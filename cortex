@@ -1,0 +1,14 @@
+#!/usr/bin/env python
+#
+# cortex | A command line client for cortexd
+
+import sys, os
+sys.path.append(os.path.join(os.path.dirname(__file__), 'lib'))
+
+import dispatch
+
+def main(argv):                                          
+    dispatch.run(argv)
+    
+if __name__ == "__main__":
+    main(sys.argv[1:])
