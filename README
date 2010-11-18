@@ -1,0 +1,9 @@
+Cortex command line client and python library.
+
+Cortex automates the management of an Information System through the entire lifecycle. 
+Integrating in particular the management of virtual machines (though an hypervisor), 
+the provisioning, the configuration management, auditing and monitoring.
+
+Copyright 2010 Guardis Sprl, Liège, Belgium.
+
+This software is proprietary of Guardis and must not be distributed or used without prior consent of Guardis.
