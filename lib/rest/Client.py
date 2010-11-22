@@ -4,10 +4,10 @@ Created on Nov 15, 2010
 @author: eschenal
 '''
 import urllib2
-import json
-import urllibx
-import globals
 from urllib2 import HTTPError
+from util import urllibx, globals
+import urllib
+import json
 
 class Client:
 
@@ -15,37 +15,35 @@ class Client:
         self.endpoint = endpoint.rstrip('/')
         self.username = username
         self.password = password
-
-    def list(self, collection):
-        url = self.endpoint + "/" + collection
-        req = urllibx.RequestWithMethod(url, method="GET", headers=self._headers())
+    
+    def create(self, resource, item, parameters={}):
+        url = self.endpoint + "/" + resource + "?" + urllib.urlencode(parameters)
+        req = urllibx.RequestWithMethod(url, method="POST", headers=self._headers(), data=json.dumps(item))
         raw = self._urlopen(req)
         result = json.load(raw)
         return result
     
-    def create(self, collection, resource):
-        url = self.endpoint + "/" + collection
-        req = urllibx.RequestWithMethod(url, method="POST", headers=self._headers(), data=json.dumps(resource))
-        raw = self._urlopen(req)
-        result = json.load(raw)
-        return result
-    
-    def read(self, collection, uuid):
-        url = self.endpoint + "/" + collection + "/" + uuid
+    def read(self, resource, parameters={}, decode=True):
+        url = self.endpoint + "/" + resource + "?" + urllib.urlencode(parameters)
         req = urllibx.RequestWithMethod(url, method="GET", headers=self._headers())
         raw = self._urlopen(req)
-        result = json.load(raw)
-        return result    
+        if decode: 
+            return json.load(raw)
+        else:
+            return raw    
 
-    def update(self, collection, uuid, resource):
-        url = self.endpoint + "/" + collection + "/" + uuid
-        req = urllibx.RequestWithMethod(url, method="PUT", headers=self._headers(), data=json.dumps(resource))
+    def update(self, resource, item=None, parameters={}, decode=True):
+        url = self.endpoint + "/" + resource + "?" + urllib.urlencode(parameters)
+        req = urllibx.RequestWithMethod(url, method="PUT", headers=self._headers())
+        if item: req.add_data(json.dumps(item))
         raw = self._urlopen(req)
-        result = json.load(raw)
-        return result
+        if json: 
+            return json.load(raw)
+        else:
+            return raw  
 
-    def delete(self, collection, uuid):
-        url = self.endpoint + "/" + collection + "/" + uuid
+    def delete(self, resource, parameters={}):
+        url = self.endpoint + "/" + resource + "?" + urllib.urlencode(parameters)
         req = urllibx.RequestWithMethod(url, method='DELETE', headers=self._headers())
         raw = self._urlopen(req)
         return
@@ -67,11 +65,3 @@ class Client:
                 print "HTTP Request returned error " + str(err.msg)
                 print err.read()
                 exit(-1)
-        
-class ApiException(Exception):
-    pass
-
-class NoResourceException(ApiException):
-    def __init__(self, uuid):
-        self.uuid= uuid
-     
