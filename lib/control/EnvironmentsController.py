@@ -18,7 +18,7 @@ class EnvironmentsController(ResourceController):
         self._parameters = {"organizationId":options.organization}
         
     def _render(self, item, detailed=False):
-        print item['name'], item['uuid']
+        print item['uuid'], item['name']
 
     def _interactive(self, item=None):
         name = None

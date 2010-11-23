@@ -22,7 +22,7 @@ class HostsController(ResourceController):
         self._parameters = {"environmentId":options.environment}
         
     def _render(self, item, detailed=False):
-        print item['name'], item['uuid']
+        print item['uuid'], item['name']
 
     def _distribution(self, argv):
         controller = HostDistributionController()
