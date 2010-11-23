@@ -4,9 +4,9 @@ Created on Nov 22, 2010
 @author: eschenal
 '''
 from util import globals
-from control.DefaultController import DefaultController, ControllerException
+from control.DefaultController import DefaultController
 from rest.Client import Client
-import json
+from control.Exceptions import NotFoundException, MissingException
 
 class ProvisionerController(DefaultController):
 
@@ -20,55 +20,35 @@ class ProvisionerController(DefaultController):
     def _kickstart(self, argv):
         options = globals.options
         
-        if not options.host:
-            print "You must provide the UUID of the host"
-            exit(-1)
-        else :
-            host = options.host
+        # Validate input parameters
+        if options.uuid:
+            uuid = options.uuid
+        elif options.path:
+            uuid = self._resolv(options.path)
+            if not uuid: raise NotFoundException(uuid)
+        else:
+            raise MissingException("You must provide a valid host UUID (with --uuid) or path (--path)")
     
         client = Client(self._endpoint(), options.username, options.password)
-        result = client.read(self._resource + "/kickstart.cfg", parameters={"hostId":host}, decode=False)
+        result = client.read(self._resource + "/kickstart.cfg", parameters={"hostId":uuid}, decode=False)
         print result.read()
         
 
     def _provision(self, argv):
         options = globals.options
         
-        if not options.host:
-            print "You must provide the UUID of the host"
-            exit(-1)
-        else :
-            host = options.host
+        # Validate input parameters
+        if options.uuid:
+            uuid = options.uuid
+        elif options.path:
+            uuid = self._resolv(options.path)
+            if not uuid: raise NotFoundException(uuid)
+        else:
+            raise MissingException("You must provide a valid host UUID (with --uuid) or path (--path)")
             
         client = Client(self._endpoint(), options.username, options.password)
-        result = client.update(self._resource + "/_provision", parameters={"hostId":host}, decode=False)
+        result = client.update(self._resource + "/_provision", parameters={"hostId":uuid}, decode=False)
         print result.read()   
-
-    
-    def _set(self, argv):
-        options = globals.options
-          
-        if not options.host:
-            print "You must provide the UUID of the host"
-            exit(-1)
-        else:    
-            host = options.host 
-          
-        if options.filename:
-            with open(options.filename, 'r') as f:
-                item = json.load(f)
-        elif options.json:
-            item = json.loads(options.json)
-        else:
-            raise ControllerException("Setting a distribution is not possible in interactive mode.")
-        
-        client = Client(self._endpoint(), options.username, options.password)
-        result = client.update(self._resource + "/" + host + "/distribution", item)
-        
-        if options.raw:
-            print json.dumps(result, sort_keys=True, indent=4)
-        else:
-            self._render(result)
         
     def _render(self, item, detailed=False):
         if item.has_key('settings'):
@@ -81,3 +61,9 @@ class ProvisionerController(DefaultController):
     def _endpoint(self):
         options = globals.options
         return options.api
+    
+    def _resolv(self, path):
+        options = globals.options
+        client = Client(self._endpoint(), options.username, options.password)
+        result = client.read("directory/organization/" + path)
+        if result.has_key('uuid') : return result['uuid']

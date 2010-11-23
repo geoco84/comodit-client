@@ -14,6 +14,7 @@ from control.DistributionsController import DistributionsController
 from control.EnvironmentsController import EnvironmentsController
 from control.HostsController import HostsController
 from control.CmsController import CmsController
+from control.Exceptions import ArgumentException
 
 def run(argv):
     Controllers.register(["org", "organizations"],  OrganizationsController())
@@ -30,16 +31,15 @@ def _parse(argv):
     usage = "usage: %prog resource [command] [options]"
     parser = optparse.OptionParser(usage)
     parser.add_option("-A", "--api",    dest="api",      help="endpoint for the API", default="http://localhost:8000/api")
-    parser.add_option("-u", "--user",   dest="username", help="username on cortex server",     default="admin")
-    parser.add_option("-p", "--pass",   dest="password", help="password on cortex server",     default="secret")
+    parser.add_option("-U", "--user",   dest="username", help="username on cortex server",     default="admin")
+    parser.add_option("-P", "--pass",   dest="password", help="password on cortex server",     default="secret")
     parser.add_option("-q", "--quiet",  dest="verbose",  help="don't print status messages to stdout", action="store_false", default=True)
     parser.add_option("-f", "--file",   dest="filename", help="input file with a JSON object")
     parser.add_option("-j", "--json",   dest="json",     help="input JSON object")
     parser.add_option("-r", "--raw",    dest="raw",      help="output the raw JSON results", action="store_true", default=False, )
-    parser.add_option("--debug",        dest="debug",    help="display debug information", action="store_true", default=False)
-    parser.add_option("--org", "--organization", dest="organization",    help="UUID of organization to which this query relates")
-    parser.add_option("--env", "--environment",  dest="environment",    help="UUID of environment to which this query relates")
-    parser.add_option("--host", "--host",  dest="host",    help="UUID of host to which this query relates")
+    parser.add_option("-u", "--uuid",  dest="uuid",    help="UUID of object to which this query relates")
+    parser.add_option("-p", "--path",  dest="path",    help="Path of object to which this query relates")
+    parser.add_option("--debug",        dest="debug",    help="display debug information", action="store_true", default=False)    
     
     (globals.options, args) = parser.parse_args()
 
@@ -58,6 +58,9 @@ def _dispatch(resource, args):
     except ControllerException as e:
         print e.msg
         exit(-1)
+    except ArgumentException as e:
+        print e.msg
+        exit(-1)        
     except Exception:
         if options.debug:
             print "Exception in user code:"

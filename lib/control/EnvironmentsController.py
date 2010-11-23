@@ -4,7 +4,9 @@ Created on Nov 22, 2010
 @author: eschenal
 '''
 from control.ResourceController import ResourceController
-from util import globals, prompt
+from control.Exceptions import NotFoundException, MissingException
+from rest.Client import Client
+from util import globals
 
 class EnvironmentsController(ResourceController):
 
@@ -13,35 +15,28 @@ class EnvironmentsController(ResourceController):
     def __init__(self):
         super(EnvironmentsController, self ).__init__()
         
-    def _pre(self, argv):
+    def _list(self, argv):
         options = globals.options
-        self._parameters = {"organizationId":options.organization}
+    
+        # Validate input parameters
+        if options.uuid:
+            uuid = options.uuid
+        elif options.path:
+            uuid = self._resolv(options.path)
+            if not uuid: raise NotFoundException(uuid)
+        else:
+            raise MissingException("You must provide a valid organization UUID (with --uuid) or path (--path)")
+        
+        self._parameters = {"organizationId":uuid}
+        
+        super(EnvironmentsController, self)._list(argv)    
+        
+        
+    def _resolv(self, path):
+        options = globals.options
+        client = Client(self._endpoint(), options.username, options.password)
+        result = client.read("directory/organization/" + path)
+        if result.has_key('uuid') : return result['uuid']
         
     def _render(self, item, detailed=False):
         print item['uuid'], item['name']
-
-    def _interactive(self, item=None):
-        name = None
-        description = None
-        
-        if not item: item = {}
-        options = globals.options
-        
-        if item.has_key('organization'):
-            organization = item['organization']
-        elif options.organization:
-            organization = options.organization
-            
-        if item.has_key('name'):
-            name = item['name']
-        
-        if item.has_key('description'):
-            description = item['description']
-
-        item['organization'] = prompt.raw_input_default("Organization: ", organization)    
-        item['name'] = prompt.raw_input_default('Name: ', name)
-        desc = prompt.raw_input_default("Description: ", description)
-        if len(desc) > 0:
-            item['description'] = desc
-        
-        return item

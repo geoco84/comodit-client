@@ -3,10 +3,12 @@ Created on Nov 22, 2010
 
 @author: eschenal
 '''
+from control.Exceptions import NotFoundException, MissingException
+from control.HostApplicationsController import HostApplicationsController
+from control.HostDistributionController import HostDistributionController
 from control.ResourceController import ResourceController
 from util import globals, prompt
-from control.HostDistributionController import HostDistributionController
-from control.HostApplicationsController import HostApplicationsController
+from rest.Client import Client
 
 class HostsController(ResourceController):
 
@@ -17,12 +19,30 @@ class HostsController(ResourceController):
         self._register(["dist", "distribution"], self._distribution)
         self._register(["apps", "applications"], self._applications)
         
-    def _pre(self, argv):
+    def _list(self, argv):
         options = globals.options
-        self._parameters = {"environmentId":options.environment}
+    
+        # Validate input parameters
+        if options.uuid:
+            uuid = options.uuid
+        elif options.path:
+            uuid = self._resolv(options.path)
+            if not uuid: raise NotFoundException(uuid)
+        else:
+            raise MissingException("You must provide a valid environment UUID (with --uuid) or path (--path)")
+        
+        self._parameters = {"environmentId":uuid}
+        
+        super(HostsController, self)._list(argv)           
         
     def _render(self, item, detailed=False):
         print item['uuid'], item['name']
+        
+    def _resolv(self, path):
+        options = globals.options
+        client = Client(self._endpoint(), options.username, options.password)
+        result = client.read("directory/organization/" + path)
+        if result.has_key('uuid') : return result['uuid']        
 
     def _distribution(self, argv):
         controller = HostDistributionController()
@@ -31,38 +51,3 @@ class HostsController(ResourceController):
     def _applications(self, argv):
         controller = HostApplicationsController()
         controller.run(argv)        
-
-    def _interactive(self, item=None):
-        if not item: item = {}
-        options = globals.options
-        name = None
-        description = None
-        environment = None
-        hostname = None
-        domain = None
-        
-        if item.has_key('environment'):
-            environment = item['environment']
-        elif options.environment:
-            environment = options.environment
-        item['environment'] = prompt.raw_input_default("Environment: ", environment)
-            
-        if item.has_key('name'):
-            name = item['name']
-        item['name'] = prompt.raw_input_default('Name: ', name)
-                
-        if item.has_key('hostname'):
-            hostname = item['hostname']            
-        item['hostname'] = prompt.raw_input_default('Hostname: ', hostname)
-
-        if item.has_key('domain'):
-            domain = item['domain']            
-        item['domain'] = prompt.raw_input_default('Domain name: ', domain)
-    
-        if item.has_key('description'):
-            description = item['description']
-        desc = prompt.raw_input_default("Description: ", description)
-        if len(desc) > 0:
-            item['description'] = desc
-        
-        return item

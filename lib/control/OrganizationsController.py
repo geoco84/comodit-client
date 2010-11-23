@@ -4,7 +4,8 @@ Created on Nov 22, 2010
 @author: eschenal
 '''
 from control.ResourceController import ResourceController
-from util import prompt
+from rest.Client import Client
+from util import prompt, globals
 
 class OrganizationsController(ResourceController):
 
@@ -21,12 +22,8 @@ class OrganizationsController(ResourceController):
                 print "   ", item['description']
         
 
-    def _interactive(self, item=None):
-        if not item: item = {}
-        
-        item['name'] = prompt.raw_input_default('Name: ', item.get('name'))
-        desc = prompt.raw_input_default("Description: ", item.get('description'))
-        if len(desc) > 0:
-            item['description'] = desc
-        
-        return item
+    def _resolv(self, path):
+        options = globals.options
+        client = Client(self._endpoint(), options.username, options.password)
+        result = client.read("directory/organization/" + path)
+        if result.has_key('uuid') : return result['uuid']

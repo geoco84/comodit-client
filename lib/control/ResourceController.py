@@ -7,6 +7,7 @@ from control.DefaultController import DefaultController
 from util import globals, prompt
 from rest.Client import Client
 import json
+from control.Exceptions import MissingException, NotFoundException
 
 class ResourceController(DefaultController):
 
@@ -39,13 +40,20 @@ class ResourceController(DefaultController):
     def _show(self, argv):
         options = globals.options
     
-        if (len(argv) == 0):
-            print "You must provide the UUID of the object to show."
-            exit(-1)
-    
+        # Validate input parameters
+        if options.uuid:
+            uuid = options.uuid
+        elif options.path:
+            uuid = self._resolv(options.path)
+            if not uuid: raise NotFoundException(uuid)
+        else:
+            raise MissingException("You must provide a valid object UUID (with --uuid) or path (--path)")
+            
+        # Query the server
         client = Client(self._endpoint(), options.username, options.password)
-        result = client.read(self._resource + "/" + argv[0])
+        result = client.read(self._resource + "/" + uuid)
         
+        # Display the result
         if options.raw:
             print json.dumps(result, sort_keys=True, indent=4)
         else:
@@ -60,7 +68,7 @@ class ResourceController(DefaultController):
         elif options.json:
             item = json.loads(options.json)            
         else:
-            item = self._interactive()
+            raise MissingException("You must provide a valid object definition with (--json or --file)")
         
         client = Client(self._endpoint(), options.username, options.password)
         result = client.create(self._resource, item)
@@ -82,12 +90,8 @@ class ResourceController(DefaultController):
         elif options.json:
             item = json.loads(options.json)
             uuid = item.get("uuid")
-        else:
-            if (len(argv) == 0):
-                print "You must provide the UUID of the item to update."
-                exit(-1)
+            raise MissingException("You must provide a valid object definition with (--json or --file)")
             
-            uuid = argv[0]
             item = client.read(self._resource + "/" + uuid)
             item = self._interactive(item)
         
@@ -102,20 +106,25 @@ class ResourceController(DefaultController):
     def _delete(self, argv):
         options = globals.options
         
-        if (len(argv) == 0):
-            print "You must provide the UUID of the object to delete."
-            exit(-1)
+        # Validate input parameters
+        if options.uuid:
+            uuid = options.uuid
+        elif options.path:
+            uuid = self._resolv(options.path)
+            if not uuid: raise NotFoundException(uuid)
+        else:
+            raise MissingException("You must provide a valid object UUID (with --uuid) or path (--path)")
             
         client = Client(self._endpoint(), options.username, options.password)
-        item = client.read(self._resource + "/" + argv[0])
+        item = client.read(self._resource + "/" + uuid)
         
         if (prompt.confirm(prompt= "Delete " + item['name'] + " ?", resp=False)) :
-            client.delete(self._resource + "/" + argv[0])
+            client.delete(self._resource + "/" + uuid)
     
     def _render(self, item, detailed=False):
         pass
-    
-    def _interactive(self, item):
+
+    def _resolv(self, path):
         pass
                         
     def _endpoint(self):

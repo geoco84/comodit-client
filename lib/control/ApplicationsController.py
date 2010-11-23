@@ -43,12 +43,8 @@ class ApplicationsController(ResourceController):
         if item.has_key('description'):
             print "   ", item['description']
 
-    def _interactive(self, item=None):
-        if not item: item = {}
-            
-        item['name'] = raw_input('Name: ')
-        desc = raw_input("Description: ")
-        if len(desc) > 0:
-            item['description'] = desc
-        
-        return item
+    def _resolv(self, path):
+        options = globals.options
+        client = Client(self._endpoint(), options.username, options.password)
+        result = client.read("directory/application/" + path)
+        if result.has_key('uuid') : return result['uuid']            

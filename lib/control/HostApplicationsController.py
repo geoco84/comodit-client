@@ -7,6 +7,8 @@ from util import globals
 from control.DefaultController import DefaultController, ControllerException
 from rest.Client import Client
 import json
+from control.Exceptions import NotFoundException, MissingException
+from pprint import pprint
 
 class HostApplicationsController(DefaultController):
 
@@ -24,14 +26,17 @@ class HostApplicationsController(DefaultController):
     def _list(self, argv):
         options = globals.options
     
-        if not options.host:
-            print "You must provide the UUID of the host"
-            exit(-1)
-        else :
-            host = options.host
+        # Validate input parameters
+        if options.uuid:
+            uuid = options.uuid
+        elif options.path:
+            uuid = self._resolv(options.path)
+            if not uuid: raise NotFoundException(uuid)
+        else:
+            raise MissingException("You must provide a valid environment UUID (with --uuid) or path (--path)")
     
         client = Client(self._endpoint(), options.username, options.password)
-        result = client.read(self._resource + "/" + host + "/applications")
+        result = client.read(self._resource + "/" + uuid + "/applications")
         
         if options.raw:
             print json.dumps(result, sort_keys=True, indent=4)
@@ -45,20 +50,23 @@ class HostApplicationsController(DefaultController):
     def _show(self, argv):
         options = globals.options
     
-        if not options.host:
-            print "You must provide the UUID of the host"
-            exit(-1)
-        else :
-            host = options.host
+        # Validate input parameters
+        if options.uuid:
+            uuid = options.uuid
+        elif options.path:
+            uuid = self._resolv(options.path)
+            if not uuid: raise NotFoundException(uuid)
+        else:
+            raise MissingException("You must provide a valid environment UUID (with --uuid) or path (--path)")
     
         if (len(argv) == 0):
-            print "You must provide the UUID of the application to delete."
+            print "You must provide the name of the application to delete."
             exit(-1)
         else:
-            uuid = argv[0]
+            application = self._resolvApplication(argv[0])
     
         client = Client(self._endpoint(), options.username, options.password)
-        result = client.read(self._resource + "/" + host + "/applications/" + uuid)
+        result = client.read(self._resource + "/" + uuid + "/applications/" + application)
         
         if options.raw:
             print json.dumps(result, sort_keys=True, indent=4)
@@ -68,11 +76,14 @@ class HostApplicationsController(DefaultController):
     def _add(self, argv):
         options = globals.options
           
-        if not options.host:
-            print "You must provide the UUID of the host"
-            exit(-1)
-        else:    
-            host = options.host 
+        # Validate input parameters
+        if options.uuid:
+            uuid = options.uuid
+        elif options.path:
+            uuid = self._resolv(options.path)
+            if not uuid: raise NotFoundException(uuid)
+        else:
+            raise MissingException("You must provide a valid environment UUID (with --uuid) or path (--path)")
           
         if options.filename:
             with open(options.filename, 'r') as f:
@@ -83,7 +94,7 @@ class HostApplicationsController(DefaultController):
             raise ControllerException("Adding an application is not possible in interactive mode.")
         
         client = Client(self._endpoint(), options.username, options.password)
-        result = client.create(self._resource + "/" + host + "/applications/", item)
+        result = client.create(self._resource + "/" + uuid + "/applications/", item)
         
         if options.raw:
             print json.dumps(result, sort_keys=True, indent=4)
@@ -93,11 +104,14 @@ class HostApplicationsController(DefaultController):
     def _update(self, argv):
         options = globals.options
           
-        if not options.host:
-            print "You must provide the UUID of the host"
-            exit(-1)
-        else:    
-            host = options.host 
+        # Validate input parameters
+        if options.uuid:
+            uuid = options.uuid
+        elif options.path:
+            uuid = self._resolv(options.path)
+            if not uuid: raise NotFoundException(uuid)
+        else:
+            raise MissingException("You must provide a valid environment UUID (with --uuid) or path (--path)")
           
         if options.filename:
             with open(options.filename, 'r') as f:
@@ -108,7 +122,7 @@ class HostApplicationsController(DefaultController):
             raise ControllerException("Configuring an application is not possible in interactive mode.")
         
         client = Client(self._endpoint(), options.username, options.password)
-        result = client.update(self._resource + "/" + host + "/applications/" + item['application'], item)
+        result = client.update(self._resource + "/" + uuid + "/applications/" + item['application'], item)
         
         if options.raw:
             print json.dumps(result, sort_keys=True, indent=4)
@@ -118,25 +132,28 @@ class HostApplicationsController(DefaultController):
     def _remove(self, argv):
         options = globals.options
           
-        if not options.host:
-            print "You must provide the UUID of the host"
-            exit(-1)
-        else:    
-            host = options.host 
+        # Validate input parameters
+        if options.uuid:
+            uuid = options.uuid
+        elif options.path:
+            uuid = self._resolv(options.path)
+            if not uuid: raise NotFoundException(uuid)
+        else:
+            raise MissingException("You must provide a valid environment UUID (with --uuid) or path (--path)")
           
     
         if (len(argv) == 0):
             print "You must provide the UUID of the application to delete."
             exit(-1)
         else:
-            uuid = argv[0]
+            application = self._resolvApplication(argv[0])
         
         client = Client(self._endpoint(), options.username, options.password)
-        result = client.delete(self._resource + "/" + host + "/applications/" + uuid)
+        result = client.delete(self._resource + "/" + uuid + "/applications/" + application)
     
     def _render(self, item, detailed=False):
-            
-        print item["application"]
+        app = self._getApplicationDetails(item['application'])    
+        print app["name"]
         if item.has_key('settings'):
             for setting in item['settings']:
                 print "    %-30s: %s" % (setting['key'], setting['value'])
@@ -144,6 +161,24 @@ class HostApplicationsController(DefaultController):
     def _interactive(self, item=None):
         raise NotImplemented
     
+    def _resolv(self, path):
+        options = globals.options
+        client = Client(self._endpoint(), options.username, options.password)
+        result = client.read("directory/organization/" + path)
+        if result.has_key('uuid') : return result['uuid']  
+        
+    def _resolvApplication(self, path):
+        options = globals.options
+        client = Client(self._endpoint(), options.username, options.password)
+        result = client.read("directory/application/" + path)
+        if result.has_key('uuid') : return result['uuid']
+        
+    def _getApplicationDetails(self, uuid):            
+        options = globals.options
+        client = Client(self._endpoint(), options.username, options.password)
+        result = client.read("applications/" + uuid)
+        return result
+        
     def _endpoint(self):
         options = globals.options
         return options.api

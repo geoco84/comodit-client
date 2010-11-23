@@ -7,6 +7,7 @@ from util import globals
 from control.DefaultController import DefaultController, ControllerException
 from rest.Client import Client
 import json
+from control.Exceptions import NotFoundException, MissingException
 
 class HostDistributionController(DefaultController):
 
@@ -21,14 +22,17 @@ class HostDistributionController(DefaultController):
     def _show(self, argv):
         options = globals.options
     
-        if not options.host:
-            print "You must provide the UUID of the host"
-            exit(-1)
-        else :
-            host = options.host
+        # Validate input parameters
+        if options.uuid:
+            uuid = options.uuid
+        elif options.path:
+            uuid = self._resolv(options.path)
+            if not uuid: raise NotFoundException(uuid)
+        else:
+            raise MissingException("You must provide a valid environment UUID (with --uuid) or path (--path)")
     
         client = Client(self._endpoint(), options.username, options.password)
-        result = client.read(self._resource + "/" + host + "/distribution")
+        result = client.read(self._resource + "/" + uuid+ "/distribution")
         
         if options.raw:
             print json.dumps(result, sort_keys=True, indent=4)
@@ -38,11 +42,14 @@ class HostDistributionController(DefaultController):
     def _set(self, argv):
         options = globals.options
           
-        if not options.host:
-            print "You must provide the UUID of the host"
-            exit(-1)
-        else:    
-            host = options.host 
+        # Validate input parameters
+        if options.uuid:
+            uuid = options.uuid
+        elif options.path:
+            uuid = self._resolv(options.path)
+            if not uuid: raise NotFoundException(uuid)
+        else:
+            raise MissingException("You must provide a valid environment UUID (with --uuid) or path (--path)")
           
         if options.filename:
             with open(options.filename, 'r') as f:
@@ -53,7 +60,7 @@ class HostDistributionController(DefaultController):
             raise ControllerException("Setting a distribution is not possible in interactive mode.")
         
         client = Client(self._endpoint(), options.username, options.password)
-        result = client.update(self._resource + "/" + host + "/distribution", item)
+        result = client.update(self._resource + "/" + uuid + "/distribution", item)
         
         if options.raw:
             print json.dumps(result, sort_keys=True, indent=4)
@@ -61,12 +68,26 @@ class HostDistributionController(DefaultController):
             self._render(result)
         
     def _render(self, item, detailed=False):
+        dist = self._getDistributionDetails(item['distribution'])    
+        print dist["name"]
         if item.has_key('settings'):
             for setting in item['settings']:
-                print "%-30s: %s" % (setting['key'], setting['value'])
+                print "    %-30s: %s" % (setting['key'], setting['value'])
 
     def _interactive(self, item=None):
         raise NotImplemented
+    
+    def _resolv(self, path):
+        options = globals.options
+        client = Client(self._endpoint(), options.username, options.password)
+        result = client.read("directory/organization/" + path)
+        if result.has_key('uuid') : return result['uuid']   
+
+    def _getDistributionDetails(self, uuid):            
+        options = globals.options
+        client = Client(self._endpoint(), options.username, options.password)
+        result = client.read("distributions/" + uuid)
+        return result        
     
     def _endpoint(self):
         options = globals.options
