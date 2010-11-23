@@ -27,7 +27,7 @@ class ProvisionerController(DefaultController):
             host = options.host
     
         client = Client(self._endpoint(), options.username, options.password)
-        result = client.read(self._resource + "/kickstart.cfg", parameters={"hostId":host}, json=False)
+        result = client.read(self._resource + "/kickstart.cfg", parameters={"hostId":host}, decode=False)
         print result.read()
         
 
@@ -41,7 +41,7 @@ class ProvisionerController(DefaultController):
             host = options.host
             
         client = Client(self._endpoint(), options.username, options.password)
-        result = client.update(self._resource + "/_provision", parameters={"hostId":host}, json=False)
+        result = client.update(self._resource + "/_provision", parameters={"hostId":host}, decode=False)
         print result.read()   
 
     

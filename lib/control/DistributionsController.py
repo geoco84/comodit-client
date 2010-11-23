@@ -7,7 +7,7 @@ from control.ResourceController import ResourceController
 from util import globals
 import json
 from control.DefaultController import ControllerException
-from rest import Client
+from rest.Client import Client
 
 class DistributionsController(ResourceController):
 

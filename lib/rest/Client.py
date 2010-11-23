@@ -16,12 +16,14 @@ class Client:
         self.username = username
         self.password = password
     
-    def create(self, resource, item, parameters={}):
+    def create(self, resource, item, parameters={}, decode=True):
         url = self.endpoint + "/" + resource + "?" + urllib.urlencode(parameters)
         req = urllibx.RequestWithMethod(url, method="POST", headers=self._headers(), data=json.dumps(item))
         raw = self._urlopen(req)
-        result = json.load(raw)
-        return result
+        if decode: 
+            return json.load(raw)
+        else:
+            return raw  
     
     def read(self, resource, parameters={}, decode=True):
         url = self.endpoint + "/" + resource + "?" + urllib.urlencode(parameters)
@@ -37,7 +39,7 @@ class Client:
         req = urllibx.RequestWithMethod(url, method="PUT", headers=self._headers())
         if item: req.add_data(json.dumps(item))
         raw = self._urlopen(req)
-        if json: 
+        if decode: 
             return json.load(raw)
         else:
             return raw  
