@@ -49,7 +49,7 @@ class CmsController(DefaultController):
         hostname = result.get('hostname')
         domain = result.get('domain')
         fqdn = hostname + "." + domain
-        print "Running puppet on " + fqdn
+        print "Running CMS on " + fqdn
         subprocess.check_call(["ssh", "root@puppet-comodit.angleur", "puppetrun --host " + fqdn], stderr=subprocess.STDOUT)
     
     def _resolv(self, path):

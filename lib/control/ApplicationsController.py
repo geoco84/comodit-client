@@ -38,10 +38,21 @@ class ApplicationsController(ResourceController):
             self._render(result)
 
     def _render(self, item, detailed=False):
-        print item['uuid']
-        print "   ",item['name']
-        if item.has_key('description'):
-            print "   ", item['description']
+        if not detailed:
+            print item['uuid'], item['name']
+        else: 
+            print "Name:", item['name']
+            if item.has_key('description'): print "Description:", item['description']
+            print "UUID:", item['uuid']
+            if item.has_key('packages'):
+                print "Packages:"
+                for p in item.get('packages'):
+                    print "   ", p                 
+            if item.has_key('parameters'):
+                print "Parameters:"
+                for p in item.get('parameters'):
+                    print "   ", p.get('key')
+
 
     def _resolv(self, path):
         options = globals.options

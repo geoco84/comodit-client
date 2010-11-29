@@ -4,7 +4,7 @@ Created on Nov 22, 2010
 @author: eschenal
 '''
 from util import globals
-from control.DefaultController import DefaultController, ControllerException
+from control.DefaultController import DefaultController
 from rest.Client import Client
 import json
 from control.Exceptions import NotFoundException, MissingException
@@ -29,7 +29,7 @@ class HostDistributionController(DefaultController):
             uuid = self._resolv(options.path)
             if not uuid: raise NotFoundException(uuid)
         else:
-            raise MissingException("You must provide a valid environment UUID (with --uuid) or path (--path)")
+            raise MissingException("You must provide a valid host UUID (with --uuid) or path (--path)")
     
         client = Client(self._endpoint(), options.username, options.password)
         result = client.read(self._resource + "/" + uuid+ "/distribution")
@@ -42,25 +42,16 @@ class HostDistributionController(DefaultController):
     def _set(self, argv):
         options = globals.options
           
-        # Validate input parameters
-        if options.uuid:
-            uuid = options.uuid
-        elif options.path:
-            uuid = self._resolv(options.path)
-            if not uuid: raise NotFoundException(uuid)
-        else:
-            raise MissingException("You must provide a valid environment UUID (with --uuid) or path (--path)")
-          
         if options.filename:
             with open(options.filename, 'r') as f:
                 item = json.load(f)
         elif options.json:
             item = json.loads(options.json)
         else:
-            raise ControllerException("Setting a distribution is not possible in interactive mode.")
+            raise MissingException("You must provide a valid object definition with (--json or --file)")
         
         client = Client(self._endpoint(), options.username, options.password)
-        result = client.update(self._resource + "/" + uuid + "/distribution", item)
+        result = client.update(self._resource + "/" + item['host'] + "/distribution", item)
         
         if options.raw:
             print json.dumps(result, sort_keys=True, indent=4)

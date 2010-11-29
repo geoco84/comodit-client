@@ -17,7 +17,7 @@ class HostsController(ResourceController):
     def __init__(self):
         super(HostsController, self ).__init__()
         self._register(["dist", "distribution"], self._distribution)
-        self._register(["apps", "applications"], self._applications)
+        self._register(["app", "application", "applications"], self._applications)
         
     def _list(self, argv):
         options = globals.options

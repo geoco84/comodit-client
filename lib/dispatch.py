@@ -15,6 +15,7 @@ from control.EnvironmentsController import EnvironmentsController
 from control.HostsController import HostsController
 from control.CmsController import CmsController
 from control.Exceptions import ArgumentException
+from control.UsersController import UsersController
 
 def run(argv):
     Controllers.register(["org", "organizations"],  OrganizationsController())
@@ -24,6 +25,7 @@ def run(argv):
     Controllers.register(["host", "hosts"],         HostsController())
     Controllers.register(["prov", "provisioner"],   ProvisionerController())
     Controllers.register(["config", "cms", "configuration"],  CmsController())    
+    Controllers.register(["user", "users"],  UsersController())    
     _parse(argv)
 
 def _parse(argv):

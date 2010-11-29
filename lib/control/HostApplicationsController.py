@@ -57,7 +57,7 @@ class HostApplicationsController(DefaultController):
             uuid = self._resolv(options.path)
             if not uuid: raise NotFoundException(uuid)
         else:
-            raise MissingException("You must provide a valid environment UUID (with --uuid) or path (--path)")
+            raise MissingException("You must provide a valid host UUID (with --uuid) or path (--path)")
     
         if (len(argv) == 0):
             print "You must provide the name of the application to delete."
@@ -76,25 +76,16 @@ class HostApplicationsController(DefaultController):
     def _add(self, argv):
         options = globals.options
           
-        # Validate input parameters
-        if options.uuid:
-            uuid = options.uuid
-        elif options.path:
-            uuid = self._resolv(options.path)
-            if not uuid: raise NotFoundException(uuid)
-        else:
-            raise MissingException("You must provide a valid environment UUID (with --uuid) or path (--path)")
-          
         if options.filename:
             with open(options.filename, 'r') as f:
                 item = json.load(f)
         elif options.json:
             item = json.loads(options.json)
         else:
-            raise ControllerException("Adding an application is not possible in interactive mode.")
+            raise MissingException("You must provide a valid object definition with (--json or --file)")
         
         client = Client(self._endpoint(), options.username, options.password)
-        result = client.create(self._resource + "/" + uuid + "/applications/", item)
+        result = client.create(self._resource + "/" + item['host'] + "/applications/", item)
         
         if options.raw:
             print json.dumps(result, sort_keys=True, indent=4)
@@ -103,26 +94,17 @@ class HostApplicationsController(DefaultController):
             
     def _update(self, argv):
         options = globals.options
-          
-        # Validate input parameters
-        if options.uuid:
-            uuid = options.uuid
-        elif options.path:
-            uuid = self._resolv(options.path)
-            if not uuid: raise NotFoundException(uuid)
-        else:
-            raise MissingException("You must provide a valid environment UUID (with --uuid) or path (--path)")
-          
+                   
         if options.filename:
             with open(options.filename, 'r') as f:
                 item = json.load(f)
         elif options.json:
             item = json.loads(options.json)
         else:
-            raise ControllerException("Configuring an application is not possible in interactive mode.")
+            raise MissingException("You must provide a valid object definition with (--json or --file)")
         
         client = Client(self._endpoint(), options.username, options.password)
-        result = client.update(self._resource + "/" + uuid + "/applications/" + item['application'], item)
+        result = client.update(self._resource + "/" + item['host'] + "/applications/" + item['application'], item)
         
         if options.raw:
             print json.dumps(result, sort_keys=True, indent=4)
@@ -139,7 +121,7 @@ class HostApplicationsController(DefaultController):
             uuid = self._resolv(options.path)
             if not uuid: raise NotFoundException(uuid)
         else:
-            raise MissingException("You must provide a valid environment UUID (with --uuid) or path (--path)")
+            raise MissingException("You must provide a valid host UUID (with --uuid) or path (--path)")
           
     
         if (len(argv) == 0):

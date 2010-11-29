@@ -39,4 +39,14 @@ class EnvironmentsController(ResourceController):
         if result.has_key('uuid') : return result['uuid']
         
     def _render(self, item, detailed=False):
-        print item['uuid'], item['name']
+        if not detailed:
+            print item['uuid'], item['name']
+        else:
+            print "Name:", item['name']
+            print "UUUID:", item['uuid']
+            if item.has_key('description'):
+                print "Description:", item['description']
+            if item.has_key('settings'):
+                print "Settings:"
+                for setting in item['settings']:
+                    print "    %-30s: %s" % (setting['key'], setting['value'])

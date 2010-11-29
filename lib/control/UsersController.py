@@ -8,13 +8,14 @@ from util import globals
 import json
 from control.DefaultController import ControllerException
 from rest.Client import Client
+import sys
 
-class DistributionsController(ResourceController):
+class UsersController(ResourceController):
 
-    _resource = "distributions"
+    _resource = "users"
 
     def __init__(self):
-        super(DistributionsController, self ).__init__()
+        super(UsersController, self ).__init__()
         
     def _update(self, args):
         options = globals.options
@@ -27,7 +28,7 @@ class DistributionsController(ResourceController):
             item = json.loads(options.json)
             uuid = item.get("uuid")
         else:
-            raise ControllerException("Updating a distribution is not possible in interactive mode.")
+            raise ControllerException("Updating a user is not possible in interactive mode.")
         
         client = Client(self._endpoint(), options.username, options.password)
         result = client.update(self._resource + "/" + uuid, item)
@@ -39,19 +40,17 @@ class DistributionsController(ResourceController):
 
     def _render(self, item, detailed=False):
         if not detailed:
-            print item['uuid'], item['name']
+            print item['uuid'], item['username']
         else: 
-            print "Name:", item['name']
-            if item.has_key('description'): print "Description:", item['description']
+            print "Username:", item['username']
             print "UUID:", item['uuid']
-            if item.has_key('url'): print "Url:", item['url']             
-            if item.has_key('parameters'):
-                print "Parameters:"
-                for p in item.get('parameters'):
-                    print "   ", p.get('key')
+            sys.stdout.write("Roles: ")
+            map(lambda x: sys.stdout.write(x+ " "), item['roles'])
+            sys.stdout.write("\r\n")
+
 
     def _resolv(self, path):
         options = globals.options
         client = Client(self._endpoint(), options.username, options.password)
-        result = client.read("directory/distribution/" + path)
+        result = client.read("directory/user/" + path)
         if result.has_key('uuid') : return result['uuid']            
