@@ -1,21 +1,27 @@
-'''
-Created on Nov 22, 2010
+# control.resource - Generic controller for managing cortex resources. 
+# coding: utf-8
+# 
+# Copyright 2010 Guardis SPRL, Liège, Belgium.
+# Authors: Laurent Eschenauer <laurent.eschenauer@guardis.com>
+#
+# This software cannot be used and/or distributed without prior 
+# authorization from Guardis.
 
-@author: eschenal
-'''
-from control.DefaultController import DefaultController
-from util import globals, prompt
-from rest.Client import Client
 import json
-from control.Exceptions import MissingException, NotFoundException
 
-class ResourceController(DefaultController):
+from control.abstract import AbstractController
+from util import globals, prompt
+from rest.client import Client
+from control.exceptions import NotFoundException, MissingException
+
+
+class ResourceController(AbstractController):
 
     _resource = ""
     _parameters = {}
 
     def __init__(self):
-        super(ResourceController, self ).__init__()
+        super(ResourceController, self).__init__()
         self._register(["l", "list"], self._list)
         self._register(["s", "show"], self._show)
         self._register(["a", "add"], self._add)
@@ -40,14 +46,16 @@ class ResourceController(DefaultController):
     def _show(self, argv):
         options = globals.options
     
+        # Require an object as argument
+        if len(argv) == 0:
+            raise MissingException("You must provide a valid object identifier")
+    
         # Validate input parameters
         if options.uuid:
-            uuid = options.uuid
-        elif options.path:
-            uuid = self._resolv(options.path)
-            if not uuid: raise NotFoundException(uuid)
+            uuid = argv[0]
         else:
-            raise MissingException("You must provide a valid object UUID (with --uuid) or path (--path)")
+            uuid = self._resolv(argv[0])
+            if not uuid: raise NotFoundException(uuid)
             
         # Query the server
         client = Client(self._endpoint(), options.username, options.password)
@@ -94,6 +102,8 @@ class ResourceController(DefaultController):
             
             item = client.read(self._resource + "/" + uuid)
             item = self._interactive(item)
+        else:
+            raise MissingException("You must provide a valid object definition with (--json or --file)")            
         
         client = Client(self._endpoint(), options.username, options.password)
         result = client.update(self._resource + "/" + uuid, item)
@@ -106,19 +116,21 @@ class ResourceController(DefaultController):
     def _delete(self, argv):
         options = globals.options
         
+        # Require an object as argument
+        if len(argv) == 0:
+            raise MissingException("You must provide a valid object identifier")
+    
         # Validate input parameters
         if options.uuid:
-            uuid = options.uuid
-        elif options.path:
-            uuid = self._resolv(options.path)
-            if not uuid: raise NotFoundException(uuid)
+            uuid = argv[0]
         else:
-            raise MissingException("You must provide a valid object UUID (with --uuid) or path (--path)")
+            uuid = self._resolv(argv[0])
+            if not uuid: raise NotFoundException(uuid)
             
         client = Client(self._endpoint(), options.username, options.password)
         item = client.read(self._resource + "/" + uuid)
         
-        if (prompt.confirm(prompt= "Delete " + item['name'] + " ?", resp=False)) :
+        if (prompt.confirm(prompt="Delete " + item['name'] + " ?", resp=False)) :
             client.delete(self._resource + "/" + uuid)
     
     def _render(self, item, detailed=False):

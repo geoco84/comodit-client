@@ -1,14 +1,18 @@
-'''
-Created on Nov 22, 2010
+# control.hosts - Controller for cortex Hosts resources.
+# coding: utf-8
+# 
+# Copyright 2010 Guardis SPRL, Liège, Belgium.
+# Authors: Laurent Eschenauer <laurent.eschenauer@guardis.com>
+#
+# This software cannot be used and/or distributed without prior 
+# authorization from Guardis.
 
-@author: eschenal
-'''
-from control.Exceptions import NotFoundException, MissingException
-from control.HostApplicationsController import HostApplicationsController
-from control.HostDistributionController import HostDistributionController
-from control.ResourceController import ResourceController
-from util import globals, prompt
-from rest.Client import Client
+from util import globals
+from control.resource import ResourceController
+from control.exceptions import NotFoundException, MissingException
+from rest.client import Client
+from control.hostDistribution import HostDistributionController
+from control.hostApplications import HostApplicationsController
 
 class HostsController(ResourceController):
 

@@ -1,8 +1,11 @@
-'''
-Created on Nov 18, 2010
-
-@author: eschenal
-'''
+# prompt.py - Helper to prompt the user for text and confirmations 
+# coding: utf-8
+# 
+# Copyright 2010 Guardis SPRL, Liège, Belgium.
+# Authors: Laurent Eschenauer <laurent.eschenauer@guardis.com>
+#
+# This software cannot be used and/or distributed without prior 
+# authorization from Guardis.
 
 ## {{{ http://code.activestate.com/recipes/541096/ (r1)
 def confirm(prompt=None, resp=False):
@@ -46,6 +49,8 @@ def confirm(prompt=None, resp=False):
 ## end of http://code.activestate.com/recipes/541096/ }}}
 
 def raw_input_default(prompt, default=None):
+    """prompts the user for a string, proposing a default value in brackets."""
+    
     if default:
         prompt = "%s [%s]: " % (prompt, default)
     res = raw_input(prompt)

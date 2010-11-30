@@ -1,16 +1,18 @@
-'''
-Created on Nov 22, 2010
+# control.hostApplications - Sub-controller for manageing applications installed on a host.
+# coding: utf-8
+# 
+# Copyright 2010 Guardis SPRL, Liège, Belgium.
+# Authors: Laurent Eschenauer <laurent.eschenauer@guardis.com>
+#
+# This software cannot be used and/or distributed without prior 
+# authorization from Guardis.
 
-@author: eschenal
-'''
-from util import globals
-from control.DefaultController import DefaultController, ControllerException
-from rest.Client import Client
 import json
-from control.Exceptions import NotFoundException, MissingException
-from pprint import pprint
+from control.abstract import AbstractController
+from control.exceptions import NotFoundException, MissingException
+from rest.client import Client
 
-class HostApplicationsController(DefaultController):
+class HostApplicationsController(AbstractController):
 
     _resource = "hosts"
 

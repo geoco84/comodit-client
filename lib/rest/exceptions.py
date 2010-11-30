@@ -1,4 +1,4 @@
-# globals.py - Container for global variables accross options
+# rest.exceptions - Exceptions raised by the rest client library  
 # coding: utf-8
 # 
 # Copyright 2010 Guardis SPRL, Liège, Belgium.
@@ -7,5 +7,7 @@
 # This software cannot be used and/or distributed without prior 
 # authorization from Guardis.
 
-# Share the parsed command line options globably
-options = []
+class ApiException(Exception):
+    def __init__(self, message, code):
+        self.message = message
+        self.code = code

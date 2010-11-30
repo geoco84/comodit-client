@@ -1,20 +1,26 @@
-'''
-Created on Nov 22, 2010
+# control.distributions - Controller for cortex Distributions resources.
+# coding: utf-8
+# 
+# Copyright 2010 Guardis SPRL, Liège, Belgium.
+# Authors: Laurent Eschenauer <laurent.eschenauer@guardis.com>
+#
+# This software cannot be used and/or distributed without prior 
+# authorization from Guardis.
 
-@author: eschenal
-'''
-from control.ResourceController import ResourceController
-from util import globals
 import json
-from control.DefaultController import ControllerException
-from rest.Client import Client
 
-class ApplicationsController(ResourceController):
+from util import globals
+from control.resource import ResourceController
+from control.exceptions import ControllerException
+from rest.client import Client
 
-    _resource = "applications"
+
+class DistributionsController(ResourceController):
+
+    _resource = "distributions"
 
     def __init__(self):
-        super(ApplicationsController, self ).__init__()
+        super(DistributionsController, self ).__init__()
         
     def _update(self, args):
         options = globals.options
@@ -27,7 +33,7 @@ class ApplicationsController(ResourceController):
             item = json.loads(options.json)
             uuid = item.get("uuid")
         else:
-            raise ControllerException("Updating an application is not possible in interactive mode.")
+            raise ControllerException("Updating a distribution is not possible in interactive mode.")
         
         client = Client(self._endpoint(), options.username, options.password)
         result = client.update(self._resource + "/" + uuid, item)
@@ -44,18 +50,14 @@ class ApplicationsController(ResourceController):
             print "Name:", item['name']
             if item.has_key('description'): print "Description:", item['description']
             print "UUID:", item['uuid']
-            if item.has_key('packages'):
-                print "Packages:"
-                for p in item.get('packages'):
-                    print "   ", p                 
+            if item.has_key('url'): print "Url:", item['url']             
             if item.has_key('parameters'):
                 print "Parameters:"
                 for p in item.get('parameters'):
                     print "   ", p.get('key')
 
-
     def _resolv(self, path):
         options = globals.options
         client = Client(self._endpoint(), options.username, options.password)
-        result = client.read("directory/application/" + path)
+        result = client.read("directory/distribution/" + path)
         if result.has_key('uuid') : return result['uuid']            

@@ -1,11 +1,15 @@
-'''
-Created on Nov 22, 2010
+# control.organizations - Controller for cortex Organizations resources.
+# coding: utf-8
+# 
+# Copyright 2010 Guardis SPRL, Liège, Belgium.
+# Authors: Laurent Eschenauer <laurent.eschenauer@guardis.com>
+#
+# This software cannot be used and/or distributed without prior 
+# authorization from Guardis.
 
-@author: eschenal
-'''
-from control.ResourceController import ResourceController
-from rest.Client import Client
-from util import prompt, globals
+from util import globals
+from control.resource import ResourceController
+from rest.client import Client
 
 class OrganizationsController(ResourceController):
 

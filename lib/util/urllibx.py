@@ -1,8 +1,12 @@
-'''
-Created on Nov 17, 2010
+# urllibx.py - Adds support for HTTP methods to urllib2 
+# coding: utf-8
+# 
+# Copyright 2010 Guardis SPRL, Liège, Belgium.
+# Authors: Laurent Eschenauer <laurent.eschenauer@guardis.com>
+#
+# This software cannot be used and/or distributed without prior 
+# authorization from Guardis.
 
-@author: eschenal
-'''
 import urllib2
 
 class RequestWithMethod(urllib2.Request):

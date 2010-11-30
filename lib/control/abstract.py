@@ -1,10 +1,15 @@
-'''
-Created on Nov 22, 2010
+# control.abstract - Parent class for all controllers. Implements basic flow usage.
+# coding: utf-8
+# 
+# Copyright 2010 Guardis SPRL, Liège, Belgium.
+# Authors: Laurent Eschenauer <laurent.eschenauer@guardis.com>
+#
+# This software cannot be used and/or distributed without prior 
+# authorization from Guardis.
 
-@author: eschenal
-'''
+from control.exceptions import ControllerException
 
-class DefaultController(object):
+class AbstractController(object):
     '''The default (abstract) controller'''
 
     def __init__(self):
@@ -42,8 +47,4 @@ class DefaultController(object):
                 self._actions[a] = command
         else:
             self._actions[a] = command
-            
-class ControllerException(Exception):
-    
-    def __init__(self, msg):
-        self.msg = msg
+        

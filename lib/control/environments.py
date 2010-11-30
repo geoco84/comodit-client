@@ -1,12 +1,16 @@
-'''
-Created on Nov 22, 2010
+# control.environments - Controller for cortex Environments resources.
+# coding: utf-8
+# 
+# Copyright 2010 Guardis SPRL, Liège, Belgium.
+# Authors: Laurent Eschenauer <laurent.eschenauer@guardis.com>
+#
+# This software cannot be used and/or distributed without prior 
+# authorization from Guardis.
 
-@author: eschenal
-'''
-from control.ResourceController import ResourceController
-from control.Exceptions import NotFoundException, MissingException
-from rest.Client import Client
 from util import globals
+from control.resource import ResourceController
+from control.exceptions import NotFoundException, MissingException
+from rest.client import Client
 
 class EnvironmentsController(ResourceController):
 
@@ -30,7 +34,6 @@ class EnvironmentsController(ResourceController):
         self._parameters = {"organizationId":uuid}
         
         super(EnvironmentsController, self)._list(argv)    
-        
         
     def _resolv(self, path):
         options = globals.options

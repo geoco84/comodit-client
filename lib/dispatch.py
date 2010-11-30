@@ -1,47 +1,55 @@
-'''
-Created on Nov 18, 2010
+# dispatch.py - Command line dispatching for Cortex. 
+# coding: utf-8
+# 
+# Copyright 2010 Guardis SPRL, Liège, Belgium.
+# Authors: Laurent Eschenauer <laurent.eschenauer@guardis.com>
+#
+# This software cannot be used and/or distributed without prior 
+# authorization from Guardis.
+ 
+ 
+import optparse, traceback, sys, control.router
 
-@author: eschenal
-'''
-import optparse, traceback, sys
-from control import Controllers
-from util import globals 
-from control.DefaultController import ControllerException
-from control.ProvisionerController import ProvisionerController
-from control.OrganizationsController import OrganizationsController
-from control.ApplicationsController import ApplicationsController
-from control.DistributionsController import DistributionsController
-from control.EnvironmentsController import EnvironmentsController
-from control.HostsController import HostsController
-from control.CmsController import CmsController
-from control.Exceptions import ArgumentException
-from control.UsersController import UsersController
+from control.users import UsersController
+from control.applications import ApplicationsController
+from control.distributions import DistributionsController
+from control.organizations import OrganizationsController
+from control.environments import EnvironmentsController
+from control.hosts import HostsController
+from control.provisioner import ProvisionerController
+from control.cms import CmsController
+from control.exceptions import ControllerException, ArgumentException
+from util import globals
+from rest.exceptions import ApiException
 
 def run(argv):
-    Controllers.register(["org", "organizations"],  OrganizationsController())
-    Controllers.register(["app", "applications"],   ApplicationsController())
-    Controllers.register(["dist", "distributions"], DistributionsController())
-    Controllers.register(["env", "environments"],   EnvironmentsController())
-    Controllers.register(["host", "hosts"],         HostsController())
-    Controllers.register(["prov", "provisioner"],   ProvisionerController())
-    Controllers.register(["config", "cms", "configuration"],  CmsController())    
-    Controllers.register(["user", "users"],  UsersController())    
+    control.router.register(["user"], UsersController())
+    control.router.register(["app",  "application"], ApplicationsController())
+    control.router.register(["dist", "distribution"], DistributionsController())
+    control.router.register(["org",  "organization"], OrganizationsController())
+    control.router.register(["env",  "environment"], EnvironmentsController())
+    control.router.register(["host", "host"], HostsController())
+    control.router.register(["prov", "provisioner"], ProvisionerController())
+    control.router.register(["cfg",  "configuration"], CmsController())        
     _parse(argv)
 
 def _parse(argv):
             
     usage = "usage: %prog resource [command] [options]"
     parser = optparse.OptionParser(usage)
-    parser.add_option("-A", "--api",    dest="api",      help="endpoint for the API", default="http://localhost:8000/api")
-    parser.add_option("-U", "--user",   dest="username", help="username on cortex server",     default="admin")
-    parser.add_option("-P", "--pass",   dest="password", help="password on cortex server",     default="secret")
-    parser.add_option("-q", "--quiet",  dest="verbose",  help="don't print status messages to stdout", action="store_false", default=True)
-    parser.add_option("-f", "--file",   dest="filename", help="input file with a JSON object")
-    parser.add_option("-j", "--json",   dest="json",     help="input JSON object")
-    parser.add_option("-r", "--raw",    dest="raw",      help="output the raw JSON results", action="store_true", default=False, )
-    parser.add_option("-u", "--uuid",  dest="uuid",    help="UUID of object to which this query relates")
-    parser.add_option("-p", "--path",  dest="path",    help="Path of object to which this query relates")
-    parser.add_option("--debug",        dest="debug",    help="display debug information", action="store_true", default=False)    
+
+    parser.add_option("-f", "--file", dest="filename", help="input file with a JSON object")
+    parser.add_option("-j", "--json", dest="json",     help="input JSON object")
+    parser.add_option("--raw",        dest="raw",      help="output the raw JSON results", action="store_true", default=False,)
+    parser.add_option("--with-uuid",  dest="uuid",     help="references are UUID instead of paths",  action="store_true", default=False)
+
+    parser.add_option("--api",        dest="api",      help="endpoint for the API",      default="http://localhost:8000/api")
+    parser.add_option("--user",       dest="username", help="username on cortex server", default="admin")
+    parser.add_option("--pass",       dest="password", help="password on cortex server", default="secret")
+
+
+    parser.add_option("--quiet",      dest="verbose",  help="don't print status messages to stdout", action="store_false", default=True)
+    parser.add_option("--debug",      dest="debug",    help="display debug information", action="store_true", default=False)    
     
     (globals.options, args) = parser.parse_args()
 
@@ -55,20 +63,23 @@ def _dispatch(resource, args):
     options = globals.options
     
     try:
-        Controllers.dispatch(resource, args)
+        control.router.dispatch(resource, args)
         exit(0)
     except ControllerException as e:
         print e.msg
         exit(-1)
     except ArgumentException as e:
         print e.msg
-        exit(-1)        
+        exit(-1)     
+    except ApiException as e:
+        print e.message, e.code
+        exit(-1)                 
     except Exception:
         if options.debug:
             print "Exception in user code:"
-            print '-'*60
+            print '-' * 60
             traceback.print_exc(file=sys.stdout)
-            print '-'*60
+            print '-' * 60
             exit(-1)
         else :
             print "Oops, it seems something went wrong (use --debug to learn more)."
