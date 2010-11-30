@@ -28,13 +28,20 @@ class HostDistributionController(AbstractController):
         options = globals.options
     
         # Validate input parameters
-        if options.uuid:
-            uuid = options.uuid
-        elif options.path:
-            uuid = self._resolv(options.path)
-            if not uuid: raise NotFoundException(uuid)
+        if options.host_uuid:
+            uuid = options.host_uuid
+        elif options.host_path:
+            path = options.host_path
+            uuid = self._resolv(path)
+            if not uuid: raise NotFoundException(path)
+        elif options.host and options.uuid:
+            uuid = options.host
+        elif options.host:
+            path = options.host
+            uuid = self._resolv(path)
+            if not uuid: raise NotFoundException(path)
         else:
-            raise MissingException("You must provide a valid host UUID (with --uuid) or path (--path)")
+            raise MissingException("You must provide a valid host UUID (with --host-uuid) or path (--host-path)")
     
         client = Client(self._endpoint(), options.username, options.password)
         result = client.read(self._resource + "/" + uuid+ "/distribution")

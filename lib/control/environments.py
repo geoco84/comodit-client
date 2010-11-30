@@ -23,13 +23,20 @@ class EnvironmentsController(ResourceController):
         options = globals.options
     
         # Validate input parameters
-        if options.uuid:
-            uuid = options.uuid
-        elif options.path:
-            uuid = self._resolv(options.path)
-            if not uuid: raise NotFoundException(uuid)
+        if options.org_uuid:
+            uuid = options.org_uuid
+        elif options.org_path:
+            path = options.org_path
+            uuid = self._resolv(path)
+            if not uuid: raise NotFoundException(path)
+        elif options.org and options.uuid:
+            uuid = options.org
+        elif options.org:
+            path = options.org
+            uuid = self._resolv(path)
+            if not uuid: raise NotFoundException(path)
         else:
-            raise MissingException("You must provide a valid organization UUID (with --uuid) or path (--path)")
+            raise MissingException("You must provide a valid organization UUID (with --org-uuid) or path (--org-path)")
         
         self._parameters = {"organizationId":uuid}
         

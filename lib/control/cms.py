@@ -26,20 +26,18 @@ class CmsController(AbstractController):
     def _apply(self, argv):
         options = globals.options
         
+        # Require an object as argument
+        if len(argv) == 0:
+            raise MissingException("You must provide a valid host UUID or path as argument")
+    
         # Validate input parameters
         if options.uuid:
-            uuid = options.uuid
-        elif options.path:
-            uuid = self._resolv(options.path)
+            uuid = argv[0]
+        else:
+            uuid = self._resolv(argv[0])
             if not uuid: raise NotFoundException(uuid)
-        else:
-            raise MissingException("You must provide a valid host UUID (with --uuid) or path (--path)")
     
-        if isinstance(uuid, (list, tuple)):
-            for u in uuid:
-                self._puppet(u)
-        else:
-            self._puppet(uuid)
+        self._puppet(uuid)
 
         
     def _endpoint(self):
@@ -65,17 +63,5 @@ class CmsController(AbstractController):
         
         if result.get('nature') == 'host':
             return result.get('uuid')
-        elif result.get('nature') == 'environment':
-            return self._hosts(result.get('uuid'))
-        else:
-            raise ArgumentException("Cannot apply configuration on a whole domain.")
+        raise ArgumentException("Cannot apply (yet) configuration on more than one host at a time.")
     
-    def _hosts(self, uuid):
-        options = globals.options
-        client = Client(self._endpoint(), options.username, options.password)
-        result = client.read("hosts", parameters={"environmentId": uuid})
-        if result.get('count') > 0 :
-            uuids = []
-            for host in result.get('items'):
-                uuids.append(host.get('uuid'))
-            return uuids

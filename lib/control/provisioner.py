@@ -24,14 +24,16 @@ class ProvisionerController(AbstractController):
     def _kickstart(self, argv):
         options = globals.options
         
+        # Require an object as argument
+        if len(argv) == 0:
+            raise MissingException("You must provide a valid host UUID or path as argument")
+    
         # Validate input parameters
         if options.uuid:
-            uuid = options.uuid
-        elif options.path:
-            uuid = self._resolv(options.path)
-            if not uuid: raise NotFoundException(uuid)
+            uuid = argv[0]
         else:
-            raise MissingException("You must provide a valid host UUID (with --uuid) or path (--path)")
+            uuid = self._resolv(argv[0])
+            if not uuid: raise NotFoundException(uuid)
     
         client = Client(self._endpoint(), options.username, options.password)
         result = client.read(self._resource + "/kickstart.cfg", parameters={"hostId":uuid}, decode=False)
@@ -41,14 +43,16 @@ class ProvisionerController(AbstractController):
     def _provision(self, argv):
         options = globals.options
         
+        # Require an object as argument
+        if len(argv) == 0:
+            raise MissingException("You must provide a valid host UUID or path as argument")
+    
         # Validate input parameters
         if options.uuid:
-            uuid = options.uuid
-        elif options.path:
-            uuid = self._resolv(options.path)
-            if not uuid: raise NotFoundException(uuid)
+            uuid = argv[0]
         else:
-            raise MissingException("You must provide a valid host UUID (with --uuid) or path (--path)")
+            uuid = self._resolv(argv[0])
+            if not uuid: raise NotFoundException(uuid)
             
         client = Client(self._endpoint(), options.username, options.password)
         result = client.update(self._resource + "/_provision", parameters={"hostId":uuid}, decode=False)

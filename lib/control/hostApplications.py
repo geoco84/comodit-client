@@ -11,6 +11,7 @@ import json
 from control.abstract import AbstractController
 from control.exceptions import NotFoundException, MissingException
 from rest.client import Client
+from util import globals
 
 class HostApplicationsController(AbstractController):
 
@@ -29,13 +30,20 @@ class HostApplicationsController(AbstractController):
         options = globals.options
     
         # Validate input parameters
-        if options.uuid:
-            uuid = options.uuid
-        elif options.path:
-            uuid = self._resolv(options.path)
-            if not uuid: raise NotFoundException(uuid)
+        if options.host_uuid:
+            uuid = options.host_uuid
+        elif options.host_path:
+            path = options.host_path
+            uuid = self._resolv(path)
+            if not uuid: raise NotFoundException(path)
+        elif options.host and options.uuid:
+            uuid = options.host
+        elif options.host:
+            path = options.host
+            uuid = self._resolv(path)
+            if not uuid: raise NotFoundException(path)
         else:
-            raise MissingException("You must provide a valid environment UUID (with --uuid) or path (--path)")
+            raise MissingException("You must provide a valid host UUID (with --host-uuid) or path (--host-path)")
     
         client = Client(self._endpoint(), options.username, options.password)
         result = client.read(self._resource + "/" + uuid + "/applications")
@@ -53,17 +61,26 @@ class HostApplicationsController(AbstractController):
         options = globals.options
     
         # Validate input parameters
-        if options.uuid:
-            uuid = options.uuid
-        elif options.path:
-            uuid = self._resolv(options.path)
-            if not uuid: raise NotFoundException(uuid)
+        if options.host_uuid:
+            uuid = options.host_uuid
+        elif options.host_path:
+            path = options.host_path
+            uuid = self._resolv(path)
+            if not uuid: raise NotFoundException(path)
+        elif options.host and options.uuid:
+            uuid = options.host
+        elif options.host:
+            path = options.host
+            uuid = self._resolv(path)
+            if not uuid: raise NotFoundException(path)
         else:
-            raise MissingException("You must provide a valid host UUID (with --uuid) or path (--path)")
+            raise MissingException("You must provide a valid host UUID (with --host-uuid) or path (--host-path)")
     
         if (len(argv) == 0):
-            print "You must provide the name of the application to delete."
+            print "You must provide the UUID or name of the application to show."
             exit(-1)
+        elif options.uuid:
+            application = argv[0]
         else:
             application = self._resolvApplication(argv[0])
     
@@ -117,18 +134,27 @@ class HostApplicationsController(AbstractController):
         options = globals.options
           
         # Validate input parameters
-        if options.uuid:
-            uuid = options.uuid
-        elif options.path:
-            uuid = self._resolv(options.path)
-            if not uuid: raise NotFoundException(uuid)
+        if options.host_uuid:
+            uuid = options.host_uuid
+        elif options.host_path:
+            path = options.host_path
+            uuid = self._resolv(path)
+            if not uuid: raise NotFoundException(path)
+        elif options.host and options.uuid:
+            uuid = options.host
+        elif options.host:
+            path = options.host
+            uuid = self._resolv(path)
+            if not uuid: raise NotFoundException(path)
         else:
-            raise MissingException("You must provide a valid host UUID (with --uuid) or path (--path)")
-          
+            raise MissingException("You must provide a valid host UUID (with --host-uuid) or path (--host-path)")
+
     
         if (len(argv) == 0):
-            print "You must provide the UUID of the application to delete."
+            print "You must provide the UUID or name of the application to show."
             exit(-1)
+        elif options.uuid:
+            application = argv[0]
         else:
             application = self._resolvApplication(argv[0])
         

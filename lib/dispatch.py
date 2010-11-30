@@ -39,9 +39,21 @@ def _parse(argv):
     parser = optparse.OptionParser(usage)
 
     parser.add_option("-f", "--file", dest="filename", help="input file with a JSON object")
-    parser.add_option("-j", "--json", dest="json",     help="input JSON object")
+    parser.add_option("-j", "--json", dest="json",     help="input JSON object via command line")
     parser.add_option("--raw",        dest="raw",      help="output the raw JSON results", action="store_true", default=False,)
     parser.add_option("--with-uuid",  dest="uuid",     help="references are UUID instead of paths",  action="store_true", default=False)
+    
+    parser.add_option("--org",        dest="org",      help="Path or UUID of the parent organization (conditioned by --with-uuid)")
+    parser.add_option("--org-path",   dest="org_path", help="Path to the parent organization")
+    parser.add_option("--org-uuid",   dest="org_uuid", help="UUID of the parent organization")
+
+    parser.add_option("--env",        dest="env",      help="Path or UUID of the parent environment (conditioned by --with-uuid)")
+    parser.add_option("--env-path",   dest="env_path", help="Path to the parent environment")
+    parser.add_option("--env-uuid",   dest="env_uuid", help="UUID of the parent environment")
+
+    parser.add_option("--host",        dest="host",      help="Path or UUID of the parent host (conditioned by --with-uuid)")
+    parser.add_option("--host-path",   dest="host_path", help="Path to the parent host")
+    parser.add_option("--host-uuid",   dest="host_uuid", help="UUID of the parent host")
 
     parser.add_option("--api",        dest="api",      help="endpoint for the API",      default="http://localhost:8000/api")
     parser.add_option("--user",       dest="username", help="username on cortex server", default="admin")
