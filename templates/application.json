@@ -1,0 +1,25 @@
+{
+    "name":"my-app",
+    "description":"My application example",
+    "classes":
+      [
+       "class1",
+       "class2"
+      ],
+    "packages":
+      [
+       "package1",
+       "package2"
+      ],
+    "parameters":
+      [
+       {
+        "key":"parameter",
+        "name":"A parameter",
+        "description":"This parameter does something",
+        "default_value":"banana",
+        "mandatory":"false",
+        "advanced":"true"
+       }
+      ]
+}

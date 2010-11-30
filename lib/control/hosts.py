@@ -17,6 +17,7 @@ from control.hostApplications import HostApplicationsController
 class HostsController(ResourceController):
 
     _resource = "hosts"
+    _template = "host.json"    
 
     def __init__(self):
         super(HostsController, self ).__init__()
@@ -47,7 +48,13 @@ class HostsController(ResourceController):
         super(HostsController, self)._list(argv)           
         
     def _render(self, item, detailed=False):
-        print item['uuid'], item['name']
+        if not detailed:
+            print item['uuid'], item['name']
+        else:
+            print "Name:", item['name']
+            print "UUUID:", item['uuid']
+            if item.has_key('description'):
+                print "Description:", item['description']
         
     def _resolv(self, path):
         options = globals.options

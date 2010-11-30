@@ -7,17 +7,21 @@
 # This software cannot be used and/or distributed without prior 
 # authorization from Guardis.
 
-import json
+import json, os
 
 from control.abstract import AbstractController
 from util import globals, prompt
 from rest.client import Client
 from control.exceptions import NotFoundException, MissingException
+from util.editor import edit_text
+import re
 
+TEMPLATE_DIR = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'templates'))
 
 class ResourceController(AbstractController):
 
     _resource = ""
+    _template = ""
     _parameters = {}
 
     def __init__(self):
@@ -75,8 +79,12 @@ class ResourceController(AbstractController):
                 item = json.load(f)
         elif options.json:
             item = json.loads(options.json)            
-        else:
-            raise MissingException("You must provide a valid object definition with (--json or --file)")
+        else :
+            template = open(os.path.join(TEMPLATE_DIR, self._template)).read()
+            #template = "# To abort the request; just exit your editor without saving this file.\n\n" + template
+            updated = edit_text(template)
+            #updated = re.sub(r'#.*$', "", updated)
+            item = json.loads(updated)
         
         client = Client(self._endpoint(), options.username, options.password)
         result = client.create(self._resource, item)
@@ -98,14 +106,24 @@ class ResourceController(AbstractController):
         elif options.json:
             item = json.loads(options.json)
             uuid = item.get("uuid")
-            raise MissingException("You must provide a valid object definition with (--json or --file)")
-            
+        elif len(argv) > 0:
+            # Get the uuid/path from the command line
+            if options.uuid:
+                uuid = argv[0]
+            else:
+                uuid = self._resolv(argv[0])
+                if not uuid: raise NotFoundException(argv[0])
+            # Find the resource
             item = client.read(self._resource + "/" + uuid)
-            item = self._interactive(item)
-        else:
-            raise MissingException("You must provide a valid object definition with (--json or --file)")            
+            if not item: raise NotFoundException(uuid)
+            # Edit the resouce
+            original = json.dumps(item, sort_keys=True, indent=4)
+            #original = "# To abort the request; just exit your editor without saving this file.\n\n" + original
+            updated = edit_text(original)
+            #updated = re.sub(r'#.*$', "", updated)
+            item = json.loads(updated)
+            
         
-        client = Client(self._endpoint(), options.username, options.password)
         result = client.update(self._resource + "/" + uuid, item)
         
         if options.raw:
@@ -135,7 +153,7 @@ class ResourceController(AbstractController):
     
     def _render(self, item, detailed=False):
         pass
-
+    
     def _resolv(self, path):
         pass
                         

@@ -21,6 +21,7 @@ from control.cms import CmsController
 from control.exceptions import ControllerException, ArgumentException
 from util import globals
 from rest.exceptions import ApiException
+from util.editor import NotModifiedException
 
 def run(argv):
     control.router.register(["user"], UsersController())
@@ -85,7 +86,10 @@ def _dispatch(resource, args):
         exit(-1)     
     except ApiException as e:
         print e.message, e.code
-        exit(-1)                 
+        exit(-1)          
+    except NotModifiedException:
+        print "Command was canceled since you did not save the file"
+        exit(-1)       
     except Exception:
         if options.debug:
             print "Exception in user code:"

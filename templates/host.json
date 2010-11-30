@@ -1,0 +1,8 @@
+{
+   "name":"host",
+   "description":"The host description",
+   "environment":"<UUID of parent environment>",
+   "hostname":"www",
+   "domain":"example.com",
+   "mac":"00:11:33:44:55:66"
+}

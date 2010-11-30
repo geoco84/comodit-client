@@ -1,0 +1,7 @@
+{
+    "application":"<UUID of application to install",
+    "settings": 
+      [
+       {"key":"a_param","value":"a_value"}
+      ]
+}

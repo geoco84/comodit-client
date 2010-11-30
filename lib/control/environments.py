@@ -15,6 +15,7 @@ from rest.client import Client
 class EnvironmentsController(ResourceController):
 
     _resource = "environments"
+    _template = "environment.json"
 
     def __init__(self):
         super(EnvironmentsController, self ).__init__()

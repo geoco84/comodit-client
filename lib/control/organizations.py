@@ -14,6 +14,7 @@ from rest.client import Client
 class OrganizationsController(ResourceController):
 
     _resource = "organizations"
+    _template = "organization.json"
 
     def __init__(self):
         super(OrganizationsController, self ).__init__()

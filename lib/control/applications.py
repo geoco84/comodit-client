@@ -7,40 +7,20 @@
 # This software cannot be used and/or distributed without prior 
 # authorization from Guardis.
 
+from control.exceptions import ControllerException
+from control.resource import ResourceController
+from rest.client import Client
+from util import globals
 import json
 
-from util import globals
-from control.resource import ResourceController
-from control.exceptions import ControllerException
-from rest.client import Client
 
 class ApplicationsController(ResourceController):
 
     _resource = "applications"
+    _template = "application.json"
 
     def __init__(self):
         super(ApplicationsController, self ).__init__()
-        
-    def _update(self, args):
-        options = globals.options
-                  
-        if options.filename:
-            with open(options.filename, 'r') as f:
-                item = json.load(f)
-                uuid = item.get("uuid")
-        elif options.json:
-            item = json.loads(options.json)
-            uuid = item.get("uuid")
-        else:
-            raise ControllerException("Updating an application is not possible in interactive mode.")
-        
-        client = Client(self._endpoint(), options.username, options.password)
-        result = client.update(self._resource + "/" + uuid, item)
-        
-        if options.raw:
-            print json.dumps(result, sort_keys=True, indent=4)
-        else:
-            self._render(result)
 
     def _render(self, item, detailed=False):
         if not detailed:
@@ -63,4 +43,4 @@ class ApplicationsController(ResourceController):
         options = globals.options
         client = Client(self._endpoint(), options.username, options.password)
         result = client.read("directory/application/" + path)
-        if result.has_key('uuid') : return result['uuid']            
+        if result.has_key('uuid') : return result['uuid']         
