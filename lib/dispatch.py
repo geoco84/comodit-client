@@ -7,8 +7,8 @@
 # This software cannot be used and/or distributed without prior 
 # authorization from Guardis.
  
-VERSION = "0.1"
-RELEASE = "Dec 1st 2010"
+VERSION = "0.2-dev"
+RELEASE = "Ongoing development"
  
 import optparse, traceback, sys, control.router
 
