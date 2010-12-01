@@ -61,3 +61,14 @@ class EnvironmentsController(ResourceController):
                 print "Settings:"
                 for setting in item['settings']:
                     print "    %-30s: %s" % (setting['key'], setting['value'])
+
+    def _help(self, argv):
+        print '''You must provide an action to perfom on this resource. 
+        
+Actions:
+    list --org [id]    List all environments within an organization
+    show [id]          Show the details of an environment
+    add                Add an environment
+    update [id]        Update an environment
+    delete [id]        Delete an environment
+'''

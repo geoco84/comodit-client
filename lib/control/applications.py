@@ -43,4 +43,15 @@ class ApplicationsController(ResourceController):
         options = globals.options
         client = Client(self._endpoint(), options.username, options.password)
         result = client.read("directory/application/" + path)
-        if result.has_key('uuid') : return result['uuid']         
+        if result.has_key('uuid') : return result['uuid']
+    
+    def _help(self, argv):
+        print '''You must provide an action to perfom on this resource. 
+        
+Actions:
+    list            List all application profiles available to the user
+    show [id]       Show the details of an application profile
+    add             Add an application profile
+    update [id]     Update an application profile
+    delete [id]     Delete an application profile
+'''

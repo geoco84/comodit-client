@@ -37,3 +37,14 @@ class DistributionsController(ResourceController):
         client = Client(self._endpoint(), options.username, options.password)
         result = client.read("directory/distribution/" + path)
         if result.has_key('uuid') : return result['uuid']            
+
+    def _help(self, argv):
+        print '''You must provide an action to perfom on this resource. 
+        
+Actions:
+    list            List all distribution profiles available to the user
+    show [id]       Show the details of a distribution profile
+    add             Add a distribution profile
+    update [id]     Update a distribution profile
+    delete [id]     Delete a distribution profile
+'''

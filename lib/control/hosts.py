@@ -68,4 +68,19 @@ class HostsController(ResourceController):
         
     def _applications(self, argv):
         controller = HostApplicationsController()
-        controller.run(argv)        
+        controller.run(argv)
+
+    def _help(self, argv):
+        print '''You must provide an action or sub-resource to perfom on this resource. 
+        
+Actions:
+    list --env [id]    List all hosts within an environment
+    show [id]          Show the details of a host
+    add                Add an host
+    update [id]        Update a host
+    delete [id]        Delete a host
+
+Sub-resources:
+    applications       Manage applications installed on a host
+    distribution       Manager the distribution configured on a host
+'''        

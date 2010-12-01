@@ -32,3 +32,14 @@ class OrganizationsController(ResourceController):
         client = Client(self._endpoint(), options.username, options.password)
         result = client.read("directory/organization/" + path)
         if result.has_key('uuid') : return result['uuid']
+
+    def _help(self, argv):
+        print '''You must provide an action to perfom on this resource. 
+        
+Actions:
+    list            List all organizations visible to the user
+    show [id]       Show the details of an organization
+    add             Add an organization
+    update [id]     Update an organization
+    delete [id]     Delete an organization
+'''

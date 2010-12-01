@@ -7,6 +7,8 @@
 # This software cannot be used and/or distributed without prior 
 # authorization from Guardis.
  
+VERSION = "0.1"
+RELEASE = "Dec 1st 2010"
  
 import optparse, traceback, sys, control.router
 
@@ -31,7 +33,7 @@ def run(argv):
     control.router.register(["env",  "environment"], EnvironmentsController())
     control.router.register(["host", "host"], HostsController())
     control.router.register(["prov", "provisioner"], ProvisionerController())
-    control.router.register(["cfg",  "configuration"], CmsController())        
+    control.router.register(["cms",  "configuration"], CmsController())        
     _parse(argv)
 
 def _parse(argv):
@@ -63,12 +65,18 @@ def _parse(argv):
 
     parser.add_option("--quiet",      dest="verbose",  help="don't print status messages to stdout", action="store_false", default=True)
     parser.add_option("--debug",      dest="debug",    help="display debug information", action="store_true", default=False)    
+    parser.add_option("--version",    dest="version",    help="display version information", action="store_true", default=False)
     
     (globals.options, args) = parser.parse_args()
 
+    if globals.options.version:
+        print "Cortex command line client, version " + VERSION + ", released on " + RELEASE + "."
+        exit(0)  
+
     if (len(args) == 0):
         parser.print_help()
-        exit(-1)  
+        print_resources()
+        exit(-1)
 
     _dispatch(args[0], args[1:])
     
@@ -101,3 +109,17 @@ def _dispatch(resource, args):
             print "Oops, it seems something went wrong (use --debug to learn more)."
             exit(-1)
         
+def print_resources():
+    print '''
+Resources:
+    application         Applications profiles
+    distribution        Distribution profiles
+    user                User accounts
+    organization        Top-level organization
+    environment         Environment defined within an organization
+    host                Host defined within an environment
+
+Services:
+    provisioner         Provision virtual machines based on a host definition
+    cms                 Configuration manager
+''' 

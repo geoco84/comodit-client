@@ -31,7 +31,8 @@ class ResourceController(AbstractController):
         self._register(["a", "add"], self._add)
         self._register(["u", "update"], self._update)        
         self._register(["d", "delete"], self._delete)
-        self._default_action = self._list
+        self._register(["h", "help"], self._help)
+        self._default_action = self._help
         
     def _list(self, argv):
         options = globals.options
@@ -160,3 +161,6 @@ class ResourceController(AbstractController):
     def _endpoint(self):
         options = globals.options
         return options.api
+    
+    def _help(self, argv):
+        print "Oops, this piece is missing some documentation"

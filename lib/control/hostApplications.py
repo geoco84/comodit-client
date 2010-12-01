@@ -27,8 +27,9 @@ class HostApplicationsController(AbstractController):
         self._register(["show"], self._show)        
         self._register(["add"], self._add)
         self._register(["update"], self._update)
-        self._register(["remove"], self._remove)
-        self._default_action = self._list
+        self._register(["delete"], self._remove)
+        self._register(["help"], self._help)
+        self._default_action = self._help
     
     def _list(self, argv):
         options = globals.options
@@ -212,3 +213,14 @@ class HostApplicationsController(AbstractController):
         else:
             raise MissingException("You must provide a valid host UUID (with --host-uuid) or path (--host-path)")
         return uuid
+    
+    def _help(self, argv):
+        print '''You must provide an action to perfom on this resource. 
+        
+Actions:
+    list               List all applications installed on the host
+    show [id]          Show the details of an installed application
+    add                Add an application on the host
+    update [id]        Update an application configuration
+    delete [id]        Remove an application from the host
+'''

@@ -26,7 +26,8 @@ class HostDistributionController(AbstractController):
         super(HostDistributionController, self ).__init__()
         self._register(["show"], self._show)
         self._register(["set"], self._set)
-        self._default_action = self._show
+        self._register(["help"], self._help)        
+        self._default_action = self._help
     
     def _show(self, argv):
         options = globals.options
@@ -111,4 +112,12 @@ class HostDistributionController(AbstractController):
             if not uuid: raise NotFoundException(path)
         else:
             raise MissingException("You must provide a valid host UUID (with --host-uuid) or path (--host-path)")
-        return uuid    
+        return uuid
+
+    def _help(self, argv):
+        print '''You must provide an action to perfom on this resource. 
+        
+Actions:
+    show       Show the installed distribution
+    set        Set the distribution and its configuration
+'''    
