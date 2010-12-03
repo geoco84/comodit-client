@@ -1,4 +1,4 @@
-# control.cms - Controller for cortex Configuration management service.
+# control.sync - Clone system state on local filesystem and synchronize
 # coding: utf-8
 # 
 # Copyright 2010 Guardis SPRL, Liège, Belgium.

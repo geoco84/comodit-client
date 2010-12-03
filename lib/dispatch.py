@@ -20,6 +20,7 @@ from control.environments import EnvironmentsController
 from control.hosts import HostsController
 from control.provisioner import ProvisionerController
 from control.cms import CmsController
+from control.sync import SyncController
 from control.exceptions import ControllerException, ArgumentException
 from util import globals
 from rest.exceptions import ApiException
@@ -34,6 +35,7 @@ def run(argv):
     control.router.register(["host", "host"], HostsController())
     control.router.register(["prov", "provisioner"], ProvisionerController())
     control.router.register(["cms",  "configuration"], CmsController())        
+    control.router.register(["sync"], SyncController())    
     _parse(argv)
 
 def _parse(argv):
