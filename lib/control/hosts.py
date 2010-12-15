@@ -11,8 +11,6 @@ from util import globals
 from control.resource import ResourceController
 from control.exceptions import NotFoundException, MissingException
 from rest.client import Client
-from control.hostDistribution import HostDistributionController
-from control.hostApplications import HostApplicationsController
 
 class HostsController(ResourceController):
 
@@ -21,8 +19,6 @@ class HostsController(ResourceController):
 
     def __init__(self):
         super(HostsController, self ).__init__()
-        self._register(["dist", "distribution"], self._distribution)
-        self._register(["app", "application", "applications"], self._applications)
         
     def _list(self, argv):
         options = globals.options
@@ -62,16 +58,9 @@ class HostsController(ResourceController):
         result = client.read("directory/organization/" + path)
         if result.has_key('uuid') : return result['uuid']        
 
-    def _distribution(self, argv):
-        controller = HostDistributionController()
-        controller.run(argv)
-        
-    def _applications(self, argv):
-        controller = HostApplicationsController()
-        controller.run(argv)
 
     def _help(self, argv):
-        print '''You must provide an action or sub-resource to perfom on this resource. 
+        print '''You must provide an action to perfom on this resource. 
         
 Actions:
     list --env [id]    List all hosts within an environment
@@ -80,7 +69,4 @@ Actions:
     update [id]        Update a host
     delete [id]        Delete a host
 
-Sub-resources:
-    applications       Manage applications installed on a host
-    distribution       Manager the distribution configured on a host
 '''        
