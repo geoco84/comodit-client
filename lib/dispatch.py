@@ -90,26 +90,23 @@ def _dispatch(resource, args):
         exit(0)
     except ControllerException as e:
         print e.msg
-        exit(-1)
     except ArgumentException as e:
-        print e.msg
-        exit(-1)     
+        print e.msg     
     except ApiException as e:
-        print e.message, e.code
-        exit(-1)          
+        print e.message, e.code          
     except NotModifiedException:
-        print "Command was canceled since you did not save the file"
-        exit(-1)       
+        print "Command was canceled since you did not save the file"       
     except Exception:
         if options.debug:
-            print "Exception in user code:"
-            print '-' * 60
-            traceback.print_exc(file=sys.stdout)
-            print '-' * 60
-            exit(-1)
+            print "Exception in user code."
         else :
             print "Oops, it seems something went wrong (use --debug to learn more)."
-            exit(-1)
+
+    if options.debug:  
+        print '-' * 60
+        traceback.print_exc(file=sys.stdout)
+        print '-' * 60
+    exit(-1)
         
 def print_resources():
     print '''
