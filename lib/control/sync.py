@@ -18,27 +18,29 @@ class SyncController(AbstractController):
 
     def __init__(self):
         super(SyncController, self ).__init__()
-        self._register(["clone"], self._clone)
+        self._register(["pull"], self._pull)
         self._register(["h", "help"], self._help)
         self._default_action = self._help
     
-    def _clone(self, argv):
+    def _pull(self, argv):
         self._options = globals.options
         self._client = Client(self._options.api, self._options.username, self._options.password)
         
         if not self._options.username:
-            raise MissingException("Cloning require a username to be defined")
+            raise MissingException("Pull require a username to be defined")
         
         self._root = "cortex." + self._options.username
         self._ensureFolders()
         self._dumpApplications()
         self._dumpDistributions()
+        self._dumpParameters()
         self._dumpOrganizations()
 
     def _help(self, argv):
         print "Oops, this piece is missing some documentation"
    
     def _ensureFolders(self):
+        path.ensure(os.path.join(self._root, "parameters"))
         path.ensure(os.path.join(self._root, "applications"))
         path.ensure(os.path.join(self._root, "distributions"))
         path.ensure(os.path.join(self._root, "organizations"))
@@ -53,9 +55,18 @@ class SyncController(AbstractController):
                 name = o['name']
                 file = os.path.join(self._root, "applications", name)
                 path.ensure(file)
+                path.ensure(os.path.join(file, "templates"))
                 with open(os.path.join(file, "definition.json"), 'w') as f:
-                    f.write(data)               
-
+                    f.write(data)
+                if o.has_key("files"):
+                    for t in o["files"]:
+                        if t.has_key("template"):                         
+                            try:
+                                ks = self._client.read('files/' + t['template'] , decode=False)
+                                with open(os.path.join(file, "templates", t['name']), 'w') as f:
+                                    f.write(ks.read())
+                            except:
+                                pass
         
     def _dumpDistributions(self):
         result = self._client.read('distributions')
@@ -66,14 +77,27 @@ class SyncController(AbstractController):
                 name = o['name']
                 file = os.path.join(self._root, "distributions", name)
                 path.ensure(file)
+                path.ensure(os.path.join(file, "templates"))
                 with open(os.path.join(file, "definition.json"), 'w') as f:
                     f.write(data)               
                 try:
-                    ks = self._client.read('distributions/' + uuid + "/kickstart.cfg", decode=False)
-                    with open(os.path.join(file, "kickstart.template"), 'w') as f:
+                    ks = self._client.read('files/' + o['kickstart'] , decode=False)
+                    with open(os.path.join(file, "templates", "kickstart.cfg"), 'w') as f:
                         f.write(ks.read())
                 except:
                     pass
+    
+    def _dumpParameters(self):
+        result = self._client.read('parameters')
+        if not (result['count'] == "0"):
+            for o in result['items']:
+                data = json.dumps(o, sort_keys=True, indent=4)
+                uuid = o['uuid']
+                key = o['key']
+                file = os.path.join(self._root, "parameters")
+                path.ensure(file)
+                with open(os.path.join(file, key + ".json"), 'w') as f:
+                    f.write(data)
     
     def _dumpOrganizations(self):
         result = self._client.read('organizations')
@@ -112,29 +136,5 @@ class SyncController(AbstractController):
                 path.ensure(file)
                 with open(os.path.join(file, "definition.json"), 'w') as f:
                     f.write(data)                    
-                self._dumpHostApplications(uuid, file)
-                self._dumpHostDistribution(uuid, file)
-
-    def _dumpHostApplications(self, uuid, root):
-        file = os.path.join(root, "applications")
-        path.ensure(file)
-        result = self._client.read('hosts/' + uuid + "/applications")
-        if not (result['count'] == "0"):
-            for o in result['items']:
-                data = json.dumps(o, sort_keys=True, indent=4)
-                uuid = o['application']
-                application = self._client.read('applications/' + uuid)
-                with open(os.path.join(file, application['name'] + ".json"), 'w') as f:
-                    f.write(data) 
-                    
-    def _dumpHostDistribution(self, uuid, root):
-        file = os.path.join(root, "distribution")
-        path.ensure(file)
-        result = self._client.read('hosts/' + uuid + "/distribution")
-        data = json.dumps(result, sort_keys=True, indent=4)
-        uuid = result['distribution']
-        distribution = self._client.read('distributions/' + uuid)
-        with open(os.path.join(file, distribution['name'] + ".json"), 'w') as f:
-            f.write(data)                                         
-
+                                      
     

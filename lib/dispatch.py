@@ -6,7 +6,7 @@
 #
 # This software cannot be used and/or distributed without prior 
 # authorization from Guardis.
- 
+
 VERSION = "0.2-dev"
 RELEASE = "Ongoing development"
  
@@ -21,6 +21,8 @@ from control.hosts import HostsController
 from control.provisioner import ProvisionerController
 from control.cms import CmsController
 from control.sync import SyncController
+from control.parameters import ParametersController
+from control.files import FilesController
 from control.exceptions import ControllerException, ArgumentException
 from util import globals
 from rest.exceptions import ApiException
@@ -28,14 +30,16 @@ from util.editor import NotModifiedException
 
 def run(argv):
     control.router.register(["user"], UsersController())
-    control.router.register(["app",  "application"], ApplicationsController())
-    control.router.register(["dist", "distribution"], DistributionsController())
-    control.router.register(["org",  "organization"], OrganizationsController())
-    control.router.register(["env",  "environment"], EnvironmentsController())
-    control.router.register(["host", "host"], HostsController())
+    control.router.register(["app",  "applications"], ApplicationsController())
+    control.router.register(["dist", "distributions"], DistributionsController())
+    control.router.register(["org",  "organizations"], OrganizationsController())
+    control.router.register(["env",  "environments"], EnvironmentsController())
+    control.router.register(["hosst"], HostsController())
     control.router.register(["prov", "provisioner"], ProvisionerController())
     control.router.register(["cms",  "configuration"], CmsController())        
-    control.router.register(["sync"], SyncController())    
+    control.router.register(["sync"], SyncController())
+    control.router.register(["param", "parameters"], ParametersController());
+    control.router.register(["files"], FilesController());    
     _parse(argv)
 
 def _parse(argv):
@@ -111,12 +115,14 @@ def _dispatch(resource, args):
 def print_resources():
     print '''
 Resources:
-    application         Applications profiles
-    distribution        Distribution profiles
-    user                User accounts
-    organization        Top-level organization
-    environment         Environment defined within an organization
-    host                Host defined within an environment
+    applications        Recipes to provision and configure applications on a host
+    distributions       Recipes to provision and configure distributions on a host
+    parameters          Describe parameters used in recipes
+    files               Files used in recipes
+    users               User accounts
+    organizations       Top-level organization
+    environments        Environment defined within an organization
+    hosts               Host defined within an environment
 
 Services:
     provisioner         Provision virtual machines based on a host definition

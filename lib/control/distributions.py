@@ -26,11 +26,9 @@ class DistributionsController(ResourceController):
             print "Name:", item['name']
             if item.has_key('description'): print "Description:", item['description']
             print "UUID:", item['uuid']
-            if item.has_key('url'): print "Url:", item['url']             
-            if item.has_key('parameters'):
-                print "Parameters:"
-                for p in item.get('parameters'):
-                    print "   ", p.get('key')
+            if item.has_key('url'): print "Url:", item['url']
+            if item.has_key('initrd'): print "Initrd:", item['initrd']
+            if item.has_key('vmlinuz'): print "Vmlinuz:", item['vmlinuz']
 
     def _resolv(self, path):
         options = globals.options
