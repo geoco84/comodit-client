@@ -18,7 +18,7 @@ class SyncController(AbstractController):
 
     def __init__(self):
         super(SyncController, self ).__init__()
-        self._register(["pull"], self._pull)
+        self._register(["pull"], self._pull)  
         self._register(["h", "help"], self._help)
         self._default_action = self._help
     

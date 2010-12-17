@@ -34,7 +34,7 @@ def run(argv):
     control.router.register(["dist", "distributions"], DistributionsController())
     control.router.register(["org",  "organizations"], OrganizationsController())
     control.router.register(["env",  "environments"], EnvironmentsController())
-    control.router.register(["hosst"], HostsController())
+    control.router.register(["host", "hosts"], HostsController())
     control.router.register(["prov", "provisioner"], ProvisionerController())
     control.router.register(["cms",  "configuration"], CmsController())        
     control.router.register(["sync"], SyncController())
