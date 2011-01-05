@@ -17,7 +17,7 @@ from rest.client import Client
 
 class CmsController(AbstractController):
 
-    _resource = "config"
+    _resource = "cms"
 
     def __init__(self):
         super(CmsController, self ).__init__()
@@ -25,35 +25,12 @@ class CmsController(AbstractController):
     
     def _apply(self, argv):
         options = globals.options
-        
-        # Require an object as argument
-        if len(argv) == 0:
-            raise MissingException("You must provide a valid host UUID or path as argument")
-    
-        # Validate input parameters
-        if options.uuid:
-            uuid = argv[0]
-        else:
-            uuid = self._resolv(argv[0])
-            if not uuid: raise NotFoundException(uuid)
-    
-        self._puppet(uuid)
-
+        client = Client(self._endpoint(), options.username, options.password)
+        result = client.update(self._resource + "/_apply", decode=False)
         
     def _endpoint(self):
         options = globals.options
         return options.api
-    
-    def _puppet(self, uuid):
-        options = globals.options
-        client = Client(self._endpoint(), options.username, options.password)
-        result = client.read("hosts/" + uuid)
-        
-        hostname = result.get('hostname')
-        domain = result.get('domain')
-        fqdn = hostname + "." + domain
-        print "Running CMS on " + fqdn
-        subprocess.check_call(["ssh", "root@puppet-comodit.angleur", "puppetrun --host " + fqdn], stderr=subprocess.STDOUT)
     
     def _resolv(self, path):
         options = globals.options

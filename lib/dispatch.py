@@ -9,24 +9,28 @@
 
 VERSION = "0.2-dev"
 RELEASE = "Ongoing development"
- 
-import optparse, traceback, sys, control.router
 
-from control.users import UsersController
 from control.applications import ApplicationsController
-from control.distributions import DistributionsController
-from control.organizations import OrganizationsController
-from control.environments import EnvironmentsController
-from control.hosts import HostsController
-from control.provisioner import ProvisionerController
+from control.changes import ChangesController
 from control.cms import CmsController
-from control.sync import SyncController
-from control.parameters import ParametersController
-from control.files import FilesController
+from control.distributions import DistributionsController
+from control.environments import EnvironmentsController
 from control.exceptions import ControllerException, ArgumentException
-from util import globals
+from control.files import FilesController
+from control.hosts import HostsController
+from control.organizations import OrganizationsController
+from control.parameters import ParametersController
+from control.provisioner import ProvisionerController
+from control.settings import SettingsController
+from control.sync import SyncController
+from control.users import UsersController
 from rest.exceptions import ApiException
+from util import globals
 from util.editor import NotModifiedException
+import optparse
+import traceback
+import sys
+import control.router
 
 def run(argv):
     control.router.register(["user"], UsersController())
@@ -39,6 +43,8 @@ def run(argv):
     control.router.register(["cms",  "configuration"], CmsController())        
     control.router.register(["sync"], SyncController())
     control.router.register(["param", "parameters"], ParametersController());
+    control.router.register(["cr", "changes"], ChangesController());
+    control.router.register(["settings"], SettingsController());    
     control.router.register(["files"], FilesController());    
     _parse(argv)
 
