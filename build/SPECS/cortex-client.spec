@@ -1,4 +1,4 @@
-%define python_sitelib %(env python2.6 -c 'from distutils import sysconfig; print sysconfig.get_python_lib()')
+%define python_sitelib %(env python -c 'from distutils import sysconfig; print sysconfig.get_python_lib()')
 
 Name:           cortex-client
 Version:        0.1.1
@@ -12,8 +12,8 @@ Vendor: 	Guardis, http://www.guardis.com/
 Source0:	cortex-client-%{version}.tgz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
-Requires: 	/usr/bin/python2.6
-BuildRequires:  /usr/bin/python2.6
+Requires: 	/usr/bin/python
+BuildRequires:  /usr/bin/python
 
 %description
 Cortex automates the management of an Information System through the entire lifecycle. 
@@ -35,7 +35,7 @@ echo "cortex_client" > %{buildroot}/%{python_sitelib}/cortex_client.pth
 
 # To be cleaned
 # Patching the /usr/bin/cortex file to be able to load the good python version and to load his library
-cat cortex | sed -e 's,#!/usr/bin/env python,#!/usr/bin/env python2.6,g' -e "s/sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'lib'))/# sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'lib'))/g" > cortex.1
+cat cortex | sed -e "s/sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'lib'))/# sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'lib'))/g" > cortex.1
 
 %{__mv} cortex.1 %{buildroot}/%{_bindir}/cortex
 %{__chmod} 0755 %{buildroot}/%{_bindir}/cortex
@@ -50,10 +50,13 @@ rm -rf %{buildroot}
 %defattr(0644,root,root,-)
 %doc README
 %doc templates*
+%defattr(0755,root,root) 
 %{python_sitelib}/*
-%attr(0755,root,root) %{_bindir}/cortex
+%{_bindir}/cortex
 
 %changelog
+* Thu Jan 20 2011 Sebastien Caps <sebastien.caps@guardis.com> - 0.1.1
+- fix/remove python2.6 dependencies 
 * Wed Dec 08 2010 Sebastien Caps <sebastien.caps@guardis.com> - 0.1.1
 - Spec file changed to be integrated into github
 * Mon Dec 06 2010 Sebastien Caps <sebastien.caps@guardis.com> - 0.1
