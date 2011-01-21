@@ -11,6 +11,7 @@ import urllib, urllib2, json
 from urllib2 import HTTPError
 from util import urllibx
 from exceptions import ApiException
+from pprint import pprint
 
 class Client:
 
@@ -75,9 +76,9 @@ class Client:
             return urllib2.urlopen(request)
         except HTTPError as err:
             try:
-                data = json.loads(err.msg)
-                message = data.msg
-                errno = data.err
+                data = json.load(err)
+                message = data["error"]
+                errno = err.code
             except:
                 message = err.msg
                 errno = err.code

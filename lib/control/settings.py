@@ -7,7 +7,8 @@
 # This software cannot be used and/or distributed without prior 
 # authorization from Guardis.
 
-from control.exceptions import ControllerException, NotFoundException
+from control.exceptions import ControllerException, NotFoundException,\
+    MissingException
 from control.resource import ResourceController
 from rest.client import Client
 from util import globals
@@ -22,6 +23,29 @@ class SettingsController(ResourceController):
 
     def __init__(self):
         super(SettingsController, self ).__init__()
+
+    def _list(self, argv):
+        options = globals.options
+    
+        # Validate input parameters
+        if options.host_uuid:
+            uuid = options.host_uuid
+        elif options.host_path:
+            path = options.host_path
+            uuid = self._resolv(path)
+            if not uuid: raise NotFoundException(path)
+        if options.host and options.uuid:
+            uuid = options.host
+        elif options.host:
+            path = options.host
+            uuid = self._resolv(path)
+            if not uuid: raise NotFoundException(path)
+        else:
+            raise MissingException("You must provide a valid host UUID (with --host-uuid) or path (--host-path)")
+        
+        self._parameters = {"nodeId":uuid}
+        
+        super(SettingsController, self)._list(argv)   
 
     def _update(self, argv):
         options = globals.options
@@ -51,13 +75,12 @@ class SettingsController(ResourceController):
             updated = edit_text(original)
             #updated = re.sub(r'#.*$', "", updated)
             item = json.loads(updated)
-            
         
         result = client.update(self._resource + "/" + uuid, item, decode=False)
 
     def _render(self, item, detailed=False):
         if not detailed:
-            print item['key'], item['value']
+            print item['uuid'], item['key'], item['value']
         else: 
             print "Key:", item['key']
             print "Value:", item['value']
@@ -66,7 +89,7 @@ class SettingsController(ResourceController):
     def _resolv(self, path):
         options = globals.options
         client = Client(self._endpoint(), options.username, options.password)
-        result = client.read("directory/setting/" + path)
+        result = client.read("directory/organization/" + path)
         if result.has_key('uuid') : return result['uuid']
     
     def _help(self, argv):

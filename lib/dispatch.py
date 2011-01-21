@@ -103,7 +103,7 @@ def _dispatch(resource, args):
     except ArgumentException as e:
         print e.msg     
     except ApiException as e:
-        print e.message, e.code          
+        print "Error (%s): %s" % (e.code, e.message)          
     except NotModifiedException:
         print "Command was canceled since you did not save the file"       
     except Exception:
