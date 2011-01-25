@@ -28,9 +28,20 @@ This software cannot be used and/or distributed without prior authorization from
 %setup -c
 %{__mkdir} -p %{buildroot}/%{python_sitelib}/cortex_client
 %{__mkdir} -p %{buildroot}/%{_bindir}
+%{__mkdir} -p %{buildroot}/usr/lib/%{name}-%{version}/
 
 %install
 echo "cortex_client" > %{buildroot}/%{python_sitelib}/cortex_client.pth
+
+# To be cleaned
+# Patching the lib/control/files.py and lib/control/resource.py to be able to load the good templates files
+cat lib/control/files.py | sed -e  "s/TEMPLATE_DIR = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'templates'))/TEMPLATE_DIR = '\/usr\/lib\/%{name}-%{version}\/templates'/g" > lib/control/files.py.1
+cat lib/control/resource.py | sed -e "s/TEMPLATE_DIR = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'templates'))/TEMPLATE_DIR = '\/usr\/lib\/%{name}-%{version}\/templates'/g" > lib/control/resource.py.1
+%{__rm} -f lib/control/files.py
+%{__rm} -f lib/control/resource.py
+%{__mv} lib/control/files.py.1 lib/control/files.py
+%{__mv} lib/control/resource.py.1 lib/control/resource.py
+
 %{__cp} -r lib/* %{buildroot}/%{python_sitelib}/cortex_client/
 
 # To be cleaned
@@ -39,6 +50,8 @@ cat cortex | sed -e "s/sys.path.append(os.path.join(os.path.dirname(os.path.real
 
 %{__mv} cortex.1 %{buildroot}/%{_bindir}/cortex
 %{__chmod} 0755 %{buildroot}/%{_bindir}/cortex
+
+%{__cp} -r templates %{buildroot}/usr/lib/%{name}-%{version}/
 
 %post
 rm -rf %{buildroot}
@@ -49,8 +62,8 @@ rm -rf %{buildroot}
 %files
 %defattr(0644,root,root,-)
 %doc README
-%doc templates*
-%defattr(0755,root,root) 
+%defattr(0755,root,root)
+/usr/lib/%{name}-%{version}/templates*
 %{python_sitelib}/*
 %{_bindir}/cortex
 
