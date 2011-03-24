@@ -88,7 +88,7 @@ class ResourceController(AbstractController):
             item = json.loads(updated)
         
         client = Client(self._endpoint(), options.username, options.password)
-        result = client.create(self._resource, item)
+        result = client.create(self._resource, item, self._parameters)
         
         if options.raw:
             print json.dumps(result, sort_keys=True, indent=4)
@@ -97,7 +97,8 @@ class ResourceController(AbstractController):
     
     def _update(self, argv):
         options = globals.options
-          
+        self._parameters = {}
+                  
         client = Client(self._endpoint(), options.username, options.password)
         
         if options.filename:
@@ -124,8 +125,9 @@ class ResourceController(AbstractController):
             #updated = re.sub(r'#.*$', "", updated)
             item = json.loads(updated)
             
-        
-        result = client.update(self._resource + "/" + uuid, item)
+        if options.force: self._parameters["force"] = "true"
+                
+        result = client.update(self._resource + "/" + uuid, item, self._parameters)
         
         if options.raw:
             print json.dumps(result, sort_keys=True, indent=4)

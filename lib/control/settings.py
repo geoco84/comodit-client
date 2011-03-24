@@ -13,6 +13,7 @@ from control.resource import ResourceController
 from rest.client import Client
 from util import globals
 from util.editor import edit_text
+from util import globals, prompt
 import json
 
 
@@ -34,7 +35,7 @@ class SettingsController(ResourceController):
             path = options.host_path
             uuid = self._resolv(path)
             if not uuid: raise NotFoundException(path)
-        if options.host and options.uuid:
+        elif options.host and options.uuid:
             uuid = options.host
         elif options.host:
             path = options.host
@@ -47,9 +48,34 @@ class SettingsController(ResourceController):
         
         super(SettingsController, self)._list(argv)   
 
+    def _show(self, argv):
+        options = globals.options
+    
+        # Require an object as argument
+        if len(argv) == 0:
+            raise MissingException("You must provide a valid object identifier")
+    
+        # Validate input parameters
+        if options.uuid:
+            uuid = argv[0]
+        else:
+            uuid = self._lookup(argv[0])
+            if not uuid: raise NotFoundException(uuid)
+            
+        # Query the server
+        client = Client(self._endpoint(), options.username, options.password)
+        result = client.read(self._resource + "/" + uuid)
+        
+        # Display the result
+        if options.raw:
+            print json.dumps(result, sort_keys=True, indent=4)
+        else:
+            self._render(result, detailed=True)
+
     def _update(self, argv):
         options = globals.options
-          
+        self._parameters = {}
+        
         client = Client(self._endpoint(), options.username, options.password)
         
         if options.filename:
@@ -64,7 +90,7 @@ class SettingsController(ResourceController):
             if options.uuid:
                 uuid = argv[0]
             else:
-                uuid = self._resolv(argv[0])
+                uuid = self._lookup(argv[0])
                 if not uuid: raise NotFoundException(argv[0])
             # Find the resource
             item = client.read(self._resource + "/" + uuid)
@@ -75,12 +101,43 @@ class SettingsController(ResourceController):
             updated = edit_text(original)
             #updated = re.sub(r'#.*$', "", updated)
             item = json.loads(updated)
+            
+        if options.force: self._parameters["force"] = "true"
         
-        result = client.update(self._resource + "/" + uuid, item, decode=False)
+        result = client.update(self._resource + "/" + uuid, item, self._parameters, decode=False)
 
+    def _delete(self, argv):
+        options = globals.options
+        self._parameters = {}
+                
+        # Require an object as argument
+        if len(argv) == 0:
+            raise MissingException("You must provide a valid object identifier")
+    
+        # Validate input parameters
+        if options.uuid:
+            uuid = argv[0]
+        else:
+            uuid = self._lookup(argv[0])
+            if not uuid: raise NotFoundException(uuid)
+        
+        if options.force: self._parameters["force"] = "true"
+            
+        client = Client(self._endpoint(), options.username, options.password)
+        item = client.read(self._resource + "/" + uuid)
+        
+        if (prompt.confirm(prompt="Delete " + item['key'] + " ?", resp=False)) :
+            client.delete(self._resource + "/" + uuid, parameters=self._parameters)
+
+    def _add(self, argv):
+        options = globals.options
+        self._parameters = {}
+        if options.force: self._parameters["force"] = "true"
+        super(SettingsController, self)._add(argv)   
+                        
     def _render(self, item, detailed=False):
         if not detailed:
-            print item['uuid'], item['key'], item['value']
+            print "%-20s %s" % (item['key'], item['value'])
         else: 
             print "Key:", item['key']
             print "Value:", item['value']
@@ -91,6 +148,35 @@ class SettingsController(ResourceController):
         client = Client(self._endpoint(), options.username, options.password)
         result = client.read("directory/organization/" + path)
         if result.has_key('uuid') : return result['uuid']
+        
+    def _lookup(self, name):
+        options = globals.options
+        
+        if options.host_uuid:
+            host_uuid = options.host_uuid
+        elif options.host_path:
+            path = options.host_path
+            host_uuid = self._resolv(path)
+            if not host_uuid: raise NotFoundException(path)
+        elif options.host and options.uuid:
+            host_uuid = options.host
+        elif options.host:
+            path = options.host
+            host_uuid = self._resolv(path)
+            if not host_uuid: raise NotFoundException(path)
+        else :
+            raise MissingException("You must provide a valid host UUID (with --host-uuid) or path (--host-path)")
+        
+        client = Client(self._endpoint(), options.username, options.password)
+        result = client.read(self._resource, {"nodeId":host_uuid})
+        if (result['count'] == "0"):
+            raise NotFoundException("No such setting with name %s for host %s." % (name, host_uuid))
+        else:
+            for o in result['items']:
+                if o['key'] == name:
+                    return o['uuid']
+        raise NotFoundException("No such setting with name %s for host %s." % (name, host_uuid))
+        
     
     def _help(self, argv):
         print '''You must provide an action to perfom on this resource. 

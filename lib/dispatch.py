@@ -76,8 +76,9 @@ def _parse(argv):
 
 
     parser.add_option("--quiet",      dest="verbose",  help="don't print status messages to stdout", action="store_false", default=True)
+    parser.add_option("--force",      dest="force",    help="bypass change management and update everything", action="store_true", default=False)
     parser.add_option("--debug",      dest="debug",    help="display debug information", action="store_true", default=False)    
-    parser.add_option("--version",    dest="version",    help="display version information", action="store_true", default=False)
+    parser.add_option("--version",    dest="version",  help="display version information", action="store_true", default=False)
     
     (globals.options, args) = parser.parse_args()
 

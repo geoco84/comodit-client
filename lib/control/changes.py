@@ -45,10 +45,10 @@ class ChangesController(ResourceController):
 
     def _render(self, item, detailed=False):
         if not detailed:
-            print item['uuid'], item['resource'], item['action']
+            print item['uuid'], item['action']
         else: 
             print "UUID:", item['uuid']
-            print "Action:", item['action'], item['resource']
+            print "Action:", item['action']
             print "Timestamp", item['timestamp']
 
     def _resolv(self, path):

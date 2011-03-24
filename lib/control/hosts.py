@@ -25,7 +25,8 @@ class HostsController(ResourceController):
         
     def _list(self, argv):
         options = globals.options
-    
+        self._parameters = {}
+        
         # Validate input parameters
         if options.env_uuid:
             uuid = options.env_uuid
@@ -39,10 +40,10 @@ class HostsController(ResourceController):
             path = options.env
             uuid = self._resolv(path)
             if not uuid: raise NotFoundException(path)
-        else:
-            raise MissingException("You must provide a valid environment UUID (with --env-uuid) or path (--env-path)")
-        
-        self._parameters = {"environmentId":uuid}
+        else : 
+            uuid = None
+
+        if uuid : self._parameters["environmentId"] = uuid
         
         super(HostsController, self)._list(argv)
         
