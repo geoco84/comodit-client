@@ -6,11 +6,11 @@
 #
 # This software cannot be used and/or distributed without prior 
 # authorization from Guardis.
-
 VERSION = "0.2-dev"
 RELEASE = "Ongoing development"
 
 from control.applications import ApplicationsController
+from control.platforms import PlatformsController
 from control.changes import ChangesController
 from control.cms import CmsController
 from control.distributions import DistributionsController
@@ -34,6 +34,7 @@ import control.router
 
 def run(argv):
     control.router.register(["user"], UsersController())
+    control.router.register(["pf",  "platforms"], PlatformsController())
     control.router.register(["app",  "applications"], ApplicationsController())
     control.router.register(["dist", "distributions"], DistributionsController())
     control.router.register(["org",  "organizations"], OrganizationsController())
@@ -122,6 +123,7 @@ def _dispatch(resource, args):
 def print_resources():
     print '''
 Resources:
+    platforms           Underlying infrastructure platforms
     applications        Recipes to provision and configure applications on a host
     distributions       Recipes to provision and configure distributions on a host
     parameters          Describe parameters used in recipes

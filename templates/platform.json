@@ -1,0 +1,8 @@
+{
+    "name":"my-app",
+    "description":"My application example",
+    "driver": "com.guardis.*",
+    "settings": [
+    	{"key": "<key>", "value":"<value>"}
+    ]
+}
