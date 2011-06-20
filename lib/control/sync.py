@@ -35,6 +35,7 @@ class SyncController(AbstractController):
         self._dumpDistributions()
         self._dumpParameters()
         self._dumpOrganizations()
+        self._dumpPlatforms()
 
     def _help(self, argv):
         print "Oops, this piece is missing some documentation"
@@ -44,7 +45,7 @@ class SyncController(AbstractController):
         path.ensure(os.path.join(self._root, "applications"))
         path.ensure(os.path.join(self._root, "distributions"))
         path.ensure(os.path.join(self._root, "organizations"))
-
+        path.ensure(os.path.join(self._root, "platforms"))
                 
             
     def _dumpApplications(self):
@@ -81,9 +82,10 @@ class SyncController(AbstractController):
                 with open(os.path.join(file, "definition.json"), 'w') as f:
                     f.write(data)               
                 try:
-                    ks = self._client.read('files/' + o['kickstart'] , decode=False)
+                    ks = o['kickstart']
+                    content = self._client.read('files/' + ks['template'] , decode=False)
                     with open(os.path.join(file, "templates", "kickstart.cfg"), 'w') as f:
-                        f.write(ks.read())
+                        f.write(content.read())
                 except:
                     pass
     
@@ -137,4 +139,14 @@ class SyncController(AbstractController):
                 with open(os.path.join(file, "definition.json"), 'w') as f:
                     f.write(data)                    
                                       
-    
+    def _dumpPlatforms(self):
+        result = self._client.read('platforms')
+        if not (result['count'] == "0"):
+            for o in result['items']:
+                data = json.dumps(o, sort_keys=True, indent=4)
+                uuid = o['uuid']
+                name = o['name']
+                file = os.path.join(self._root, "platforms")
+                path.ensure(file)
+                with open(os.path.join(file, name + ".json"), 'w') as f:
+                    f.write(data)
