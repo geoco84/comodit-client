@@ -103,11 +103,11 @@ class FilesController(AbstractController):
         if options.raw:
             print json.dumps(result, sort_keys=True, indent=4)
         else: 
-            if (result['count'] == "0"):
+            if (len(result) == "0"):
                 print "Request returned 0 object."
             else:
-                for o in result['items']:
-                    self._render(o)
+                for o in result:
+                    print o
     
     def _update(self, argv):
         options = globals.options
