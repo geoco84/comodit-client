@@ -6,8 +6,8 @@
 #
 # This software cannot be used and/or distributed without prior 
 # authorization from Guardis.
-VERSION = "0.2-dev"
-RELEASE = "Ongoing development"
+VERSION = "0.6.0"
+RELEASE = "July 19th 2011"
 
 from control.applications import ApplicationsController
 from control.platforms import PlatformsController
