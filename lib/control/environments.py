@@ -37,9 +37,9 @@ class EnvironmentsController(ResourceController):
             uuid = self._resolv(path)
             if not uuid: raise NotFoundException(path)
         else:
-            raise MissingException("You must provide a valid organization UUID (with --org-uuid) or path (--org-path)")
+            uuid = None
         
-        self._parameters = {"organizationId":uuid}
+        if uuid: self._parameters = {"organizationId":uuid}
         
         super(EnvironmentsController, self)._list(argv)    
         

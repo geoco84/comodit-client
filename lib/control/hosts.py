@@ -7,12 +7,12 @@
 # This software cannot be used and/or distributed without prior 
 # authorization from Guardis.
 
+import json
+
 from util import globals
 from control.resource import ResourceController
 from control.exceptions import NotFoundException, MissingException
 from rest.client import Client
-from control.hostDistribution import HostDistributionController
-from control.hostApplications import HostApplicationsController
 
 class HostsController(ResourceController):
 
@@ -21,12 +21,12 @@ class HostsController(ResourceController):
 
     def __init__(self):
         super(HostsController, self ).__init__()
-        self._register(["dist", "distribution"], self._distribution)
-        self._register(["app", "application", "applications"], self._applications)
+        self._register(["s", "state"], self._state)  
         
     def _list(self, argv):
         options = globals.options
-    
+        self._parameters = {}
+        
         # Validate input parameters
         if options.env_uuid:
             uuid = options.env_uuid
@@ -40,13 +40,32 @@ class HostsController(ResourceController):
             path = options.env
             uuid = self._resolv(path)
             if not uuid: raise NotFoundException(path)
+        else : 
+            uuid = None
+
+        if uuid : self._parameters["environmentId"] = uuid
+        
+        super(HostsController, self)._list(argv)
+        
+    def _state(self, argv):
+        options = globals.options
+    
+        # Require an object as argument
+        if len(argv) == 0:
+            raise MissingException("You must provide a valid object identifier")
+    
+        # Validate input parameters
+        uuid = argv[0]
+            
+        # Query the server
+        client = Client(self._endpoint(), options.username, options.password)
+        result = client.read(self._resource + "/" + uuid + "/state")
+        
+        if options.raw:
+            print json.dumps(result, sort_keys=True, indent=4)
         else:
-            raise MissingException("You must provide a valid environment UUID (with --env-uuid) or path (--env-path)")
-        
-        self._parameters = {"environmentId":uuid}
-        
-        super(HostsController, self)._list(argv)           
-        
+            self._renderState(result)
+                    
     def _render(self, item, detailed=False):
         if not detailed:
             print item['uuid'], item['name']
@@ -55,6 +74,11 @@ class HostsController(ResourceController):
             print "UUUID:", item['uuid']
             if item.has_key('description'):
                 print "Description:", item['description']
+                
+    def _renderState(self, item,):
+        print "State:", item['state']
+        if item.has_key('cpuTime'):
+            print "CPU Time:", item['cpuTime']
         
     def _resolv(self, path):
         options = globals.options
@@ -62,25 +86,16 @@ class HostsController(ResourceController):
         result = client.read("directory/organization/" + path)
         if result.has_key('uuid') : return result['uuid']        
 
-    def _distribution(self, argv):
-        controller = HostDistributionController()
-        controller.run(argv)
-        
-    def _applications(self, argv):
-        controller = HostApplicationsController()
-        controller.run(argv)
 
     def _help(self, argv):
-        print '''You must provide an action or sub-resource to perfom on this resource. 
+        print '''You must provide an action to perfom on this resource. 
         
 Actions:
     list --env [id]    List all hosts within an environment
     show [id]          Show the details of a host
+    state [id]         Show the state of a host
     add                Add an host
     update [id]        Update a host
     delete [id]        Delete a host
 
-Sub-resources:
-    applications       Manage applications installed on a host
-    distribution       Manager the distribution configured on a host
 '''        

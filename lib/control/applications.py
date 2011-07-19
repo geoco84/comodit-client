@@ -32,11 +32,18 @@ class ApplicationsController(ResourceController):
             if item.has_key('packages'):
                 print "Packages:"
                 for p in item.get('packages'):
-                    print "   ", p                 
-            if item.has_key('parameters'):
-                print "Parameters:"
-                for p in item.get('parameters'):
-                    print "   ", p.get('key')
+                    name = p.get("name")
+                    print "   ", name  
+            if item.has_key('services'):
+                print "Services::"
+                for p in item.get('services'):
+                    name = p.get("name")
+                    print "   ", name                          
+            if item.has_key('files'):
+                print "Files::"
+                for p in item.get('files'):
+                    path = p.get("path")
+                    print "   ", path                               
 
 
     def _resolv(self, path):

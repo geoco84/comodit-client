@@ -6,34 +6,47 @@
 #
 # This software cannot be used and/or distributed without prior 
 # authorization from Guardis.
- 
-VERSION = "0.1"
-RELEASE = "Dec 1st 2010"
- 
-import optparse, traceback, sys, control.router
+VERSION = "0.6.0"
+RELEASE = "July 19th 2011"
 
-from control.users import UsersController
 from control.applications import ApplicationsController
-from control.distributions import DistributionsController
-from control.organizations import OrganizationsController
-from control.environments import EnvironmentsController
-from control.hosts import HostsController
-from control.provisioner import ProvisionerController
+from control.platforms import PlatformsController
+from control.changes import ChangesController
 from control.cms import CmsController
+from control.distributions import DistributionsController
+from control.environments import EnvironmentsController
 from control.exceptions import ControllerException, ArgumentException
-from util import globals
+from control.files import FilesController
+from control.hosts import HostsController
+from control.organizations import OrganizationsController
+from control.parameters import ParametersController
+from control.provisioner import ProvisionerController
+from control.settings import SettingsController
+from control.sync import SyncController
+from control.users import UsersController
 from rest.exceptions import ApiException
+from util import globals
 from util.editor import NotModifiedException
+import optparse
+import traceback
+import sys
+import control.router
 
 def run(argv):
     control.router.register(["user"], UsersController())
-    control.router.register(["app",  "application"], ApplicationsController())
-    control.router.register(["dist", "distribution"], DistributionsController())
-    control.router.register(["org",  "organization"], OrganizationsController())
-    control.router.register(["env",  "environment"], EnvironmentsController())
-    control.router.register(["host", "host"], HostsController())
+    control.router.register(["pf",  "platforms"], PlatformsController())
+    control.router.register(["app",  "applications"], ApplicationsController())
+    control.router.register(["dist", "distributions"], DistributionsController())
+    control.router.register(["org",  "organizations"], OrganizationsController())
+    control.router.register(["env",  "environments"], EnvironmentsController())
+    control.router.register(["host", "hosts"], HostsController())
     control.router.register(["prov", "provisioner"], ProvisionerController())
     control.router.register(["cms",  "configuration"], CmsController())        
+    control.router.register(["sync"], SyncController())
+    control.router.register(["param", "parameters"], ParametersController());
+    control.router.register(["cr", "changes"], ChangesController());
+    control.router.register(["settings"], SettingsController());    
+    control.router.register(["files"], FilesController());    
     _parse(argv)
 
 def _parse(argv):
@@ -64,8 +77,9 @@ def _parse(argv):
 
 
     parser.add_option("--quiet",      dest="verbose",  help="don't print status messages to stdout", action="store_false", default=True)
+    parser.add_option("--force",      dest="force",    help="bypass change management and update everything", action="store_true", default=False)
     parser.add_option("--debug",      dest="debug",    help="display debug information", action="store_true", default=False)    
-    parser.add_option("--version",    dest="version",    help="display version information", action="store_true", default=False)
+    parser.add_option("--version",    dest="version",  help="display version information", action="store_true", default=False)
     
     (globals.options, args) = parser.parse_args()
 
@@ -88,36 +102,36 @@ def _dispatch(resource, args):
         exit(0)
     except ControllerException as e:
         print e.msg
-        exit(-1)
     except ArgumentException as e:
-        print e.msg
-        exit(-1)     
+        print e.msg     
     except ApiException as e:
-        print e.message, e.code
-        exit(-1)          
+        print "Error (%s): %s" % (e.code, e.message)          
     except NotModifiedException:
-        print "Command was canceled since you did not save the file"
-        exit(-1)       
+        print "Command was canceled since you did not save the file"       
     except Exception:
         if options.debug:
-            print "Exception in user code:"
-            print '-' * 60
-            traceback.print_exc(file=sys.stdout)
-            print '-' * 60
-            exit(-1)
+            print "Exception in user code."
         else :
             print "Oops, it seems something went wrong (use --debug to learn more)."
-            exit(-1)
+
+    if options.debug:  
+        print '-' * 60
+        traceback.print_exc(file=sys.stdout)
+        print '-' * 60
+    exit(-1)
         
 def print_resources():
     print '''
 Resources:
-    application         Applications profiles
-    distribution        Distribution profiles
-    user                User accounts
-    organization        Top-level organization
-    environment         Environment defined within an organization
-    host                Host defined within an environment
+    platforms           Underlying infrastructure platforms
+    applications        Recipes to provision and configure applications on a host
+    distributions       Recipes to provision and configure distributions on a host
+    parameters          Describe parameters used in recipes
+    files               Files used in recipes
+    users               User accounts
+    organizations       Top-level organization
+    environments        Environment defined within an organization
+    hosts               Host defined within an environment
 
 Services:
     provisioner         Provision virtual machines based on a host definition

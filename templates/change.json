@@ -1,0 +1,4 @@
+{
+	"action":"<what you want to do",
+	"target":"<uuid of target node>"
+}
