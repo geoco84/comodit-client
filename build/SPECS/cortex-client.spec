@@ -1,7 +1,7 @@
 %define python_sitelib %(env python -c 'from distutils import sysconfig; print sysconfig.get_python_lib()')
 
 Name:           cortex-client
-Version:        0.1.1
+Version:        0.7.0
 Release:        1
 Summary:        Cortex command line client and python library.
 Group:          System Environment/Applications
