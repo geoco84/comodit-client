@@ -3,7 +3,7 @@
     "description":"My application example",
     "packages":
       [
-       {"name":"package"},
+       {"name":"package"}
       ],
      "services":
       [
