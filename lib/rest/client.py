@@ -33,8 +33,8 @@ class Client:
             return raw  
     
     def read(self, resource, parameters={}, decode=True):
-        url = self.endpoint + "/" + resource
-        if len(parameters) >0:
+        url = self.endpoint + "/" + urllib.quote(resource)
+        if len(parameters) > 0:
             url = url + "?" + urllib.urlencode(parameters)
 
         req = urllibx.RequestWithMethod(url, method="GET", headers=self._headers())
@@ -45,7 +45,7 @@ class Client:
             return raw    
 
     def update(self, resource, item=None, parameters={}, decode=True):
-        url = self.endpoint + "/" + resource
+        url = self.endpoint + "/" + urllib.quote(resource)
         if len(parameters) >0:
             url = url + "?" + urllib.urlencode(parameters)
 
@@ -58,7 +58,10 @@ class Client:
             return raw  
 
     def delete(self, resource, parameters={}):
-        url = self.endpoint + "/" + resource + "?" + urllib.urlencode(parameters)
+        url = self.endpoint + "/" + urllib.quote(resource)
+        if len(parameters) >0:
+            url = url + "?" + urllib.urlencode(parameters)
+
         req = urllibx.RequestWithMethod(url, method='DELETE', headers=self._headers())
         self._urlopen(req)
         return
