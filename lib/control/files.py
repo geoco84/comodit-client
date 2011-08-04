@@ -29,9 +29,10 @@ class FilesController(AbstractController):
         super(FilesController, self).__init__()
         self._register(["l", "list"], self._list)   
         self._register(["s", "show"], self._show)
-        self._register(["g", "get"], self._get)
+        self._register(["r", "read"], self._read)
+        self._register(["u", "update"], self._update)
         self._register(["a", "add"], self._add)
-        self._register(["u", "update"], self._update)        
+        self._register(["w", "write"], self._write)        
         self._register(["d", "delete"], self._delete)
         self._register(["h", "help"], self._help)
         self._default_action = self._help
@@ -50,7 +51,7 @@ class FilesController(AbstractController):
                 for o in result['items']:
                     self._render(o)
 
-    def _get(self, argv):
+    def _read(self, argv):
         options = globals.options
     
         # Require an object as argument
@@ -87,6 +88,41 @@ class FilesController(AbstractController):
             print json.dumps(result, sort_keys=True, indent=4)
         else:
             self._render(result, detailed=True)
+            
+    def _update(self, argv):
+        options = globals.options
+        self._parameters = {}
+                  
+        client = Client(self._endpoint(), options.username, options.password)
+        
+        if options.filename:
+            with open(options.filename, 'r') as f:
+                item = json.load(f)
+                uuid = item.get("uuid")
+        elif options.json:
+            item = json.loads(options.json)
+            uuid = item.get("uuid")
+        elif len(argv) > 0:
+            # Get the uuid/path from the command line
+            uuid = argv[0]
+            # Find the resource
+            item = client.read(self._resource + "/" + uuid + "/_meta")
+            if not item: raise NotFoundException(uuid)
+            # Edit the resouce
+            original = json.dumps(item, sort_keys=True, indent=4)
+            #original = "# To abort the request; just exit your editor without saving this file.\n\n" + original
+            updated = edit_text(original)
+            #updated = re.sub(r'#.*$', "", updated)
+            item = json.loads(updated)
+            
+        if options.force: self._parameters["force"] = "true"
+                
+        result = client.update(self._resource + "/" + uuid + "/_meta", item, self._parameters)
+        
+        if options.raw:
+            print json.dumps(result, sort_keys=True, indent=4)
+        else:
+            self._render(result)            
     
     def _add(self, argv):
         options = globals.options
@@ -109,7 +145,7 @@ class FilesController(AbstractController):
                 for o in result:
                     print o
     
-    def _update(self, argv):
+    def _write(self, argv):
         options = globals.options
 
         if len(argv) == 0:
@@ -171,8 +207,9 @@ class FilesController(AbstractController):
 Actions:
     list            List all files available to the user
     show [uuid]     Show the details of a file
-    get [uuid]      Fetch the content of a file
     add             Upload a new file
-    update [uuid]   Update the content of a file
+    update [uuid]   Update the details of a file
     delete [uuid]   Delete a file
+    read [uuid]     Fetch the content of a file
+    write [uuid]    Update the content of a file    
 '''
