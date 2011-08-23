@@ -1,16 +1,16 @@
 # control.environments - Controller for cortex Environments resources.
 # coding: utf-8
-# 
+#
 # Copyright 2010 Guardis SPRL, Liège, Belgium.
 # Authors: Laurent Eschenauer <laurent.eschenauer@guardis.com>
 #
-# This software cannot be used and/or distributed without prior 
+# This software cannot be used and/or distributed without prior
 # authorization from Guardis.
 
-from util import globals
-from control.resource import ResourceController
-from control.exceptions import NotFoundException, MissingException
-from rest.client import Client
+from cortex_client.util import globals
+from cortex_client.control.resource import ResourceController
+from cortex_client.control.exceptions import NotFoundException, MissingException
+from cortex_client.rest.client import Client
 
 class EnvironmentsController(ResourceController):
 
@@ -19,10 +19,10 @@ class EnvironmentsController(ResourceController):
 
     def __init__(self):
         super(EnvironmentsController, self ).__init__()
-        
+
     def _list(self, argv):
         options = globals.options
-    
+
         # Validate input parameters
         if options.org_uuid:
             uuid = options.org_uuid
@@ -38,17 +38,17 @@ class EnvironmentsController(ResourceController):
             if not uuid: raise NotFoundException(path)
         else:
             uuid = None
-        
+
         if uuid: self._parameters = {"organizationId":uuid}
-        
-        super(EnvironmentsController, self)._list(argv)    
-        
+
+        super(EnvironmentsController, self)._list(argv)
+
     def _resolv(self, path):
         options = globals.options
         client = Client(self._endpoint(), options.username, options.password)
         result = client.read("directory/organization/" + path)
         if result.has_key('uuid') : return result['uuid']
-        
+
     def _render(self, item, detailed=False):
         if not detailed:
             print item['uuid'], item['name']
@@ -63,8 +63,8 @@ class EnvironmentsController(ResourceController):
                     print "    %-30s: %s" % (setting['key'], setting['value'])
 
     def _help(self, argv):
-        print '''You must provide an action to perfom on this resource. 
-        
+        print '''You must provide an action to perfom on this resource.
+
 Actions:
     list --org [id]    List all environments within an organization
     show [id]          Show the details of an environment

@@ -1,18 +1,18 @@
 # control.users - Controller for cortex Users resources.
 # coding: utf-8
-# 
+#
 # Copyright 2010 Guardis SPRL, Liège, Belgium.
 # Authors: Laurent Eschenauer <laurent.eschenauer@guardis.com>
 #
-# This software cannot be used and/or distributed without prior 
+# This software cannot be used and/or distributed without prior
 # authorization from Guardis.
 
 import sys, json
 
-from util import globals
-from control.resource import ResourceController
-from control.exceptions import ControllerException
-from rest.client import Client
+from cortex_client.util import globals
+from cortex_client.control.resource import ResourceController
+from cortex_client.control.exceptions import ControllerException
+from cortex_client.rest.client import Client
 
 class UsersController(ResourceController):
 
@@ -20,10 +20,10 @@ class UsersController(ResourceController):
 
     def __init__(self):
         super(UsersController, self ).__init__()
-        
+
     def _update(self, args):
         options = globals.options
-                  
+
         if options.filename:
             with open(options.filename, 'r') as f:
                 item = json.load(f)
@@ -33,10 +33,10 @@ class UsersController(ResourceController):
             uuid = item.get("uuid")
         else:
             raise ControllerException("Updating a user is not possible in interactive mode.")
-        
+
         client = Client(self._endpoint(), options.username, options.password)
         result = client.update(self._resource + "/" + uuid, item)
-        
+
         if options.raw:
             print json.dumps(result, sort_keys=True, indent=4)
         else:
@@ -45,7 +45,7 @@ class UsersController(ResourceController):
     def _render(self, item, detailed=False):
         if not detailed:
             print item['uuid'], item['username']
-        else: 
+        else:
             print "Username:", item['username']
             print "UUID:", item['uuid']
             sys.stdout.write("Roles: ")
@@ -57,4 +57,4 @@ class UsersController(ResourceController):
         options = globals.options
         client = Client(self._endpoint(), options.username, options.password)
         result = client.read("directory/user/" + path)
-        if result.has_key('uuid') : return result['uuid']            
+        if result.has_key('uuid') : return result['uuid']

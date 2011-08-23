@@ -1,17 +1,17 @@
 # rest.client - Generic client for crud opetations in a REST-Json API.
 # coding: utf-8
-# 
+#
 # Copyright 2010 Guardis SPRL, Liège, Belgium.
 # Authors: Laurent Eschenauer <laurent.eschenauer@guardis.com>
 #
-# This software cannot be used and/or distributed without prior 
+# This software cannot be used and/or distributed without prior
 # authorization from Guardis.
 
 import urllib, urllib2, json
 from urllib2 import HTTPError
-from util import urllibx
-from exceptions import ApiException
-from pprint import pprint
+from cortex_client.util import urllibx
+from cortex_client.rest.exceptions import ApiException
+
 
 class Client:
 
@@ -19,19 +19,19 @@ class Client:
         self.endpoint = endpoint.rstrip('/')
         self.username = username
         self.password = password
-    
+
     def create(self, resource, item, parameters={}, decode=True):
         url = self.endpoint + "/" + resource
         if len(parameters) >0:
             url = url + "?" + urllib.urlencode(parameters)
-            
+
         req = urllibx.RequestWithMethod(url, method="POST", headers=self._headers(), data=json.dumps(item))
         raw = self._urlopen(req)
-        if decode: 
+        if decode:
             return json.load(raw)
         else:
-            return raw  
-    
+            return raw
+
     def read(self, resource, parameters={}, decode=True):
         url = self.endpoint + "/" + urllib.quote(resource)
         if len(parameters) > 0:
@@ -39,10 +39,10 @@ class Client:
 
         req = urllibx.RequestWithMethod(url, method="GET", headers=self._headers())
         raw = self._urlopen(req)
-        if decode: 
+        if decode:
             return json.load(raw)
         else:
-            return raw    
+            return raw
 
     def update(self, resource, item=None, parameters={}, decode=True):
         url = self.endpoint + "/" + urllib.quote(resource)
@@ -52,10 +52,10 @@ class Client:
         req = urllibx.RequestWithMethod(url, method="PUT", headers=self._headers())
         if item: req.add_data(json.dumps(item))
         raw = self._urlopen(req)
-        if decode: 
+        if decode:
             return json.load(raw)
         else:
-            return raw  
+            return raw
 
     def delete(self, resource, parameters={}):
         url = self.endpoint + "/" + urllib.quote(resource)
@@ -65,7 +65,7 @@ class Client:
         req = urllibx.RequestWithMethod(url, method='DELETE', headers=self._headers())
         self._urlopen(req)
         return
-    
+
     def _headers(self):
         s = self.username + ":" + self.password
         headers = {
@@ -73,7 +73,7 @@ class Client:
                    "Content-Type": "application/json",
                    }
         return headers
-    
+
     def _urlopen(self, request):
         try:
             return urllib2.urlopen(request)
@@ -86,4 +86,4 @@ class Client:
                 message = err.msg
                 errno = err.code
             raise ApiException(message, errno)
-            
+

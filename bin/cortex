@@ -3,6 +3,7 @@
 # cortex | A command line client for cortex-server
 
 import sys, os
+#sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'lib'))
 
 from cortex_client import dispatch
 
