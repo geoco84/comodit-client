@@ -12,16 +12,13 @@ RELEASE = "Ongoing development"
 from control.applications import ApplicationsController
 from control.platforms import PlatformsController
 from control.changes import ChangesController
-from control.cms import CmsController
 from control.distributions import DistributionsController
 from control.environments import EnvironmentsController
 from control.exceptions import ControllerException, ArgumentException
 from control.files import FilesController
 from control.hosts import HostsController
 from control.organizations import OrganizationsController
-from control.parameters import ParametersController
 from control.provisioner import ProvisionerController
-from control.settings import SettingsController
 from control.sync.sync import SyncController
 from control.users import UsersController
 from rest.exceptions import ApiException
@@ -31,6 +28,7 @@ import optparse
 import traceback
 import sys
 import control.router
+from config import Config
 
 def run(argv):
     control.router.register(["user"], UsersController())
@@ -41,11 +39,8 @@ def run(argv):
     control.router.register(["env",  "environments"], EnvironmentsController())
     control.router.register(["host", "hosts"], HostsController())
     control.router.register(["prov", "provisioner"], ProvisionerController())
-    control.router.register(["cms",  "configuration"], CmsController())        
     control.router.register(["sync"], SyncController())
-    control.router.register(["param", "parameters"], ParametersController());
     control.router.register(["cr", "changes"], ChangesController());
-    control.router.register(["settings"], SettingsController());    
     control.router.register(["files"], FilesController());    
     _parse(argv)
 
@@ -71,17 +66,35 @@ def _parse(argv):
     parser.add_option("--host-path",   dest="host_path", help="Path to the parent host")
     parser.add_option("--host-uuid",   dest="host_uuid", help="UUID of the parent host")
 
-    parser.add_option("--api",        dest="api",      help="endpoint for the API",      default="http://localhost:8000/api")
-    parser.add_option("--user",       dest="username", help="username on cortex server", default="admin")
-    parser.add_option("--pass",       dest="password", help="password on cortex server", default="secret")
+    parser.add_option("--api",        dest="api",      help="endpoint for the API",      default=None)
+    parser.add_option("--user",       dest="username", help="username on cortex server", default=None)
+    parser.add_option("--pass",       dest="password", help="password on cortex server", default=None)
 
 
     parser.add_option("--quiet",      dest="verbose",  help="don't print status messages to stdout", action="store_false", default=True)
     parser.add_option("--force",      dest="force",    help="bypass change management and update everything", action="store_true", default=False)
     parser.add_option("--debug",      dest="debug",    help="display debug information", action="store_true", default=False)    
     parser.add_option("--version",    dest="version",  help="display version information", action="store_true", default=False)
-    
+
     (globals.options, args) = parser.parse_args()
+
+    # Read options from configuration file if it exists
+    config = Config()
+    if(config.config):
+        if(not globals.options.api):
+            globals.options.api = config.config["client"]["api"]
+            if(not globals.options.api):
+                globals.options.api = "http://localhost:8000/api"
+    
+        if(not globals.options.username):
+            globals.options.username = config.config["client"]["username"]
+            if(not globals.options.username):
+                globals.options.username = "admin"
+    
+        if(not globals.options.password):
+            globals.options.password = config.config["client"]["password"]
+            if(not globals.options.password):
+                globals.options.password = "secret"
 
     if globals.options.version:
         print "Cortex command line client, version " + VERSION + ", released on " + RELEASE + "."
@@ -135,5 +148,4 @@ Resources:
 
 Services:
     provisioner         Provision virtual machines based on a host definition
-    cms                 Configuration manager
 ''' 
