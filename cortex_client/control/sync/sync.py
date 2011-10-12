@@ -7,13 +7,15 @@
 # This software cannot be used and/or distributed without prior
 # authorization from Guardis.
 
-import os, json, urlparse, shutil
+import os, json, shutil
 
-from cortex_client.util import globals, path, fileupload
+from cortex_client.util import globals, path
 from cortex_client.control.abstract import AbstractController
 from cortex_client.control.exceptions import MissingException
 from cortex_client.control.exceptions import ControllerException
 from cortex_client.rest.client import Client
+from cortex_client.rest.exceptions import ApiException
+from actions import *
 
 class SyncException(ControllerException):
     def __init__(self, msg):
@@ -63,10 +65,25 @@ class SyncController(AbstractController):
 
         self._readRemoteEntities()
 
+        self._actions = ActionsQueue()
         self._pushApplications()
         self._pushDistributions()
         self._pushPlatforms()
         self._pushOrganizations()
+
+        if(self._actions.isFastForward() or self._options.force):
+            uuid_convert = UuidConversionTable()
+            self._actions.executeActions(uuid_convert)
+        else:
+            print "Push not fast-forward:"
+            self._actions.display()
+
+    def _readDefinitionFile(self, file_name):
+        if(not os.path.exists(file_name)):
+            raise SyncException("Definition file "+file_name+" not found")
+    
+        with open(file_name, 'r') as f:
+            return json.load(f)
 
     def _readRemoteEntities(self):
         file_list = self._client.read("files")
@@ -143,19 +160,6 @@ Actions:
         with open(os.path.join(output_folder, "definition.json"), 'w') as f:
             f.write(json.dumps(file_meta, sort_keys=True, indent=4))
 
-    def _upload_template(self, file_name):
-        with open(file_name, 'r') as f:
-            url = urlparse.urlparse(self._options.api + "/files")
-            response = fileupload.post_multipart(url.netloc, url.path, [("test", "none")], [("file", file_name, f.read())], {"Authorization": "Basic " + (self._options.username + ":" + self._options.password).encode("base64").rstrip()})
-
-        result = json.loads(response);
-        return result[0]
-    
-    def _update_template(self, uuid, file_name):
-        with open(file_name, 'r') as f:
-            url = urlparse.urlparse(self._options.api + "/files/" + uuid)
-            fileupload.post_multipart(url.netloc, url.path, [("test", "none")], [("file", file_name, f.read())], {"Authorization": "Basic " + (self._options.username + ":" + self._options.password).encode("base64").rstrip()})
-
     def _pushTemplate(self, root_folder, template_subfolder):
         src_folder = os.path.join(root_folder, template_subfolder)
         if(not os.path.exists(src_folder)):
@@ -165,18 +169,9 @@ Actions:
 
         local_uuid = template_meta["uuid"]
         if(self._remote_files.has_key(local_uuid)):
-            if(self._options.force):
-                self._update_template(local_uuid, os.path.join(src_folder, template_meta["name"]))
-                self._client.update("files/" + local_uuid + "/_meta", template_meta)
-                return local_uuid
-            else:
-                raise SyncException("Template with UUID "+local_uuid+" already exists, force to update.")
+            self._actions.addAction(UpdateTemplateAction(False, self._client, src_folder, template_meta))
         else:
-            new_uuid = self._upload_template(os.path.join(src_folder, template_meta["name"]))
-
-            template_meta["uuid"] = new_uuid
-            self._client.update("files/" + new_uuid + "/_meta", template_meta)
-            return new_uuid
+            self._actions.addAction(CreateTemplateAction(True, self._client, src_folder, template_meta))
 
     def _pushApplications(self):
         if(not os.path.exists(self._root + "/applications")):
@@ -207,24 +202,16 @@ Actions:
             remote_res = available_resources[res_name]
             remote_uuid = remote_res["uuid"]
             if(remote_uuid == local_uuid):
-                if(self._options.force):
-                    return self._client.update(res_type + "/" + local_uuid, local_res)["uuid"]
-                else:
-                    raise SyncException("Remote resource "+res_name+
-                                        " ("+res_type+") already exists and has"+
-                                        " same UUID, force to update.")
+                self._actions.addAction(UpdateResource(False, self._client,
+                                                       res_type, local_res))
             else:
-                if(self._options.force):
-                    new_name = self._getUniqueName(res_name, available_resources)
-                    local_res["name"] = new_name
-                    return self._client.create(res_type, local_res)["uuid"]
-                else:
-                    raise SyncException("Remote resource "+res_name+
-                                        " ("+res_type+") already exists but has"+
-                                        " not the same UUID, force to create a new"+
-                                        " resource.")
+                new_name = self._getUniqueName(res_name, available_resources)
+                local_res["name"] = new_name
+                self._actions.addAction(CreateResource(False, self._client,
+                                                       res_type, local_res))
         else:
-            return self._client.create(res_type, local_res)["uuid"]
+            self._actions.addAction(CreateResource(True, self._client,
+                                                       res_type, local_res))
 
     def _pushApplication(self, app_folder):
         def_file = os.path.join(app_folder, "definition.json")
@@ -234,13 +221,10 @@ Actions:
         app_files = app_def["files"]
         for app_file in app_files:
             template_uuid = app_file["template"]
-            new_uuid = self._pushTemplate(app_folder, template_uuid)
-            app_file["template"] = new_uuid
+            self._pushTemplate(app_folder, template_uuid)
 
         # Define new application
-        old_uuid = app_def["uuid"]
-        new_uuid = self._pushResource("applications", app_def, self._remote_applications)
-        self._new_from_old_app[old_uuid] = new_uuid
+        self._pushResource("applications", app_def, self._remote_applications)
 
     def _dumpApplications(self):
         result = self._client.read('applications')
@@ -271,13 +255,10 @@ Actions:
         dist_def = self._readDefinitionFile(def_file)
 
         # Upload kickstart
-        new_uuid = self._pushTemplate(dist_folder, "kickstart")
-        dist_def["kickstart"] = new_uuid
+        self._pushTemplate(dist_folder, "kickstart")
 
         # Define new distribution
-        old_uuid = dist_def["uuid"]
-        new_uuid = self._pushResource("distributions", dist_def, self._remote_distributions)
-        self._new_from_old_dist[old_uuid] = new_uuid
+        self._pushResource("distributions", dist_def, self._remote_distributions)
 
     def _dumpDistributions(self):
         result = self._client.read('distributions')
@@ -322,51 +303,47 @@ Actions:
         org_def = self._readDefinitionFile(def_file)
 
         # Create organization
-        new_uuid = self._pushResource("organizations", org_def, self._remote_organizations)
+        self._pushResource("organizations", org_def, self._remote_organizations)
 
         # Get environments
-        env_list = self._client.read("environments", {"organizationId" : new_uuid})
         available_environments = {}
-        if(env_list["count"] != "0"):
-            for env in env_list["items"]:
-                available_environments[env["name"]] = env
+        if(org_def.has_key("uuid")):
+            try:
+                env_list = self._client.read("environments",
+                                             {"organizationId" : org_def["uuid"]})
+                if(env_list["count"] != "0"):
+                    for env in env_list["items"]:
+                        available_environments[env["name"]] = env
+            except ApiException, e:
+                if(e.code == 404):
+                    pass
+                else:
+                    raise e
 
         # Create environments
         envs_list = os.listdir(org_folder)
         for env in envs_list:
             if(os.path.isdir(os.path.join(org_folder, env))):
-                self._pushEnvironment(org_folder, env, new_uuid, available_environments)
+                self._pushEnvironment(org_folder, env, available_environments)
 
-    def _pushEnvironment(self, org_folder, env_name, org_uuid, available_environments):
+    def _pushEnvironment(self, org_folder, env_name, available_environments):
         env_folder = os.path.join(org_folder, env_name)
         def_file = os.path.join(env_folder, "definition.json")
         env_def = self._readDefinitionFile(def_file)
 
-        env_def["organization"] = org_uuid
-        env_uuid = self._pushResource("environments", env_def, available_environments)
-        self._pushHosts(env_folder, env_uuid, org_uuid)
+        self._pushResource("environments", env_def, available_environments)
+        self._pushHosts(env_folder)
 
-    def _pushHosts(self, env_folder, env_uuid, org_uuid):
+    def _pushHosts(self, env_folder):
         hosts_list = os.listdir(env_folder)
         for host in hosts_list:
             if(os.path.isdir(os.path.join(env_folder, host))):
-                self._pushHost(env_folder, host, env_uuid, org_uuid)
-                
-    def _pushHost(self, env_folder, host, env_uuid, org_uuid):
+                self._pushHost(env_folder, host)
+
+    def _pushHost(self, env_folder, host):
         host_folder = os.path.join(env_folder, host)
         def_file = os.path.join(host_folder, "definition.json")
         host_def = self._readDefinitionFile(def_file)
-
-        # Update host data
-        host_def["environment"] = env_uuid
-        host_def["organization"] = org_uuid
-        host_def["distribution"] = self._new_from_old_dist[host_def["distribution"]]
-        host_def["platform"] = self._new_from_old_plat[host_def["platform"]]
-        if(host_def.has_key("applications")):
-            host_apps = []
-            for old_app_uuid in host_def["applications"]:
-                host_apps.append(self._new_from_old_app[old_app_uuid])
-            host_def["applications"] = host_apps
 
         # Create host
         self._pushResource("hosts", host_def, self._remote_hosts)
@@ -422,13 +399,4 @@ Actions:
         def_file = os.path.join(plat_folder, plat_file_name)
         plat_def = self._readDefinitionFile(def_file)
 
-        old_uuid = plat_def["uuid"]
-        new_uuid = self._pushResource("platforms", plat_def, self._remote_platforms)
-        self._new_from_old_plat[old_uuid] = new_uuid
-
-    def _readDefinitionFile(self, file_name):
-        if(not os.path.exists(file_name)):
-            raise SyncException("Definition file "+file_name+" not found")
-
-        with open(file_name, 'r') as f:
-            return json.load(f)
+        self._pushResource("platforms", plat_def, self._remote_platforms)
