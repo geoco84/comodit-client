@@ -9,10 +9,11 @@
 
 import json
 
-from cortex_client.util import globals
+from cortex_client.util import globals, prompt
 from cortex_client.control.resource import ResourceController
 from cortex_client.control.exceptions import NotFoundException, MissingException
 from cortex_client.rest.client import Client
+from cortex_client.rest.exceptions import ApiException
 
 class HostsController(ResourceController):
 
@@ -106,6 +107,34 @@ class HostsController(ResourceController):
         # Query the server
         client = Client(self._endpoint(), options.username, options.password)
         client.update(self._resource + "/" + uuid + "/" + action, decode=False)
+
+    def _delete(self, argv):
+        options = globals.options
+
+        # Require an object as argument
+        if len(argv) == 0:
+            raise MissingException("You must provide a valid object identifier")
+
+        # Validate input parameters
+        if options.uuid:
+            uuid = argv[0]
+        else:
+            uuid = self._resolv(argv[0])
+            if not uuid: raise NotFoundException(uuid)
+
+        client = Client(self._endpoint(), options.username, options.password)
+        item = client.read(self._resource + "/" + uuid)
+
+        if (prompt.confirm(prompt="Delete " + item['name'] + " ?", resp=False)) :
+            if(prompt.confirm(prompt="Delete VM also ?", resp=False)):
+                try:
+                    client.update(self._resource + "/" + uuid + "/_delete", decode=False)
+                except ApiException, e:
+                    if(e.code == 400):
+                        print "Could not delete VM:", e.message
+                    else:
+                        raise e
+            client.delete(self._resource + "/" + uuid)
 
     def _start(self, argv):
         self._apply_action("_start", argv)
