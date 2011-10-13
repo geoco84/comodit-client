@@ -33,7 +33,7 @@ class Config(object):
     def _get_config_path(self):
         """ Gets the configuration path with following priority order :
         1) <current_directory>/conf/cortex-client.conf
-        2) ~/.cortex-client.conf
+        2) ~/.cortexrc
         3) /etc/cortex/cortex-client.conf
 
         elsewhere : return None
@@ -41,7 +41,7 @@ class Config(object):
         config_name = "cortex-client.conf"
 
         curdir_path = os.curdir + "/conf/" + config_name
-        user_path = os.path.expanduser("~") + "/." + config_name
+        user_path = os.path.expanduser("~") + "/.cortexrc"
         etc_path = "/etc/cortex/" + config_name
 
         for loc in curdir_path, user_path, etc_path:
