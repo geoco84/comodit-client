@@ -62,10 +62,6 @@ def _parse(argv):
     parser.add_option("--env-path",   dest="env_path", help="Path to the parent environment")
     parser.add_option("--env-uuid",   dest="env_uuid", help="UUID of the parent environment")
 
-    parser.add_option("--host",        dest="host",      help="Path or UUID of the parent host (conditioned by --with-uuid)")
-    parser.add_option("--host-path",   dest="host_path", help="Path to the parent host")
-    parser.add_option("--host-uuid",   dest="host_uuid", help="UUID of the parent host")
-
     parser.add_option("--api",        dest="api",      help="endpoint for the API",      default=None)
     parser.add_option("--user",       dest="username", help="username on cortex server", default=None)
     parser.add_option("--pass",       dest="password", help="password on cortex server", default=None)
