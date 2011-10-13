@@ -46,7 +46,7 @@ def run(argv):
 
 def _parse(argv):
             
-    usage = "usage: %prog resource [command] [options]"
+    usage = "usage: %prog (resource|service) [command] [options]"
     parser = optparse.OptionParser(usage)
 
     parser.add_option("-f", "--file", dest="filename", help="input file with a JSON object")
