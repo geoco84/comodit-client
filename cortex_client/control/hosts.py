@@ -126,19 +126,23 @@ class HostsController(ResourceController):
         print '''You must provide an action to perfom on this resource.
 
 Actions:
-    list --env [id]    List all hosts within an environment
-    show [id]          Show the details of a host
-    state [id]         Show the state of a host
+    list [--env <id> | --env-path <path> | --env-uuid <uuid>]
+                       List all hosts, optionally within an environment
+    show <id>          Show the details of a host
+    state <id>         Show the state of a host
     add                Add an host
-    update [id]        Update a host
-    delete [id]        Delete a host
-    start [id]         Start a host
-    pause [id]         Pause a host
-    resume [id]        Resume a host's execution
-    shutdown [id]      Shutdown a host
-    poweroff [id]      Power-off a host
+    update <id>        Update a host
+    delete <id>        Delete a host
+    start <id>         Start a host
+    pause <id>         Pause a host
+    resume <id>        Resume a host's execution
+    shutdown <id>      Shutdown a host
+    poweroff <id>      Power-off a host
 
-[id] may either be a UUID (--with-uuid option must be provided) or a host
-identifier given as <organization name>/<environment name>/<host name>.
+A path may uniquely define an environment or a host. The path to a particular
+environment is as follows: <organization name>/<environment name>. The path
+to a particular host is as follows: <organization name>/<environment name>/
+<host name>.
 
+<id> may either be a UUID (--with-uuid option must be provided) or a path.
 '''

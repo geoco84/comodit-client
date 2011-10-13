@@ -137,8 +137,10 @@ def print_resources():
     print '''
 Resources:
     platforms           Underlying infrastructure platforms
-    applications        Recipes to provision and configure applications on a host
-    distributions       Recipes to provision and configure distributions on a host
+    applications        Recipes to provision and configure applications on a
+                        host
+    distributions       Recipes to provision and configure distributions on a
+                        host
     parameters          Describe parameters used in recipes
     files               Files used in recipes
     users               User accounts
