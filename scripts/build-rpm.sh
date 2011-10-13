@@ -5,7 +5,7 @@ RELEASE=`git describe --long --match "release*" | awk -F"-" '{print $3}'`
 COMMIT=`git describe --long --match "release*" | awk -F"-" '{print $4}'`
 
 NAME=cortex-client
-TAR_CONTENT="cortex_client conf setup.py cortex-client"
+TAR_CONTENT="cortex_client templates conf setup.py cortex-client"
 
 cd `dirname $0`
 cd ..

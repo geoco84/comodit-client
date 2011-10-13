@@ -69,7 +69,7 @@ def _parse(argv):
     parser.add_option("--api",        dest="api",      help="endpoint for the API",      default=None)
     parser.add_option("--user",       dest="username", help="username on cortex server", default=None)
     parser.add_option("--pass",       dest="password", help="password on cortex server", default=None)
-
+    parser.add_option("--templates",  dest="templates_path", help="directory containing JSON templates", default=None)
 
     parser.add_option("--quiet",      dest="verbose",  help="don't print status messages to stdout", action="store_false", default=True)
     parser.add_option("--force",      dest="force",    help="bypass change management and update everything", action="store_true", default=False)
@@ -95,6 +95,12 @@ def _parse(argv):
             globals.options.password = config.config["client"]["password"]
             if(not globals.options.password):
                 globals.options.password = "secret"
+
+    # Set templates directory
+    if(not globals.options.templates_path):
+        globals.options.templates_path = config.templates_path
+        if(not globals.options.templates_path):
+                globals.options.templates_path = "templates/"
 
     if globals.options.version:
         print "Cortex command line client, version " + VERSION + ", released on " + RELEASE + "."

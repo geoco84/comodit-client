@@ -30,6 +30,11 @@ class Config(object):
         if not self.config:
             raise IOError("Bad configuration file")
 
+        # set templates directory
+        self.templates_path = self._get_templates_path()
+        if not self.templates_path:
+            raise IOError("No templates directory found")
+
     def _get_config_path(self):
         """ Gets the configuration path with following priority order :
         1) <current_directory>/conf/cortex-client.conf
@@ -46,6 +51,17 @@ class Config(object):
 
         for loc in curdir_path, user_path, etc_path:
             if os.path.isfile(loc):
+                return loc
+
+        return None
+
+    def _get_templates_path(self):
+        curdir_path = os.curdir + "/templates"
+        user_path = os.path.expanduser("~") + "/.cortex/templates"
+        etc_path = "/etc/cortex/client/templates/"
+
+        for loc in curdir_path, user_path, etc_path:
+            if os.path.isdir(loc):
                 return loc
 
         return None

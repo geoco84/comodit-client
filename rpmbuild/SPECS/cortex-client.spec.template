@@ -33,12 +33,13 @@ Requires: python(abi) >= 2.6
 
 %install
 %{__rm} -rf %{buildroot}
-%{__mkdir} -p %{buildroot}/etc/cortex/
+%{__mkdir} -p %{buildroot}/etc/cortex/client/templates/
 
 %{__python} setup.py install -O1 --skip-build --root %{buildroot}
 
 %{__cp} cortex-client %{buildroot}/usr/bin/cortex-client
 %{__cp} conf/cortex-client.conf %{buildroot}/etc/cortex/
+%{__cp} templates/*.json %{buildroot}/etc/cortex/client/templates/
 
 # Remove egg info
 %{__rm} -rf %{buildroot}/%{python_sitelib}/%{main_package}*.egg-info
@@ -48,7 +49,8 @@ Requires: python(abi) >= 2.6
 
 %files
 /usr/bin/cortex-client
-/etc/cortex/cortex-client.conf
+%config(noreplace)/etc/cortex/cortex-client.conf
+/etc/cortex/client/templates/*.json
 %{python_sitelib}/%{main_package}
 
 %changelog
