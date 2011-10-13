@@ -31,7 +31,7 @@ import control.router
 from config import Config
 
 def run(argv):
-    control.router.register(["user"], UsersController())
+    control.router.register(["users"], UsersController())
     control.router.register(["pf",  "platforms"], PlatformsController())
     control.router.register(["app",  "applications"], ApplicationsController())
     control.router.register(["dist", "distributions"], DistributionsController())
