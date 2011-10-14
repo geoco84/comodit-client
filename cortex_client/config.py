@@ -12,6 +12,9 @@ def singleton(cls):
         return instances[cls]
     return getinstance
 
+class ConfigException(Exception):
+    def __init__(self, message):
+        self.msg = message
 
 @singleton
 class Config(object):
@@ -33,13 +36,24 @@ class Config(object):
         else:
             # load the configuration file
             self.config = self._get_config_dict(config_path)
-            if not self.config:
-                raise IOError("Bad configuration file")
+            self._check_config()
 
         # set templates directory
         self.templates_path = self._get_templates_path()
         if not self.templates_path:
             raise IOError("No templates directory found")
+
+    def _check_config(self):
+        if(not self.config):
+            raise ConfigException("Unable to parse config file")
+
+        if(not self.config.has_key("client")):
+            raise ConfigException("No client section defined in config file")
+
+        config_fields = ["api", "username", "password"]
+        for field in config_fields:
+            if(not self.config["client"].has_key(field)):
+                raise ConfigException("Field "+field+" is not defined in config file")
 
     def _get_config_path(self):
         """ Gets the configuration path with following priority order :

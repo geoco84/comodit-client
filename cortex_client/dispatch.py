@@ -28,7 +28,7 @@ import optparse
 import traceback
 import sys
 import control.router
-from config import Config
+from config import Config, ConfigException
 
 def run(argv):
     control.router.register(["users"], UsersController())
@@ -45,9 +45,16 @@ def run(argv):
     _parse(argv)
 
 def _parse(argv):
-            
+
     usage = "usage: %prog (resource|service) [command] [options]"
     parser = optparse.OptionParser(usage)
+
+    try:
+        config=Config()
+    except ConfigException, e:
+        print "Configuration error:"
+        print e.msg
+        exit(-1)
 
     parser.add_option("-f", "--file", dest="filename", help="input file with a JSON object")
     parser.add_option("-j", "--json", dest="json",     help="input JSON object via command line")
@@ -62,10 +69,10 @@ def _parse(argv):
     parser.add_option("--env-path",   dest="env_path", help="Path to the parent environment")
     parser.add_option("--env-uuid",   dest="env_uuid", help="UUID of the parent environment")
 
-    parser.add_option("--api",        dest="api",      help="endpoint for the API",      default=Config().config["client"]["api"])
-    parser.add_option("--user",       dest="username", help="username on cortex server", default=Config().config["client"]["username"])
-    parser.add_option("--pass",       dest="password", help="password on cortex server", default=Config().config["client"]["password"])
-    parser.add_option("--templates",  dest="templates_path", help="directory containing JSON templates", default=Config().templates_path)
+    parser.add_option("--api",        dest="api",      help="endpoint for the API",      default=config.config["client"]["api"])
+    parser.add_option("--user",       dest="username", help="username on cortex server", default=config.config["client"]["username"])
+    parser.add_option("--pass",       dest="password", help="password on cortex server", default=config.config["client"]["password"])
+    parser.add_option("--templates",  dest="templates_path", help="directory containing JSON templates", default=config.templates_path)
 
     parser.add_option("--quiet",      dest="verbose",  help="don't print status messages to stdout", action="store_false", default=True)
     parser.add_option("--force",      dest="force",    help="bypass change management and update everything", action="store_true", default=False)
