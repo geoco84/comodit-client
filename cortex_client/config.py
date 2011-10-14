@@ -44,16 +44,16 @@ class Config(object):
             raise IOError("No templates directory found")
 
     def _check_config(self):
-        if(not self.config):
+        if(self.config is None):
             raise ConfigException("Unable to parse config file")
 
         if(not self.config.has_key("client")):
-            raise ConfigException("No client section defined in config file")
+            self.config["client"]= {}
 
         config_fields = ["api", "username", "password"]
         for field in config_fields:
             if(not self.config["client"].has_key(field)):
-                raise ConfigException("Field "+field+" is not defined in config file")
+                self.config["client"][field] = self._default_config["client"][field]
 
     def _get_config_path(self):
         """ Gets the configuration path with following priority order :
