@@ -17,18 +17,24 @@ def singleton(cls):
 class Config(object):
     _instance = None
 
+    _default_config = {
+        "client": {
+            "api": "http://localhost:8000/api",
+            "username": "admin",
+            "password": "secret"
+            }
+        }
+
     def __init__(self):
-        self.config = None
-
         # load the configuration file path
-        self.config_path = self._get_config_path()
-        if not self.config_path:
-            return
-
-        # load the configuration file
-        self.config = self._get_config_dict(self.config_path)
-        if not self.config:
-            raise IOError("Bad configuration file")
+        config_path = self._get_config_path()
+        if not config_path:
+            self.config = self._default_config
+        else:
+            # load the configuration file
+            self.config = self._get_config_dict(config_path)
+            if not self.config:
+                raise IOError("Bad configuration file")
 
         # set templates directory
         self.templates_path = self._get_templates_path()

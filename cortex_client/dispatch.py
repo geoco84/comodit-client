@@ -62,10 +62,10 @@ def _parse(argv):
     parser.add_option("--env-path",   dest="env_path", help="Path to the parent environment")
     parser.add_option("--env-uuid",   dest="env_uuid", help="UUID of the parent environment")
 
-    parser.add_option("--api",        dest="api",      help="endpoint for the API",      default=None)
-    parser.add_option("--user",       dest="username", help="username on cortex server", default=None)
-    parser.add_option("--pass",       dest="password", help="password on cortex server", default=None)
-    parser.add_option("--templates",  dest="templates_path", help="directory containing JSON templates", default=None)
+    parser.add_option("--api",        dest="api",      help="endpoint for the API",      default=Config().config["client"]["api"])
+    parser.add_option("--user",       dest="username", help="username on cortex server", default=Config().config["client"]["username"])
+    parser.add_option("--pass",       dest="password", help="password on cortex server", default=Config().config["client"]["password"])
+    parser.add_option("--templates",  dest="templates_path", help="directory containing JSON templates", default=Config().templates_path)
 
     parser.add_option("--quiet",      dest="verbose",  help="don't print status messages to stdout", action="store_false", default=True)
     parser.add_option("--force",      dest="force",    help="bypass change management and update everything", action="store_true", default=False)
@@ -73,30 +73,6 @@ def _parse(argv):
     parser.add_option("--version",    dest="version",  help="display version information", action="store_true", default=False)
 
     (globals.options, args) = parser.parse_args()
-
-    # Read options from configuration file if it exists
-    config = Config()
-    if(config.config):
-        if(not globals.options.api):
-            globals.options.api = config.config["client"]["api"]
-            if(not globals.options.api):
-                globals.options.api = "http://localhost:8000/api"
-    
-        if(not globals.options.username):
-            globals.options.username = config.config["client"]["username"]
-            if(not globals.options.username):
-                globals.options.username = "admin"
-    
-        if(not globals.options.password):
-            globals.options.password = config.config["client"]["password"]
-            if(not globals.options.password):
-                globals.options.password = "secret"
-
-    # Set templates directory
-    if(not globals.options.templates_path):
-        globals.options.templates_path = config.templates_path
-        if(not globals.options.templates_path):
-                globals.options.templates_path = "templates/"
 
     if globals.options.version:
         print "Cortex command line client, version " + VERSION + ", released on " + RELEASE + "."
