@@ -3,6 +3,7 @@ import json
 from api_config import ApiConfig
 from cortex_client.api.resource import Resource
 from cortex_client.rest.exceptions import ApiException
+from environment_collection import EnvironmentCollection
 
 class Setting(object):
     def __init__(self, json_data = None):
@@ -43,6 +44,7 @@ class Host(Resource):
     def __init__(self, json_data = None):
         from cortex_client.api.host_collection import HostCollection
         super(Host, self).__init__(HostCollection(), json_data)
+        self._env_collection = EnvironmentCollection()
 
     def get_organization(self):
         return self._get_field("organization")
@@ -74,6 +76,7 @@ class Host(Resource):
         if(json_settings):
             for s in json_settings:
                 settings.append(Setting(s))
+        return settings
 
     def set_settings(self, settings):
         json_settings = []
@@ -98,22 +101,26 @@ class Host(Resource):
         return HostInfo(result)
 
     def get_identifier(self):
-        return "<org>" + "/" + "<env>" + "/" + self.get_name()
+        env_uuid = self.get_environment()
+        env = self._env_collection.get_resource(env_uuid)
+        return env.get_identifier() + "/" + self.get_name()
 
     def _show(self, as_json = False, indent = 0):
-        print " "*indent, "UUID:", self._json_data["uuid"]
-        print " "*indent, "Name:", self._json_data["name"]
-        print " "*indent, "Description:", self._json_data["description"]
-        print " "*indent, "Organization:", self._json_data["organization"]
-        print " "*indent, "Environment:", self._json_data["environment"]
-        print " "*indent, "Platform:", self._json_data["platform"]
-        print " "*indent, "Distribution:", self._json_data["distribution"]
+        print " "*indent, "UUID:", self.get_uuid()
+        print " "*indent, "Name:", self.get_name()
+        print " "*indent, "Description:", self.get_description()
+        print " "*indent, "Organization:", self.get_organization()
+        print " "*indent, "Environment:", self.get_environment()
+        print " "*indent, "Platform:", self.get_platform()
+        print " "*indent, "Distribution:", self.get_distribution()
         print " "*indent, "Settings:"
-        if(not self._json_data.has_key("settings") or len(self._json_data["settings"]) == 0):
-            print " "*(indent + 2), "None"
+        settings = self.get_settings()
+        if(settings):
+            for s in self.get_settings():
+                s.show(indent=(indent + 2))
+                print
         else:
-            for s in self._json_data["settings"]:
-                Setting.show_json(s, indent + 2)
+            print " "*(indent + 2), "None"
 
     def start(self):
         result = ApiConfig.get_client().update("hosts/"+self.get_uuid()+"/_start", decode=False)
