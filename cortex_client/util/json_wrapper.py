@@ -1,5 +1,9 @@
 import json
 
+class StringFactory(object):
+    def new_object(self, json_data):
+        return json_data
+
 class JsonWrapper(object):
     def __init__(self, json_data = None):
         if(json_data):
@@ -15,6 +19,20 @@ class JsonWrapper(object):
 
     def _set_field(self, field, value):
         self.__json_data[field] = value
+
+    def _get_list_field(self, field, factory):
+        object_list = []
+        if(self.__json_data.has_key(field)):
+            json_list = self.__json_data[field]
+            for j in json_list:
+                object_list.append(factory.new_object(j))
+        return object_list
+
+    def _set_list_field(self, field, object_list):
+        json_list = []
+        for o in object_list:
+            object_list.append(o.get_json())
+        self.__json_data[field] = json_list
 
     def set_json(self, json_data):
         self.__json_data = json_data

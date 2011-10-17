@@ -1,4 +1,4 @@
-from cortex_client.util.json_wrapper import JsonWrapper
+from cortex_client.util.json_wrapper import JsonWrapper, StringFactory
 from resource import Resource
 
 class ApplicationResource(JsonWrapper):
@@ -19,6 +19,11 @@ class Package(ApplicationResource):
     pass
 
 
+class PackageFactory(object):
+    def new_object(self, json_data):
+        return Package(json_data)
+
+
 class Service(ApplicationResource):
     def get_running(self):
         return self._get_field("running")
@@ -30,6 +35,11 @@ class Service(ApplicationResource):
         print " "*indent, self.get_name()+":"
         print " "*(indent+2), "enabled:", self.get_enabled()
         print " "*(indent+2), "running", self.get_running()
+
+
+class ServiceFactory(object):
+    def new_object(self, json_data):
+        return Service(json_data)
 
 
 class File(ApplicationResource):
@@ -57,6 +67,11 @@ class File(ApplicationResource):
         print " "*(indent+2), "template:", self.get_template_uuid()
 
 
+class FileFactory(object):
+    def new_object(self, json_data):
+        return File(json_data)
+
+
 class Action(JsonWrapper):
     def __init__(self, json_data):
         super(Action, self).__init__(json_data)
@@ -68,49 +83,44 @@ class Action(JsonWrapper):
         return self._get_field("resource")
 
     def show(self, indent = 0):
-        print self.get_type(), self.get_resource()
+        print " "*indent, self.get_type(), self.get_resource()
+
+
+class ActionFactory(object):
+    def new_object(self, json_data):
+        return Action(json_data)
+
 
 class Handler(JsonWrapper):
     def __init__(self, json_data):
         super(Handler, self).__init__(json_data)
 
     def get_actions(self):
-        actions_json = self._get_field("do")
-        actions = []
-        if(actions_json):
-            for a in actions_json:
-                actions.append(Action(a))
-        return actions
+        return self._get_list_field("do", ActionFactory())
 
     def set_actions(self, actions):
-        json_actions = []
-        for a in actions:
-            json_actions.append(a.get_json())
-        self._set_field("do", json_actions)
+        self._set_list_field("do", actions)
 
     def get_triggers(self):
-        actions_json = self._get_field("on")
-        actions = []
-        if(actions_json):
-            for a in actions_json:
-                actions.append(a)
-        return actions
+        return self._get_list_field("on", StringFactory())
 
     def set_triggers(self, triggers):
-        json_triggers = []
-        for t in triggers:
-            json_triggers.append(t)
-        self._set_field("on", json_triggers)
+        self._set_list_field("on", triggers)
 
     def show(self, indent = 0):
-        print "Actions:"
+        print " "*indent, "Actions:"
         actions = self.get_actions()
         for a in actions:
             a.show(indent + 2)
-        print "Triggers:"
+        print " "*indent, "Triggers:"
         triggers = self.get_triggers()
         for t in triggers:
             print " "*(indent + 2), t
+
+
+class HandlerFactory(object):
+    def new_object(self, json_data):
+        return Handler(json_data)
 
 
 class Application(Resource):
@@ -119,60 +129,28 @@ class Application(Resource):
         super(Application, self).__init__(ApplicationCollection(), json_data)
 
     def get_packages(self):
-        packages = []
-        json_packages = self._get_field("packages")
-        if(json_packages):
-            for s in json_packages:
-                packages.append(Package(s))
-        return packages
+        return self._get_list_field("packages", PackageFactory())
 
     def set_packages(self, packages):
-        json_packages = []
-        for p in packages:
-            json_packages.append(p.get_json())
-        self._set_field("packages", json_packages)
+        self._set_list_field("packages", packages)
 
     def get_services(self):
-        packages = []
-        json_packages = self._get_field("services")
-        if(json_packages):
-            for s in json_packages:
-                packages.append(Service(s))
-        return packages
+        return self._get_list_field("services", ServiceFactory())
 
     def set_services(self, services):
-        json_packages = []
-        for p in services:
-            json_packages.append(p.get_json())
-        self._set_field("services", json_packages)
+        self._set_list_field("services", services)
 
     def get_files(self):
-        packages = []
-        json_packages = self._get_field("files")
-        if(json_packages):
-            for s in json_packages:
-                packages.append(File(s))
-        return packages
+        return self._get_list_field("files", FileFactory())
 
-    def set_files(self, services):
-        json_packages = []
-        for p in services:
-            json_packages.append(p.get_json())
-        self._set_field("files", json_packages)
+    def set_files(self, files):
+        self._set_list_field("files", files)
 
     def get_handlers(self):
-        packages = []
-        json_packages = self._get_field("handlers")
-        if(json_packages):
-            for s in json_packages:
-                packages.append(Handler(s))
-        return packages
+        return self._get_list_field("handlers", HandlerFactory())
 
-    def set_handlers(self, services):
-        json_packages = []
-        for p in services:
-            json_packages.append(p.get_json())
-        self._set_field("handlers", json_packages)
+    def set_handlers(self, handlers):
+        self._set_list_field("handlers", handlers)
 
     def _show(self, indent = 0):
         print " "*indent, "UUID:", self.get_uuid()
