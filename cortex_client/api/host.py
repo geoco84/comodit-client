@@ -1,44 +1,42 @@
-import json
-
 from api_config import ApiConfig
 from cortex_client.api.resource import Resource
 from cortex_client.rest.exceptions import ApiException
+from cortex_client.util.json_wrapper import JsonWrapper
 from environment_collection import EnvironmentCollection
 
-class Setting(object):
+class Setting(JsonWrapper):
     def __init__(self, json_data = None):
-        if(json_data):
-            self._json_data = json_data
-        else:
-            self._json_data = {}
+        super(Setting, self).__init__(json_data)
 
-    @classmethod
-    def show_json(cls, json_data, indent = 0):
-        print " "*indent, "Value:", json_data["value"]
-        print " "*indent, "Key:", json_data["key"]
-        print " "*indent, "Version:", json_data["version"]
+    def get_value(self):
+        return self._get_field("value")
 
-    def show(self, as_json = False, indent = 0):
-        if(as_json):
-            print json.dumps(self._json_data, indent = 4)
-        else:
-            self.show_json(self._json_data, indent)
+    def get_key(self):
+        return self._get_field("key")
 
-class HostInfo(object):
+    def get_version(self):
+        return self._get_field("version")
+
+    def show(self, indent = 0):
+        print " "*indent, "Value:", self.get_value()
+        print " "*indent, "Key:", self.get_key()
+        print " "*indent, "Version:", self.get_version()
+
+
+class SettingFactory(object):
+    def new_object(self, json_data):
+        return Setting(json_data)
+
+
+class HostInfo(JsonWrapper):
     def __init__(self, json_data = None):
-        if(json_data):
-            self._json_data = json_data
-        else:
-            self._json_data = {}
+        super(Setting, self).__init__(json_data)
 
     def get_state(self):
-        return self._json_data["state"]
+        return self._get_field("state")
 
-    def show(self, indent = 0, as_json = False):
-        if(as_json):
-            print json.dumps(self._json_data, indent = 4)
-        else:
-            print " "*indent, self._json_data["state"]
+    def show(self, indent = 0):
+        print " "*indent, self.get_state()
 
 class Host(Resource):
     def __init__(self, json_data = None):
@@ -71,18 +69,10 @@ class Host(Resource):
         self._set_field("distribution", distribution)
 
     def get_settings(self):
-        settings = []
-        json_settings = self._get_field("settings")
-        if(json_settings):
-            for s in json_settings:
-                settings.append(Setting(s))
-        return settings
+        return self._get_list_field("settings", SettingFactory())
 
     def set_settings(self, settings):
-        json_settings = []
-        for s in settings:
-            json_settings.append(s.get_json())
-        self._set_field("settings", json_settings)
+        self._set_list_field("settings", settings)
 
     def delete(self, delete_vm = False):
         if(delete_vm):
@@ -105,7 +95,7 @@ class Host(Resource):
         env = self._env_collection.get_resource(env_uuid)
         return env.get_identifier() + "/" + self.get_name()
 
-    def _show(self, as_json = False, indent = 0):
+    def _show(self, indent = 0):
         print " "*indent, "UUID:", self.get_uuid()
         print " "*indent, "Name:", self.get_name()
         print " "*indent, "Description:", self.get_description()
@@ -115,12 +105,9 @@ class Host(Resource):
         print " "*indent, "Distribution:", self.get_distribution()
         print " "*indent, "Settings:"
         settings = self.get_settings()
-        if(settings):
-            for s in self.get_settings():
-                s.show(indent=(indent + 2))
-                print
-        else:
-            print " "*(indent + 2), "None"
+        for s in settings:
+            s.show(indent=(indent + 2))
+            print
 
     def start(self):
         result = ApiConfig.get_client().update("hosts/"+self.get_uuid()+"/_start", decode=False)
