@@ -20,6 +20,7 @@ class HostsController(ResourceController):
 
     def __init__(self):
         super(HostsController, self ).__init__()
+        self._collection = HostCollection()
         self._register(["s", "state"], self._state)
         self._register(["start"], self._start)
         self._register(["pause"], self._pause)
@@ -29,7 +30,7 @@ class HostsController(ResourceController):
 
     def _get_resources(self, argv):
         options = globals.options
-        self._parameters = {}
+        parameters = {}
 
         # Validate input parameters
         env_uuid = None
@@ -46,17 +47,10 @@ class HostsController(ResourceController):
             env_uuid = Directory.get_environment_uuid(path)
             if not env_uuid: raise NotFoundException(path)
 
-        return HostCollection.get_hosts(env_uuid)
+        if(env_uuid):
+            parameters["environmentId"] = env_uuid
 
-    def _get_resource(self, argv):
-        if len(argv) == 0:
-            raise MissingException("You must provide a valid host identifier")
-
-        # Validate input parameters
-        if globals.options.uuid:
-            return HostCollection.get_host(argv[0])
-        else:
-            return HostCollection.get_host_from_path(argv[0])
+        return super(HostsController, self)._get_resources(argv, parameters)
 
     def _new_resource(self, json_data):
         return Host(json_data)

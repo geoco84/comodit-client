@@ -12,7 +12,26 @@ class Collection(object):
                                                resource.get_json())
         resource.set_json(result)
 
-    def remove_resource(self, resource):
-        result = ApiConfig.get_client().delete(self._resource_path,
-                                               resource.get_json())
-        resource.set_json(result)
+    def get_resources(self, parameters = {}):
+        result = ApiConfig.get_client().read(self._resource_path, parameters)
+
+        resources_list = []
+        if(result["count"] != "0"):
+            json_list = result["items"]
+            for json_res in json_list:
+                resources_list.append(self._new_resource(json_res))
+
+        return resources_list
+
+    def _new_resource(self, json_data):
+        raise NotImplemented
+
+    def get_resource(self, uuid):
+        result = ApiConfig.get_client().read(self._resource_path + "/"+uuid)
+        return self._new_resource(result)
+
+    def get_resource_from_path(self, path):
+        return self.get_resource(self.get_uuid(path))
+
+    def get_uuid(self, path):
+        raise NotImplemented

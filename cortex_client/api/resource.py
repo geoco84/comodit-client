@@ -1,3 +1,5 @@
+import json
+
 from api_config import ApiConfig
 
 class Resource(object):
@@ -31,6 +33,18 @@ class Resource(object):
     def set_uuid(self, uuid):
         self._set_field("uuid", uuid)
 
+    def get_name(self):
+        return self._get_field("name")
+
+    def set_name(self, name):
+        self._set_field("name", name)
+
+    def get_description(self):
+        return self._get_field("description")
+
+    def set_description(self, description):
+        self._set_field("description", description)
+
     def commit(self, force = False):
         parameters = {}
         if(force):
@@ -44,10 +58,14 @@ class Resource(object):
         self._resource_collection.add_resource(self)
 
     def delete(self):
-        self._resource_collection.remove_resource(self)
+        self._json_data = ApiConfig.get_client().delete(self._resource + "/" +
+                                                        self._json_data["uuid"])
 
-    def show(self, as_json = False, ident = 0):
-        raise NotImplemented
+    def show(self, as_json = False, indent = 0):
+        if(as_json):
+            print json.dumps(self._json_data)
+        else:
+            self._show(indent)
 
     def get_identifier(self):
         raise NotImplemented

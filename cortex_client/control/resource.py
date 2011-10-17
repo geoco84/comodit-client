@@ -13,6 +13,7 @@ from cortex_client.config import Config
 from cortex_client.control.abstract import AbstractController
 from cortex_client.util import globals, prompt
 from cortex_client.util.editor import edit_text
+from cortex_client.control.exceptions import MissingException
 
 
 class ResourceController(AbstractController):
@@ -20,6 +21,7 @@ class ResourceController(AbstractController):
     _resource = ""
     _template = ""
     _parameters = {}
+    _collection = None
 
     def __init__(self):
         super(ResourceController, self).__init__()
@@ -98,3 +100,19 @@ class ResourceController(AbstractController):
 
     def _help(self, argv):
         print "Oops, this piece is missing some documentation"
+
+    def _get_resource(self, argv):
+        if len(argv) == 0:
+            raise MissingException("You must provide a valid host identifier")
+
+        # Validate input parameters
+        if(globals.options.uuid):
+            return self._collection.get_resource(argv[0])
+        else:
+            return self._collection.get_resource_from_path(argv[0])
+
+    def _get_resources(self, argv, parameters = {}):
+        return self._collection.get_resources(parameters)
+
+    def _new_resource(self, json_data):
+        raise NotImplemented
