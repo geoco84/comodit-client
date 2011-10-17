@@ -1,31 +1,13 @@
 import json
 
+from cortex_client.util.json_wrapper import JsonWrapper
 from api_config import ApiConfig
 
-class Resource(object):
+class Resource(JsonWrapper):
     def __init__(self, resource_collection, json_data = None):
+        super(Resource, self).__init__(json_data)
         self._resource = resource_collection.get_path()
         self._resource_collection = resource_collection
-
-        if(json_data):
-            self._json_data = json_data
-        else:
-            self._json_data = {}
-
-    def _get_field(self, field):
-        if(self._json_data.has_key(field)):
-            return self._json_data[field]
-        else:
-            return None
-
-    def _set_field(self, field, value):
-        self._json_data[field] = value
-
-    def set_json(self, json_data):
-        self._json_data = json_data
-
-    def get_json(self):
-        return self._json_data
 
     def get_uuid(self):
         return self._get_field("uuid")
@@ -49,23 +31,23 @@ class Resource(object):
         parameters = {}
         if(force):
             parameters["force"] = "true"
-        self._json_data = ApiConfig.get_client().update(self._resource + "/" +
-                                                        self._json_data["uuid"],
-                                                        self._json_data,
-                                                        parameters)
+        self.set_json(ApiConfig.get_client().update(self._resource + "/" +
+                                                    self._json_data["uuid"],
+                                                    self._json_data,
+                                                    parameters))
 
     def create(self):
         self._resource_collection.add_resource(self)
 
     def delete(self):
-        self._json_data = ApiConfig.get_client().delete(self._resource + "/" +
-                                                        self._json_data["uuid"])
+        self.set_json(ApiConfig.get_client().delete(self._resource + "/" +
+                                                    self._json_data["uuid"]))
 
     def show(self, as_json = False, indent = 0):
         if(as_json):
-            print json.dumps(self._json_data)
+            self.print_json()
         else:
             self._show(indent)
 
     def get_identifier(self):
-        raise NotImplemented
+        return self.get_name()
