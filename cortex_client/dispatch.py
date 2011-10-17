@@ -29,6 +29,7 @@ import traceback
 import sys
 import control.router
 from config import Config, ConfigException
+from api.api_config import ApiConfig
 
 def run(argv):
     control.router.register(["users"], UsersController())
@@ -89,6 +90,8 @@ def _parse(argv):
         parser.print_help()
         print_resources()
         exit(-1)
+
+    ApiConfig.init(globals.options.api, globals.options.username, globals.options.password)
 
     _dispatch(args[0], args[1:])
     
