@@ -18,7 +18,7 @@ sed -i "s/#COMMIT#/${COMMIT}/g" rpmbuild/SPECS/${NAME}.spec
 tar -cvzf $HOME/rpmbuild/SOURCES/${NAME}-${VERSION}-${RELEASE}.tar.gz ${TAR_CONTENT}
 rpmbuild -ba rpmbuild/SPECS/${NAME}.spec
 
-for platform in "${platforms[@]}"
+for platform in "${PLATFORMS[@]}"
 do
     mock -r ${platform} --rebuild $HOME/rpmbuild/SRPMS/${NAME}-${VERSION}-${RELEASE}*.src.rpm
 done
