@@ -57,16 +57,16 @@ class ResourceController(AbstractController):
         if options.filename:
             with open(options.filename, 'r') as f:
                 item = json.load(f)
-                res = self._new_resource(item)
+                res = self._collection._new_resource(item)
         elif options.json:
             item = json.loads(options.json)
-            res = self._new_resource(item)
+            res = self._collection._new_resource(item)
         else :
             template = open(os.path.join(Config().templates_path, self._template)).read()
             #template = "# To abort the request; just exit your editor without saving this file.\n\n" + template
             updated = edit_text(template)
             #updated = re.sub(r'#.*$', "", updated)
-            res = self._new_resource(json.loads(updated))
+            res = self._collection._new_resource(json.loads(updated))
 
         res.create()
         res.show(as_json = options.raw)
@@ -113,6 +113,3 @@ class ResourceController(AbstractController):
 
     def _get_resources(self, argv, parameters = {}):
         return self._collection.get_resources(parameters)
-
-    def _new_resource(self, json_data):
-        raise NotImplemented

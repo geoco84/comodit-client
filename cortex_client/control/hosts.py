@@ -9,7 +9,7 @@
 
 from cortex_client.util import globals, prompt
 from cortex_client.control.resource import ResourceController
-from cortex_client.control.exceptions import NotFoundException, MissingException
+from cortex_client.control.exceptions import NotFoundException
 from cortex_client.api.host_collection import HostCollection
 from cortex_client.api.host import Host
 from cortex_client.api.directory import Directory
@@ -51,9 +51,6 @@ class HostsController(ResourceController):
             parameters["environmentId"] = env_uuid
 
         return super(HostsController, self)._get_resources(argv, parameters)
-
-    def _new_resource(self, json_data):
-        return Host(json_data)
 
     def _state(self, argv):
         options = globals.options

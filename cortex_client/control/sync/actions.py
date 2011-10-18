@@ -27,7 +27,7 @@ class Action(object):
         return self._is_fast_forward
 
     def executeAction(self, uuid_conversion_table):
-        raise NotImplemented
+        raise NotImplementedError
 
     def display(self):
         print "Fast-forward:", self._is_fast_forward

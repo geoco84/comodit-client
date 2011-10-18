@@ -129,7 +129,6 @@ Resources:
                         host
     distributions       Recipes to provision and configure distributions on a
                         host
-    parameters          Describe parameters used in recipes
     files               Files used in recipes
     users               User accounts
     organizations       Top-level organization

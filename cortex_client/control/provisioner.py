@@ -65,7 +65,7 @@ class ProvisionerController(AbstractController):
                 print "%-30s: %s" % (setting['key'], setting['value'])
 
     def _interactive(self, item=None):
-        raise NotImplemented
+        raise NotImplementedError
 
     def _endpoint(self):
         options = globals.options

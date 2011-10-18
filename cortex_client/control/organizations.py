@@ -9,7 +9,6 @@
 
 from cortex_client.control.resource import ResourceController
 from cortex_client.api.organization_collection import OrganizationCollection
-from cortex_client.api.organization import Organization
 
 class OrganizationsController(ResourceController):
 
@@ -18,9 +17,6 @@ class OrganizationsController(ResourceController):
     def __init__(self):
         super(OrganizationsController, self ).__init__()
         self._collection = OrganizationCollection()
-
-    def _new_resource(self, json_data):
-        return Organization(json_data)
 
     def _help(self, argv):
         print '''You must provide an action to perfom on this resource.

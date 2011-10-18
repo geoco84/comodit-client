@@ -10,7 +10,6 @@
 from cortex_client.util import globals
 from cortex_client.control.resource import ResourceController
 from cortex_client.control.exceptions import NotFoundException
-from cortex_client.api.environment import Environment
 from cortex_client.api.environment_collection import EnvironmentCollection
 from cortex_client.api.directory import Directory
 
@@ -21,9 +20,6 @@ class EnvironmentsController(ResourceController):
     def __init__(self):
         super(EnvironmentsController, self ).__init__()
         self._collection = EnvironmentCollection()
-
-    def _new_resource(self, json_data):
-        return Environment(json_data)
 
     def _get_resources(self, argv):
         options = globals.options

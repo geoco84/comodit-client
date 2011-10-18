@@ -24,7 +24,7 @@ class Collection(object):
         return resources_list
 
     def _new_resource(self, json_data):
-        raise NotImplemented
+        raise NotImplementedError
 
     def get_resource(self, uuid):
         result = ApiConfig.get_client().read(self._resource_path + "/"+uuid)
@@ -34,4 +34,4 @@ class Collection(object):
         return self.get_resource(self.get_uuid(path))
 
     def get_uuid(self, path):
-        raise NotImplemented
+        raise NotImplementedError

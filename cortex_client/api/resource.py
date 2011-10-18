@@ -1,5 +1,3 @@
-import json
-
 from cortex_client.util.json_wrapper import JsonWrapper
 from api_config import ApiConfig
 
@@ -41,7 +39,7 @@ class Resource(JsonWrapper):
 
     def delete(self):
         self.set_json(ApiConfig.get_client().delete(self._resource + "/" +
-                                                    self._json_data["uuid"]))
+                                                    self.get_uuid()))
 
     def show(self, as_json = False, indent = 0):
         if(as_json):

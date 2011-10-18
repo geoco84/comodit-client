@@ -19,9 +19,6 @@ class ApplicationsController(ResourceController):
         super(ApplicationsController, self ).__init__()
         self._collection = ApplicationCollection()
 
-    def _new_resource(self, json_data):
-        return Application(json_data)
-
     def _help(self, argv):
         print '''You must provide an action to perfom on this resource.
 
