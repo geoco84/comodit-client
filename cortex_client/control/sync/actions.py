@@ -108,9 +108,10 @@ class ResourceAction(Action):
     def _update_meta_data(self, uuid_conversion_table):
         if(self._resource_type == "applications"):
             # Update templates' UUID
-            app_files = self._meta_data["files"]
-            for app_file in app_files:
-                app_file["template"] = uuid_conversion_table.getNewUuid(app_file["template"])
+            if (self._meta_data.has_key("files")):
+                app_files = self._meta_data["files"]
+                for app_file in app_files:
+                    app_file["template"] = uuid_conversion_table.getNewUuid(app_file["template"])
         elif(self._resource_type == "distributions"):
             # Update kickstart UUID
             self._meta_data["kickstart"] = uuid_conversion_table.getNewUuid(self._meta_data["kickstart"])

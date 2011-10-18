@@ -218,10 +218,11 @@ Actions:
         app_def = self._readDefinitionFile(def_file)
 
         # Upload file resources
-        app_files = app_def["files"]
-        for app_file in app_files:
-            template_uuid = app_file["template"]
-            self._pushTemplate(app_folder, template_uuid)
+        if (app_def.has_key("files")):
+            app_files = app_def["files"]
+            for app_file in app_files:
+                template_uuid = app_file["template"]
+                self._pushTemplate(app_folder, template_uuid)
 
         # Define new application
         self._pushResource("applications", app_def, self._remote_applications)
@@ -236,9 +237,10 @@ Actions:
                 app_meta = json.dumps(o, sort_keys=True, indent=4)
                 with open(os.path.join(output_dir, "definition.json"), 'w') as f:
                     f.write(app_meta)
-                for t in o["files"]:
-                    file_uuid = t["template"]
-                    self._dumpTemplate(output_dir, file_uuid)
+                if (o.has_key("files")):
+                    for t in o["files"]:
+                        file_uuid = t["template"]
+                        self._dumpTemplate(output_dir, file_uuid)
 
     def _pushDistributions(self):
         if(not os.path.exists(self._root + "/distributions")):
