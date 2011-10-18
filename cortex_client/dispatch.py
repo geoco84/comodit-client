@@ -132,4 +132,5 @@ Resources:
     organizations       Top-level organization
     environments        Environment defined within an organization
     hosts               Host defined within an environment
+    changes             Change requests
 ''' 
