@@ -32,8 +32,8 @@ class Resource(JsonWrapper):
         if(force):
             parameters["force"] = "true"
         self.set_json(ApiConfig.get_client().update(self._resource + "/" +
-                                                    self._json_data["uuid"],
-                                                    self._json_data,
+                                                    self.get_uuid(),
+                                                    self.get_json(),
                                                     parameters))
 
     def create(self):
@@ -51,3 +51,8 @@ class Resource(JsonWrapper):
 
     def get_identifier(self):
         return self.get_name()
+
+    def _show(self, indent = 0):
+        print " "*indent, "UUID:", self.get_uuid()
+        print " "*indent, "Name:", self.get_name()
+        print " "*indent, "Description:", self.get_description()
