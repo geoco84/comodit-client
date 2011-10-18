@@ -30,6 +30,9 @@ class Environment(Resource):
     def set_hosts(self, hosts):
         self._set_list_field("hosts", hosts)
 
+    def get_version(self):
+        return self._get_field("version")
+
     def get_identifier(self):
         org_uuid = self.get_organization()
         org = self._org_collection.get_resource(org_uuid)

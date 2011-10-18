@@ -30,9 +30,6 @@ class Parameter(JsonWrapper):
     def get_version(self):
         return self._get_field("version")
 
-    def set_version(self, version):
-        return self._set_field("version", version)
-
     def show(self, indent = 0):
         print " "*indent, "Key:", self.get_key()
         print " "*indent, "Value:", self.get_value()

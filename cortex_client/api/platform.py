@@ -24,6 +24,9 @@ class Platform(Resource):
     def set_settings(self, owner):
         return self._set_list_field("settings", owner)
 
+    def get_version(self):
+        return self._get_field("version")
+
     def _show(self, indent = 0):
         super(Platform, self)._show(indent)
         print " "*indent, "Driver:", self.get_driver()

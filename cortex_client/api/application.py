@@ -152,6 +152,9 @@ class Application(Resource):
     def set_handlers(self, handlers):
         self._set_list_field("handlers", handlers)
 
+    def get_version(self):
+        return self._get_field("version")
+
     def _show(self, indent = 0):
         print " "*indent, "UUID:", self.get_uuid()
         print " "*indent, "Name:", self.get_name()

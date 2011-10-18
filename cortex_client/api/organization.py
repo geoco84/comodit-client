@@ -12,6 +12,9 @@ class Organization(Resource):
     def set_environments(self, environments):
         return self._set_list_field("environments", environments)
 
+    def get_version(self):
+        return self._get_field("version")
+
     def _show(self, indent = 0):
         print " "*indent, "UUID:", self.get_uuid()
         print " "*indent, "Name:", self.get_name()

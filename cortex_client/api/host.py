@@ -74,6 +74,9 @@ class Host(Resource):
     def set_settings(self, settings):
         self._set_list_field("settings", settings)
 
+    def get_version(self):
+        self._get_field("version")
+
     def delete(self, delete_vm = False):
         if(delete_vm):
             try:

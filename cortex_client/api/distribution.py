@@ -35,6 +35,9 @@ class Distribution(Resource):
     def set_owner(self, owner):
         return self._set_field("owner", owner)
 
+    def get_version(self):
+        return self._get_field("version")
+
     def _show(self, indent = 0):
         super(Distribution, self)._show(indent)
         print " "*indent, "Kickstart:", self.get_kickstart()
