@@ -30,7 +30,7 @@ class SettingFactory(object):
 
 class HostInfo(JsonWrapper):
     def __init__(self, json_data = None):
-        super(Setting, self).__init__(json_data)
+        super(HostInfo, self).__init__(json_data)
 
     def get_state(self):
         return self._get_field("state")

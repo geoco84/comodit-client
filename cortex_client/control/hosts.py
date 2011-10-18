@@ -10,8 +10,8 @@
 from cortex_client.util import globals, prompt
 from cortex_client.control.resource import ResourceController
 from cortex_client.control.exceptions import NotFoundException
+from cortex_client.api.api_config import ApiConfig
 from cortex_client.api.host_collection import HostCollection
-from cortex_client.api.host import Host
 from cortex_client.api.directory import Directory
 
 class HostsController(ResourceController):
@@ -22,6 +22,7 @@ class HostsController(ResourceController):
         super(HostsController, self ).__init__()
         self._collection = HostCollection()
         self._register(["s", "state"], self._state)
+        self._register(["provision"], self._provision)
         self._register(["start"], self._start)
         self._register(["pause"], self._pause)
         self._register(["resume"], self._resume)
@@ -68,6 +69,13 @@ class HostsController(ResourceController):
             delete_vm = prompt.confirm(prompt="Delete VM also ?", resp=False)
             host.delete(delete_vm)
 
+    def _provision(self, argv):
+        host = self._get_resource(argv)
+        uuid = host.get_uuid()
+        client = ApiConfig.get_client()
+        client.update("provisioner/_provision",
+                      parameters={"hostId":uuid}, decode=False)
+
     def _start(self, argv):
         host = self._get_resource(argv)
         host.start()
@@ -99,6 +107,7 @@ Actions:
     add                Add an host
     update <id>        Update a host
     delete <id>        Delete a host
+    provision <id>     Provision a host
     start <id>         Start a host
     pause <id>         Pause a host
     resume <id>        Resume a host's execution

@@ -18,7 +18,6 @@ from control.exceptions import ControllerException, ArgumentException
 from control.files import FilesController
 from control.hosts import HostsController
 from control.organizations import OrganizationsController
-from control.provisioner import ProvisionerController
 from control.sync.sync import SyncController
 from control.users import UsersController
 from rest.exceptions import ApiException
@@ -39,7 +38,6 @@ def run(argv):
     control.router.register(["org",  "organizations"], OrganizationsController())
     control.router.register(["env",  "environments"], EnvironmentsController())
     control.router.register(["host", "hosts"], HostsController())
-    control.router.register(["prov", "provisioner"], ProvisionerController())
     control.router.register(["sync"], SyncController())
     control.router.register(["cr", "changes"], ChangesController());
     control.router.register(["files"], FilesController());    
@@ -47,7 +45,7 @@ def run(argv):
 
 def _parse(argv):
 
-    usage = "usage: %prog (resource|service) [command] [options]"
+    usage = "usage: %prog resource [command] [options]"
     parser = optparse.OptionParser(usage)
 
     try:
@@ -134,7 +132,4 @@ Resources:
     organizations       Top-level organization
     environments        Environment defined within an organization
     hosts               Host defined within an environment
-
-Services:
-    provisioner         Provision virtual machines based on a host definition
 ''' 
