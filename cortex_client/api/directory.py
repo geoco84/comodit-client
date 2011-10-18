@@ -10,6 +10,13 @@ class Directory(object):
         return reference["uuid"]
 
     @classmethod
+    def get_platform_uuid(self, name):
+        reference = ApiConfig.get_client().read("directory/platform/" + name)
+        if(not reference):
+            raise NotFoundException("Platform not found")
+        return reference["uuid"]
+
+    @classmethod
     def get_distribution_uuid(self, name):
         reference = ApiConfig.get_client().read("directory/distribution/" + name)
         if(not reference):

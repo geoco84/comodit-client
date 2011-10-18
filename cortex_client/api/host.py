@@ -18,8 +18,8 @@ class Setting(JsonWrapper):
         return self._get_field("version")
 
     def show(self, indent = 0):
-        print " "*indent, "Value:", self.get_value()
         print " "*indent, "Key:", self.get_key()
+        print " "*indent, "Value:", self.get_value()
         print " "*indent, "Version:", self.get_version()
 
 
