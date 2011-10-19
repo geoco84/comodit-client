@@ -3,22 +3,19 @@ import os
 import cortex_client.util.path as path
 
 from resource import Resource
-from organization_collection import OrganizationCollection
 from cortex_client.util.json_wrapper import StringFactory
-from cortex_client.api.host_collection import HostCollection
 
 class Environment(Resource):
-    def __init__(self, json_data = None):
-        from environment_collection import EnvironmentCollection
-        super(Environment, self).__init__(EnvironmentCollection(), json_data)
-        self._org_collection = OrganizationCollection()
+    def __init__(self, api, json_data = None):
+        super(Environment, self).__init__(api, api.get_environment_collection(),
+                                          json_data)
 
     def dump(self, output_folder):
         env_folder = os.path.join(output_folder, self.get_name())
         path.ensure(env_folder)
         self.dump_json(os.path.join(env_folder, "definition.json"))
 
-        hosts = HostCollection().get_resources({"environmentId" : self.get_uuid()})
+        hosts = self._api.get_host_collection().get_resources({"environmentId" : self.get_uuid()})
         for h in hosts:
             h.dump(env_folder)
 
@@ -49,5 +46,5 @@ class Environment(Resource):
 
     def get_identifier(self):
         org_uuid = self.get_organization()
-        org = self._org_collection.get_resource(org_uuid)
+        org = self._api.get_organization_collection().get_resource(org_uuid)
         return org.get_name() + "/" + self.get_name()

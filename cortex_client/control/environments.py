@@ -10,8 +10,6 @@
 from cortex_client.util import globals
 from cortex_client.control.resource import ResourceController
 from cortex_client.control.exceptions import NotFoundException
-from cortex_client.api.environment_collection import EnvironmentCollection
-from cortex_client.api.directory import Directory
 
 class EnvironmentsController(ResourceController):
 
@@ -19,7 +17,9 @@ class EnvironmentsController(ResourceController):
 
     def __init__(self):
         super(EnvironmentsController, self ).__init__()
-        self._collection = EnvironmentCollection()
+
+    def get_collection(self):
+        return self._api.get_environment_collection()
 
     def _get_resources(self, argv):
         options = globals.options
@@ -31,13 +31,13 @@ class EnvironmentsController(ResourceController):
             org_uuid = options.org_uuid
         elif options.env_path:
             path = options.env_path
-            org_uuid = Directory.get_organization_uuid(path)
+            org_uuid = self._api.get_directory().get_organization_uuid(path)
             if not org_uuid: raise NotFoundException(path)
         elif options.env and options.uuid:
             org_uuid = options.env
         elif options.env:
             path = options.env
-            org_uuid = Directory.get_organization_uuid(path)
+            org_uuid = self._api.get_directory().get_organization_uuid(path)
             if not org_uuid: raise NotFoundException(path)
 
         if(org_uuid):

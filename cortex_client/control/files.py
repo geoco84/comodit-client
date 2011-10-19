@@ -9,7 +9,6 @@
 
 from cortex_client.control.resource import ResourceController
 from cortex_client.control.exceptions import MissingException
-from cortex_client.api.file_collection import FileCollection
 
 class FilesController(ResourceController):
 
@@ -17,10 +16,12 @@ class FilesController(ResourceController):
 
     def __init__(self):
         super(FilesController, self).__init__()
-        self._collection = FileCollection()
         self._register(["r", "read"], self._read)
         self._register(["w", "write"], self._write)
         self._default_action = self._help
+
+    def get_collection(self):
+        return self._api.get_file_collection()
 
     def _read(self, argv):
         file_res = self._get_resource(argv)

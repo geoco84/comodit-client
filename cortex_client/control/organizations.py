@@ -8,7 +8,6 @@
 # authorization from Guardis.
 
 from cortex_client.control.resource import ResourceController
-from cortex_client.api.organization_collection import OrganizationCollection
 
 class OrganizationsController(ResourceController):
 
@@ -16,7 +15,9 @@ class OrganizationsController(ResourceController):
 
     def __init__(self):
         super(OrganizationsController, self ).__init__()
-        self._collection = OrganizationCollection()
+
+    def get_collection(self):
+        return self._api.get_organization_collection()
 
     def _help(self, argv):
         print '''You must provide an action to perfom on this resource.

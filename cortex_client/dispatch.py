@@ -28,7 +28,7 @@ import traceback
 import sys
 import control.router
 from config import Config, ConfigException
-from api.api_config import ApiConfig
+from api.api_config import CortexApi
 
 def run(argv):
     control.router.register(["users"], UsersController())
@@ -40,7 +40,7 @@ def run(argv):
     control.router.register(["host", "hosts"], HostsController())
     control.router.register(["sync"], SyncController())
     control.router.register(["cr", "changes"], ChangesController());
-    control.router.register(["files"], FilesController());    
+    control.router.register(["files"], FilesController());
     _parse(argv)
 
 def _parse(argv):
@@ -89,15 +89,16 @@ def _parse(argv):
         print_resources()
         exit(-1)
 
-    ApiConfig.init(globals.options.api, globals.options.username, globals.options.password)
+    api = CortexApi(globals.options.api, globals.options.username,
+                    globals.options.password)
 
-    _dispatch(args[0], args[1:])
+    _dispatch(args[0], args[1:], api)
     
-def _dispatch(resource, args):
+def _dispatch(resource, args, api):
     options = globals.options
     
     try:
-        control.router.dispatch(resource, args)
+        control.router.dispatch(resource, api, args)
         exit(0)
     except ControllerException as e:
         print e.msg

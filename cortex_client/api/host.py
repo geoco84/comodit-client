@@ -2,11 +2,9 @@ import os
 
 import cortex_client.util.path as path
 
-from api_config import ApiConfig
 from cortex_client.api.resource import Resource
 from cortex_client.rest.exceptions import ApiException
 from cortex_client.util.json_wrapper import JsonWrapper
-from environment_collection import EnvironmentCollection
 
 class Setting(JsonWrapper):
     def __init__(self, json_data = None):
@@ -43,10 +41,8 @@ class HostInfo(JsonWrapper):
         print " "*indent, self.get_state()
 
 class Host(Resource):
-    def __init__(self, json_data = None):
-        from cortex_client.api.host_collection import HostCollection
-        super(Host, self).__init__(HostCollection(), json_data)
-        self._env_collection = EnvironmentCollection()
+    def __init__(self, api, json_data = None):
+        super(Host, self).__init__(api, api.get_host_collection(), json_data)
 
     def get_organization(self):
         return self._get_field("organization")
@@ -84,22 +80,22 @@ class Host(Resource):
     def delete(self, delete_vm = False):
         if(delete_vm):
             try:
-                ApiConfig.get_client().update("hosts/" + self.get_uuid() + "/_delete",
+                self._api.get_client().update("hosts/" + self.get_uuid() + "/_delete",
                                               decode=False)
             except ApiException, e:
                 if(e.code == 400):
                     print "Could not delete VM:", e.message
                 else:
                     raise e
-        ApiConfig.get_client().delete("hosts/" + self.get_uuid())
+        self._api.get_client().delete("hosts/" + self.get_uuid())
 
     def get_state(self):
-        result = ApiConfig.get_client().read("hosts/" + self.get_uuid()+"/state")
+        result = self._api.get_client().read("hosts/" + self.get_uuid()+"/state")
         return HostInfo(result)
 
     def get_identifier(self):
         env_uuid = self.get_environment()
-        env = self._env_collection.get_resource(env_uuid)
+        env = self._api.get_environment_collection().get_resource(env_uuid)
         return env.get_identifier() + "/" + self.get_name()
 
     def dump(self, output_folder):
@@ -122,26 +118,26 @@ class Host(Resource):
             print
 
     def start(self):
-        result = ApiConfig.get_client().update("hosts/"+self.get_uuid()+"/_start", decode=False)
+        result = self._api.get_client().update("hosts/"+self.get_uuid()+"/_start", decode=False)
         if(result.getcode() != 202):
             raise "Call not accepted by server"
 
     def pause(self):
-        result = ApiConfig.get_client().update("hosts/"+self.get_uuid()+"/_pause", decode=False)
+        result = self._api.get_client().update("hosts/"+self.get_uuid()+"/_pause", decode=False)
         if(result.getcode() != 202):
             raise "Call not accepted by server"
 
     def resume(self):
-        result = ApiConfig.get_client().update("hosts/"+self.get_uuid()+"/_resume", decode=False)
+        result = self._api.get_client().update("hosts/"+self.get_uuid()+"/_resume", decode=False)
         if(result.getcode() != 202):
             raise "Call not accepted by server"
 
     def shutdown(self):
-        result = ApiConfig.get_client().update("hosts/"+self.get_uuid()+"/_stop", decode=False)
+        result = self._api.get_client().update("hosts/"+self.get_uuid()+"/_stop", decode=False)
         if(result.getcode() != 202):
             raise "Call not accepted by server"
 
     def poweroff(self):
-        result = ApiConfig.get_client().update("hosts/"+self.get_uuid()+"/_off", decode=False)
+        result = self._api.get_client().update("hosts/"+self.get_uuid()+"/_off", decode=False)
         if(result.getcode() != 202):
             raise "Call not accepted by server"

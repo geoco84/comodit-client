@@ -1,4 +1,3 @@
-from api_config import ApiConfig
 from resource import Resource
 from exceptions import PythonApiException
 
@@ -10,9 +9,10 @@ __all__ = ["ChangeRequest",
            "DeleteSettingChangeRequest"]
 
 class ChangeRequest(Resource):
-    def __init__(self, json_data = None):
-        from change_request_collection import ChangeRequestCollection
-        super(ChangeRequest, self).__init__(ChangeRequestCollection(), json_data)
+    def __init__(self, api, json_data = None):
+        super(ChangeRequest, self).__init__(api,
+                                            api.get_change_request_collection(),
+                                            json_data)
 
     def get_owner(self):
         return self._get_field("owner")
@@ -57,7 +57,7 @@ class ChangeRequest(Resource):
         return self._get_field("state")
 
     def apply_request(self):
-        result = ApiConfig.get_client().update(self._resource_collection._resource_path + "/" +
+        result = self._client.update(self._resource_collection._resource_path + "/" +
                                           self.get_uuid() + "/_apply",
                                           decode=False)
         if(result.code != 200):
@@ -76,8 +76,8 @@ class ChangeRequest(Resource):
 
 
 class ApplicationChangeRequest(ChangeRequest):
-    def __init__(self, json_data = None):
-        super(ApplicationChangeRequest, self).__init__(json_data)
+    def __init__(self, api, json_data = None):
+        super(ApplicationChangeRequest, self).__init__(api, json_data)
 
     def get_application(self):
         return self._get_field("application")
@@ -93,21 +93,21 @@ class ApplicationChangeRequest(ChangeRequest):
 
 class InstallApplicationChangeRequest(ApplicationChangeRequest):
     ACTION = "install_application"
-    def __init__(self, json_data = None):
-        super(InstallApplicationChangeRequest, self).__init__(json_data)
+    def __init__(self, api, json_data = None):
+        super(InstallApplicationChangeRequest, self).__init__(api, json_data)
         self._set_action(self.ACTION)
 
 
 class UninstallApplicationChangeRequest(ApplicationChangeRequest):
     ACTION = "uninstall_application"
-    def __init__(self, json_data = None):
-        super(UninstallApplicationChangeRequest, self).__init__(json_data)
+    def __init__(self, api, json_data = None):
+        super(UninstallApplicationChangeRequest, self).__init__(api, json_data)
         self._set_action(self.ACTION)
 
 
 class SettingChangeRequest(ChangeRequest):
-    def __init__(self, json_data = None):
-        super(SettingChangeRequest, self).__init__(json_data)
+    def __init__(self, api, json_data = None):
+        super(SettingChangeRequest, self).__init__(api, json_data)
 
     def get_value(self):
         return self._get_field("value")
@@ -122,8 +122,8 @@ class SettingChangeRequest(ChangeRequest):
 
 class AddSettingChangeRequest(SettingChangeRequest):
     ACTION = "add_setting"
-    def __init__(self, json_data = None):
-        super(AddSettingChangeRequest, self).__init__(json_data)
+    def __init__(self, api, json_data = None):
+        super(AddSettingChangeRequest, self).__init__(api, json_data)
         self._set_action(self.ACTION)
 
     def get_key(self):
@@ -140,8 +140,8 @@ class AddSettingChangeRequest(SettingChangeRequest):
 
 class UpdateSettingChangeRequest(SettingChangeRequest):
     ACTION = "update_setting"
-    def __init__(self, json_data = None):
-        super(UpdateSettingChangeRequest, self).__init__(json_data)
+    def __init__(self, api, json_data = None):
+        super(UpdateSettingChangeRequest, self).__init__(api, json_data)
         self._set_action(self.ACTION)
 
     def _show(self, indent = 0):
@@ -151,8 +151,8 @@ class UpdateSettingChangeRequest(SettingChangeRequest):
 
 class DeleteSettingChangeRequest(SettingChangeRequest):
     ACTION = "delete_setting"
-    def __init__(self, json_data = None):
-        super(DeleteSettingChangeRequest, self).__init__(json_data)
+    def __init__(self, api, json_data = None):
+        super(DeleteSettingChangeRequest, self).__init__(api, json_data)
         self._set_action(self.ACTION)
 
     def _show(self, indent = 0):

@@ -4,9 +4,8 @@ from resource import Resource
 from host import SettingFactory
 
 class Platform(Resource):
-    def __init__(self, json_data = None):
-        from platform_collection import PlatformCollection
-        super(Platform, self).__init__(PlatformCollection(), json_data)
+    def __init__(self, api, json_data = None):
+        super(Platform, self).__init__(api, api.get_platform_collection(), json_data)
 
     def get_driver(self):
         return self._get_field("driver")

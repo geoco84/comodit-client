@@ -8,7 +8,6 @@
 # authorization from Guardis.
 
 from cortex_client.control.resource import ResourceController
-from cortex_client.api.distribution_collection import DistributionCollection
 
 class DistributionsController(ResourceController):
 
@@ -16,7 +15,9 @@ class DistributionsController(ResourceController):
 
     def __init__(self):
         super(DistributionsController, self ).__init__()
-        self._collection = DistributionCollection()
+
+    def get_collection(self):
+        return self._api.get_distribution_collection()
 
     def _help(self, argv):
         print '''You must provide an action to perfom on this resource.

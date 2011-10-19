@@ -6,9 +6,9 @@ from resource import Resource
 from cortex_client.util.json_wrapper import StringFactory
 
 class Organization(Resource):
-    def __init__(self, json_data = None):
-        from organization_collection import OrganizationCollection
-        super(Organization, self).__init__(OrganizationCollection(), json_data)
+    def __init__(self, api, json_data = None):
+        super(Organization, self).__init__(api, api.get_organization_collection(),
+                                           json_data)
 
     def get_environments(self):
         return self._get_list_field("environments", StringFactory())
@@ -24,8 +24,7 @@ class Organization(Resource):
         path.ensure(org_folder)
         self.dump_json(os.path.join(org_folder, "definition.json"))
 
-        from cortex_client.api.environment_collection import EnvironmentCollection
-        envs = EnvironmentCollection().get_resources({"organizationId" : self.get_uuid()})
+        envs = self._api.get_environment_collection().get_resources({"organizationId" : self.get_uuid()})
         for e in envs:
             e.dump(org_folder)
 

@@ -128,9 +128,9 @@ class HandlerFactory(object):
 
 
 class Application(Resource):
-    def __init__(self, json_data = None):
-        from application_collection import ApplicationCollection
-        super(Application, self).__init__(ApplicationCollection(), json_data)
+    def __init__(self, api, json_data = None):
+        super(Application, self).__init__(api, api.get_application_collection(),
+                                          json_data)
 
     def get_packages(self):
         return self._get_list_field("packages", PackageFactory())
@@ -166,8 +166,7 @@ class Application(Resource):
         app_files = self.get_files()
         for f in app_files:
             template_uuid = f.get_template_uuid()
-            from cortex_client.api.file_collection import FileCollection
-            template = FileCollection().get_resource(template_uuid)
+            template = self._api.get_file_collection().get_resource(template_uuid)
             template.dump(output_dir)
 
     def _show(self, indent = 0):

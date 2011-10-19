@@ -21,7 +21,6 @@ class ResourceController(AbstractController):
     _resource = ""
     _template = ""
     _parameters = {}
-    _collection = None
 
     def __init__(self):
         super(ResourceController, self).__init__()
@@ -57,16 +56,16 @@ class ResourceController(AbstractController):
         if options.filename:
             with open(options.filename, 'r') as f:
                 item = json.load(f)
-                res = self._collection._new_resource(item)
+                res = self.get_collection()._new_resource(item)
         elif options.json:
             item = json.loads(options.json)
-            res = self._collection._new_resource(item)
+            res = self.get_collection()._new_resource(item)
         else :
             template = open(os.path.join(Config().templates_path, self._template)).read()
             #template = "# To abort the request; just exit your editor without saving this file.\n\n" + template
             updated = edit_text(template)
             #updated = re.sub(r'#.*$', "", updated)
-            res = self._collection._new_resource(json.loads(updated))
+            res = self.get_collection()._new_resource(json.loads(updated))
 
         res.create()
         res.show(as_json = options.raw)
@@ -107,9 +106,12 @@ class ResourceController(AbstractController):
 
         # Validate input parameters
         if(globals.options.uuid):
-            return self._collection.get_resource(argv[0])
+            return self.get_collection().get_resource(argv[0])
         else:
-            return self._collection.get_resource_from_path(argv[0])
+            return self.get_collection().get_resource_from_path(argv[0])
 
     def _get_resources(self, argv, parameters = {}):
-        return self._collection.get_resources(parameters)
+        return self.get_collection().get_resources(parameters)
+
+    def get_collection(self):
+        raise NotImplementedError

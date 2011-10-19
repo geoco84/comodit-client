@@ -8,8 +8,6 @@
 # authorization from Guardis.
 
 from cortex_client.control.resource import ResourceController
-from cortex_client.api.application_collection import ApplicationCollection
-from cortex_client.api.application import Application
 
 class ApplicationsController(ResourceController):
 
@@ -17,7 +15,9 @@ class ApplicationsController(ResourceController):
 
     def __init__(self):
         super(ApplicationsController, self ).__init__()
-        self._collection = ApplicationCollection()
+
+    def get_collection(self):
+        return self._api.get_application_collection()
 
     def _help(self, argv):
         print '''You must provide an action to perfom on this resource.

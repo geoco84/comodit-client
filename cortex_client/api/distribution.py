@@ -3,12 +3,11 @@ import os
 import cortex_client.util.path as path
 
 from resource import Resource
-from cortex_client.api.file_collection import FileCollection
 
 class Distribution(Resource):
-    def __init__(self, json_data = None):
-        from distribution_collection import DistributionCollection
-        super(Distribution, self).__init__(DistributionCollection(), json_data)
+    def __init__(self, api, json_data = None):
+        super(Distribution, self).__init__(api, api.get_distribution_collection(),
+                                           json_data)
 
     def get_kickstart(self):
         return self._get_field("kickstart")
@@ -49,7 +48,7 @@ class Distribution(Resource):
         self.dump_json(os.path.join(dist_folder, "definition.json"))
 
         # Dump kickstart
-        kickstart = FileCollection().get_resource(self.get_kickstart())
+        kickstart = self._api.get_file_collection().get_resource(self.get_kickstart())
         kickstart.dump(dist_folder, "kickstart")
 
     def _show(self, indent = 0):

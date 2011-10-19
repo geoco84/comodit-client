@@ -8,7 +8,6 @@
 # authorization from Guardis.
 
 from cortex_client.control.resource import ResourceController
-from cortex_client.api.change_request_collection import ChangeRequestCollection
 
 class ChangesController(ResourceController):
 
@@ -17,7 +16,9 @@ class ChangesController(ResourceController):
     def __init__(self):
         super(ChangesController, self ).__init__()
         self._register(["apply"], self._apply)
-        self._collection = ChangeRequestCollection()
+
+    def get_collection(self):
+        return self._api.get_change_request_collection()
 
     def _apply(self, argv):
         change_req = self._get_resource(argv)

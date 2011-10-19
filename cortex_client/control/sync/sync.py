@@ -16,13 +16,6 @@ from cortex_client.control.exceptions import ControllerException
 from cortex_client.rest.exceptions import ApiException
 from actions import *
 
-from cortex_client.api.file_collection import FileCollection
-from cortex_client.api.application_collection import ApplicationCollection
-from cortex_client.api.distribution_collection import DistributionCollection
-from cortex_client.api.organization_collection import OrganizationCollection
-from cortex_client.api.platform_collection import PlatformCollection
-from cortex_client.api.host_collection import HostCollection
-
 class SyncException(ControllerException):
     def __init__(self, msg):
         ControllerException.__init__(self, msg)
@@ -90,32 +83,32 @@ class SyncController(AbstractController):
             return json.load(f)
 
     def _readRemoteEntities(self):
-        file_list = FileCollection().get_resources()
+        file_list = self._api.get_file_collection().get_resources()
         self._remote_files = {}
         for f in file_list:
             self._remote_files[f.get_uuid()] = f
 
-        app_list = ApplicationCollection().get_resources()
+        app_list = self._api.get_application_collection().get_resources()
         self._remote_applications = {}
         for app in app_list:
             self._remote_applications[app.get_name()] = app
 
-        dist_list = DistributionCollection().get_resources()
+        dist_list = self._api.get_distribution_collection().get_resources()
         self._remote_distributions = {}
         for dist in dist_list:
             self._remote_distributions[dist.get_name()] = dist
                 
-        host_list = HostCollection().get_resources()
+        host_list = self._api.get_host_collection().get_resources()
         self._remote_hosts = {}
         for host in host_list:
             self._remote_hosts[host.get_name()] = host
 
-        org_list = OrganizationCollection().get_resources()
+        org_list = self._api.get_organization_collection().get_resources()
         self._remote_organizations = {}
         for org in org_list:
             self._remote_organizations[org.get_name()] = org
 
-        plats_list = PlatformCollection().get_resources()
+        plats_list = self._api.get_platform_collection().get_resources()
         self._remote_platforms = {}
         for plat in plats_list:
             self._remote_platforms[plat.get_name()] = plat
@@ -204,7 +197,7 @@ Actions:
         self._pushResource("applications", app_def, self._remote_applications)
 
     def _dumpApplications(self):
-        apps = ApplicationCollection().get_resources()
+        apps = self._api.get_application_collection().get_resources()
         apps_folder = os.path.join(self._root, "applications")
         for a in apps:
             a.dump(apps_folder)
@@ -230,13 +223,13 @@ Actions:
         self._pushResource("distributions", dist_def, self._remote_distributions)
 
     def _dumpDistributions(self):
-        dists = DistributionCollection().get_resources()
+        dists = self._api.get_distribution_collection().get_resources()
         dists_folder = os.path.join(self._root, "distributions")
         for d in dists:
             d.dump(dists_folder)
 
     def _dumpOrganizations(self):
-        orgs = OrganizationCollection().get_resources()
+        orgs = self._api.get_organization_collection().get_resources()
         orgs_folder = os.path.join(self._root, "organizations")
         for o in orgs:
             o.dump(orgs_folder)
@@ -301,7 +294,7 @@ Actions:
         self._pushResource("hosts", host_def, self._remote_hosts)
 
     def _dumpPlatforms(self):
-        plats = PlatformCollection().get_resources()
+        plats = self._api.get_platform_collection().get_resources()
         plats_folder = os.path.join(self._root, "platforms")
         for p in plats:
             p.dump(plats_folder)

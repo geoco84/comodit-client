@@ -2,7 +2,6 @@ import os, json
 
 from cortex_client.util import path
 from resource import Resource
-from api_config import ApiConfig
 from exceptions import PythonApiException
 from cortex_client.util.json_wrapper import JsonWrapper
 
@@ -42,9 +41,8 @@ class ParameterFactory(object):
 
 
 class File(Resource):
-    def __init__(self, json_data = None):
-        from file_collection import FileCollection
-        super(File, self).__init__(FileCollection(), json_data)
+    def __init__(self, api, json_data = None):
+        super(File, self).__init__(api, api.get_file_collection(), json_data)
         self._content_to_upload = None
 
     def get_description(self):
@@ -60,8 +58,8 @@ class File(Resource):
         self._set_list_field("parameters", parameters)
 
     def get_content(self):
-        content = ApiConfig.get_client().read(self._resource + "/" +
-                                                  self.get_uuid(), decode=False)
+        content = self._api.get_client().read(self._resource + "/" +
+                                              self.get_uuid(), decode=False)
         return content.read()
 
     def set_content(self, file_name):
@@ -72,12 +70,12 @@ class File(Resource):
         if(not os.path.exists(template_file_name)):
             raise PythonApiException("File "+template_file_name+" does not exist.")
 
-        uuid = ApiConfig.get_client().upload_new_file(template_file_name)
+        uuid = self._api.get_client().upload_new_file(template_file_name)
 
         parameters = {}
         if force: parameters["force"] = "true"
 
-        self.set_json(ApiConfig.get_client().update(self._resource + "/" + uuid + "/_meta",
+        self.set_json(self._api.get_client().update(self._resource + "/" + uuid + "/_meta",
                                       self.get_json(), parameters))
 
     def _show(self, indent = 0):
@@ -92,14 +90,15 @@ class File(Resource):
         parameters = {}
         if(force):
             parameters["force"] = "true"
-        self.set_json(ApiConfig.get_client().update(self._resource + "/" +
+        self.set_json(self._api.get_client().update(self._resource + "/" +
                                                     self.get_uuid() + "/_meta",
                                                     self.get_json(),
                                                     parameters))
 
     def _commit_content(self, force):
         if(self._content_to_upload):
-            ApiConfig.get_client().upload_to_exising_file(self._content_to_upload, self.get_uuid())
+            self._api.get_client().upload_to_exising_file(self._content_to_upload,
+                                                          self.get_uuid())
             self._content_to_upload = None
 
     def commit(self, force = False):

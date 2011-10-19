@@ -1,19 +1,19 @@
-from api_config import ApiConfig
-
 class Collection(object):
-    def __init__(self, resource_path):
+    def __init__(self, resource_path, api):
         self._resource_path = resource_path
+        self._api = api
 
     def get_path(self):
         return self._resource_path
 
     def add_resource(self, resource):
-        result = ApiConfig.get_client().create(self._resource_path,
+        result = self._client.create(self._resource_path,
                                                resource.get_json())
         resource.set_json(result)
 
     def get_resources(self, parameters = {}):
-        result = ApiConfig.get_client().read(self._resource_path, parameters)
+        client = self._api.get_client()
+        result = client.read(self._resource_path, parameters)
 
         resources_list = []
         if(result["count"] != "0"):
@@ -27,7 +27,8 @@ class Collection(object):
         raise NotImplementedError
 
     def get_resource(self, uuid):
-        result = ApiConfig.get_client().read(self._resource_path + "/"+uuid)
+        client = self._api.get_client()
+        result = client.read(self._resource_path + "/" + uuid)
         return self._new_resource(result)
 
     def get_resource_from_path(self, path):

@@ -10,9 +10,6 @@
 from cortex_client.util import globals, prompt
 from cortex_client.control.resource import ResourceController
 from cortex_client.control.exceptions import NotFoundException
-from cortex_client.api.api_config import ApiConfig
-from cortex_client.api.host_collection import HostCollection
-from cortex_client.api.directory import Directory
 
 class HostsController(ResourceController):
 
@@ -20,7 +17,6 @@ class HostsController(ResourceController):
 
     def __init__(self):
         super(HostsController, self ).__init__()
-        self._collection = HostCollection()
         self._register(["s", "state"], self._state)
         self._register(["provision"], self._provision)
         self._register(["start"], self._start)
@@ -28,6 +24,9 @@ class HostsController(ResourceController):
         self._register(["resume"], self._resume)
         self._register(["shutdown"], self._shutdown)
         self._register(["poweroff"], self._poweroff)
+
+    def get_collection(self):
+        return self._api.get_host_collection()
 
     def _get_resources(self, argv):
         options = globals.options
@@ -39,13 +38,13 @@ class HostsController(ResourceController):
             env_uuid = options.env_uuid
         elif options.env_path:
             path = options.env_path
-            env_uuid = Directory.get_environment_uuid(path)
+            env_uuid = self._api.get_directory().get_environment_uuid(path)
             if not env_uuid: raise NotFoundException(path)
         elif options.env and options.uuid:
             env_uuid = options.env
         elif options.env:
             path = options.env
-            env_uuid = Directory.get_environment_uuid(path)
+            env_uuid = self._api.get_directory().get_environment_uuid(path)
             if not env_uuid: raise NotFoundException(path)
 
         if(env_uuid):
@@ -72,7 +71,7 @@ class HostsController(ResourceController):
     def _provision(self, argv):
         host = self._get_resource(argv)
         uuid = host.get_uuid()
-        client = ApiConfig.get_client()
+        client = CortexApi.get_client()
         client.update("provisioner/_provision",
                       parameters={"hostId":uuid}, decode=False)
 

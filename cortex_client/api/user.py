@@ -2,9 +2,8 @@ from resource import Resource
 from cortex_client.util.json_wrapper import StringFactory
 
 class User(Resource):
-    def __init__(self, json_data = None):
-        from user_collection import UserCollection
-        super(User, self).__init__(UserCollection(), json_data)
+    def __init__(self, api, json_data = None):
+        super(User, self).__init__(api, api.get_user_collection(), json_data)
 
     def get_description(self):
         raise NotImplementedError
