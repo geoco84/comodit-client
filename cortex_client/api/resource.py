@@ -73,3 +73,9 @@ class Resource(JsonWrapper):
         print " "*indent, "UUID:", self.get_uuid()
         print " "*indent, "Name:", self.get_name()
         print " "*indent, "Description:", self.get_description()
+
+    def dump(self, output_folder):
+        raise NotImplementedError
+
+    def load(self, input_folder):
+        raise NotImplementedError

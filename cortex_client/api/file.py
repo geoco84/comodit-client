@@ -105,13 +105,12 @@ class File(Resource):
         self._commit_content(force)
         self._commit_meta(force)
 
-    def dump(self, dest_folder, folder_name = None):
-        if(folder_name != None):
-            output_folder = os.path.join(dest_folder, folder_name)
-        else:
-            output_folder = os.path.join(dest_folder, self.get_uuid())
-        path.ensure(output_folder)
-        with open(os.path.join(output_folder, self.get_name()), 'w') as f:
+    def dump(self, dest_folder):
+        path.ensure(dest_folder)
+        with open(os.path.join(dest_folder, self.get_name()), 'w') as f:
             f.write(self.get_content())
-        with open(os.path.join(output_folder, "definition.json"), 'w') as f:
+        with open(os.path.join(dest_folder, "definition.json"), 'w') as f:
             f.write(json.dumps(self.get_json(), sort_keys=True, indent=4))
+
+    def load(self, input_folder):
+        raise NotImplementedError

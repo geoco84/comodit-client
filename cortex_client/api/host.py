@@ -98,10 +98,12 @@ class Host(Resource):
         env = self._api.get_environment_collection().get_resource(env_uuid)
         return env.get_identifier() + "/" + self.get_name()
 
-    def dump(self, output_folder):
-        host_folder = os.path.join(output_folder, self.get_name())
+    def dump(self, host_folder):
         path.ensure(host_folder)
         self.dump_json(os.path.join(host_folder, "definition.json"))
+
+    def load(self, input_folder):
+        raise NotImplementedError
 
     def _show(self, indent = 0):
         print " "*indent, "UUID:", self.get_uuid()

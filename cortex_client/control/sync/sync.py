@@ -41,6 +41,7 @@ class SyncController(AbstractController):
             raise SyncException(self._root+" already exists.")
 
         self._ensureFolders()
+        self._dumpFiles()
         self._dumpApplications()
         self._dumpDistributions()
         self._dumpOrganizations()
@@ -124,6 +125,7 @@ Actions:
 """
 
     def _ensureFolders(self):
+        path.ensure(os.path.join(self._root, "files"))
         path.ensure(os.path.join(self._root, "applications"))
         path.ensure(os.path.join(self._root, "distributions"))
         path.ensure(os.path.join(self._root, "organizations"))
@@ -196,11 +198,18 @@ Actions:
         # Define new application
         self._pushResource("applications", app_def, self._remote_applications)
 
+    def _dumpFiles(self):
+        files = self._api.get_file_collection().get_resources()
+        files_folder = os.path.join(self._root, "files")
+        for f in files:
+            f.dump(os.path.join(files_folder, f.get_uuid()))
+
     def _dumpApplications(self):
         apps = self._api.get_application_collection().get_resources()
         apps_folder = os.path.join(self._root, "applications")
         for a in apps:
-            a.dump(apps_folder)
+            app_folder = os.path.join(apps_folder, a.get_name())
+            a.dump(app_folder)
 
     def _pushDistributions(self):
         if(not os.path.exists(self._root + "/distributions")):
@@ -226,13 +235,13 @@ Actions:
         dists = self._api.get_distribution_collection().get_resources()
         dists_folder = os.path.join(self._root, "distributions")
         for d in dists:
-            d.dump(dists_folder)
+            d.dump(os.path.join(dists_folder, d.get_name()))
 
     def _dumpOrganizations(self):
         orgs = self._api.get_organization_collection().get_resources()
         orgs_folder = os.path.join(self._root, "organizations")
         for o in orgs:
-            o.dump(orgs_folder)
+            o.dump(os.path.join(orgs_folder, o.get_name()))
 
     def _pushOrganizations(self):
         if(not os.path.exists(self._root + "/organizations")):
@@ -297,7 +306,7 @@ Actions:
         plats = self._api.get_platform_collection().get_resources()
         plats_folder = os.path.join(self._root, "platforms")
         for p in plats:
-            p.dump(plats_folder)
+            p.dump(os.path.join(plats_folder, p.get_name()))
 
     def _pushPlatforms(self):
         if(not os.path.exists(self._root + "/platforms")):

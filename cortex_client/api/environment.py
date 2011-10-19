@@ -10,14 +10,16 @@ class Environment(Resource):
         super(Environment, self).__init__(api, api.get_environment_collection(),
                                           json_data)
 
-    def dump(self, output_folder):
-        env_folder = os.path.join(output_folder, self.get_name())
+    def dump(self, env_folder):
         path.ensure(env_folder)
         self.dump_json(os.path.join(env_folder, "definition.json"))
 
         hosts = self._api.get_host_collection().get_resources({"environmentId" : self.get_uuid()})
         for h in hosts:
-            h.dump(env_folder)
+            h.dump(os.path.join(env_folder, h.get_name()))
+
+    def load(self, input_folder):
+        raise NotImplementedError
 
     def _show(self, indent = 0):
         print " "*indent, "UUID:", self.get_uuid()

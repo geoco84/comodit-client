@@ -19,14 +19,13 @@ class Organization(Resource):
     def get_version(self):
         return self._get_field("version")
 
-    def dump(self, output_folder):
-        org_folder = os.path.join(output_folder, self.get_name())
+    def dump(self, org_folder):
         path.ensure(org_folder)
         self.dump_json(os.path.join(org_folder, "definition.json"))
 
         envs = self._api.get_environment_collection().get_resources({"organizationId" : self.get_uuid()})
         for e in envs:
-            e.dump(org_folder)
+            e.dump(os.path.join(org_folder, e.get_name()))
 
     def _show(self, indent = 0):
         print " "*indent, "UUID:", self.get_uuid()

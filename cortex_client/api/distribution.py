@@ -42,14 +42,12 @@ class Distribution(Resource):
     def get_version(self):
         return self._get_field("version")
 
-    def dump(self, output_folder):
-        dist_folder = os.path.join(output_folder, self.get_name())
+    def dump(self, dist_folder):
         path.ensure(dist_folder)
         self.dump_json(os.path.join(dist_folder, "definition.json"))
 
-        # Dump kickstart
-        kickstart = self._api.get_file_collection().get_resource(self.get_kickstart())
-        kickstart.dump(dist_folder, "kickstart")
+    def load(self, input_folder):
+        raise NotImplementedError
 
     def _show(self, indent = 0):
         super(Distribution, self)._show(indent)

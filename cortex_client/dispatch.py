@@ -28,7 +28,7 @@ import traceback
 import sys
 import control.router
 from config import Config, ConfigException
-from api.api_config import CortexApi
+from api.api import CortexApi
 
 def run(argv):
     control.router.register(["users"], UsersController())

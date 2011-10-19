@@ -159,15 +159,12 @@ class Application(Resource):
     def get_version(self):
         return self._get_field("version")
 
-    def dump(self, output_folder):
-        output_dir = os.path.join(output_folder, self.get_name())
+    def dump(self, output_dir):
         path.ensure(output_dir)
         self.dump_json(os.path.join(output_dir, "definition.json"))
-        app_files = self.get_files()
-        for f in app_files:
-            template_uuid = f.get_template_uuid()
-            template = self._api.get_file_collection().get_resource(template_uuid)
-            template.dump(output_dir)
+
+    def load(self, input_folder):
+        self.load_json(os.path.join(input_folder, "definition.json"))
 
     def _show(self, indent = 0):
         print " "*indent, "UUID:", self.get_uuid()

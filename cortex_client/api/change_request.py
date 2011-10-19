@@ -63,6 +63,12 @@ class ChangeRequest(Resource):
         if(result.code != 200):
             raise PythonApiException(result.read())
 
+    def dump(self, output_folder):
+        raise NotImplementedError
+
+    def load(self, input_folder):
+        raise NotImplementedError
+
     def _show(self, indent = 0):
         print " "*indent, "Summary:", self.get_summary()
         print " "*indent, "Created:", self.get_created_time_stamp()

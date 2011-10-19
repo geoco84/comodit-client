@@ -30,3 +30,9 @@ class User(Resource):
         roles = self.get_roles()
         for r in roles:
             print " "*(indent + 2), r
+
+    def dump(self, output_folder):
+        raise NotImplementedError
+
+    def load(self, input_folder):
+        raise NotImplementedError
