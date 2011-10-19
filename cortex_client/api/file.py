@@ -1,5 +1,6 @@
-import os
+import os, json
 
+from cortex_client.util import path
 from resource import Resource
 from api_config import ApiConfig
 from exceptions import PythonApiException
@@ -61,7 +62,7 @@ class File(Resource):
     def get_content(self):
         content = ApiConfig.get_client().read(self._resource + "/" +
                                                   self.get_uuid(), decode=False)
-        return content
+        return content.read()
 
     def set_content(self, file_name):
         self._content_to_upload = file_name
@@ -104,3 +105,14 @@ class File(Resource):
     def commit(self, force = False):
         self._commit_content(force)
         self._commit_meta(force)
+
+    def dump(self, dest_folder, folder_name = None):
+        if(folder_name != None):
+            output_folder = os.path.join(dest_folder, folder_name)
+        else:
+            output_folder = os.path.join(dest_folder, self.get_uuid())
+        path.ensure(output_folder)
+        with open(os.path.join(output_folder, self.get_name()), 'w') as f:
+            f.write(self.get_content())
+        with open(os.path.join(output_folder, "definition.json"), 'w') as f:
+            f.write(json.dumps(self.get_json(), sort_keys=True, indent=4))

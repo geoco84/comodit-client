@@ -1,4 +1,4 @@
-import json
+import json, os
 
 class StringFactory(object):
     def new_object(self, json_data):
@@ -42,3 +42,8 @@ class JsonWrapper(object):
     
     def print_json(self):
         print json.dumps(self.__json_data)
+
+    def dump_json(self, output_file, sort_keys=True, indent=4):
+        meta = json.dumps(self.__json_data, sort_keys=sort_keys, indent=indent)
+        with open(os.path.join(output_file), 'w') as f:
+            f.write(meta)

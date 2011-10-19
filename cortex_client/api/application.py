@@ -1,3 +1,7 @@
+import os
+
+import cortex_client.util.path as path
+
 from cortex_client.util.json_wrapper import JsonWrapper, StringFactory
 from resource import Resource
 
@@ -42,7 +46,7 @@ class ServiceFactory(object):
         return Service(json_data)
 
 
-class File(ApplicationResource):
+class ApplicationFile(ApplicationResource):
     def get_owner(self):
         return self._get_field("owner")
 
@@ -67,9 +71,9 @@ class File(ApplicationResource):
         print " "*(indent+2), "template:", self.get_template_uuid()
 
 
-class FileFactory(object):
+class ApplicationFileFactory(object):
     def new_object(self, json_data):
-        return File(json_data)
+        return ApplicationFile(json_data)
 
 
 class Action(JsonWrapper):
@@ -141,7 +145,7 @@ class Application(Resource):
         self._set_list_field("services", services)
 
     def get_files(self):
-        return self._get_list_field("files", FileFactory())
+        return self._get_list_field("files", ApplicationFileFactory())
 
     def set_files(self, files):
         self._set_list_field("files", files)
@@ -154,6 +158,17 @@ class Application(Resource):
 
     def get_version(self):
         return self._get_field("version")
+
+    def dump(self, output_folder):
+        output_dir = os.path.join(output_folder, self.get_name())
+        path.ensure(output_dir)
+        self.dump_json(os.path.join(output_dir, "definition.json"))
+        app_files = self.get_files()
+        for f in app_files:
+            template_uuid = f.get_template_uuid()
+            from cortex_client.api.file_collection import FileCollection
+            template = FileCollection().get_resource(template_uuid)
+            template.dump(output_dir)
 
     def _show(self, indent = 0):
         print " "*indent, "UUID:", self.get_uuid()

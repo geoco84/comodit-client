@@ -1,3 +1,7 @@
+import os
+
+import cortex_client.util.path as path
+
 from api_config import ApiConfig
 from cortex_client.api.resource import Resource
 from cortex_client.rest.exceptions import ApiException
@@ -97,6 +101,11 @@ class Host(Resource):
         env_uuid = self.get_environment()
         env = self._env_collection.get_resource(env_uuid)
         return env.get_identifier() + "/" + self.get_name()
+
+    def dump(self, output_folder):
+        host_folder = os.path.join(output_folder, self.get_name())
+        path.ensure(host_folder)
+        self.dump_json(os.path.join(host_folder, "definition.json"))
 
     def _show(self, indent = 0):
         print " "*indent, "UUID:", self.get_uuid()

@@ -1,12 +1,26 @@
+import os
+
+import cortex_client.util.path as path
+
 from resource import Resource
 from organization_collection import OrganizationCollection
 from cortex_client.util.json_wrapper import StringFactory
+from cortex_client.api.host_collection import HostCollection
 
 class Environment(Resource):
     def __init__(self, json_data = None):
         from environment_collection import EnvironmentCollection
         super(Environment, self).__init__(EnvironmentCollection(), json_data)
         self._org_collection = OrganizationCollection()
+
+    def dump(self, output_folder):
+        env_folder = os.path.join(output_folder, self.get_name())
+        path.ensure(env_folder)
+        self.dump_json(os.path.join(env_folder, "definition.json"))
+
+        hosts = HostCollection().get_resources({"environmentId" : self.get_uuid()})
+        for h in hosts:
+            h.dump(env_folder)
 
     def _show(self, indent = 0):
         print " "*indent, "UUID:", self.get_uuid()

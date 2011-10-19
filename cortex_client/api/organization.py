@@ -1,3 +1,7 @@
+import os
+
+import cortex_client.util.path as path
+
 from resource import Resource
 from cortex_client.util.json_wrapper import StringFactory
 
@@ -14,6 +18,16 @@ class Organization(Resource):
 
     def get_version(self):
         return self._get_field("version")
+
+    def dump(self, output_folder):
+        org_folder = os.path.join(output_folder, self.get_name())
+        path.ensure(org_folder)
+        self.dump_json(os.path.join(org_folder, "definition.json"))
+
+        from cortex_client.api.environment_collection import EnvironmentCollection
+        envs = EnvironmentCollection().get_resources({"organizationId" : self.get_uuid()})
+        for e in envs:
+            e.dump(org_folder)
 
     def _show(self, indent = 0):
         print " "*indent, "UUID:", self.get_uuid()

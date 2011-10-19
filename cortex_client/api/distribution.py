@@ -1,4 +1,9 @@
+import os
+
+import cortex_client.util.path as path
+
 from resource import Resource
+from cortex_client.api.file_collection import FileCollection
 
 class Distribution(Resource):
     def __init__(self, json_data = None):
@@ -37,6 +42,15 @@ class Distribution(Resource):
 
     def get_version(self):
         return self._get_field("version")
+
+    def dump(self, output_folder):
+        dist_folder = os.path.join(output_folder, self.get_name())
+        path.ensure(dist_folder)
+        self.dump_json(os.path.join(dist_folder, "definition.json"))
+
+        # Dump kickstart
+        kickstart = FileCollection().get_resource(self.get_kickstart())
+        kickstart.dump(dist_folder, "kickstart")
 
     def _show(self, indent = 0):
         super(Distribution, self)._show(indent)

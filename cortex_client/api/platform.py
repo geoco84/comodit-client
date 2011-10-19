@@ -1,3 +1,5 @@
+import os
+
 from resource import Resource
 from host import SettingFactory
 
@@ -26,6 +28,10 @@ class Platform(Resource):
 
     def get_version(self):
         return self._get_field("version")
+
+    def dump(self, dest_folder):
+        plat_file = os.path.join(dest_folder, self.get_name() + ".json")
+        self.dump_json(plat_file)
 
     def _show(self, indent = 0):
         super(Platform, self)._show(indent)
