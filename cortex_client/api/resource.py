@@ -1,12 +1,21 @@
 from cortex_client.util.json_wrapper import JsonWrapper
+from cortex_client.api.exceptions import PythonApiException
 
 class Resource(JsonWrapper):
-    def __init__(self, api, resource_collection, json_data = None):
+    def __init__(self, api = None, resource_collection = None, json_data = None):
         super(Resource, self).__init__(json_data)
+        if(api):
+            self.set_api(api)
+        if(resource_collection):
+            self.set_collection(resource_collection)
+
+    def set_api(self, api):
         self._api = api
         self._client = api.get_client()
-        self._resource = resource_collection.get_path()
-        self._resource_collection = resource_collection
+
+    def set_collection(self, collection):
+        self._resource = collection.get_path()
+        self._resource_collection = collection
 
     def get_uuid(self):
         return self._get_field("uuid")
@@ -27,6 +36,9 @@ class Resource(JsonWrapper):
         self._set_field("description", description)
 
     def commit(self, force = False):
+        if(self._client is None):
+            raise PythonApiException("API is not set")
+
         parameters = {}
         if(force):
             parameters["force"] = "true"
@@ -36,9 +48,15 @@ class Resource(JsonWrapper):
                                         parameters))
 
     def create(self):
+        if(self._resource_collection is None):
+            raise PythonApiException("Collection is not set")
+
         self._resource_collection.add_resource(self)
 
     def delete(self):
+        if(self._client is None):
+            raise PythonApiException("API is not set")
+
         self.set_json(self._client.delete(self._resource + "/" +
                                                     self.get_uuid()))
 
