@@ -1,7 +1,3 @@
-import os
-
-import cortex_client.util.path as path
-
 from resource import Resource
 
 class Distribution(Resource):
@@ -41,13 +37,6 @@ class Distribution(Resource):
 
     def get_version(self):
         return self._get_field("version")
-
-    def dump(self, dist_folder):
-        path.ensure(dist_folder)
-        self.dump_json(os.path.join(dist_folder, "definition.json"))
-
-    def load(self, input_folder):
-        raise NotImplementedError
 
     def _show(self, indent = 0):
         super(Distribution, self)._show(indent)

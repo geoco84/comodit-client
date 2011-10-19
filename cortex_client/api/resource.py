@@ -1,5 +1,9 @@
+import os
+
 from cortex_client.util.json_wrapper import JsonWrapper
 from cortex_client.api.exceptions import PythonApiException
+
+import cortex_client.util.path as path
 
 class Resource(JsonWrapper):
     def __init__(self, api = None, resource_collection = None, json_data = None):
@@ -74,8 +78,10 @@ class Resource(JsonWrapper):
         print " "*indent, "Name:", self.get_name()
         print " "*indent, "Description:", self.get_description()
 
-    def dump(self, output_folder):
-        raise NotImplementedError
+    def dump(self, dest_folder):
+        path.ensure(dest_folder)
+        plat_file = os.path.join(dest_folder, "definition.json")
+        self.dump_json(plat_file)
 
     def load(self, input_folder):
-        raise NotImplementedError
+        self.load_json(os.path.join(input_folder, "definition.json"))

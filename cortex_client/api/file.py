@@ -1,4 +1,4 @@
-import os, json
+import os
 
 from cortex_client.util import path
 from resource import Resource
@@ -66,7 +66,12 @@ class File(Resource):
         self._content_to_upload = file_name
 
     def create(self, force = False):
-        template_file_name = self.get_name()
+        template_file_name = None
+        if(self._content_to_upload):
+            template_file_name = self._content_to_upload
+        else:
+            template_file_name = self.get_name()
+
         if(not os.path.exists(template_file_name)):
             raise PythonApiException("File "+template_file_name+" does not exist.")
 
@@ -77,6 +82,7 @@ class File(Resource):
 
         self.set_json(self._api.get_client().update(self._resource + "/" + uuid + "/_meta",
                                       self.get_json(), parameters))
+        self._content_to_upload = None
 
     def _show(self, indent = 0):
         print " "*indent, "UUID:", self.get_uuid()
@@ -109,8 +115,8 @@ class File(Resource):
         path.ensure(dest_folder)
         with open(os.path.join(dest_folder, self.get_name()), 'w') as f:
             f.write(self.get_content())
-        with open(os.path.join(dest_folder, "definition.json"), 'w') as f:
-            f.write(json.dumps(self.get_json(), sort_keys=True, indent=4))
+        self.dump_json(os.path.join(dest_folder, "definition.json"))
 
     def load(self, input_folder):
-        raise NotImplementedError
+        self.load_json(os.path.join(input_folder, "definition.json"))
+        self.set_content(os.path.join(input_folder, self.get_name()))

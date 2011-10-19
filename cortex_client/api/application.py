@@ -1,7 +1,3 @@
-import os
-
-import cortex_client.util.path as path
-
 from cortex_client.util.json_wrapper import JsonWrapper, StringFactory
 from resource import Resource
 
@@ -61,6 +57,9 @@ class ApplicationFile(ApplicationResource):
 
     def get_template_uuid(self):
         return self._get_field("template")
+
+    def set_template_uuid(self, uuid):
+        self._set_field("template", uuid)
 
     def show(self, indent = 0):
         print " "*indent, self.get_name()+":"
@@ -158,13 +157,6 @@ class Application(Resource):
 
     def get_version(self):
         return self._get_field("version")
-
-    def dump(self, output_dir):
-        path.ensure(output_dir)
-        self.dump_json(os.path.join(output_dir, "definition.json"))
-
-    def load(self, input_folder):
-        self.load_json(os.path.join(input_folder, "definition.json"))
 
     def _show(self, indent = 0):
         print " "*indent, "UUID:", self.get_uuid()

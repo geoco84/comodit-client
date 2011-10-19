@@ -7,7 +7,7 @@ class Collection(object):
         return self._resource_path
 
     def add_resource(self, resource):
-        result = self._client.create(self._resource_path,
+        result = self._api.get_client().create(self._resource_path,
                                                resource.get_json())
         resource.set_json(result)
 

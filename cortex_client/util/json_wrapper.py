@@ -44,6 +44,9 @@ class JsonWrapper(object):
         print json.dumps(self.__json_data)
 
     def dump_json(self, output_file, sort_keys=True, indent=4):
-        meta = json.dumps(self.__json_data, sort_keys=sort_keys, indent=indent)
-        with open(os.path.join(output_file), 'w') as f:
-            f.write(meta)
+        with open(output_file, 'w') as f:
+            json.dump(self.__json_data, f, sort_keys=sort_keys, indent=indent)
+
+    def load_json(self, input_file):
+        with open(os.path.join(input_file), 'r') as f:
+            self.__json_data = json.load(f)

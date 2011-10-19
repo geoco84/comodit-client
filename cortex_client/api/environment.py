@@ -1,7 +1,3 @@
-import os
-
-import cortex_client.util.path as path
-
 from resource import Resource
 from cortex_client.util.json_wrapper import StringFactory
 
@@ -9,17 +5,6 @@ class Environment(Resource):
     def __init__(self, api, json_data = None):
         super(Environment, self).__init__(api, api.get_environment_collection(),
                                           json_data)
-
-    def dump(self, env_folder):
-        path.ensure(env_folder)
-        self.dump_json(os.path.join(env_folder, "definition.json"))
-
-        hosts = self._api.get_host_collection().get_resources({"environmentId" : self.get_uuid()})
-        for h in hosts:
-            h.dump(os.path.join(env_folder, h.get_name()))
-
-    def load(self, input_folder):
-        raise NotImplementedError
 
     def _show(self, indent = 0):
         print " "*indent, "UUID:", self.get_uuid()

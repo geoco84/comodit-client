@@ -1,7 +1,3 @@
-import os
-
-import cortex_client.util.path as path
-
 from cortex_client.api.resource import Resource
 from cortex_client.rest.exceptions import ApiException
 from cortex_client.util.json_wrapper import JsonWrapper
@@ -97,13 +93,6 @@ class Host(Resource):
         env_uuid = self.get_environment()
         env = self._api.get_environment_collection().get_resource(env_uuid)
         return env.get_identifier() + "/" + self.get_name()
-
-    def dump(self, host_folder):
-        path.ensure(host_folder)
-        self.dump_json(os.path.join(host_folder, "definition.json"))
-
-    def load(self, input_folder):
-        raise NotImplementedError
 
     def _show(self, indent = 0):
         print " "*indent, "UUID:", self.get_uuid()
