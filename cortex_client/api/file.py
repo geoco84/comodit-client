@@ -57,6 +57,9 @@ class File(Resource):
     def set_parameters(self, parameters):
         self._set_list_field("parameters", parameters)
 
+    def add_parameter(self, parameter):
+        self._add_to_list_field("parameters", parameter)
+
     def get_content(self):
         content = self._api.get_client().read(self._resource + "/" +
                                               self.get_uuid(), decode=False)

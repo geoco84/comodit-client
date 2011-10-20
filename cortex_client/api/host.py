@@ -1,6 +1,7 @@
 from cortex_client.api.resource import Resource
 from cortex_client.rest.exceptions import ApiException
 from cortex_client.util.json_wrapper import JsonWrapper
+from exceptions import PythonApiException
 
 class Setting(JsonWrapper):
     def __init__(self, json_data = None):
@@ -70,6 +71,18 @@ class Host(Resource):
     def set_settings(self, settings):
         self._set_list_field("settings", settings)
 
+    def add_setting(self, setting):
+        self._add_to_list_field("settings", setting)
+
+    def get_appliations(self):
+        return self._get_list_field("applications", SettingFactory())
+
+    def set_applications(self, applications):
+        self._set_list_field("applications", applications)
+        
+    def add_application(self, application):
+        self._add_to_list_field("applications", application)
+
     def get_version(self):
         self._get_field("version")
 
@@ -108,27 +121,36 @@ class Host(Resource):
             s.show(indent=(indent + 2))
             print
 
+    def provision(self):
+        uuid = self.get_uuid()
+        client = self._api.get_client()
+        try:
+            client.update("provisioner/_provision",
+                      parameters={"hostId":uuid}, decode=False)
+        except ApiException, e:
+            raise PythonApiException("Unable to provision host", e)
+
     def start(self):
         result = self._api.get_client().update("hosts/"+self.get_uuid()+"/_start", decode=False)
         if(result.getcode() != 202):
-            raise "Call not accepted by server"
+            raise PythonApiException("Call not accepted by server")
 
     def pause(self):
         result = self._api.get_client().update("hosts/"+self.get_uuid()+"/_pause", decode=False)
         if(result.getcode() != 202):
-            raise "Call not accepted by server"
+            raise PythonApiException("Call not accepted by server")
 
     def resume(self):
         result = self._api.get_client().update("hosts/"+self.get_uuid()+"/_resume", decode=False)
         if(result.getcode() != 202):
-            raise "Call not accepted by server"
+            raise PythonApiException("Call not accepted by server")
 
     def shutdown(self):
         result = self._api.get_client().update("hosts/"+self.get_uuid()+"/_stop", decode=False)
         if(result.getcode() != 202):
-            raise "Call not accepted by server"
+            raise PythonApiException("Call not accepted by server")
 
     def poweroff(self):
         result = self._api.get_client().update("hosts/"+self.get_uuid()+"/_off", decode=False)
         if(result.getcode() != 202):
-            raise "Call not accepted by server"
+            raise PythonApiException("Call not accepted by server")

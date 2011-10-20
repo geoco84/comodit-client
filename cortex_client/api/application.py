@@ -2,7 +2,7 @@ from cortex_client.util.json_wrapper import JsonWrapper, StringFactory
 from resource import Resource
 
 class ApplicationResource(JsonWrapper):
-    def __init__(self, json_data):
+    def __init__(self, json_data = None):
         super(ApplicationResource, self).__init__(json_data)
 
     def get_name(self):
@@ -136,6 +136,9 @@ class Application(Resource):
 
     def set_packages(self, packages):
         self._set_list_field("packages", packages)
+
+    def add_package(self, package):
+        self._add_to_list_field("packages", package)
 
     def get_services(self):
         return self._get_list_field("services", ServiceFactory())

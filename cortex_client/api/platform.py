@@ -23,6 +23,9 @@ class Platform(Resource):
     def set_settings(self, owner):
         return self._set_list_field("settings", owner)
 
+    def add_setting(self, setting):
+        self._add_to_list_field("settings", setting)
+
     def get_version(self):
         return self._get_field("version")
 

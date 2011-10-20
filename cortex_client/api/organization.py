@@ -9,9 +9,6 @@ class Organization(Resource):
     def get_environments(self):
         return self._get_list_field("environments", StringFactory())
 
-    def set_environments(self, environments):
-        return self._set_list_field("environments", environments)
-
     def get_version(self):
         return self._get_field("version")
 

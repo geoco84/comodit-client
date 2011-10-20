@@ -70,10 +70,7 @@ class HostsController(ResourceController):
 
     def _provision(self, argv):
         host = self._get_resource(argv)
-        uuid = host.get_uuid()
-        client = CortexApi.get_client()
-        client.update("provisioner/_provision",
-                      parameters={"hostId":uuid}, decode=False)
+        host.provision()
 
     def _start(self, argv):
         host = self._get_resource(argv)

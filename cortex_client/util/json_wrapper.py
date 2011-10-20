@@ -28,10 +28,18 @@ class JsonWrapper(object):
                 object_list.append(factory.new_object(j))
         return object_list
 
+    def _add_to_list_field(self, field, value):
+        if(not self.__json_data.has_key(field)):
+            self.__json_data[field] = []
+        if(isinstance(value, basestring)):
+            self.__json_data[field].append(value)
+        else:
+            self.__json_data[field].append(value.get_json())
+
     def _set_list_field(self, field, object_list):
         json_list = []
         for o in object_list:
-            object_list.append(o.get_json())
+            json_list.append(o.get_json())
         self.__json_data[field] = json_list
 
     def set_json(self, json_data):

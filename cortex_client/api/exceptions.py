@@ -1,7 +1,8 @@
 class PythonApiException(Exception):
-    def __init__(self, message):
-        self.message = message
+    def __init__(self, message, cause = None):
+        super(PythonApiException, self).__init__(message)
+        self.cause = cause
 
 class NotFoundException(PythonApiException):
     def __init__(self, message):
-        self.message = message
+        super(PythonApiException, self).__init__(message)

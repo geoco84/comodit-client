@@ -10,6 +10,14 @@ from organization_collection import OrganizationCollection
 from platform_collection import PlatformCollection
 from user_collection import UserCollection
 
+from application import Application
+from platform import Platform
+from distribution import Distribution
+from file import File
+from organization import Organization
+from environment import Environment
+from host import Host
+
 class CortexApi(object):
 
     def __init__(self, endpoint, username, password):
@@ -58,3 +66,24 @@ class CortexApi(object):
 
     def get_user_collection(self):
         return self._user_collection
+
+    def new_application(self):
+        return Application(self)
+
+    def new_platform(self):
+        return Platform(self)
+
+    def new_distribution(self):
+        return Distribution(self)
+
+    def new_file(self):
+        return File(self)
+
+    def new_organization(self):
+        return Organization(self)
+
+    def new_environment(self):
+        return Environment(self)
+
+    def new_host(self):
+        return Host(self)
