@@ -18,10 +18,6 @@ from cortex_client.control.exceptions import MissingException
 
 class ResourceController(AbstractController):
 
-    _resource = ""
-    _template = ""
-    _parameters = {}
-
     def __init__(self):
         super(ResourceController, self).__init__()
         self._register(["l", "list"], self._list)
