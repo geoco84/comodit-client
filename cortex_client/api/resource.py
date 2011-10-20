@@ -39,6 +39,9 @@ class Resource(JsonWrapper):
     def set_description(self, description):
         self._set_field("description", description)
 
+    def update(self):
+        self.set_json(self._client.read(self._resource + "/" + self.get_uuid()))
+
     def commit(self, force = False):
         if(self._client is None):
             raise PythonApiException("API is not set")

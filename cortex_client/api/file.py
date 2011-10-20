@@ -107,6 +107,9 @@ class File(Resource):
                                                           self.get_uuid())
             self._content_to_upload = None
 
+    def update(self):
+        self.set_json(self._client.read(self._resource + "/" + self.get_uuid() +"/_meta"))
+
     def commit(self, force = False):
         self._commit_content(force)
         self._commit_meta(force)
