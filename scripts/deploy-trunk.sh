@@ -4,7 +4,7 @@ echo "Building cortex-client from trunk"
 cd `dirname $0`
 cd ..
 
-git checkout python_api
+git checkout dev
 git pull
 
 NAME="cortex-client"
