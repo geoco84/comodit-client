@@ -78,6 +78,7 @@ class ResourceAction(Action):
     def _update_meta_data(self, uuid_conversion_table):
         if(isinstance(self._res_object, Application)):
             app = self._res_object
+
             # Update templates' UUID
             app_files = app.get_files()
             for app_file in app_files:
@@ -90,13 +91,10 @@ class ResourceAction(Action):
         elif(isinstance(self._res_object, Platform)):
             pass
         elif(isinstance(self._res_object, Organization)):
-            org = self._res_object
-            # Clear environments (they will be re-added later)
-            org.set_environments([])
+            pass
         elif(isinstance(self._res_object, Environment)):
             env = self._res_object
-            # Clear hosts (they will be re-added later)
-            env.set_hosts([])
+
             # Update organization
             env.set_organization(uuid_conversion_table.getNewUuid(env.get_organization()))
         elif(isinstance(self._res_object, Host)):
