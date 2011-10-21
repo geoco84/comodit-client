@@ -1,9 +1,14 @@
 from resource import Resource
 
 class Distribution(Resource):
-    def __init__(self, api, json_data = None):
-        super(Distribution, self).__init__(api, api.get_distribution_collection(),
-                                           json_data)
+    def __init__(self, api = None, json_data = None):
+        super(Distribution, self).__init__(json_data)
+        if(api):
+            self.set_api(api)
+
+    def set_api(self, api):
+        super(Distribution, self).set_api(api)
+        self._set_collection(api.get_distribution_collection())
 
     def get_kickstart(self):
         return self._get_field("kickstart")

@@ -17,14 +17,6 @@ from cortex_client.rest.exceptions import ApiException
 from actions import *
 from exceptions import SyncException
 
-from cortex_client.api.file import File
-from cortex_client.api.application import Application
-from cortex_client.api.distribution import Distribution
-from cortex_client.api.organization import Organization
-from cortex_client.api.environment import Environment
-from cortex_client.api.host import Host
-from cortex_client.api.platform import Platform
-
 class SyncController(AbstractController):
 
     def __init__(self):
@@ -131,7 +123,7 @@ Actions:
         path.ensure(os.path.join(self._root, "platforms"))
 
     def _pushTemplate(self, src_folder):
-        f = File(self._api, self._api.get_file_collection())
+        f = self._api.new_file()
         f.load(src_folder)
 
         local_uuid = f.get_uuid()
@@ -156,7 +148,7 @@ Actions:
         app_folder = os.path.join(self._root, "applications")
         apps_list = os.listdir(app_folder)
         for app_name in apps_list:
-            app = Application(self._api, self._api.get_application_collection())
+            app = self._api.new_application()
             app.load(os.path.join(app_folder, app_name))
             self._pushResource(app, self._remote_applications)
 
@@ -207,7 +199,7 @@ Actions:
         dist_folder = os.path.join(self._root, "distributions")
         dists_list = os.listdir(dist_folder)
         for dist_name in dists_list:
-            dist = Distribution(self._api, self._api.get_application_collection())
+            dist = self._api.new_distribution()
             dist.load(os.path.join(dist_folder, dist_name))
             self._pushResource(dist, self._remote_distributions)
 
@@ -243,7 +235,7 @@ Actions:
             self._pushOrganization(os.path.join(org_folder, org))
 
     def _pushOrganization(self, org_folder):
-        org = Organization(self._api, self._api.get_organization_collection())
+        org = self._api.new_organization()
         org.load(org_folder)
 
         # Create organization
@@ -270,7 +262,7 @@ Actions:
                 self._pushEnvironment(env_folder, available_environments)
 
     def _pushEnvironment(self, env_folder, available_environments):
-        env = Environment(self._api, self._api.get_environment_collection())
+        env = self._api.new_environment()
         env.load(env_folder)
 
         self._pushResource(env, available_environments)
@@ -284,7 +276,7 @@ Actions:
 
     def _pushHost(self, env_folder, host):
         host_folder = os.path.join(env_folder, host)
-        host = Host(self._api, self._api.get_host_collection())
+        host = self._api.new_host()
         host.load(host_folder)
 
         # Create host
@@ -303,7 +295,7 @@ Actions:
         plats_folder = os.path.join(self._root, "platforms")
         plats_list = os.listdir(plats_folder)
         for plat_name in plats_list:
-            plat = Platform(self._api, self._api.get_platform_collection())
+            plat = self._api.new_platform()
             plat_folder = os.path.join(plats_folder, plat_name)
             plat.load(plat_folder)
             self._pushResource(plat, self._remote_platforms)

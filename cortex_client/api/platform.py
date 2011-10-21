@@ -2,8 +2,14 @@ from resource import Resource
 from host import SettingFactory
 
 class Platform(Resource):
-    def __init__(self, api, json_data = None):
-        super(Platform, self).__init__(api, api.get_platform_collection(), json_data)
+    def __init__(self, api = None, json_data = None):
+        super(Platform, self).__init__(json_data)
+        if(api):
+            self.set_api(api)
+
+    def set_api(self, api):
+        super(Platform, self).set_api(api)
+        self._set_collection(api.get_platform_collection())
 
     def get_driver(self):
         return self._get_field("driver")

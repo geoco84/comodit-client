@@ -2,9 +2,14 @@ from resource import Resource
 from cortex_client.util.json_wrapper import StringFactory
 
 class Environment(Resource):
-    def __init__(self, api, json_data = None):
-        super(Environment, self).__init__(api, api.get_environment_collection(),
-                                          json_data)
+    def __init__(self, api = None, json_data = None):
+        super(Environment, self).__init__(json_data)
+        if(api):
+            self.set_api(api)
+
+    def set_api(self, api):
+        super(Environment, self).set_api(api)
+        self._set_collection(api.get_environment_collection())
 
     def _show(self, indent = 0):
         print " "*indent, "UUID:", self.get_uuid()

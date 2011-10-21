@@ -41,9 +41,15 @@ class ParameterFactory(object):
 
 
 class File(Resource):
-    def __init__(self, api, json_data = None):
-        super(File, self).__init__(api, api.get_file_collection(), json_data)
+    def __init__(self, api = None, json_data = None):
+        super(File, self).__init__(json_data)
         self._content_to_upload = None
+        if(api):
+            self.set_api(api)
+
+    def set_api(self, api):
+        super(File, self).set_api(api)
+        self._set_collection(api.get_file_collection())
 
     def get_description(self):
         raise NotImplementedError
@@ -69,13 +75,11 @@ class File(Resource):
         self._content_to_upload = file_name
 
     def create(self, force = False):
-        template_file_name = None
-        if(self._content_to_upload):
-            template_file_name = self._content_to_upload
-        else:
-            template_file_name = self.get_name()
+        if not self._content_to_upload:
+            raise PythonApiException("File has no content")
 
-        if(not os.path.exists(template_file_name)):
+        template_file_name = self._content_to_upload
+        if not os.path.exists(template_file_name):
             raise PythonApiException("File "+template_file_name+" does not exist.")
 
         uuid = self._api.get_client().upload_new_file(template_file_name)

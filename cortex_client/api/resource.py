@@ -6,18 +6,11 @@ from cortex_client.api.exceptions import PythonApiException
 import cortex_client.util.path as path
 
 class Resource(JsonWrapper):
-    def __init__(self, api = None, resource_collection = None, json_data = None):
-        super(Resource, self).__init__(json_data)
-        if(api):
-            self.set_api(api)
-        if(resource_collection):
-            self.set_collection(resource_collection)
-
     def set_api(self, api):
         self._api = api
         self._client = api.get_client()
 
-    def set_collection(self, collection):
+    def _set_collection(self, collection):
         self._resource = collection.get_path()
         self._resource_collection = collection
 
@@ -64,8 +57,7 @@ class Resource(JsonWrapper):
         if(self._client is None):
             raise PythonApiException("API is not set")
 
-        self.set_json(self._client.delete(self._resource + "/" +
-                                                    self.get_uuid()))
+        self.set_json(self._client.delete(self._resource + "/" + self.get_uuid()))
 
     def show(self, as_json = False, indent = 0):
         if(as_json):

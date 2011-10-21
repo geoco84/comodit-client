@@ -12,10 +12,7 @@ class JsonWrapper(object):
             self.__json_data = {}
 
     def _get_field(self, field):
-        if(self.__json_data.has_key(field)):
-            return self.__json_data[field]
-        else:
-            return None
+        return self.__json_data.get(field, None)
 
     def _set_field(self, field, value):
         self.__json_data[field] = value

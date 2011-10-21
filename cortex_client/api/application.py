@@ -127,9 +127,14 @@ class HandlerFactory(object):
 
 
 class Application(Resource):
-    def __init__(self, api, json_data = None):
-        super(Application, self).__init__(api, api.get_application_collection(),
-                                          json_data)
+    def __init__(self, api = None, json_data = None):
+        super(Application, self).__init__(json_data)
+        if(api):
+            self.set_api(api)
+
+    def set_api(self, api):
+        super(Application, self).set_api(api)
+        self._set_collection(api.get_application_collection())
 
     def get_packages(self):
         return self._get_list_field("packages", PackageFactory())

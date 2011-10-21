@@ -9,10 +9,14 @@ __all__ = ["ChangeRequest",
            "DeleteSettingChangeRequest"]
 
 class ChangeRequest(Resource):
-    def __init__(self, api, json_data = None):
-        super(ChangeRequest, self).__init__(api,
-                                            api.get_change_request_collection(),
-                                            json_data)
+    def __init__(self, api = None, json_data = None):
+        super(ChangeRequest, self).__init__(json_data)
+        if(api):
+            self.set_api(api)
+
+    def set_api(self, api):
+        super(ChangeRequest, self).set_api(api)
+        self._set_collection(api.get_change_request_collection())
 
     def get_owner(self):
         return self._get_field("owner")
@@ -82,7 +86,7 @@ class ChangeRequest(Resource):
 
 
 class ApplicationChangeRequest(ChangeRequest):
-    def __init__(self, api, json_data = None):
+    def __init__(self, api = None, json_data = None):
         super(ApplicationChangeRequest, self).__init__(api, json_data)
 
     def get_application(self):
@@ -99,20 +103,20 @@ class ApplicationChangeRequest(ChangeRequest):
 
 class InstallApplicationChangeRequest(ApplicationChangeRequest):
     ACTION = "install_application"
-    def __init__(self, api, json_data = None):
+    def __init__(self, api = None, json_data = None):
         super(InstallApplicationChangeRequest, self).__init__(api, json_data)
         self._set_action(self.ACTION)
 
 
 class UninstallApplicationChangeRequest(ApplicationChangeRequest):
     ACTION = "uninstall_application"
-    def __init__(self, api, json_data = None):
+    def __init__(self, api = None, json_data = None):
         super(UninstallApplicationChangeRequest, self).__init__(api, json_data)
         self._set_action(self.ACTION)
 
 
 class SettingChangeRequest(ChangeRequest):
-    def __init__(self, api, json_data = None):
+    def __init__(self, api = None, json_data = None):
         super(SettingChangeRequest, self).__init__(api, json_data)
 
     def get_value(self):
@@ -128,7 +132,7 @@ class SettingChangeRequest(ChangeRequest):
 
 class AddSettingChangeRequest(SettingChangeRequest):
     ACTION = "add_setting"
-    def __init__(self, api, json_data = None):
+    def __init__(self, api = None, json_data = None):
         super(AddSettingChangeRequest, self).__init__(api, json_data)
         self._set_action(self.ACTION)
 
@@ -146,7 +150,7 @@ class AddSettingChangeRequest(SettingChangeRequest):
 
 class UpdateSettingChangeRequest(SettingChangeRequest):
     ACTION = "update_setting"
-    def __init__(self, api, json_data = None):
+    def __init__(self, api = None, json_data = None):
         super(UpdateSettingChangeRequest, self).__init__(api, json_data)
         self._set_action(self.ACTION)
 
@@ -157,7 +161,7 @@ class UpdateSettingChangeRequest(SettingChangeRequest):
 
 class DeleteSettingChangeRequest(SettingChangeRequest):
     ACTION = "delete_setting"
-    def __init__(self, api, json_data = None):
+    def __init__(self, api = None, json_data = None):
         super(DeleteSettingChangeRequest, self).__init__(api, json_data)
         self._set_action(self.ACTION)
 

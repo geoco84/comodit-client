@@ -38,8 +38,14 @@ class HostInfo(JsonWrapper):
         print " "*indent, self.get_state()
 
 class Host(Resource):
-    def __init__(self, api, json_data = None):
-        super(Host, self).__init__(api, api.get_host_collection(), json_data)
+    def __init__(self, api = None, json_data = None):
+        super(Host, self).__init__(json_data)
+        if(api):
+            self.set_api(api)
+
+    def set_api(self, api):
+        super(Host, self).set_api(api)
+        self._set_collection(api.get_host_collection())
 
     def get_organization(self):
         return self._get_field("organization")
@@ -151,6 +157,9 @@ class Host(Resource):
             raise PythonApiException("Call not accepted by server")
 
     def poweroff(self):
-        result = self._api.get_client().update("hosts/"+self.get_uuid()+"/_off", decode=False)
-        if(result.getcode() != 202):
-            raise PythonApiException("Call not accepted by server")
+        try:
+            result = self._api.get_client().update("hosts/"+self.get_uuid()+"/_off", decode=False)
+            if(result.getcode() != 202):
+                raise PythonApiException("Call not accepted by server")
+        except ApiException, e:
+            raise PythonApiException("Unable to poweroff host", e)
