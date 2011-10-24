@@ -20,5 +20,5 @@ rpmbuild -ba rpmbuild/SPECS/${NAME}.spec
 
 for platform in "${PLATFORMS[@]}"
 do
-    mock -r ${platform} --rebuild $HOME/rpmbuild/SRPMS/${NAME}-${VERSION}-${RELEASE}*.src.rpm
+    /usr/bin/mock -r ${platform} --rebuild $HOME/rpmbuild/SRPMS/${NAME}-${VERSION}-${RELEASE}*.src.rpm
 done
