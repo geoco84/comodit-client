@@ -104,7 +104,7 @@ class SyncController(AbstractController):
             self._remote_platforms[plat.get_name()] = plat
 
     def _help(self, argv):
-        print """You must provide an action to perfom.
+        print """You must provide an action to perform.
 
 Actions:
     pull            Retrieves data from cortex server (local data are overwrit-
