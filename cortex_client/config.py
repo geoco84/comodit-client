@@ -29,7 +29,7 @@ class ConfigException(Exception):
         """
         Creates a ConfigException instance.
         @param message: A message
-        @type message: string
+        @type message: String
         """
         self.msg = message
 

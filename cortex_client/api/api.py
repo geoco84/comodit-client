@@ -1,10 +1,8 @@
 # coding: utf-8
 """
-This module defines the access point to a cortex-server. An instance of
-CortexApi class provides an access to resources and services exhibited by
-a particular cortex-server.
+Cortex server access point module. An instance of CortexApi class provides an
+access to resources and services exhibited by a particular cortex-server.
 
-@author: Gérard Dethier
 @organization: Guardis
 @copyright: 2011 Guardis SPRL, Liège, Belgium.
 """
@@ -61,11 +59,11 @@ class CortexApi(object):
         a user name and a password for authentication.
         
         @param endpoint: The URL of a cortex-server's REST API.
-        @type endpoint: string
+        @type endpoint: String
         @param username: A user name
-        @type username: string
+        @type username: String
         @param password: A password
-        @type password: string
+        @type password: String
         """
 
         self._client = Client(endpoint, username, password)
