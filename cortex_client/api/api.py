@@ -1,3 +1,9 @@
+"""
+This module defines the access point to a cortex-server. An instance of
+CortexApi class provides an access to resources and services exhibited by
+a particular cortex-server.
+"""
+
 from cortex_client.rest.client import Client
 from directory import Directory
 from rendering_service import RenderingService
