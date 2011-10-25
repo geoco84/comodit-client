@@ -1,17 +1,55 @@
+# coding: utf-8
+"""
+Application module.
+
+@organization: Guardis
+@copyright: 2011 Guardis SPRL, Liège, Belgium.
+"""
+
 from cortex_client.util.json_wrapper import JsonWrapper, StringFactory
 from resource import Resource
 
 class ApplicationResource(JsonWrapper):
+    """
+    Base resource associated to an application.
+    """
+
     def __init__(self, json_data = None):
+        """
+        Sets the state of a new instance of ApplicationResource with
+        given state.
+        
+        @param json_data: A quasi-JSON representation of object's state
+        @type json_data: dict
+        """
         super(ApplicationResource, self).__init__(json_data)
 
     def get_name(self):
+        """
+        Provides the name of the resource
+        
+        @return: The name of the resource
+        @rtype: String
+        """
         return self._get_field("name")
 
     def set_name(self, name):
+        """
+        Sets the name of the resource
+
+        @param name: The new name of the resource
+        @type name: String
+        """
         return self._set_field("name", name)
 
     def show(self, indent = 0):
+        """
+        Prints this resource.
+
+        @param indent: The number of white spaces inserted before each printed
+        line
+        @type indent: Integer
+        """
         print " "*indent, self.get_name()
 
 
@@ -32,9 +70,9 @@ class Service(ApplicationResource):
         return self._get_field("enabled")
 
     def show(self, indent = 0):
-        print " "*indent, self.get_name()+":"
-        print " "*(indent+2), "enabled:", self.get_enabled()
-        print " "*(indent+2), "running", self.get_running()
+        print " "*indent, self.get_name() + ":"
+        print " "*(indent + 2), "enabled:", self.get_enabled()
+        print " "*(indent + 2), "running", self.get_running()
 
 
 class ServiceFactory(object):
@@ -62,12 +100,12 @@ class ApplicationFile(ApplicationResource):
         self._set_field("template", uuid)
 
     def show(self, indent = 0):
-        print " "*indent, self.get_name()+":"
-        print " "*(indent+2), "owner:", self.get_owner()
-        print " "*(indent+2), "group:", self.get_group()
-        print " "*(indent+2), "mode:", self.get_mode()
-        print " "*(indent+2), "path:", self.get_path()
-        print " "*(indent+2), "template:", self.get_template_uuid()
+        print " "*indent, self.get_name() + ":"
+        print " "*(indent + 2), "owner:", self.get_owner()
+        print " "*(indent + 2), "group:", self.get_group()
+        print " "*(indent + 2), "mode:", self.get_mode()
+        print " "*(indent + 2), "path:", self.get_path()
+        print " "*(indent + 2), "template:", self.get_template_uuid()
 
 
 class ApplicationFileFactory(object):
