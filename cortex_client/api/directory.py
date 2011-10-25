@@ -1,6 +1,11 @@
 from exceptions import NotFoundException
 
 class Directory(object):
+    """
+    An instance of Directory is an access point to the directory service of a
+    cortex server. The directory allows to obtain the UUID of an entity given
+    a name or a path.
+    """
     def __init__(self, api):
         self._client = api.get_client()
 
