@@ -40,8 +40,8 @@ class JsonWrapper(object):
 
     def __init__(self, json_data = None):
         """
-        Creates an instance of JsonWrapper.
-
+        Instantiates the class.
+        
         @param json_data: A quasi-JSON representation
         @type json_data: String, dict or list
         """
