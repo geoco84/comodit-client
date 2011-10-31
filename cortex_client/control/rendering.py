@@ -97,11 +97,11 @@ class RenderingController(AbstractController):
 
                 # Set permissions
                 mode = f.get_mode()
+                os.chmod(output_file, int(mode, 8))
                 owner = f.get_owner()
                 owner_id = pwd.getpwnam(owner)[2]
                 group = f.get_group()
                 group_id = grp.getgrnam(group)[2]
-                os.chmod(output_file, mode)
                 os.chown(output_file, owner_id, group_id)
 
     def _help(self, argv):
