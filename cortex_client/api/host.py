@@ -3,6 +3,30 @@ from cortex_client.rest.exceptions import ApiException
 from cortex_client.util.json_wrapper import JsonWrapper, StringFactory
 from exceptions import PythonApiException
 
+class Property(JsonWrapper):
+    def __init__(self, json_data = None):
+        super(Property, self).__init__(json_data)
+
+    def get_key(self):
+        return self._get_field("key")
+
+    def set_key(self, key):
+        return self._set_field("key", key)
+
+    def get_value(self):
+        return self._get_field("value")
+
+    def set_value(self, value):
+        return self._set_field("value", value)
+
+    def show(self, indent = 0):
+        print " "*indent, "Key:", self.get_key()
+        print " "*indent, "Value:", self.get_value()
+
+class PropertyFactory(object):
+    def new_object(self, json_data):
+        return Property(json_data)
+
 class Setting(JsonWrapper):
     def __init__(self, json_data = None):
         super(Setting, self).__init__(json_data)
@@ -80,12 +104,21 @@ class Host(Resource):
     def add_setting(self, setting):
         self._add_to_list_field("settings", setting)
 
+    def get_properties(self):
+        return self._get_list_field("properties", PropertyFactory())
+
+    def set_properties(self, properties):
+        self._set_list_field("properties", properties)
+
+    def add_property(self, prop):
+        self._add_to_list_field("properties", prop)
+
     def get_applications(self):
         return self._get_list_field("applications", StringFactory())
 
     def set_applications(self, applications):
         self._set_list_field("applications", applications)
-        
+
     def add_application(self, application):
         self._add_to_list_field("applications", application)
 
@@ -96,7 +129,7 @@ class Host(Resource):
         if(delete_vm):
             try:
                 self._api.get_client().update("hosts/" + self.get_uuid() + "/_delete",
-                                              decode=False)
+                                              decode = False)
             except ApiException, e:
                 if(e.code == 400):
                     print "Could not delete VM:", e.message
@@ -105,8 +138,10 @@ class Host(Resource):
         self._api.get_client().delete("hosts/" + self.get_uuid())
 
     def get_state(self):
-        result = self._api.get_client().read("hosts/" + self.get_uuid()+"/state")
-        return HostInfo(result)
+        return self._get_field("state")
+
+    def set_state(self, state):
+        self._set_field("state", state)
 
     def get_identifier(self):
         env_uuid = self.get_environment()
@@ -121,10 +156,20 @@ class Host(Resource):
         print " "*indent, "Environment:", self.get_environment()
         print " "*indent, "Platform:", self.get_platform()
         print " "*indent, "Distribution:", self.get_distribution()
+        print " "*indent, "State:", self.get_state()
+
+    def show_settings(self, indent = 0):
         print " "*indent, "Settings:"
         settings = self.get_settings()
         for s in settings:
-            s.show(indent=(indent + 2))
+            s.show(indent = (indent + 2))
+            print
+
+    def show_properties(self, indent = 0):
+        print " "*indent, "Properties:"
+        props = self.get_properties()
+        for p in props:
+            p.show(indent + 2)
             print
 
     def provision(self):
@@ -132,33 +177,33 @@ class Host(Resource):
         client = self._api.get_client()
         try:
             client.update("provisioner/_provision",
-                      parameters={"hostId":uuid}, decode=False)
+                      parameters = {"hostId":uuid}, decode = False)
         except ApiException, e:
             raise PythonApiException("Unable to provision host", e)
 
     def start(self):
-        result = self._api.get_client().update("hosts/"+self.get_uuid()+"/_start", decode=False)
+        result = self._api.get_client().update("hosts/" + self.get_uuid() + "/_start", decode = False)
         if(result.getcode() != 202):
             raise PythonApiException("Call not accepted by server")
 
     def pause(self):
-        result = self._api.get_client().update("hosts/"+self.get_uuid()+"/_pause", decode=False)
+        result = self._api.get_client().update("hosts/" + self.get_uuid() + "/_pause", decode = False)
         if(result.getcode() != 202):
             raise PythonApiException("Call not accepted by server")
 
     def resume(self):
-        result = self._api.get_client().update("hosts/"+self.get_uuid()+"/_resume", decode=False)
+        result = self._api.get_client().update("hosts/" + self.get_uuid() + "/_resume", decode = False)
         if(result.getcode() != 202):
             raise PythonApiException("Call not accepted by server")
 
     def shutdown(self):
-        result = self._api.get_client().update("hosts/"+self.get_uuid()+"/_stop", decode=False)
+        result = self._api.get_client().update("hosts/" + self.get_uuid() + "/_stop", decode = False)
         if(result.getcode() != 202):
             raise PythonApiException("Call not accepted by server")
 
     def poweroff(self):
         try:
-            result = self._api.get_client().update("hosts/"+self.get_uuid()+"/_off", decode=False)
+            result = self._api.get_client().update("hosts/" + self.get_uuid() + "/_off", decode = False)
             if(result.getcode() != 202):
                 raise PythonApiException("Call not accepted by server")
         except ApiException, e:
