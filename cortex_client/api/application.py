@@ -510,7 +510,7 @@ class Application(Resource):
         @return: The version
         @rtype: Integer
         """
-        return self._get_field("version")
+        return int(self._get_field("version"))
 
     def _show(self, indent = 0):
         """
