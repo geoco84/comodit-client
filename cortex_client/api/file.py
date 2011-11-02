@@ -241,7 +241,7 @@ class File(Resource):
     def dump(self, dest_folder):
         path.ensure(dest_folder)
         with open(os.path.join(dest_folder, self.get_name()), 'w') as f:
-            f.write(self.get_content())
+            f.write(self.get_content().read())
         self.dump_json(os.path.join(dest_folder, "definition.json"))
 
     def load(self, input_folder):
