@@ -177,6 +177,14 @@ class InstanceInfo(JsonWrapper):
         """
         return int(self._get_field("vncPort"))
 
+    def get_synapse_state(self):
+        """
+        Provides Synapse's state.
+        @return: Synapse's state (possible values: Up, Down)
+        @rtype: String
+        """
+        return self._get_field("synapseState")
+
     def show(self, indent = 0):
         """
         Prints instance's information to standard output in a user-friendly way.
@@ -188,6 +196,7 @@ class InstanceInfo(JsonWrapper):
         print " "*indent, "State:", self.get_state()
         print " "*indent, "Platform host name:", self.get_platform_hostname()
         print " "*indent, "VNC port:", self.get_vnc_port()
+        print " "*indent, "Synapse state:", self.get_synapse_state()
 
 class Host(Resource):
     """
