@@ -1,7 +1,7 @@
 import httplib, mimetypes, pycurl
 
 def post_multipart(host, selector, fields, files, headers = {}):
-    return post_multipart_httplib(host, selector, fields, files, headers)
+    return post_multipart_pycurl(host, selector, fields, files, headers)
 
 class PyCurlCallBack(object):
     def __init__(self):
@@ -13,7 +13,7 @@ class PyCurlCallBack(object):
 def post_multipart_pycurl(host, selector, fields, files, headers = {}):
     c = pycurl.Curl()
     c.setopt(c.POST, 1)
-    c.setopt(c.URL, host + "/" + selector)
+    c.setopt(c.URL, "http://" + host + selector)
 
     # Build header
     curl_headers = []
@@ -22,43 +22,23 @@ def post_multipart_pycurl(host, selector, fields, files, headers = {}):
     c.setopt(c.HTTPHEADER, curl_headers)
 
     # Add data
-#    for (key, value) in fields:
-#        c.setopt(c.HTTPPOST, [(key, (c.FORM_DATA, value))])
+    for (key, value) in fields:
+        c.setopt(c.HTTPPOST, [(key, value)])
 
     # Add files
     curl_files = []
     for (key, filename, value) in files:
-        curl_files.append((key, (c.FORM_FILE, filename)))
+        curl_files.append((key, (c.FORM_FILE, str(filename))))
     c.setopt(c.HTTPPOST, curl_files)
 
     # Set callback
     callback = PyCurlCallBack()
     c.setopt(c.WRITEFUNCTION, callback.response_callback)
 
-    c.setopt(c.VERBOSE, 1)
     c.perform()
     c.close()
 
     return callback.response
-
-def post_multipart_httplib(host, selector, fields, files, headers = {}):
-    """
-    Post fields and files to an http host as multipart/form-data.
-    fields is a sequence of (name, value) elements for regular form fields.
-    files is a sequence of (name, filename, value) elements for data to be uploaded as files
-    Return the server's response page.
-    """
-    content_type, body = encode_multipart_formdata(fields, files)
-    h = httplib.HTTP(host)
-    h.putrequest('POST', selector)
-    h.putheader('content-type', content_type)
-    h.putheader('content-length', str(len(body)))
-    for key in headers:
-        h.putheader(key, headers[key])
-    h.endheaders()
-    h.send(body)
-    errcode, errmsg, headers = h.getreply()
-    return h.file.read()
 
 def encode_multipart_formdata(fields, files):
     """
