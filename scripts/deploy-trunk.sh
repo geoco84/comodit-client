@@ -1,10 +1,10 @@
 #!/bin/bash
-echo "Building cortex-client from trunk"
+echo "Building cortex-client from master"
 
 cd `dirname $0`
 cd ..
 
-git checkout dev
+git checkout master
 git pull
 
 NAME="cortex-client"
