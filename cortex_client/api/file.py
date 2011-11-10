@@ -110,7 +110,7 @@ class File(JsonWrapper):
     A template may be rendered after values are given to its parameters (see
     L{RenderingService}).
     """
-    def __init__(self, api = None, json_data = None):
+    def __init__(self, json_data = None):
         """
         @param api: An access point.
         @type api: L{CortexApi}
@@ -118,17 +118,6 @@ class File(JsonWrapper):
         @type json_data: dict, list or String
         """
         super(File, self).__init__(json_data)
-        if(api):
-            self.set_api(api)
-
-    def set_api(self, api):
-        """
-        Sets the cortex server access point.
-
-        @param api: An access point.
-        @type api: L{CortexApi}
-        """
-        self._api = api
 
     def get_name(self):
         """

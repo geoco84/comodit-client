@@ -90,8 +90,6 @@ class Client:
                                              [("file", file_name)],
                                              {"Authorization": "Basic " + (self.username + ":" + self.password).encode("base64").rstrip()})
 
-        return json.loads(response);
-
     def _headers(self):
         s = self.username + ":" + self.password
         headers = {
