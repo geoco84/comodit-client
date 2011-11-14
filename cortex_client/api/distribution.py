@@ -105,12 +105,6 @@ class Distribution(Resource):
         """
         return int(self._get_field("version"))
 
-    def commit(self):
-        super(Distribution, self).commit()
-        if self._kickstart:
-            self._kickstart.commit_content()
-            self._kickstart = None
-
     def _show(self, indent = 0):
         super(Distribution, self)._show(indent)
         kickstart = self.get_kickstart()
