@@ -41,7 +41,7 @@ class Distribution(Resource):
         data = self._get_field("kickstart")
         if data is None:
             return None
-        return File(api = self._api, json_data = data)
+        return File(json_data = data)
 
     def set_kickstart(self, kickstart):
         """
@@ -49,7 +49,7 @@ class Distribution(Resource):
         @param kickstart: Kickstart's template
         @type kickstart: L{File}
         """
-        self._set_field("kickstart", kickstart.get_json())
+        self._set_field("kickstart", kickstart)
 
     def set_kickstart_content(self, path):
         self._api.get_client().upload_to_exising_file_with_path(path, self._resource + "/" + self.get_uuid() + "/kickstart")
