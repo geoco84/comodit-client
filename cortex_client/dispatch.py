@@ -90,10 +90,26 @@ def _parse(argv):
     parser.add_option("--debug", dest = "debug", help = "display debug information", action = "store_true", default = False)
     parser.add_option("--version", dest = "version", help = "display version information", action = "store_true", default = False)
 
+    parser.add_option("--options", dest = "show_options", help = "display options", action = "store_true", default = False)
+    parser.add_option("--resources", dest = "show_resources", help = "display resources", action = "store_true", default = False)
+    parser.add_option("--completions", dest = "show_completions", help = "display completions", action = "store_true", default = False)
+
     (globals.options, args) = parser.parse_args()
 
     if globals.options.version:
         print "Cortex command line client, version " + VERSION + ", released on " + RELEASE + "."
+        exit(0)
+
+    if globals.options.show_options:
+        for o in parser.option_list:
+            for so in o._short_opts:
+                print so
+            for lo in o._long_opts:
+                print lo
+        exit(0)
+
+    if globals.options.show_resources:
+        control.router.print_keywords()
         exit(0)
 
     if (len(args) == 0):

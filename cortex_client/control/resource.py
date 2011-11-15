@@ -29,6 +29,9 @@ class ResourceController(AbstractController):
         self._default_action = self._help
 
     def _list(self, argv):
+        if(globals.options.show_completions):
+            return
+
         resources_list = self._get_resources(argv)
         if(len(resources_list) == 0):
             print "No resources to list"
@@ -36,7 +39,24 @@ class ResourceController(AbstractController):
             for r in resources_list:
                 print r.get_uuid(), r.get_identifier()
 
+    def _print_identifiers(self, argv):
+        resources_list = self._get_resources(argv)
+
+        if len(argv) > 0:
+            # Check if completions are available
+            id = argv[0]
+            for res in resources_list:
+                if id == res.get_identifier():
+                    return
+
+        for r in resources_list:
+            print r.get_identifier()
+
     def _show(self, argv):
+        if(globals.options.show_completions):
+            self._print_identifiers(argv)
+            return
+
         res = self._get_resource(argv)
 
         # Display the result
@@ -47,6 +67,9 @@ class ResourceController(AbstractController):
             res.show()
 
     def _add(self, argv):
+        if(globals.options.show_completions):
+            return
+
         options = globals.options
 
         if options.filename:
@@ -67,6 +90,9 @@ class ResourceController(AbstractController):
         res.show(as_json = options.raw)
 
     def _update(self, argv):
+        if(globals.options.show_completions):
+            return
+
         options = globals.options
 
         if options.filename:
@@ -79,7 +105,7 @@ class ResourceController(AbstractController):
         elif len(argv) > 0:
             res = self._get_resource(argv)
             # Edit the resource
-            original = json.dumps(res.get_json(), sort_keys=True, indent=4)
+            original = json.dumps(res.get_json(), sort_keys = True, indent = 4)
             #original = "# To abort the request; just exit your editor without saving this file.\n\n" + original
             updated = edit_text(original)
             #updated = re.sub(r'#.*$', "", updated)
@@ -89,8 +115,14 @@ class ResourceController(AbstractController):
         res.show(as_json = options.raw)
 
     def _delete(self, argv):
+        if(globals.options.show_completions):
+            resources_list = self._get_resources(argv)
+            for r in resources_list:
+                print r.get_identifier()
+            return
+
         res = self._get_resource(argv)
-        if (prompt.confirm(prompt="Delete " + res.get_name() + " ?", resp=False)) :
+        if (prompt.confirm(prompt = "Delete " + res.get_name() + " ?", resp = False)) :
             res.delete()
 
     def _help(self, argv):

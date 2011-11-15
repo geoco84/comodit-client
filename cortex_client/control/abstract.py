@@ -14,6 +14,7 @@ class AbstractController(object):
 
     def __init__(self):
         self._actions = {}
+        self._register("__available_actions", self._available_actions)
         self._default_action = lambda x : self._error("No default action defined", -1)
 
     def run(self, api, argv):
@@ -39,7 +40,7 @@ class AbstractController(object):
     def _post(self, argv):
         pass
 
-    def _error(self, message, code=-1):
+    def _error(self, message, code = -1):
         print(message)
         exit(code)
 
@@ -48,5 +49,9 @@ class AbstractController(object):
             for a in action:
                 self._actions[a] = command
         else:
-            self._actions[a] = command
+            self._actions[action] = command
 
+    def _available_actions(self, argv):
+        for k in self._actions.keys():
+            if k[0] != '_':
+                print k
