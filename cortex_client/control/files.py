@@ -28,7 +28,31 @@ class FilesController(ResourceController):
     def get_collection(self):
         return self._api.get_file_collection()
 
+    def _request_file_completion(self):
+        exit(1)
+
+    def _print_identifiers(self, argv):
+        resources_list = self._get_resources(argv)
+
+        if len(argv) > 0:
+            # Check if completions are available
+            id = argv[0]
+            for res in resources_list:
+                if id == res.get_uuid():
+                    return
+
+        for r in resources_list:
+            print r.get_uuid()
+
+    def _print_add_completions(self, param_num, argv):
+        if param_num == 0:
+            self._request_file_completion()
+
     def _add(self, argv):
+        if(globals.options.param_completions >= 0):
+            self._print_add_completions(globals.options.param_completions, argv)
+            return
+
         if(len(argv) == 0):
             raise MissingException("You must provide a file to upload")
 
@@ -56,7 +80,15 @@ class FilesController(ResourceController):
         res.create()
         res.show(as_json = options.raw)
 
+    def _print_read_completions(self, param_num, argv):
+        if(param_num == 0):
+            self._print_identifiers(argv)
+
     def _read(self, argv):
+        if(globals.options.param_completions >= 0):
+            self._print_read_completions(globals.options.param_completions, argv)
+            return
+
         file_res = self._get_resource(argv)
 
         file_content = file_res.get_content()
@@ -65,12 +97,23 @@ class FilesController(ResourceController):
             print line,
         print "-"*80
 
-    def _write(self, argv):
-        options = globals.options
-        if not options.filename:
-            raise MissingException("You must provide a file to upload")
+    def _print_write_completions(self, param_num, argv):
+        if param_num == 0:
+            # UUID completion
+            self._print_identifiers(argv)
+        elif param_num == 1:
+            # File completion
+            self._request_file_completion()
 
-        content_file_name = options.filename
+    def _write(self, argv):
+        if(globals.options.param_completions >= 0):
+            self._print_write_completions(globals.options.param_completions, argv)
+            return
+
+        if(len(argv) != 2):
+            raise ArgumentException("Wrong number of arguments")
+
+        content_file_name = argv[1]
 
         if(not os.path.exists(content_file_name)):
             raise ArgumentException("Given file does not exist: " + content_file_name)
@@ -92,7 +135,7 @@ Actions:
     update <uuid>              Update the details of a file
     delete <uuid>              Delete a file
     read <uuid>                Fetch the content of a file
-    write <uuid> --file <path> Update an existing file's content
+    write <uuid> <path>        Update an existing file's content
 
 A file is completely described by its details and its content. Details include a
 file name as well as a list of parameters. When creating a new file (add),

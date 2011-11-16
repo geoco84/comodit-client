@@ -24,6 +24,19 @@ class ChangesController(ResourceController):
         change_req = self._get_resource(argv)
         change_req.apply_request()
 
+    def _print_identifiers(self, argv):
+        resources_list = self._get_resources(argv)
+
+        if len(argv) > 0:
+            # Check if completions are available
+            id = argv[0]
+            for res in resources_list:
+                if id == res.get_uuid():
+                    return
+
+        for r in resources_list:
+            print r.get_uuid()
+
     def _help(self, argv):
         if(globals.options.param_completions >= 0):
             return
