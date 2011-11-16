@@ -20,12 +20,12 @@ class ResourceController(AbstractController):
 
     def __init__(self):
         super(ResourceController, self).__init__()
-        self._register(["l", "list"], self._list)
-        self._register(["s", "show"], self._show)
-        self._register(["a", "add"], self._add)
-        self._register(["u", "update"], self._update)
-        self._register(["d", "delete"], self._delete)
-        self._register(["h", "help"], self._help)
+        self._register(["list"], self._list)
+        self._register(["show"], self._show)
+        self._register(["add"], self._add)
+        self._register(["update"], self._update)
+        self._register(["delete"], self._delete)
+        self._register(["help"], self._help)
         self._default_action = self._help
 
     def _print_list_completions(self, param_num, argv):

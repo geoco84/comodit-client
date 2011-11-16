@@ -8,9 +8,9 @@ from cortex_client.control.exceptions import MissingException, ControllerExcepti
 class RenderingController(AbstractController):
     def __init__(self):
         super(RenderingController, self).__init__()
-        self._register(["af", "app-file"], self._app_file)
-        self._register(["ks", "kickstart"], self._kickstart)
-        self._register(["t", "tree"], self._tree)
+        self._register(["app-file"], self._app_file)
+        self._register(["kickstart"], self._kickstart)
+        self._register(["tree"], self._tree)
         self._default_action = self._help
 
     def _app_file(self, argv):

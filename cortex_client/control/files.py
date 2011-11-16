@@ -21,8 +21,8 @@ class FilesController(ResourceController):
 
     def __init__(self):
         super(FilesController, self).__init__()
-        self._register(["r", "read"], self._read)
-        self._register(["w", "write"], self._write)
+        self._register(["read"], self._read)
+        self._register(["write"], self._write)
         self._default_action = self._help
 
     def get_collection(self):

@@ -36,14 +36,14 @@ from api.exceptions import PythonApiException
 def run(argv):
     # resources
     control.router.register(["users"], UsersController())
-    control.router.register(["pf", "platforms"], PlatformsController())
-    control.router.register(["app", "applications"], ApplicationsController())
-    control.router.register(["dist", "distributions"], DistributionsController())
-    control.router.register(["org", "organizations"], OrganizationsController())
-    control.router.register(["env", "environments"], EnvironmentsController())
-    control.router.register(["host", "hosts"], HostsController())
+    control.router.register(["platforms"], PlatformsController())
+    control.router.register(["applications"], ApplicationsController())
+    control.router.register(["distributions"], DistributionsController())
+    control.router.register(["organizations"], OrganizationsController())
+    control.router.register(["environments"], EnvironmentsController())
+    control.router.register(["hosts"], HostsController())
     control.router.register(["sync"], SyncController())
-    control.router.register(["cr", "changes"], ChangesController());
+    control.router.register(["changes"], ChangesController());
     control.router.register(["files"], FilesController());
 
     # services
