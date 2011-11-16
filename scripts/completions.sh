@@ -62,7 +62,7 @@ _cortex_client()
     #
     opts=`${COMP_WORDS[0]} --options`
     if [[ ${cur} == -* ]] ; then
-        COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+        COMPREPLY=( $(compgen -W "${opts}" ${cur}) )
         return 0
     fi
 
@@ -80,7 +80,7 @@ _cortex_client()
     #  Complete resources if no action is yet given
     if [[ ${__no_opts_cur} == 1 ]]
     then
-        COMPREPLY=( $(compgen -W "${resources}" -- ${cur}) )
+        COMPREPLY=( $(compgen -W "${resources}" ${cur}) )
         _clean
         return 0
     fi
@@ -92,7 +92,7 @@ _cortex_client()
         actions=`${__no_opts[0]} ${resource} __available_actions`
         if [[ $? == 0 ]]
         then
-            COMPREPLY=( $(compgen -W "${actions}" -- ${cur}) )
+            COMPREPLY=( $(compgen -W "${actions}" ${cur}) )
         fi
         _clean
         return 0
@@ -106,10 +106,21 @@ _cortex_client()
         
         ((cur_arg=__no_opts_cur-3))
         params=`${COMP_WORDS[@]} --completions ${cur_arg}`
-        if [[ $? == 0 ]]
-        then
-            COMPREPLY=( $(compgen -W "${params}" -- ${cur}) )
-        fi
+        case "$?" in
+            "0")
+                COMPREPLY=( $(compgen -W "${params}" ${cur}) )
+                ;;
+            "1")
+                # File completion is requested
+                COMPREPLY=( $(compgen -f ${cur}) )
+                ;;
+            "2")
+                # Directory completion is requested
+                COMPREPLY=( $(compgen -d ${cur}) )
+                ;;
+            *)
+                ;;
+        esac
         _clean
         return 0
     fi
@@ -118,4 +129,4 @@ _cortex_client()
    return 0
 }
 
-complete -F _cortex_client cortex-client
+complete -F _cortex_client -o filenames cortex-client
