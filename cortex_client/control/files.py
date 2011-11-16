@@ -81,10 +81,6 @@ class FilesController(ResourceController):
             self._print_identifiers(argv)
 
     def _read(self, argv):
-        if(globals.options.param_completions >= 0):
-            self._print_read_completions(globals.options.param_completions, argv)
-            return
-
         file_res = self._get_resource(argv)
 
         file_content = file_res.get_content()
@@ -102,10 +98,6 @@ class FilesController(ResourceController):
             self._request_file_completion()
 
     def _write(self, argv):
-        if(globals.options.param_completions >= 0):
-            self._print_write_completions(globals.options.param_completions, argv)
-            return
-
         if(len(argv) != 2):
             raise ArgumentException("Wrong number of arguments")
 
