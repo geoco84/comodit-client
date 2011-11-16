@@ -62,7 +62,7 @@ _cortex_client()
     #
     opts=`${COMP_WORDS[0]} --options`
     if [[ ${cur} == -* ]] ; then
-        COMPREPLY=( $(compgen -W "${opts}" ${cur}) )
+        COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
         return 0
     fi
 
