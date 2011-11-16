@@ -15,7 +15,7 @@ class ChangesController(ResourceController):
 
     def __init__(self):
         super(ChangesController, self).__init__()
-        self._register(["apply"], self._apply)
+        self._register(["apply"], self._apply, self._print_show_completions)
 
     def get_collection(self):
         return self._api.get_change_request_collection()
@@ -38,8 +38,6 @@ class ChangesController(ResourceController):
             print r.get_uuid()
 
     def _help(self, argv):
-        if(globals.options.param_completions >= 0):
-            return
         print '''You must provide an action to perform on this resource.
 
 Actions:

@@ -7,6 +7,7 @@
 # This software cannot be used and/or distributed without prior
 # authorization from Guardis.
 
+from cortex_client.util import globals
 from cortex_client.control.exceptions import ControllerException
 
 class AbstractController(object):
@@ -14,6 +15,7 @@ class AbstractController(object):
 
     def __init__(self):
         self._actions = {}
+        self._completions = {}
         self._register("__available_actions", self._available_actions)
         self._default_action = lambda x : self._error("No default action defined", -1)
 
@@ -26,6 +28,11 @@ class AbstractController(object):
             self._default_action(argv[1:])
         else:
             action = argv[0]
+            if globals.options.param_completions >= 0:
+                if self._completions.has_key(action):
+                    self._completions[action](globals.options.param_completions, argv[1:])
+                return
+
             if self._actions.has_key(action):
                 self._actions[action](argv[1:])
             else:
@@ -44,12 +51,16 @@ class AbstractController(object):
         print(message)
         exit(code)
 
-    def _register(self, action, command):
+    def _register(self, action, command, print_complete = None):
         if isinstance(action, (list, tuple)):
             for a in action:
                 self._actions[a] = command
+                if print_complete:
+                    self._completions[a] = print_complete
         else:
             self._actions[action] = command
+            if print_complete:
+                    self._completions[action] = print_complete
 
     def _available_actions(self, argv):
         for k in self._actions.keys():

@@ -46,8 +46,6 @@ class EnvironmentsController(ResourceController):
         return super(EnvironmentsController, self)._get_resources(argv, parameters)
 
     def _help(self, argv):
-        if(globals.options.param_completions >= 0):
-            return
         print '''You must provide an action to perform on this resource.
 
 Actions:

@@ -21,8 +21,8 @@ class FilesController(ResourceController):
 
     def __init__(self):
         super(FilesController, self).__init__()
-        self._register(["read"], self._read)
-        self._register(["write"], self._write)
+        self._register(["read"], self._read, self._print_read_completions)
+        self._register(["write"], self._write, self._print_write_completions)
         self._default_action = self._help
 
     def get_collection(self):
@@ -49,10 +49,6 @@ class FilesController(ResourceController):
             self._request_file_completion()
 
     def _add(self, argv):
-        if(globals.options.param_completions >= 0):
-            self._print_add_completions(globals.options.param_completions, argv)
-            return
-
         if(len(argv) == 0):
             raise MissingException("You must provide a file to upload")
 

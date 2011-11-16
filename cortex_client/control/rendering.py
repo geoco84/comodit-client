@@ -8,9 +8,10 @@ from cortex_client.control.exceptions import MissingException, ControllerExcepti
 class RenderingController(AbstractController):
     def __init__(self):
         super(RenderingController, self).__init__()
-        self._register(["app-file"], self._app_file)
-        self._register(["kickstart"], self._kickstart)
-        self._register(["tree"], self._tree)
+        self._register(["app-file"], self._app_file, self._print_app_file_completions)
+        self._register(["kickstart"], self._kickstart, self._print_kickstart_completions)
+        self._register(["tree"], self._tree, self._print_tree_completions)
+        self._register(["help"], self._help)
         self._default_action = self._help
 
     def _print_hosts(self, argv):
@@ -79,10 +80,6 @@ class RenderingController(AbstractController):
             self._print_files(argv)
 
     def _app_file(self, argv):
-        if(globals.options.param_completions >= 0):
-            self._print_app_file_completions(globals.options.param_completions, argv)
-            return
-
         if len(argv) != 3:
             raise MissingException("This action takes 3 arguments")
 
@@ -113,10 +110,6 @@ class RenderingController(AbstractController):
             self._print_hosts(argv)
 
     def _kickstart(self, argv):
-        if(globals.options.param_completions >= 0):
-            self._print_kickstart_completions(globals.options.param_completions, argv)
-            return
-
         if len(argv) != 1:
             raise MissingException("This action takes 1 argument")
 
@@ -137,10 +130,6 @@ class RenderingController(AbstractController):
             exit(2) # Request folder completion
 
     def _tree(self, argv):
-        if(globals.options.param_completions >= 0):
-            self._print_tree_completions(globals.options.param_completions, argv)
-            return
-
         if len(argv) != 2:
             raise MissingException("This action takes 2 argument")
 
@@ -199,8 +188,6 @@ class RenderingController(AbstractController):
                         raise ControllerException("Could not set ownership on file " + output_file + ": " + e.strerror)
 
     def _help(self, argv):
-        if(globals.options.param_completions >= 0):
-            return
         print '''You must provide an action to perform.
 
 Actions:

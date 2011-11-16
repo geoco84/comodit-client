@@ -20,8 +20,6 @@ class DistributionsController(ResourceController):
         return self._api.get_distribution_collection()
 
     def _help(self, argv):
-        if(globals.options.param_completions >= 0):
-            return
         print '''You must provide an action to perform on this resource.
 
 Actions:

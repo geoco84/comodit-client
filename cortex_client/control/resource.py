@@ -20,22 +20,18 @@ class ResourceController(AbstractController):
 
     def __init__(self):
         super(ResourceController, self).__init__()
-        self._register(["list"], self._list)
-        self._register(["show"], self._show)
-        self._register(["add"], self._add)
-        self._register(["update"], self._update)
-        self._register(["delete"], self._delete)
-        self._register(["help"], self._help)
+        self._register(["list"], self._list, self._print_list_completions)
+        self._register(["show"], self._show, self._print_show_completions)
+        self._register(["add"], self._add, self._print_add_completions)
+        self._register(["update"], self._update, self._print_update_completions)
+        self._register(["delete"], self._delete, self._print_delete_completions)
+        self._register(["help"], self._help, self._print_help_completions)
         self._default_action = self._help
 
     def _print_list_completions(self, param_num, argv):
         pass
 
     def _list(self, argv):
-        if(globals.options.param_completions >= 0):
-            self._print_list_completions(globals.options.param_completions, argv)
-            return
-
         resources_list = self._get_resources(argv)
         if(len(resources_list) == 0):
             print "No resources to list"
@@ -61,10 +57,6 @@ class ResourceController(AbstractController):
             self._print_identifiers(argv)
 
     def _show(self, argv):
-        if(globals.options.param_completions >= 0):
-            self._print_show_completions(globals.options.param_completions, argv)
-            return
-
         res = self._get_resource(argv)
 
         # Display the result
@@ -78,10 +70,6 @@ class ResourceController(AbstractController):
         pass
 
     def _add(self, argv):
-        if(globals.options.param_completions >= 0):
-            self._print_add_completions(globals.options.param_completions, argv)
-            return
-
         options = globals.options
 
         if options.filename:
@@ -105,10 +93,6 @@ class ResourceController(AbstractController):
         pass
 
     def _update(self, argv):
-        if(globals.options.param_completions >= 0):
-            self._print_update_completions(globals.options.param_completions, argv)
-            return
-
         options = globals.options
 
         if options.filename:
@@ -134,17 +118,14 @@ class ResourceController(AbstractController):
         self._print_identifiers(argv)
 
     def _delete(self, argv):
-        if(globals.options.param_completions >= 0):
-            self._print_delete_completions(globals.options.param_completions, argv)
-            return
-
         res = self._get_resource(argv)
         if (prompt.confirm(prompt = "Delete " + res.get_name() + " ?", resp = False)) :
             res.delete()
 
+    def _print_help_completions(self, param_num, argv):
+        pass
+
     def _help(self, argv):
-        if(globals.options.param_completions >= 0):
-            return
         print "Oops, this piece is missing some documentation"
 
     def _get_resource(self, argv):
