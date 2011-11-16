@@ -56,14 +56,26 @@ class HostsController(ResourceController):
         return super(HostsController, self)._get_resources(argv, parameters)
 
     def _settings(self, argv):
+        if(globals.options.param_completions >= 0):
+            self._print_show_completions(globals.options.param_completions, argv)
+            return
+
         host = self._get_resource(argv)
         host.show_settings()
 
     def _properties(self, argv):
+        if(globals.options.param_completions >= 0):
+            self._print_show_completions(globals.options.param_completions, argv)
+            return
+
         host = self._get_resource(argv)
         host.show_properties()
 
     def _delete(self, argv):
+        if(globals.options.param_completions >= 0):
+            self._print_show_completions(globals.options.param_completions, argv)
+            return
+
         host = self._get_resource(argv)
 
         if (prompt.confirm(prompt = "Delete " + host.get_name() + " ?", resp = False)) :
@@ -71,30 +83,58 @@ class HostsController(ResourceController):
             host.delete(delete_vm)
 
     def _provision(self, argv):
+        if(globals.options.param_completions >= 0):
+            self._print_show_completions(globals.options.param_completions, argv)
+            return
+
         host = self._get_resource(argv)
         host.provision()
 
     def _start(self, argv):
+        if(globals.options.param_completions >= 0):
+            self._print_show_completions(globals.options.param_completions, argv)
+            return
+
         host = self._get_resource(argv)
         host.start()
 
     def _pause(self, argv):
+        if(globals.options.param_completions >= 0):
+            self._print_show_completions(globals.options.param_completions, argv)
+            return
+
         host = self._get_resource(argv)
         host.pause()
 
     def _resume(self, argv):
+        if(globals.options.param_completions >= 0):
+            self._print_show_completions(globals.options.param_completions, argv)
+            return
+
         host = self._get_resource(argv)
         host.resume()
 
     def _shutdown(self, argv):
+        if(globals.options.param_completions >= 0):
+            self._print_show_completions(globals.options.param_completions, argv)
+            return
+
         host = self._get_resource(argv)
         host.shutdown()
 
     def _poweroff(self, argv):
+        if(globals.options.param_completions >= 0):
+            self._print_show_completions(globals.options.param_completions, argv)
+            return
+
         host = self._get_resource(argv)
         host.poweroff()
 
     def _info(self, argv):
+        if(globals.options.param_completions >= 0):
+            self._print_show_completions(globals.options.param_completions, argv)
+            return
+
         host = self._get_resource(argv)
         try:
             info = host.get_instance_info()
