@@ -92,7 +92,7 @@ def _parse(argv):
 
     parser.add_option("--options", dest = "show_options", help = "display options", action = "store_true", default = False)
     parser.add_option("--resources", dest = "show_resources", help = "display resources", action = "store_true", default = False)
-    parser.add_option("--completions", dest = "show_completions", help = "display completions", action = "store_true", default = False)
+    parser.add_option("--completions", dest = "param_completions", type = "int", help = "parameter to complete", default = -1)
 
     (globals.options, args) = parser.parse_args()
 
