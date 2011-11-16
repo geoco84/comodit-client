@@ -14,12 +14,14 @@ class DistributionsController(ResourceController):
     _template = "distribution.json"
 
     def __init__(self):
-        super(DistributionsController, self ).__init__()
+        super(DistributionsController, self).__init__()
 
     def get_collection(self):
         return self._api.get_distribution_collection()
 
     def _help(self, argv):
+        if(globals.options.param_completions >= 0):
+            return
         print '''You must provide an action to perform on this resource.
 
 Actions:

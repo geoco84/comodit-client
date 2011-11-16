@@ -103,6 +103,8 @@ class HostsController(ResourceController):
             print e.message
 
     def _help(self, argv):
+        if(globals.options.param_completions >= 0):
+            return
         print '''You must provide an action to perform on this resource.
 
 Actions:

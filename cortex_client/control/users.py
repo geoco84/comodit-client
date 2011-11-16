@@ -14,12 +14,14 @@ class UsersController(ResourceController):
     _template = "user.json"
 
     def __init__(self):
-        super(UsersController, self ).__init__()
+        super(UsersController, self).__init__()
 
     def get_collection(self):
         return self._api.get_user_collection()
 
     def _help(self, argv):
+        if(globals.options.param_completions >= 0):
+            return
         print '''You must provide an action to perfom on this resource.
 
 Actions:

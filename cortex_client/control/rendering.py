@@ -115,6 +115,8 @@ class RenderingController(AbstractController):
                         raise ControllerException("Could not set ownership on file " + output_file + ": " + e.strerror)
 
     def _help(self, argv):
+        if(globals.options.param_completions >= 0):
+            return
         print '''You must provide an action to perform.
 
 Actions:

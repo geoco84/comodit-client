@@ -14,12 +14,14 @@ class OrganizationsController(ResourceController):
     _template = "organization.json"
 
     def __init__(self):
-        super(OrganizationsController, self ).__init__()
+        super(OrganizationsController, self).__init__()
 
     def get_collection(self):
         return self._api.get_organization_collection()
 
     def _help(self, argv):
+        if(globals.options.param_completions >= 0):
+            return
         print '''You must provide an action to perform on this resource.
 
 Actions:

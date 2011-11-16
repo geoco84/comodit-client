@@ -143,6 +143,8 @@ class ResourceController(AbstractController):
             res.delete()
 
     def _help(self, argv):
+        if(globals.options.param_completions >= 0):
+            return
         print "Oops, this piece is missing some documentation"
 
     def _get_resource(self, argv):

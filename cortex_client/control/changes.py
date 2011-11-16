@@ -14,7 +14,7 @@ class ChangesController(ResourceController):
     _template = "change.json"
 
     def __init__(self):
-        super(ChangesController, self ).__init__()
+        super(ChangesController, self).__init__()
         self._register(["apply"], self._apply)
 
     def get_collection(self):
@@ -25,6 +25,8 @@ class ChangesController(ResourceController):
         change_req.apply_request()
 
     def _help(self, argv):
+        if(globals.options.param_completions >= 0):
+            return
         print '''You must provide an action to perform on this resource.
 
 Actions:

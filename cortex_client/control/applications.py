@@ -14,12 +14,14 @@ class ApplicationsController(ResourceController):
     _template = "application.json"
 
     def __init__(self):
-        super(ApplicationsController, self ).__init__()
+        super(ApplicationsController, self).__init__()
 
     def get_collection(self):
         return self._api.get_application_collection()
 
     def _help(self, argv):
+        if(globals.options.param_completions >= 0):
+            return
         print '''You must provide an action to perform on this resource.
 
 Actions:
