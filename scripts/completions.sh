@@ -87,6 +87,7 @@ _clean()
 {
     unset __no_opts __no_opts_cur
     unset __value_options
+    unset __escaped_string
 }
 
 _print_debug()
@@ -99,6 +100,28 @@ _print_debug()
     echo "Commands:"
     echo ${__no_opts[@]}
     echo ${__no_opts_cur}
+}
+
+# This helper function was written in order to overcome a bash issue with
+# string substitutions: when a string contains a non-ASCII character,
+# substitution does not work.
+_escape_spaces()
+{
+    __escaped_string=""
+    local to_escape=$1
+    local string_size=${#to_escape}
+    local i=0
+    while (( i < string_size ))
+    do
+        cur_char=${to_escape:$i:1}
+        if [[ "${cur_char}" == " " ]]
+        then
+            __escaped_string=${__escaped_string}"\\ "
+        else
+            __escaped_string=${__escaped_string}${cur_char}
+        fi
+        ((i++))
+    done
 }
 
 _cortex_client()
@@ -184,8 +207,9 @@ _cortex_client()
                 local num_of_comps=${#COMPREPLY[@]}
                 while ((cur_comp < num_of_comps))
                 do
-                    to_escape=${COMPREPLY[$cur_comp]}
-                    escaped=${to_escape//" "/"\\ "}
+                    local to_escape=${COMPREPLY[$cur_comp]}
+                    _escape_spaces $to_escape
+                    local escaped=${__escaped_string}
                     COMPREPLY[$cur_comp]=$escaped
                     ((cur_comp++))
                 done

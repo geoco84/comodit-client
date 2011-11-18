@@ -43,18 +43,9 @@ class ResourceController(AbstractController):
         resources_list = self._get_resources(argv)
 
         if len(argv) > 0:
-            import unicodedata as ud
-            # Check if completions are available
-            id = argv[0].decode(sys.stdin.encoding)
-            for res in resources_list:
-                if ud.normalize('NFC', id) == ud.normalize('NFC', res.get_identifier()):
-                    return
-
-        for r in resources_list:
-            identifier = r.get_identifier()
-            identifier = identifier.replace("\\", "\\\\")
-            identifier = identifier.replace(" ", "\\ ")
-            print identifier.encode("utf-8")
+            self._print_resource_identifiers(resources_list, argv[0])
+        else:
+            self._print_resource_identifiers(resources_list)
 
     def _print_show_completions(self, param_num, argv):
         if(param_num == 0):
