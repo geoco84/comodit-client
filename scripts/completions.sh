@@ -172,10 +172,23 @@ _cortex_client()
         else
             ((cur_arg=__no_opts_cur-3))
         fi
-        params=`${COMP_WORDS[@]} --completions ${cur_arg} --debug`
+        params=`${COMP_WORDS[@]} --completions ${cur_arg}`
         case "$?" in
             "0")
-                COMPREPLY=( $(compgen -W "${params}" ${cur}) )
+                # Ignore spaces when parsing possible values
+                local IFS=$'\n'
+                COMPREPLY=( $(compgen -W "${params}" -- ${cur}) )
+
+                # Escape spaces
+                local cur_comp=0
+                local num_of_comps=${#COMPREPLY[@]}
+                while ((cur_comp < num_of_comps))
+                do
+                    to_escape=${COMPREPLY[$cur_comp]}
+                    escaped=${to_escape//" "/"\\ "}
+                    COMPREPLY[$cur_comp]=$escaped
+                    ((cur_comp++))
+                done
                 ;;
             "1")
                 # File completion is requested

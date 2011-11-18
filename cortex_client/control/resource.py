@@ -51,7 +51,10 @@ class ResourceController(AbstractController):
                     return
 
         for r in resources_list:
-            print r.get_identifier().encode("utf-8")
+            identifier = r.get_identifier()
+            identifier = identifier.replace("\\", "\\\\")
+            identifier = identifier.replace(" ", "\\ ")
+            print identifier.encode("utf-8")
 
     def _print_show_completions(self, param_num, argv):
         if(param_num == 0):
