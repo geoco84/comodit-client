@@ -7,7 +7,7 @@
 # This software cannot be used and/or distributed without prior
 # authorization from Guardis.
 
-import json, os
+import json, os, sys
 
 from cortex_client.config import Config
 from cortex_client.control.abstract import AbstractController
@@ -43,14 +43,15 @@ class ResourceController(AbstractController):
         resources_list = self._get_resources(argv)
 
         if len(argv) > 0:
+            import unicodedata as ud
             # Check if completions are available
-            id = argv[0]
+            id = argv[0].decode(sys.stdin.encoding)
             for res in resources_list:
-                if id == res.get_identifier():
+                if ud.normalize('NFC', id) == ud.normalize('NFC', res.get_identifier()):
                     return
 
         for r in resources_list:
-            print r.get_identifier()
+            print r.get_identifier().encode("utf-8")
 
     def _print_show_completions(self, param_num, argv):
         if(param_num == 0):
