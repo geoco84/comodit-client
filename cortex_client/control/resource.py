@@ -94,7 +94,8 @@ class ResourceController(AbstractController):
         res.show(as_json = options.raw)
 
     def _print_update_completions(self, param_num, argv):
-        pass
+        if(param_num == 0):
+            self._print_identifiers(argv)
 
     def _update(self, argv):
         options = globals.options
