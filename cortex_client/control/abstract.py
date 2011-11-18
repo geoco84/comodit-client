@@ -74,7 +74,7 @@ class AbstractController(object):
             return
         name = name.replace("\\", "\\\\")
         name = name.replace(" ", "\\ ")
-        print name.encode("utf-8")
+        print name.decode("utf-8")
 
     def _equals_identifiers(self, id1, id2):
         if id1 is None or id2 is None:
@@ -82,13 +82,12 @@ class AbstractController(object):
 
         u_id1 = id1
         if isinstance(id1, basestring):
-            u_id1 = unicode(id1)
+            u_id1 = id1.decode("utf-8")
         u_id2 = id2
         if isinstance(id2, basestring):
-            u_id2 = unicode(id2)
+            u_id2 = id2.decode("utf-8")
 
-        import unicodedata as ud
-        return ud.normalize('NFC', u_id1) == ud.normalize('NFC', u_id2)
+        return u_id1 == u_id2
 
     def _print_resource_identifiers(self, res_list, current_id = None):
         for r in res_list:
