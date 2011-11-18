@@ -135,7 +135,7 @@ class Collection(object):
             if e.code == 404:
                 raise ResourceNotFoundException(uuid, e)
             else:
-                raise PythonApiException("Could not get resource " + uuid, e)
+                raise PythonApiException("Could not get resource " + uuid + ":" + e.message)
         return self._new_resource(result)
 
     def get_resource_from_path(self, identifier):
@@ -157,7 +157,7 @@ class Collection(object):
             if e.code == 404:
                 raise ResourceNotFoundException(identifier)
             else:
-                raise PythonApiException("Could not get resource " + identifier, e)
+                raise PythonApiException("Could not get resource " + identifier + ":" + e.message)
 
     def get_uuid(self, identifier):
         """

@@ -49,7 +49,7 @@ class Distribution(Resource):
         @param kickstart: Kickstart's template
         @type kickstart: L{File}
         """
-        self._set_field("kickstart", kickstart)
+        self._set_field("kickstart", kickstart.get_json())
 
     def set_kickstart_content(self, path):
         self._api.get_client().upload_to_exising_file_with_path(path, self._resource + "/" + self.get_uuid() + "/kickstart")
