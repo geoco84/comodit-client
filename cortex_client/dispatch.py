@@ -44,7 +44,6 @@ def run(argv):
     control.router.register(["hosts"], HostsController())
     control.router.register(["sync"], SyncController())
     control.router.register(["changes"], ChangesController());
-    control.router.register(["files"], FilesController());
 
     # services
     control.router.register(["rendering"], RenderingController());
@@ -178,7 +177,6 @@ Resources:
                         host
     distributions       Recipes to provision and configure distributions on a
                         host
-    files               Files used in recipes
     users               User accounts
     organizations       Top-level organization
     environments        Environment defined within an organization

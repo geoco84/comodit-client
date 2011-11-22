@@ -125,7 +125,7 @@ class CortexApi(object):
         @rtype: L{ChangeRequestCollection}
         """
         return self._chan_collection
-    
+
     def get_distribution_collection(self):
         """
         Provides an access to applications collection of associated cortex server.
@@ -215,15 +215,6 @@ class CortexApi(object):
         @rtype: L{Distribution}
         """
         return Distribution(self)
-
-    def new_file(self):
-        """
-        Factory method for file resource.
-
-        @return: A file connected to associated cortex server.
-        @rtype: L{File}
-        """
-        return File(self)
 
     def new_organization(self):
         """
