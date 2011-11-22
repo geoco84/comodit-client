@@ -7,8 +7,10 @@
 # This software cannot be used and/or distributed without prior
 # authorization from Guardis.
 
+import os
+
 from cortex_client.control.resource import ResourceController
-from cortex_client.control.exceptions import MissingException
+from cortex_client.control.exceptions import MissingException, ArgumentException
 
 class ApplicationsController(ResourceController):
 
@@ -23,16 +25,21 @@ class ApplicationsController(ResourceController):
         return self._api.get_application_collection()
 
     def _show_file(self, argv):
+        if len(argv) != 2:
+            raise MissingException("Wrong number of arguments")
+
         app = self._get_resource(argv)
         file_name = argv[1]
         print app.get_file_content(file_name).read()
 
     def _set_file(self, argv):
-        dist = self._get_resource(argv)
-
         if len(argv) != 3:
             raise MissingException("Wrong number of arguments")
 
+        if not os.path.exists(argv[2]):
+            raise ArgumentException("Given file does not exist: " + argv[2])
+
+        dist = self._get_resource(argv)
         dist.set_file_content(argv[1], argv[2])
 
     def _help(self, argv):
