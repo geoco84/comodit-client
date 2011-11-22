@@ -99,6 +99,7 @@ _print_debug()
     echo ${COMP_CWORD}
     echo "Commands:"
     echo ${__no_opts[@]}
+    echo ${#__no_opts[@]}
     echo ${__no_opts_cur}
 }
 
