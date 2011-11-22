@@ -234,4 +234,4 @@ _cortex_client()
    return 0
 }
 
-complete -F _cortex_client cortex-client
+complete -F _cortex_client cortex

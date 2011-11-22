@@ -14,20 +14,20 @@ requires = [
 ]
 
 setup(
-    name='cortex-client',
-    description='cortex command line client',
-    author='Laurent Eschenauer',
-    author_email='laurent.eschenauer@gmail.com',
-    url='https://github.com/guardis/cortex-client',
-    license='',
-    packages=find_packages(),
-    scripts=[
-        'cortex-client'
+    name = 'cortex-client',
+    description = 'cortex command line client',
+    author = 'Laurent Eschenauer',
+    author_email = 'laurent.eschenauer@gmail.com',
+    url = 'https://github.com/guardis/cortex-client',
+    license = '',
+    packages = find_packages(),
+    scripts = [
+        'cortex'
     ],
-    include_package_data=True,
+    include_package_data = True,
     # Here's the list of usable classifiers:
     # http://pypi.python.org/pypi?%3Aaction=list_classifiers
-    classifiers=[
+    classifiers = [
         'Programming Language :: Python',
         'Operating System :: POSIX',
         'Topic :: Content Management',
@@ -35,5 +35,5 @@ setup(
         'Intended Audience :: Developers',
         'Development Status :: 3 - Alpha',
     ],
-    install_requires=requires,
+    install_requires = requires,
 )
