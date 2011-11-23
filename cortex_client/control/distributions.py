@@ -16,15 +16,30 @@ class DistributionsController(ResourceController):
 
     def __init__(self):
         super(DistributionsController, self).__init__()
-        self._register(["sk", "show-kick"], self._show_kickstart)
-        self._register(["set-kick"], self._set_kickstart)
+        self._register(["sk", "show-kick"], self._show_kickstart, self._print_show_kick_completions)
+        self._register(["set-kick"], self._set_kickstart, self._print_set_kick_completions)
 
     def get_collection(self):
         return self._api.get_distribution_collection()
 
+    def _print_distributions(self, argv):
+        dists = self._api.get_distribution_collection().get_resources()
+        for d in dists:
+            self._print_escaped_name(d.get_name())
+
+    def _print_show_kick_completions(self, param_num, argv):
+        if param_num == 0:
+            self._print_distributions(argv)
+
     def _show_kickstart(self, argv):
         dist = self._get_resource(argv)
         print dist.get_kickstart_content().read()
+
+    def _print_set_kick_completions(self, param_num, argv):
+        if param_num == 0:
+            self._print_distributions(argv)
+        elif param_num == 1:
+            exit(1)
 
     def _set_kickstart(self, argv):
         dist = self._get_resource(argv)
