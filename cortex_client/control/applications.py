@@ -9,6 +9,7 @@
 
 import os
 
+from cortex_client.util import globals
 from cortex_client.control.resource import ResourceController
 from cortex_client.control.exceptions import MissingException, ArgumentException
 
@@ -18,11 +19,34 @@ class ApplicationsController(ResourceController):
 
     def __init__(self):
         super(ApplicationsController, self).__init__()
-        self._register(["show-file"], self._show_file)
-        self._register(["set-file"], self._set_file)
+        self._register(["show-file"], self._show_file, self._print_show_file_completions)
+        self._register(["set-file"], self._set_file, self._print_set_file_completions)
 
     def get_collection(self):
         return self._api.get_application_collection()
+
+    def _print_applications(self, argv):
+        apps = self._api.get_application_collection().get_resources()
+        for a in apps:
+            self._print_escaped_name(a.get_name())
+
+    def _get_application(self, id):
+        if(globals.options.uuid):
+            return self._api.get_application_collection().get_resource(id)
+        else:
+            return self._api.get_application_collection().get_resource_from_path(id)
+
+    def _print_files(self, argv):
+        if(len(argv) > 0):
+            app = self._get_application(argv[0])
+            for f in app.get_files():
+                self._print_escaped_name(f.get_name())
+
+    def _print_show_file_completions(self, param_num, argv):
+        if param_num == 0:
+            self._print_applications(argv)
+        elif param_num == 1:
+            self._print_files(argv)
 
     def _show_file(self, argv):
         if len(argv) != 2:
@@ -31,6 +55,14 @@ class ApplicationsController(ResourceController):
         app = self._get_resource(argv)
         file_name = argv[1]
         print app.get_file_content(file_name).read()
+
+    def _print_set_file_completions(self, param_num, argv):
+        if param_num == 0:
+            self._print_applications(argv)
+        elif param_num == 1:
+            self._print_files(argv)
+        elif param_num == 2:
+            exit(1)
 
     def _set_file(self, argv):
         if len(argv) != 3:
