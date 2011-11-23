@@ -15,7 +15,6 @@ from control.changes import ChangesController
 from control.distributions import DistributionsController
 from control.environments import EnvironmentsController
 from control.exceptions import ControllerException, ArgumentException
-from control.files import FilesController
 from control.hosts import HostsController
 from control.organizations import OrganizationsController
 from control.sync.sync import SyncController

@@ -5,11 +5,13 @@ RELEASE=`git describe --long --match "release*" | awk -F"-" '{print $3}'`
 COMMIT=`git describe --long --match "release*" | awk -F"-" '{print $4}'`
 
 NAME=cortex-client
-TAR_CONTENT="cortex_client templates conf setup.py cortex scripts/completions.sh"
+TAR_CONTENT="cortex_client templates conf setup.py cortex scripts/completions.sh cortex-doc/tmp/en-US/man/cortex.1"
 PLATFORMS=(epel-6-i386 fedora-14-i386 fedora-15-i386)
 
 cd `dirname $0`
 cd ..
+
+scripts/build-man.sh
 
 sed "s/#VERSION#/${VERSION}/g" rpmbuild/SPECS/${NAME}.spec.template > rpmbuild/SPECS/${NAME}.spec
 sed -i "s/#RELEASE#/${RELEASE}/g" rpmbuild/SPECS/${NAME}.spec

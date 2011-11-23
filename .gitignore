@@ -6,6 +6,5 @@ build
 dist
 *.egg-info
 lib/
-cortex.*/
 rpmbuild/SPECS/cortex-client.spec
 epydoc-html/

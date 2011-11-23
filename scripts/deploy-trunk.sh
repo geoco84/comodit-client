@@ -6,6 +6,8 @@ cd ..
 
 git checkout master
 git pull
+git submodule init
+git submodule update
 
 NAME="cortex-client"
 VERSION=`git describe --long --match "release*" | awk -F"-" '{print $2}'`
