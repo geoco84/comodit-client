@@ -9,7 +9,6 @@ Base resource class module.
 import os
 
 from cortex_client.util.json_wrapper import JsonWrapper
-from cortex_client.api.exceptions import PythonApiException
 
 import cortex_client.util.path as path
 
@@ -25,46 +24,45 @@ class Resource(JsonWrapper):
     must be explicitly created by a call to L{create}.
     """
 
-    def set_api(self, api):
-        """
-        Sets the cortex server access point.
-
-        @param api: An access point.
-        @type api: L{CortexApi}
-        """
-        self._api = api
-        self._client = api.get_client()
-
-    def _set_collection(self, collection):
+    def __init__(self, collection, json_data = None):
         """
         Sets the collection this resource is associated to.
 
         @param collection: A collection
         @type collection: L{Collection}
         """
-        self._resource = collection.get_path()
-        self._resource_collection = collection
+        super(Resource, self).__init__(json_data)
 
-    def get_uuid(self):
+        if collection is None:
+            raise Exception("Collection must be set")
+        self._collection = collection
+
+    def _get_path(self):
         """
-        Provides the UUID of this resource or None if it is not yet set.
-
-        @return: A UUID
+        Provides the path to this resource.
+        
+        @return: The path to this resource
         @rtype: String
         """
-        return self._get_field("uuid")
+        return self._collection.get_path() + self.get_name() + "/"
 
-    def set_uuid(self, uuid):
+    def _get_client(self):
         """
-        Sets the UUID of this resource.
-
-        @param uuid: The new UUID
-        @type uuid: String
-
-        @warning: The UUID of a resource is generally set by the server.
-        Only use this method if you know what you do.
+        Provides rest client to server.
+        
+        @return: The rest client
+        @rtype: L{Client}
         """
-        self._set_field("uuid", uuid)
+        return self._collection.get_client()
+
+    def _get_api(self):
+        """
+        Provides rest client to server.
+        
+        @return: The rest client
+        @rtype: L{CortexApi}
+        """
+        return self._collection.get_api()
 
     def get_name(self):
         """
@@ -74,6 +72,9 @@ class Resource(JsonWrapper):
         @rtype: String
         """
         return self._get_field("name")
+
+    def get_identifier(self):
+        return self.get_name()
 
     def set_name(self, name):
         """
@@ -108,10 +109,7 @@ class Resource(JsonWrapper):
 
         @raise PythonApiException: If server access point is not set.
         """
-        if(self._client is None):
-            raise PythonApiException("API is not set")
-
-        self.set_json(self._client.read(self._resource + "/" + self.get_uuid()))
+        self.set_json(self._get_client().read(self._get_path()))
 
     def commit(self, force = False):
         """
@@ -123,14 +121,10 @@ class Resource(JsonWrapper):
 
         @raise PythonApiException: If server access point is not set.
         """
-        if(self._client is None):
-            raise PythonApiException("API is not set")
-
         parameters = {}
         if(force):
             parameters["force"] = "true"
-        self.set_json(self._client.update(self._resource + "/" +
-                                        self.get_uuid(),
+        self.set_json(self._get_client().update(self._get_path(),
                                         self.get_json(),
                                         parameters))
 
@@ -141,10 +135,7 @@ class Resource(JsonWrapper):
 
         @raise PythonApiException: If server access point is not set.
         """
-        if(self._resource_collection is None):
-            raise PythonApiException("Collection is not set")
-
-        self._resource_collection.add_resource(self)
+        self._collection.add_resource(self)
 
     def delete(self):
         """
@@ -152,10 +143,7 @@ class Resource(JsonWrapper):
 
         @raise PythonApiException: If server access point is not set.
         """
-        if(self._client is None):
-            raise PythonApiException("API is not set")
-
-        self.set_json(self._client.delete(self._resource + "/" + self.get_uuid()))
+        self._get_client().delete(self._get_path())
 
     def show(self, as_json = False, indent = 0):
         """
@@ -174,17 +162,6 @@ class Resource(JsonWrapper):
         else:
             self._show(indent)
 
-    def get_identifier(self):
-        """
-        Provides the identifier of this resource in its collection.
-        The identifier may be used with directory service to retrieve the UUID
-        of this resource.
-
-        @return: The identifier of this resource.
-        @rtype: String
-        """
-        return self.get_name()
-
     def _show(self, indent = 0):
         """
         Prints this resource's state to standard output in a user-friendly way.
@@ -193,7 +170,6 @@ class Resource(JsonWrapper):
         line.
         @type indent: Integer
         """
-        print " "*indent, "UUID:", self.get_uuid()
         print " "*indent, "Name:", self.get_name()
         print " "*indent, "Description:", self.get_description()
 

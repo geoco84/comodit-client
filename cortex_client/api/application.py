@@ -182,7 +182,7 @@ class ApplicationFile(ApplicationResource):
 
     def set_template(self, template):
         """
-        Sets this file's template UUID.
+        Sets this file's template.
         @param template: A template
         @type template: L{File}
         """
@@ -398,20 +398,14 @@ class Application(Resource):
     service and file resources as well as handlers. A handler defines one or more
     triggers for one or more actions to perform.
     """
-    def __init__(self, api = None, json_data = None):
+    def __init__(self, collection, json_data = None):
         """
-        @param api: An access point.
-        @type api: L{CortexApi}
+        @param collection: A collection
+        @type collection: L{Collection}
         @param json_data: A quasi-JSON representation of application's state.
         @type json_data: dict, list or String
         """
-        super(Application, self).__init__(json_data)
-        if(api):
-            self.set_api(api)
-
-    def set_api(self, api):
-        super(Application, self).set_api(api)
-        self._set_collection(api.get_application_collection())
+        super(Application, self).__init__(collection, json_data)
 
     def get_packages(self):
         """
@@ -518,7 +512,7 @@ class Application(Resource):
         return int(self._get_field("version"))
 
     def _get_file_path(self, name):
-        return self._resource + "/" + self.get_uuid() + "/files/" + name
+        return self._get_path() + "/files/" + name
 
     def set_file_content(self, file_name, path):
         self._api.get_client().upload_to_exising_file_with_path(path, self._get_file_path(file_name))
@@ -535,7 +529,6 @@ class Application(Resource):
         printed line
         @type indent: Integer
         """
-        print " "*indent, "UUID:", self.get_uuid()
         print " "*indent, "Name:", self.get_name()
         print " "*indent, "Description:", self.get_description()
         print " "*indent, "Packages:"

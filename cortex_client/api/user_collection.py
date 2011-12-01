@@ -34,13 +34,4 @@ class UserCollection(Collection):
         @see: L{User}
         """
 
-        return User(self._api, json_data)
-
-    def get_uuid(self, username):
-        """
-        Retrieves the UUID of a user given its name.
-
-        @param username: A user name
-        @type username: String
-        """
-        return self._api.get_directory().get_user_uuid(username)
+        return User(self, json_data)

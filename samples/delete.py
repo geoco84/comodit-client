@@ -19,27 +19,41 @@ def delete_resources():
     # Username "admin" and password "secret" are used for authentification
     api = CortexApi("http://localhost:8000/api", "admin", "secret")
 
-    app_coll = api.get_application_collection()
-    app = app_coll.get_resource_from_path(app_name)
+    org_coll = api.organizations()
+    try:
+        org = org_coll.get_resource(org_name)
+    except:
+        print "Organization does not exist"
 
-    plat_coll = api.get_platform_collection()
-    plat = plat_coll.get_resource_from_path(plat_name)
+    app_coll = org.applications()
+    try:
+        app = app_coll.get_resource(app_name)
+    except:
+        print "Application does not exist"
 
-    dist_coll = api.get_distribution_collection()
-    dist = dist_coll.get_resource_from_path(dist_name)
+    plat_coll = org.platforms()
+    try:
+        plat = plat_coll.get_resource(plat_name)
+    except:
+        print "Platform does not exist"
 
-    org_coll = api.get_organization_collection()
-    org = org_coll.get_resource_from_path(org_name)
+    dist_coll = org.distributions()
+    try:
+        dist = dist_coll.get_resource(dist_name)
+    except:
+        print "Distribution does not exist"
 
-    env_coll = api.get_environment_collection()
-    envs = []
-    for env_desc in org_envs:
-        env_name = env_desc["name"]
-        env = env_coll.get_resource_from_path(org_name + "/" + env_name)
-        envs.append(env)
+    env_coll = org.environments()
+    try:
+        env = env_coll.get_resource(env_name)
+    except:
+        print "Environment does not exist"
 
-    host_coll = api.get_host_collection()
-    host = host_coll.get_resource_from_path(host_env + "/" + host_name)
+    host_coll = env.hosts()
+    try:
+        host = host_coll.get_resource(host_name)
+    except:
+        print "Host does not exist"
 
     ###################
     # Delete entities #
@@ -80,11 +94,10 @@ def delete_resources():
 
     print "="*80
     print "Delete environments"
-    for e in envs:
-        try:
-            e.delete()
-        except Exception, e:
-            print e.message
+    try:
+        env.delete()
+    except Exception, e:
+        print e.message
 
     print "="*80
     print "Delete organization"

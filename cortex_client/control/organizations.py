@@ -16,8 +16,8 @@ class OrganizationsController(ResourceController):
     def __init__(self):
         super(OrganizationsController, self).__init__()
 
-    def get_collection(self):
-        return self._api.get_organization_collection()
+    def get_collection(self, argv):
+        return self._api.organizations()
 
     def _help(self, argv):
         print '''You must provide an action to perform on this resource.

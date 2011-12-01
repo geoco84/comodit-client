@@ -14,20 +14,14 @@ class Platform(Resource):
     Platform's description. A platform is described by a driver and a list of
     settings.
     """
-    def __init__(self, api = None, json_data = None):
+    def __init__(self, collection, json_data = None):
         """
         @param api: An access point.
         @type api: L{CortexApi}
         @param json_data: A quasi-JSON representation of application's state.
         @type json_data: dict, list or String
         """
-        super(Platform, self).__init__(json_data)
-        if(api):
-            self.set_api(api)
-
-    def set_api(self, api):
-        super(Platform, self).set_api(api)
-        self._set_collection(api.get_platform_collection())
+        super(Platform, self).__init__(collection, json_data)
 
     def get_driver(self):
         """

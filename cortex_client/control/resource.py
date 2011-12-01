@@ -37,7 +37,7 @@ class ResourceController(AbstractController):
             print "No resources to list"
         else:
             for r in resources_list:
-                print r.get_uuid(), r.get_identifier()
+                print r.get_identifier()
 
     def _print_identifiers(self, argv):
         resources_list = self._get_resources(argv)
@@ -70,16 +70,16 @@ class ResourceController(AbstractController):
         if options.filename:
             with open(options.filename, 'r') as f:
                 item = json.load(f)
-                res = self.get_collection()._new_resource(item)
+                res = self.get_collection(argv)._new_resource(item)
         elif options.json:
             item = json.loads(options.json)
-            res = self.get_collection()._new_resource(item)
+            res = self.get_collection(argv)._new_resource(item)
         else :
             template = open(os.path.join(Config().templates_path, self._template)).read()
             #template = "# To abort the request; just exit your editor without saving this file.\n\n" + template
             updated = edit_text(template)
             #updated = re.sub(r'#.*$', "", updated)
-            res = self.get_collection()._new_resource(json.loads(updated))
+            res = self.get_collection(argv)._new_resource(json.loads(updated))
 
         res.create()
         res.show(as_json = options.raw)
@@ -129,13 +129,10 @@ class ResourceController(AbstractController):
             raise MissingException("You must provide a valid host identifier")
 
         # Validate input parameters
-        if(globals.options.uuid):
-            return self.get_collection().get_resource(argv[0])
-        else:
-            return self.get_collection().get_resource_from_path(argv[0])
+        return self.get_collection(argv).get_resource(self._get_name_argument(argv))
 
-    def _get_resources(self, argv, parameters = {}):
-        return self.get_collection().get_resources(parameters)
+    def _get_resources(self, argv):
+        return self.get_collection(argv).get_resources()
 
-    def get_collection(self):
+    def get_collection(self, argv):
         raise NotImplementedError

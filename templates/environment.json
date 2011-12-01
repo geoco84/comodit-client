@@ -1,5 +1,5 @@
 {
     "name":"prod",
     "description":"The production environment",
-    "organization":"<UUID of the parent organization>"
+    "organization":"Organization name"
 }

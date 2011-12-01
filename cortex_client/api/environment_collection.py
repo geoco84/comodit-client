@@ -15,14 +15,16 @@ class EnvironmentCollection(Collection):
     cortex server.
     """
 
-    def __init__(self, api):
+    def __init__(self, api, collection_path):
         """
         Creates a new EnvironmentCollection instance.
         
         @param api: Access point to a server
         @type api: L{CortexApi}
+        @param collection_path: The path to collection
+        @type collection_path: L{String}
         """
-        super(EnvironmentCollection, self).__init__("environments", api)
+        super(EnvironmentCollection, self).__init__(collection_path, api)
 
     def _new_resource(self, json_data):
         """
@@ -34,13 +36,4 @@ class EnvironmentCollection(Collection):
         @see: L{Environment}
         """
 
-        return Environment(self._api, json_data)
-
-    def get_uuid(self, path):
-        """
-        Retrieves the UUID of an environment given its name.
-
-        @param path: The name of an environment
-        @type path: String
-        """
-        return self._api.get_directory().get_environment_uuid_from_path(path)
+        return Environment(self, json_data)

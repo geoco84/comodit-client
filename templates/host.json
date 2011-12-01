@@ -1,12 +1,12 @@
 {
    "name":"host",
    "description":"The host description",
-   "environment":"<UUID of parent environment>",
-   "distribution": "<uuid of a distribution>",
+   "environment":"Environment name",
+   "distribution": "Distribution name",
    "applications": [
-     "<UUID of an application>"
+     "Application name"
    ],
-   "platform" : "<UUID of a platform>",
+   "platform" : "Platform name",
    "settings": [
      {
        "key": "<k>",

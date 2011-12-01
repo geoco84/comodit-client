@@ -14,14 +14,16 @@ class HostCollection(Collection):
     cortex server.
     """
 
-    def __init__(self, api):
+    def __init__(self, api, collection_path):
         """
         Creates a new HostCollection instance.
         
         @param api: Access point to a server
         @type api: L{CortexApi}
+        @param collection_path: The path to collection
+        @type collection_path: L{String}
         """
-        super(HostCollection, self).__init__("hosts", api)
+        super(HostCollection, self).__init__(collection_path, api)
 
     def _new_resource(self, json_data):
         """
@@ -34,15 +36,4 @@ class HostCollection(Collection):
         """
 
         from host import Host
-        return Host(self._api, json_data)
-
-    def get_uuid(self, path):
-        """
-        Retrieves the UUID of a host given its path. The path of a host is:
-        Org/Env/host where Org is the name of an organization, Env the name
-        of an environment of organization Org and host the name of a host.
-
-        @param path: The name of a path
-        @type path: String
-        """
-        return self._api.get_directory().get_host_uuid_from_path(path)
+        return Host(self, json_data)

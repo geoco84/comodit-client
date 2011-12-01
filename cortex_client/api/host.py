@@ -205,20 +205,14 @@ class Host(Resource):
     to a platform and a distribution. It may be started, paused, resumed, shutdown
     and provisioned.
     """
-    def __init__(self, api = None, json_data = None):
+    def __init__(self, collection, json_data = None):
         """
         @param api: An access point.
         @type api: L{CortexApi}
         @param json_data: A quasi-JSON representation of application's state.
         @type json_data: dict, list or String
         """
-        super(Host, self).__init__(json_data)
-        if(api):
-            self.set_api(api)
-
-    def set_api(self, api):
-        super(Host, self).set_api(api)
-        self._set_collection(api.get_host_collection())
+        super(Host, self).__init__(collection, json_data)
 
     def get_organization(self):
         """
@@ -229,14 +223,8 @@ class Host(Resource):
         """
         return self._get_field("organization")
 
-    def set_organization(self, organization):
-        """
-        Sets the organization this host is part of. It must be host's
-        environment's organization.
-        @param organization: Organization's UUID
-        @type organization: String
-        """
-        self._set_field("organization", organization)
+    def set_organization(self, name):
+        return self._set_field("organization", name)
 
     def get_environment(self):
         """
@@ -246,13 +234,8 @@ class Host(Resource):
         """
         return self._get_field("environment")
 
-    def set_environment(self, environment):
-        """
-        Sets the environment this host is part of.
-        @param environment: Environment's UUID
-        @type environment: String
-        """
-        self._set_field("environment", environment)
+    def set_environment(self, name):
+        return self._set_field("environment", name)
 
     def get_platform(self):
         """
@@ -363,14 +346,14 @@ class Host(Resource):
             uuid = app.get_uuid()
             self._add_to_list_field("applications", uuid)
 
-    def add_application(self, application):
+    def add_application(self, app_name):
         """
         Adds an application to this host. Note that, for a provisioned host,
         applications must be added or removed using change requests.
-        @param application: An application
-        @type application: L{Application}
+        @param application: An application's name
+        @type application: L{String}
         """
-        self._add_to_list_field("applications", application.get_uuid())
+        self._add_to_list_field("applications", app_name)
 
     def get_version(self):
         """
@@ -387,14 +370,14 @@ class Host(Resource):
         """
         if(delete_vm):
             try:
-                self._api.get_client().update("hosts/" + self.get_uuid() + "/VM/_delete",
+                self._get_client().update(self._get_path() + "VM/_delete",
                                               decode = False)
             except ApiException, e:
                 if(e.code == 400):
                     print "Could not delete VM:", e.message
                 else:
                     raise e
-        self._api.get_client().delete("hosts/" + self.get_uuid())
+        self._get_client().delete(self._get_path())
 
     def get_state(self):
         """
@@ -414,7 +397,7 @@ class Host(Resource):
         if self.get_state() == "DEFINED":
             raise PythonApiException("Host must first be provision(ed|ing)")
 
-        info_json = self._api.get_client().read("hosts/" + self.get_uuid() + "/VM/state")
+        info_json = self._api.get_client().read(self._get_path() + "VM/state")
         return InstanceInfo(info_json)
 
     def get_identifier(self):
@@ -432,7 +415,6 @@ class Host(Resource):
         return env.get_identifier() + "/" + self.get_name()
 
     def _show(self, indent = 0):
-        print " "*indent, "UUID:", self.get_uuid()
         print " "*indent, "Name:", self.get_name()
         print " "*indent, "Description:", self.get_description()
         print " "*indent, "Organization:", self.get_organization()
@@ -487,7 +469,7 @@ class Host(Resource):
         Starts host.
         @raise PythonApiException: If host could not be started.
         """
-        result = self._api.get_client().update("hosts/" + self.get_uuid() + "/VM/_start", decode = False)
+        result = self._api.get_client().update(self._get_path() + "VM/_start", decode = False)
         if(result.getcode() != 202):
             raise PythonApiException("Call not accepted by server")
 
@@ -496,7 +478,7 @@ class Host(Resource):
         Pauses host.
         @raise PythonApiException: If host could not be paused.
         """
-        result = self._api.get_client().update("hosts/" + self.get_uuid() + "/VM/_pause", decode = False)
+        result = self._api.get_client().update(self._get_path() + "VM/_pause", decode = False)
         if(result.getcode() != 202):
             raise PythonApiException("Call not accepted by server")
 
@@ -505,7 +487,7 @@ class Host(Resource):
         Resumes host's execution (after pause).
         @raise PythonApiException: If host's execution could not be resumed.
         """
-        result = self._api.get_client().update("hosts/" + self.get_uuid() + "/VM/_resume", decode = False)
+        result = self._api.get_client().update(self._get_path() + "VM/_resume", decode = False)
         if(result.getcode() != 202):
             raise PythonApiException("Call not accepted by server")
 
@@ -514,7 +496,7 @@ class Host(Resource):
         Shutdowns host.
         @raise PythonApiException: If host could not be shutdown.
         """
-        result = self._api.get_client().update("hosts/" + self.get_uuid() + "/VM/_stop", decode = False)
+        result = self._api.get_client().update(self._get_path() + "VM/_stop", decode = False)
         if(result.getcode() != 202):
             raise PythonApiException("Call not accepted by server")
 
@@ -524,7 +506,7 @@ class Host(Resource):
         @raise PythonApiException: If host could not be powered-off.
         """
         try:
-            result = self._api.get_client().update("hosts/" + self.get_uuid() + "/VM/_off", decode = False)
+            result = self._api.get_client().update(self._get_path() + "VM/_off", decode = False)
             if(result.getcode() != 202):
                 raise PythonApiException("Call not accepted by server")
         except ApiException, e:

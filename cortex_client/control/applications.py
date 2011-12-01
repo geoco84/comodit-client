@@ -22,7 +22,7 @@ class ApplicationsController(ResourceController):
         self._register(["show-file"], self._show_file, self._print_show_file_completions)
         self._register(["set-file"], self._set_file, self._print_set_file_completions)
 
-    def get_collection(self):
+    def get_collection(self, argv):
         return self._api.get_application_collection()
 
     def _print_applications(self, argv):

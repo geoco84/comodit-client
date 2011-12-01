@@ -8,25 +8,12 @@ access to resources and services exhibited by a particular cortex-server.
 """
 
 from cortex_client.rest.client import Client
-from directory import Directory
 from rendering_service import RenderingService
-from application_collection import ApplicationCollection
-from change_request_collection import ChangeRequestCollection
-from distribution_collection import DistributionCollection
-from environment_collection import EnvironmentCollection
-from file_collection import FileCollection
-from host_collection import HostCollection
 from organization_collection import OrganizationCollection
-from platform_collection import PlatformCollection
 from user_collection import UserCollection
 
-from application import Application
-from platform import Platform
-from distribution import Distribution
-from file import File
 from organization import Organization
-from environment import Environment
-from host import Host
+from user import User
 
 class CortexApi(object):
     """
@@ -67,17 +54,9 @@ class CortexApi(object):
         """
 
         self._client = Client(endpoint, username, password)
-        self._directory = Directory(self)
         self._rendering = RenderingService(self)
 
-        self._appl_collection = ApplicationCollection(self)
-        self._chan_collection = ChangeRequestCollection(self)
-        self._dist_collection = DistributionCollection(self)
-        self._envi_collection = EnvironmentCollection(self)
-        self._file_collection = FileCollection(self)
-        self._host_collection = HostCollection(self)
         self._orga_collection = OrganizationCollection(self)
-        self._plat_collection = PlatformCollection(self)
         self._user_collection = UserCollection(self)
 
     def get_client(self):
@@ -90,15 +69,6 @@ class CortexApi(object):
         """
         return self._client
 
-    def get_directory(self):
-        """
-        Provides an access to the directory of associated cortex server.
-
-        @return: The directory access point
-        @rtype: L{Directory}
-        """
-        return self._directory
-
     def get_rendering_service(self):
         """
         Provides the rendering service associated to this instance.
@@ -108,61 +78,7 @@ class CortexApi(object):
         """
         return self._rendering
 
-    def get_application_collection(self):
-        """
-        Provides an access to applications collection of associated cortex server.
-        
-        @return: The applications collection access point
-        @rtype: L{ApplicationCollection}
-        """
-        return self._appl_collection
-
-    def get_change_request_collection(self):
-        """
-        Provides an access to change requests collection of associated cortex server.
-
-        @return: The change requests collection access point
-        @rtype: L{ChangeRequestCollection}
-        """
-        return self._chan_collection
-
-    def get_distribution_collection(self):
-        """
-        Provides an access to applications collection of associated cortex server.
-        
-        @return: The applications collection access point
-        @rtype: L{ApplicationCollection}
-        """
-        return self._dist_collection
-
-    def get_environment_collection(self):
-        """
-        Provides an access to environments collection of associated cortex server.
-        
-        @return: The environments collection access point
-        @rtype: L{EnvironmentCollection}
-        """
-        return self._envi_collection
-
-    def get_file_collection(self):
-        """
-        Provides an access to files collection of associated cortex server.
-        
-        @return: The files collection access point
-        @rtype: L{FileCollection}
-        """
-        return self._file_collection
-
-    def get_host_collection(self):
-        """
-        Provides an access to hosts collection of associated cortex server.
-        
-        @return: The hosts collection access point
-        @rtype: L{HostCollection}
-        """
-        return self._host_collection
-
-    def get_organization_collection(self):
+    def organizations(self):
         """
         Provides an access to organizations collection of associated cortex server.
         
@@ -171,16 +87,7 @@ class CortexApi(object):
         """
         return self._orga_collection
 
-    def get_platform_collection(self):
-        """
-        Provides an access to platforms collection of associated cortex server.
-        
-        @return: The platforms collection access point
-        @rtype: L{PlatformCollection}
-        """
-        return self._plat_collection
-
-    def get_user_collection(self):
+    def users(self):
         """
         Provides an access to users collection of associated cortex server.
         
@@ -189,56 +96,24 @@ class CortexApi(object):
         """
         return self._user_collection
 
-    def new_application(self):
-        """
-        Factory method for application resource.
-
-        @return: An application connected to associated cortex server.
-        @rtype: L{Application}
-        """
-        return Application(self)
-
-    def new_platform(self):
-        """
-        Factory method for platform resource.
-
-        @return: A platform connected to associated cortex server.
-        @rtype: L{Platform}
-        """
-        return Platform(self)
-
-    def new_distribution(self):
-        """
-        Factory method for distribution resource.
-
-        @return: A distribution connected to associated cortex server.
-        @rtype: L{Distribution}
-        """
-        return Distribution(self)
-
-    def new_organization(self):
+    def new_organization(self, name):
         """
         Factory method for organization resource.
 
         @return: An organization connected to associated cortex server.
         @rtype: L{Organization}
         """
-        return Organization(self)
+        org = Organization(self._orga_collection)
+        org.set_name(name)
+        return org
 
-    def new_environment(self):
+    def new_user(self, username):
         """
-        Factory method for environment resource.
+        Factory method for user resource.
 
-        @return: An environment connected to associated cortex server.
-        @rtype: L{Environment}
+        @return: A user connected to associated cortex server.
+        @rtype: L{User}
         """
-        return Environment(self)
-
-    def new_host(self):
-        """
-        Factory method for host resource.
-
-        @return: A host connected to associated cortex server.
-        @rtype: L{Host}
-        """
-        return Host(self)
+        user = User(self._user_collection)
+        user.set_name(username)
+        return user

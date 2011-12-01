@@ -1,6 +1,10 @@
 #==============================================================================
 # Definitions section
 
+# Define organization
+org_name = "Guardis2"
+org_description = "Guardis2's organization"
+
 # Define application
 app_name = "htop2"
 app_packages = ["htop"]
@@ -27,11 +31,9 @@ dist_kickstart_params = [{"key": "zone", "value":"angleur"},
 {"key": "enable_trunk", "value":"true"},
 {"key": "ks_rootpw_one", "value":"secret"}]
 
-# Define organization and environment(s)
-org_name = "Guardis2"
-org_description = "Guardis2's organization"
-org_envs = [{"name": "Test2", "description":"Test environment 1 of Guardis2"},
-{"name": "Test3", "description":"Test environment 2 of Guardis2"}]
+# Define environments
+env_name = "Test2"
+env_description = "Test environment 1 of Guardis2"
 
 # Define host
 host_name = "test2"

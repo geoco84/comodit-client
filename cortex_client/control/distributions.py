@@ -8,7 +8,7 @@
 # authorization from Guardis.
 
 from cortex_client.control.resource import ResourceController
-from cortex_client.control.exceptions import MissingException
+from cortex_client.control.exceptions import MissingException, ArgumentException
 
 class DistributionsController(ResourceController):
 
@@ -19,8 +19,17 @@ class DistributionsController(ResourceController):
         self._register(["sk", "show-kick"], self._show_kickstart, self._print_show_kick_completions)
         self._register(["set-kick"], self._set_kickstart, self._print_set_kick_completions)
 
-    def get_collection(self):
-        return self._api.get_distribution_collection()
+    def _get_name_argument(self, argv):
+        if len(argv) < 2:
+            raise ArgumentException("Wrong number of arguments");
+        return argv[1]
+
+    def get_collection(self, argv):
+        if len(argv) == 0:
+            raise ArgumentException("Wrong number of arguments");
+
+        org = self._api.organizations().get_resource(argv[0])
+        return org.distributions()
 
     def _print_distributions(self, argv):
         dists = self._api.get_distribution_collection().get_resources()

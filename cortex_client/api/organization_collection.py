@@ -22,7 +22,7 @@ class OrganizationCollection(Collection):
         @param api: Access point to a server
         @type api: L{CortexApi}
         """
-        super(OrganizationCollection, self).__init__("organizations", api)
+        super(OrganizationCollection, self).__init__("organizations/", api)
 
     def _new_resource(self, json_data):
         """
@@ -34,13 +34,4 @@ class OrganizationCollection(Collection):
         @see: L{Organization}
         """
 
-        return Organization(self._api, json_data)
-
-    def get_uuid(self, path):
-        """
-        Retrieves the UUID of an organization given its name.
-
-        @param path: The name of an organization
-        @type path: String
-        """
-        return self._api.get_directory().get_organization_uuid(path)
+        return Organization(self, json_data)

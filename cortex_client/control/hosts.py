@@ -28,7 +28,7 @@ class HostsController(ResourceController):
         self._register(["properties"], self._properties, self._print_show_completions)
         self._register(["info"], self._info, self._print_show_completions)
 
-    def get_collection(self):
+    def get_collection(self, argv):
         return self._api.get_host_collection()
 
     def _get_resources(self, argv):

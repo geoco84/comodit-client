@@ -37,10 +37,10 @@ class Collection(object):
         Creates an instance of Collection.
 
         @param resource_path: Path to associated collection on cortex server
-        (for example, 'applications' is the relative path to access applications
+        (for example, 'organizations' is the relative path to access organizations
         collection i.e., if server's API is available at address
         'http://cortex.server.com/api', applications collection is available
-        at address 'http://cortex.server.com/api/applications'.
+        at address 'http://cortex.server.com/api/organizations'.
         @type resource_path: String
         @param api: An API access point.
         @type api: L{CortexApi}
@@ -48,9 +48,15 @@ class Collection(object):
         self._resource_path = resource_path
         self._api = api
 
+    def get_api(self):
+        return self._api
+
+    def get_client(self):
+        return self._api.get_client()
+
     def get_path(self):
         """
-        Returns the relative path to associated resources collection.
+        Returns the relative path to associated collection.
 
         @return: A relative path
         @rtype: String
@@ -80,27 +86,30 @@ class Collection(object):
                                      resource.get_name() + ": " + e.message)
         resource.set_json(result)
 
-    def get_resources(self, parameters = {}):
+    def get_resources(self):
         """
-        Provides the list of resources in associated collection. This list may
-        be filtered.
-        
-        @param parameters: Filtering parameters
-        @type parameters: dict of <String,String>
+        Provides the list of resources associated to this collection.
         
         @return: A list of resources
         @rtype: list of L{Resource}
         """
         client = self._api.get_client()
-        result = client.read(self._resource_path, parameters)
+        try:
+            result = client.read(self._resource_path)
 
-        resources_list = []
-        if(result["count"] != "0"):
-            json_list = result["items"]
-            for json_res in json_list:
-                resources_list.append(self._new_resource(json_res))
+            resources_list = []
+            count = int(result["count"])
+            if(count > 0):
+                json_list = result["items"]
+                for json_res in json_list:
+                    resources_list.append(self._new_resource(json_res))
 
-        return resources_list
+            return resources_list
+        except ApiException, e:
+            if e.code == 404:
+                raise ResourceNotFoundException(e.message)
+            else:
+                raise PythonApiException("Could not get elements: " + e.message)
 
     def _new_resource(self, json_data):
         """
@@ -115,14 +124,14 @@ class Collection(object):
         """
         raise NotImplementedError
 
-    def get_resource(self, uuid):
+    def get_resource(self, e_id):
         """
-        Retrieves the resource with given UUID from this collection.
+        Retrieves the resource or collection with given identifier from this collection.
         
-        @param uuid: The UUID of the resource to retrieve
-        @type uuid: String
+        @param e_id: The identifier of the resource or collection to retrieve
+        @type e_id: String
         
-        @return: A resource object
+        @return: A resource
         @rtype: L{Resource}
         
         @raise PythonApiException: If the resource could not be retrieved from
@@ -130,44 +139,10 @@ class Collection(object):
         """
         client = self._api.get_client()
         try:
-            result = client.read(self._resource_path + "/" + uuid)
+            result = client.read(self._resource_path + e_id)
+            return self._new_resource(result)
         except ApiException, e:
             if e.code == 404:
-                raise ResourceNotFoundException(uuid, e)
+                raise ResourceNotFoundException(e_id)
             else:
-                raise PythonApiException("Could not get resource " + uuid + ":" + e.message)
-        return self._new_resource(result)
-
-    def get_resource_from_path(self, identifier):
-        """
-        Retrieves the resource with given identifier from this collection.
-        
-        @param identifier: The identifier of the resource to retrieve
-        @type identifier: String
-        
-        @return: A resource object
-        @rtype: L{Resource}
-        
-        @raise PythonApiException: If the resource could not be retrieved from
-        server.
-        """
-        try:
-            return self.get_resource(self.get_uuid(identifier))
-        except ApiException, e:
-            if e.code == 404:
-                raise ResourceNotFoundException(identifier)
-            else:
-                raise PythonApiException("Could not get resource " + identifier + ":" + e.message)
-
-    def get_uuid(self, identifier):
-        """
-        Retrieves the UUID of a resource in this collection with given
-        identifier.
-        
-        @param identifier: The identifier of a resource in this collection.
-        @type identifier: String
-        
-        @return: A UUID
-        @rtype: String
-        """
-        raise NotImplementedError
+                raise PythonApiException("Could not get resource " + e_id + ":" + e.message)

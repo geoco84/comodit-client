@@ -8,6 +8,14 @@ Organization module.
 
 from resource import Resource
 from cortex_client.util.json_wrapper import StringFactory
+from environment import Environment
+from environment_collection import EnvironmentCollection
+from distribution import Distribution
+from distribution_collection import DistributionCollection
+from platform import Platform
+from platform_collection import PlatformCollection
+from application import Application
+from application_collection import ApplicationCollection
 
 class Organization(Resource):
     """
@@ -15,20 +23,14 @@ class Organization(Resource):
     
     @see: L{Environment}
     """
-    def __init__(self, api = None, json_data = None):
+    def __init__(self, collection, json_data = None):
         """
         @param api: An access point.
         @type api: L{CortexApi}
         @param json_data: A quasi-JSON representation of application's state.
         @type json_data: dict, list or String
         """
-        super(Organization, self).__init__(json_data)
-        if(api):
-            self.set_api(api)
-
-    def set_api(self, api):
-        super(Organization, self).set_api(api)
-        self._set_collection(api.get_organization_collection())
+        super(Organization, self).__init__(collection, json_data)
 
     def get_environments(self):
         """
@@ -48,13 +50,93 @@ class Organization(Resource):
         return int(self._get_field("version"))
 
     def _show(self, indent = 0):
-        print " "*indent, "UUID:", self.get_uuid()
         print " "*indent, "Name:", self.get_name()
         print " "*indent, "Description:", self.get_description()
-        print " "*indent, "Environments:", self.get_description()
+        print " "*indent, "Environments:"
         environments = self.get_environments()
         for e in environments:
             print " "*(indent + 2), e
 
     def get_identifier(self):
         return self.get_name()
+
+    def applications(self):
+        """
+        Provides an access to applications collection of this organization.
+        
+        @return: The collection
+        @rtype: L{ApplicationCollection}
+        """
+        return ApplicationCollection(self._get_api(), self._get_path() + "applications/")
+
+    def new_application(self, name):
+        """
+        Factory method for application resource.
+
+        @return: An application connected to associated cortex server.
+        @rtype: L{Application}
+        """
+        app = Application(self.applications())
+        app.set_name(name)
+        return app
+
+    def platforms(self):
+        """
+        Provides an access to platforms collection of this organization.
+        
+        @return: The collection
+        @rtype: L{PlatformCollection}
+        """
+        return PlatformCollection(self._get_api(), self._get_path() + "platforms/")
+
+    def new_platform(self, name):
+        """
+        Factory method for platform resource.
+
+        @return: A platform connected to associated cortex server.
+        @rtype: L{Platform}
+        """
+        plat = Platform(self.platforms())
+        plat.set_name(name)
+        return plat
+
+    def distributions(self):
+        """
+        Provides an access to distributions collection of this organization.
+        
+        @return: The collection
+        @rtype: L{ApplicationCollection}
+        """
+        return DistributionCollection(self._get_api(), self._get_path() + "distributions/")
+
+    def new_distribution(self, name):
+        """
+        Factory method for distribution resource.
+
+        @return: A distribution connected to associated cortex server.
+        @rtype: L{Distribution}
+        """
+        dist = Distribution(self.distributions())
+        dist.set_name(name)
+        return dist
+
+    def environments(self):
+        """
+        Provides an access to distributions collection of this organization.
+        
+        @return: The collection
+        @rtype: L{ApplicationCollection}
+        """
+        return EnvironmentCollection(self._get_api(), self._get_path() + "environments/")
+
+    def new_environment(self, name):
+        """
+        Factory method for environment resource.
+
+        @return: An environment connected to associated cortex server.
+        @rtype: L{Environment}
+        """
+        env = Environment(self.environments())
+        env.set_name(name)
+        env.set_organization(self.get_name())
+        return env

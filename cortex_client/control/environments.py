@@ -18,7 +18,7 @@ class EnvironmentsController(ResourceController):
     def __init__(self):
         super(EnvironmentsController, self).__init__()
 
-    def get_collection(self):
+    def get_collection(self, argv):
         return self._api.get_environment_collection()
 
     def _get_resources(self, argv):

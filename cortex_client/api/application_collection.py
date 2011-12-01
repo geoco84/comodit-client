@@ -11,18 +11,20 @@ from application import Application
 
 class ApplicationCollection(Collection):
     """
-    Application collection. Collection of the applications available on a
-    cortex server.
+    Application collection. Collection of the applications available in a
+    particular organization.
     """
 
-    def __init__(self, api):
+    def __init__(self, api, collection_path):
         """
         Creates a new ApplicationCollection instance.
         
         @param api: Access point to a server
         @type api: L{CortexApi}
+        @param collection_path: The path to collection
+        @type collection_path: L{String}
         """
-        super(ApplicationCollection, self).__init__("applications", api)
+        super(ApplicationCollection, self).__init__(collection_path, api)
 
     def _new_resource(self, json_data):
         """
@@ -33,13 +35,5 @@ class ApplicationCollection(Collection):
 
         @see: L{Application}
         """
-        return Application(self._api, json_data)
-
-    def get_uuid(self, name):
-        """
-        Retrieves the UUID of an application given its name.
-
-        @param name: The name of an application
-        @type name: String
-        """
-        return self._api.get_directory().get_application_uuid(name)
+        app = Application(self, json_data)
+        return app

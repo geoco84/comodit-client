@@ -13,20 +13,14 @@ class User(Resource):
     """
     A user's representation.
     """
-    def __init__(self, api = None, json_data = None):
+    def __init__(self, collection, json_data = None):
         """
         @param api: An access point.
         @type api: L{CortexApi}
         @param json_data: A quasi-JSON representation of application's state.
         @type json_data: dict, list or String
         """
-        super(User, self).__init__(json_data)
-        if(api):
-            self.set_api(api)
-
-    def set_api(self, api):
-        super(User, self).set_api(api)
-        self._set_collection(api.get_user_collection())
+        super(User, self).__init__(collection, json_data)
 
     def get_description(self):
         raise NotImplementedError
@@ -57,7 +51,6 @@ class User(Resource):
         return self._set_list_field("roles", roles)
 
     def _show(self, indent = 0):
-        print " "*indent, "UUID:", self.get_uuid()
         print " "*indent, "User name:", self.get_name()
         print " "*indent, "Roles:"
         roles = self.get_roles()

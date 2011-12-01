@@ -11,7 +11,6 @@ RELEASE = "** ongoing development **"
 
 from control.applications import ApplicationsController
 from control.platforms import PlatformsController
-from control.changes import ChangesController
 from control.distributions import DistributionsController
 from control.environments import EnvironmentsController
 from control.exceptions import ControllerException, ArgumentException
@@ -42,7 +41,6 @@ def run(argv):
     control.router.register(["environments"], EnvironmentsController())
     control.router.register(["hosts"], HostsController())
     control.router.register(["sync"], SyncController())
-    control.router.register(["changes"], ChangesController());
 
     # services
     control.router.register(["rendering"], RenderingController());
@@ -65,10 +63,8 @@ def _get_value_options(parser):
                 "-j", "--json",
                 "--org",
                 "--org-path",
-                "--org-uuid",
                 "--env",
                 "--env-path",
-                "--env-uuid",
                 "--api",
                 "--user",
                 "--pass",
@@ -93,15 +89,12 @@ def _parse(argv):
     parser.add_option("-f", "--file", dest = "filename", help = "input file with a JSON object")
     parser.add_option("-j", "--json", dest = "json", help = "input JSON object via command line")
     parser.add_option("--raw", dest = "raw", help = "output the raw JSON results", action = "store_true", default = False,)
-    parser.add_option("--with-uuid", dest = "uuid", help = "references are UUID instead of paths", action = "store_true", default = False)
 
     parser.add_option("--org", dest = "org", help = "Path or UUID of the parent organization (conditioned by --with-uuid)")
     parser.add_option("--org-path", dest = "org_path", help = "Path to the parent organization")
-    parser.add_option("--org-uuid", dest = "org_uuid", help = "UUID of the parent organization")
 
     parser.add_option("--env", dest = "env", help = "Path or UUID of the parent environment (conditioned by --with-uuid)")
     parser.add_option("--env-path", dest = "env_path", help = "Path to the parent environment")
-    parser.add_option("--env-uuid", dest = "env_uuid", help = "UUID of the parent environment")
 
     parser.add_option("--skip-chown", dest = "skip_chown", help = "Path to the parent environment", action = "store_true", default = False)
     parser.add_option("--skip-chmod", dest = "skip_chmod", help = "UUID of the parent environment", action = "store_true", default = False)
@@ -212,7 +205,6 @@ Resources:
     organizations       Top-level organization
     environments        Environment defined within an organization
     hosts               Host defined within an environment
-    changes             Change requests
 
 Services:
     rendering           Rendering of templates

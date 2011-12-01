@@ -140,6 +140,8 @@ class JsonWrapper(object):
         @param json_data: A quasi-JSON represented object state.
         @type json_data: dict
         """
+        if not isinstance(json_data, dict):
+            raise Exception("Wrong type")
         self.__json_data = json_data
 
     def get_json(self):

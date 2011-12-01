@@ -15,14 +15,16 @@ class PlatformCollection(Collection):
     cortex server.
     """
 
-    def __init__(self, api):
+    def __init__(self, api, collection_path):
         """
         Creates a new PlatformCollection instance.
         
         @param api: Access point to a server
         @type api: L{CortexApi}
+        @param collection_path: The path to collection
+        @type collection_path: L{String}
         """
-        super(PlatformCollection, self).__init__("platforms", api)
+        super(PlatformCollection, self).__init__(collection_path, api)
 
     def _new_resource(self, json_data):
         """
@@ -34,13 +36,4 @@ class PlatformCollection(Collection):
         @see: L{Platform}
         """
 
-        return Platform(self._api, json_data)
-
-    def get_uuid(self, name):
-        """
-        Retrieves the UUID of a platform given its name.
-
-        @param name: The name of an application
-        @type name: String
-        """
-        return self._api.get_directory().get_platform_uuid(name)
+        return Platform(self, json_data)

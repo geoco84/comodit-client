@@ -8,6 +8,8 @@ Environment module.
 
 from resource import Resource
 from cortex_client.util.json_wrapper import StringFactory
+from host import Host
+from host_collection import HostCollection
 
 class Environment(Resource):
     """
@@ -16,23 +18,16 @@ class Environment(Resource):
     @see: L{Organization}
     @see: L{Host}
     """
-    def __init__(self, api = None, json_data = None):
+    def __init__(self, collection, json_data = None):
         """
         @param api: An access point.
         @type api: L{CortexApi}
         @param json_data: A quasi-JSON representation of change request's state.
         @type json_data: dict, list or String
         """
-        super(Environment, self).__init__(json_data)
-        if(api):
-            self.set_api(api)
-
-    def set_api(self, api):
-        super(Environment, self).set_api(api)
-        self._set_collection(api.get_environment_collection())
+        super(Environment, self).__init__(collection, json_data)
 
     def _show(self, indent = 0):
-        print " "*indent, "UUID:", self.get_uuid()
         print " "*indent, "Name:", self.get_name()
         print " "*indent, "Description:", self.get_description()
         print " "*indent, "Organization:", self.get_organization()
@@ -91,6 +86,26 @@ class Environment(Resource):
         @return: Environment's identifier
         @rtype: String
         """
-        org_uuid = self.get_organization()
-        org = self._api.get_organization_collection().get_resource(org_uuid)
-        return org.get_name() + "/" + self.get_name()
+        return self.get_organization() + "/" + self.get_name()
+
+    def hosts(self):
+        """
+        Provides an access to hosts collection of this environment.
+        
+        @return: The collection
+        @rtype: L{HostCollection}
+        """
+        return HostCollection(self._get_api(), self._get_path() + "hosts/")
+
+    def new_host(self, name):
+        """
+        Factory method for host resource.
+
+        @return: A host connected to associated cortex server.
+        @rtype: L{Host}
+        """
+        host = Host(self.hosts())
+        host.set_name(name)
+        host.set_organization(self.get_organization())
+        host.set_environment(self.get_name())
+        return host

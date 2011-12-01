@@ -16,7 +16,7 @@ class UsersController(ResourceController):
     def __init__(self):
         super(UsersController, self).__init__()
 
-    def get_collection(self):
+    def get_collection(self, argv):
         return self._api.get_user_collection()
 
     def _help(self, argv):

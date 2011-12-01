@@ -14,23 +14,17 @@ class Distribution(Resource):
     Represents a distribution. A distribution is described by a kickstart file,
     the base URL of its repository, an initrd and a vmlinuz.
     """
-    def __init__(self, api = None, json_data = None):
+    def __init__(self, collection, json_data = None):
         """
         @param api: An access point.
         @type api: L{CortexApi}
         @param json_data: A quasi-JSON representation of change request's state.
         @type json_data: dict, list or String
         """
-        super(Distribution, self).__init__(json_data)
-        if(api):
-            self.set_api(api)
-
-    def set_api(self, api):
-        super(Distribution, self).set_api(api)
-        self._set_collection(api.get_distribution_collection())
+        super(Distribution, self).__init__(collection, json_data)
 
     def _get_kickstart_path(self):
-        return "distributions/" + self.get_uuid() + "/kickstart"
+        return self._get_path() + "kickstart"
 
     def get_kickstart(self):
         """
@@ -52,10 +46,10 @@ class Distribution(Resource):
         self._set_field("kickstart", kickstart.get_json())
 
     def set_kickstart_content(self, path):
-        self._api.get_client().upload_to_exising_file_with_path(path, self._resource + "/" + self.get_uuid() + "/kickstart")
+        self._get_client().upload_to_exising_file_with_path(path, self._get_kickstart_path())
 
     def get_kickstart_content(self):
-        return self._api.get_client().read(self._get_kickstart_path(), decode = False)
+        return self._get_client().read(self._get_kickstart_path(), decode = False)
 
     def get_initrd(self):
         """
@@ -89,14 +83,6 @@ class Distribution(Resource):
         """
         return self._set_field("vmlinuz", vmlinuz)
 
-    def get_owner(self):
-        """
-        Provides distribution's owner UUID.
-        @return: A UUID
-        @rtype: String
-        """
-        return self._get_field("owner")
-
     def get_version(self):
         """
         Provides distribution's version.
@@ -113,4 +99,3 @@ class Distribution(Resource):
             kickstart.show(indent = indent + 2)
         print " "*indent, "Initrd:", self.get_initrd()
         print " "*indent, "Vmlinuz:", self.get_vmlinuz()
-        print " "*indent, "Owner:", self.get_owner()
