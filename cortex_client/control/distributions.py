@@ -21,12 +21,12 @@ class DistributionsController(ResourceController):
 
     def _get_name_argument(self, argv):
         if len(argv) < 2:
-            raise ArgumentException("Wrong number of arguments");
+            raise ArgumentException("An organization and host name must be provided");
         return argv[1]
 
     def get_collection(self, argv):
         if len(argv) == 0:
-            raise ArgumentException("Wrong number of arguments");
+            raise ArgumentException("An organization name must be provided");
 
         org = self._api.organizations().get_resource(argv[0])
         return org.distributions()
@@ -62,12 +62,18 @@ class DistributionsController(ResourceController):
         print '''You must provide an action to perform on this resource.
 
 Actions:
-    list            List all distribution profiles available to the user
-    show <id>       Show the details of a distribution profile
-    show-kick <id>  Show distribution's kickstart template
-    set-kick <id> <path>
-                    Set distribution's kickstart template's content
-    add             Add a distribution profile
-    update <id>     Update a distribution profile
-    delete <id>     Delete a distribution profile
+    list <org_name>
+                List all distribution profiles available to the user
+    show <org_name> <dist_name>
+                Show the details of a distribution
+    show-kick <org_name> <dist_name>
+                Show distribution's kickstart template
+    set-kick <org_name> <dist_name> <path>
+                Set distribution's kickstart template's content
+    add <org_name>
+                Add a distribution profile
+    update <org_name> <dist_name>
+                Update a distribution profile
+    delete <org_name> <dist_name>
+                Delete a distribution profile
 '''

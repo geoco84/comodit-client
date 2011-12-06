@@ -125,10 +125,6 @@ class ResourceController(AbstractController):
         print "Oops, this piece is missing some documentation"
 
     def _get_resource(self, argv):
-        if len(argv) == 0:
-            raise MissingException("You must provide a valid host identifier")
-
-        # Validate input parameters
         return self.get_collection(argv).get_resource(self._get_name_argument(argv))
 
     def _get_resources(self, argv):
