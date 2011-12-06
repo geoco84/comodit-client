@@ -44,10 +44,10 @@ class DistributionsController(OrganizationResourceController):
     def _set_kickstart(self, argv):
         dist = self._get_resource(argv)
 
-        if len(argv) != 2:
+        if len(argv) != 3:
             raise MissingException("Wrong number of arguments")
 
-        dist.set_kickstart_content(argv[1])
+        dist.set_kickstart_content(argv[2])
 
     def _help(self, argv):
         print '''You must provide an action to perform on this resource.
