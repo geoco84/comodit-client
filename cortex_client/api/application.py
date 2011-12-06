@@ -512,13 +512,14 @@ class Application(Resource):
         return int(self._get_field("version"))
 
     def _get_file_path(self, name):
-        return self._get_path() + "/files/" + name
+        return self._get_path() + "files/" + name
 
     def set_file_content(self, file_name, path):
-        self._api.get_client().upload_to_exising_file_with_path(path, self._get_file_path(file_name))
+        self._get_client().upload_to_exising_file_with_path(path, self._get_file_path(file_name))
 
     def get_file_content(self, file_name):
-        return self._api.get_client().read(self._get_file_path(file_name), decode = False)
+        print self._get_file_path(file_name)
+        return self._get_client().read(self._get_file_path(file_name), decode = False)
 
     def _show(self, indent = 0):
         """
