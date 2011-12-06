@@ -1,6 +1,11 @@
 #==============================================================================
 # Definitions section
 
+# ComodIT server
+comodit_url = "http://localhost:8000/api"
+comodit_user = "admin"
+comodit_pass = "secret"
+
 # Define organization
 org_name = "Guardis2"
 org_description = "Guardis2's organization"
@@ -20,7 +25,6 @@ plat_settings = [{"key":"libvirt.connectUrl",
 # Define distribution (kickstart template is in same folder)
 dist_name = "co6i686"
 dist_description = "CentOS 6 i686"
-dist_url = "http://oak.angleur.guardis.be/public/centos/6.0/os/i386/"
 dist_initrd = "/var/lib/libvirt/boot/initrd.img.centos.6.i386"
 dist_vmlinuz = "/var/lib/libvirt/boot/vmlinuz.centos.6.i386"
 
@@ -38,7 +42,6 @@ env_description = "Test environment 1 of Guardis2"
 # Define host
 host_name = "test2"
 host_description = "Single host of Test2 environment"
-host_env = "Guardis2/Test2"
 host_dist = dist_name
 host_plat = plat_name
 host_apps = [app_name]

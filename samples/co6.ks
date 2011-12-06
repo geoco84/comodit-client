@@ -118,4 +118,4 @@ password = guest
 EOF
 
 # Synapse for one time install
-/usr/bin/synapse --uri ${_api}/provisioner/setup.json?hostId=${_hostid}
+/usr/bin/synapse --uri ${_api}/organizations/${_orgName}/environments/${_envName}/hosts/${_hostName}/setup.json

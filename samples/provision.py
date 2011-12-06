@@ -27,11 +27,9 @@ from definitions import *
 def provision_host():
     # API from server cortex listening on port 8000 of localhost is used
     # Username "admin" and password "secret" are used for authentification
-    api = CortexApi("http://localhost:8000/api", "admin", "secret")
+    api = CortexApi(comodit_url, comodit_user, comodit_pass)
 
-
-    host_coll = api.get_host_collection()
-    host = host_coll.get_resource_from_path(host_env + "/" + host_name)
+    host = api.organizations().get_resource(org_name).environments().get_resource(env_name).hosts().get_resource(host_name)
 
 
     #############
@@ -44,7 +42,7 @@ def provision_host():
     host.update()
 
     print "="*80
-    print "Waiting for end of installation..."
+    print "Waiting for the end of installation..."
     while host.get_instance_info().get_state() == "RUNNING":
         time.sleep(3)
 
@@ -55,6 +53,8 @@ def provision_host():
     while host.get_state() == "PROVISIONING":
         time.sleep(3)
         host.update()
+
+    print "Host provisioned and running."
 
 #==============================================================================
 # Entry point

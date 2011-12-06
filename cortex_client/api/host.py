@@ -397,22 +397,8 @@ class Host(Resource):
         if self.get_state() == "DEFINED":
             raise PythonApiException("Host must first be provision(ed|ing)")
 
-        info_json = self._api.get_client().read(self._get_path() + "VM/state")
+        info_json = self._get_client().read(self._get_path() + "VM/state")
         return InstanceInfo(info_json)
-
-    def get_identifier(self):
-        """
-        Provides host's identifier. The identifier is actually a path including
-        the names of host's organization and environment. In path 'org/env/host',
-        'org' is the name of the organization, 'env' the name of the environment
-        and 'host' the name of the 'host'. Note that 'org/env' is the identifier
-        of environment 'env'.
-        @return: Host's identifier
-        @rtype: String
-        """
-        env_uuid = self.get_environment()
-        env = self._api.get_environment_collection().get_resource(env_uuid)
-        return env.get_identifier() + "/" + self.get_name()
 
     def _show(self, indent = 0):
         print " "*indent, "Name:", self.get_name()
@@ -456,11 +442,9 @@ class Host(Resource):
         Provisions host.
         @raise PythonApiException: If host could not be provisioned.
         """
-        uuid = self.get_uuid()
-        client = self._api.get_client()
+        client = self._get_client()
         try:
-            client.update("provisioner/_provision",
-                      parameters = {"hostId":uuid}, decode = False)
+            client.update(self._get_path() + "_provision", decode = False)
         except ApiException, e:
             raise PythonApiException("Unable to provision host: " + e.message)
 
@@ -469,16 +453,19 @@ class Host(Resource):
         Starts host.
         @raise PythonApiException: If host could not be started.
         """
-        result = self._api.get_client().update(self._get_path() + "VM/_start", decode = False)
-        if(result.getcode() != 202):
-            raise PythonApiException("Call not accepted by server")
+        try:
+            result = self._get_client().update(self._get_path() + "VM/_start", decode = False)
+            if(result.getcode() != 202):
+                raise PythonApiException("Call not accepted by server")
+        except ApiException, e:
+            raise PythonApiException("Unable to start host: " + e.message)
 
     def pause(self):
         """
         Pauses host.
         @raise PythonApiException: If host could not be paused.
         """
-        result = self._api.get_client().update(self._get_path() + "VM/_pause", decode = False)
+        result = self._get_client().update(self._get_path() + "VM/_pause", decode = False)
         if(result.getcode() != 202):
             raise PythonApiException("Call not accepted by server")
 
@@ -487,7 +474,7 @@ class Host(Resource):
         Resumes host's execution (after pause).
         @raise PythonApiException: If host's execution could not be resumed.
         """
-        result = self._api.get_client().update(self._get_path() + "VM/_resume", decode = False)
+        result = self._get_client().update(self._get_path() + "VM/_resume", decode = False)
         if(result.getcode() != 202):
             raise PythonApiException("Call not accepted by server")
 
@@ -496,7 +483,7 @@ class Host(Resource):
         Shutdowns host.
         @raise PythonApiException: If host could not be shutdown.
         """
-        result = self._api.get_client().update(self._get_path() + "VM/_stop", decode = False)
+        result = self._get_client().update(self._get_path() + "VM/_stop", decode = False)
         if(result.getcode() != 202):
             raise PythonApiException("Call not accepted by server")
 
@@ -506,7 +493,7 @@ class Host(Resource):
         @raise PythonApiException: If host could not be powered-off.
         """
         try:
-            result = self._api.get_client().update(self._get_path() + "VM/_off", decode = False)
+            result = self._get_client().update(self._get_path() + "VM/_off", decode = False)
             if(result.getcode() != 202):
                 raise PythonApiException("Call not accepted by server")
         except ApiException, e:

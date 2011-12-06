@@ -20,7 +20,7 @@ from definitions import *
 def create_resources():
     # API from server cortex listening on port 8000 of localhost is used
     # Username "admin" and password "secret" are used for authentification
-    api = CortexApi("http://localhost:8000/api", "admin", "secret")
+    api = CortexApi(comodit_url, comodit_user, comodit_pass)
 
 
     ##################################################
