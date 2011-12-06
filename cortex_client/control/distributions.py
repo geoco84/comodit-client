@@ -7,10 +7,10 @@
 # This software cannot be used and/or distributed without prior
 # authorization from Guardis.
 
-from cortex_client.control.resource import ResourceController
-from cortex_client.control.exceptions import MissingException, ArgumentException
+from cortex_client.control.organization_resource import OrganizationResourceController
+from cortex_client.control.exceptions import MissingException
 
-class DistributionsController(ResourceController):
+class DistributionsController(OrganizationResourceController):
 
     _template = "distribution.json"
 
@@ -19,16 +19,7 @@ class DistributionsController(ResourceController):
         self._register(["sk", "show-kick"], self._show_kickstart, self._print_show_kick_completions)
         self._register(["set-kick"], self._set_kickstart, self._print_set_kick_completions)
 
-    def _get_name_argument(self, argv):
-        if len(argv) < 2:
-            raise ArgumentException("An organization and host name must be provided");
-        return argv[1]
-
-    def get_collection(self, argv):
-        if len(argv) == 0:
-            raise ArgumentException("An organization name must be provided");
-
-        org = self._api.organizations().get_resource(argv[0])
+    def _get_collection(self, org):
         return org.distributions()
 
     def _print_distributions(self, argv):
