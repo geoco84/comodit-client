@@ -7,9 +7,9 @@
 # This software cannot be used and/or distributed without prior
 # authorization from Guardis.
 
-from cortex_client.util import globals, prompt
+from cortex_client.util import prompt
 from cortex_client.control.resource import ResourceController
-from cortex_client.control.exceptions import NotFoundException
+from cortex_client.control.exceptions import ArgumentException
 from cortex_client.api.exceptions import PythonApiException
 
 class HostsController(ResourceController):
@@ -26,34 +26,21 @@ class HostsController(ResourceController):
         self._register(["poweroff"], self._poweroff, self._print_show_completions)
         self._register(["settings"], self._settings, self._print_show_completions)
         self._register(["properties"], self._properties, self._print_show_completions)
-        self._register(["info"], self._info, self._print_show_completions)
+        self._register(["instance"], self._instance, self._print_show_completions)
 
     def get_collection(self, argv):
-        return self._api.get_host_collection()
+        if len(argv) < 2:
+            raise ArgumentException("Wrong number of arguments");
 
-    def _get_resources(self, argv):
-        options = globals.options
-        parameters = {}
+        org = self._api.organizations().get_resource(argv[0])
+        env = org.environments().get_resource(argv[1])
+        return env.hosts()
 
-        # Validate input parameters
-        env_uuid = None
-        if options.env_uuid:
-            env_uuid = options.env_uuid
-        elif options.env_path:
-            path = options.env_path
-            env_uuid = self._api.get_directory().get_environment_uuid_from_path(path)
-            if not env_uuid: raise NotFoundException(path)
-        elif options.env and options.uuid:
-            env_uuid = options.env
-        elif options.env:
-            path = options.env
-            env_uuid = self._api.get_directory().get_environment_uuid_from_path(path)
-            if not env_uuid: raise NotFoundException(path)
+    def _get_name_argument(self, argv):
+        if len(argv) < 3:
+            raise ArgumentException("Wrong number of arguments");
 
-        if(env_uuid):
-            parameters["environmentId"] = env_uuid
-
-        return super(HostsController, self)._get_resources(argv, parameters)
+        return argv[2]
 
     def _settings(self, argv):
         host = self._get_resource(argv)
@@ -94,10 +81,10 @@ class HostsController(ResourceController):
         host = self._get_resource(argv)
         host.poweroff()
 
-    def _info(self, argv):
+    def _instance(self, argv):
         host = self._get_resource(argv)
         try:
-            info = host.get_instance_info()
+            info = host.get_instance()
             info.show()
         except PythonApiException, e:
             print e.message
@@ -106,27 +93,31 @@ class HostsController(ResourceController):
         print '''You must provide an action to perform on this resource.
 
 Actions:
-    list [--env <id> | --env-path <path> | --env-uuid <uuid>]
+    list <org_name> <env_name>
                        List all hosts, optionally within an environment
-    show <id>          Show the details of a host
-    settings <id>      Show the settings of a host
-    properties <id>    Show the properties of a host (including IP address and
-                       host name)
-    info <id>          Show information about host's instance
-    add                Add an host
-    update <id>        Update a host
-    delete <id>        Delete a host
-    provision <id>     Provision a host
-    start <id>         Start a host
-    pause <id>         Pause a host
-    resume <id>        Resume a host's execution
-    shutdown <id>      Shutdown a host
-    poweroff <id>      Power-off a host
-
-A path may uniquely define an environment or a host. The path to a particular
-environment is as follows: <organization name>/<environment name>. The path
-to a particular host is as follows: <organization name>/<environment name>/
-<host name>.
-
-<id> may either be a UUID (--with-uuid option must be provided) or a path.
+    show <org_name> <env_name> <host_name>
+                       Show the details of a host
+    settings <org_name> <env_name> <host_name>
+                       Show the settings of a host
+    instance <org_name> <env_name> <host_name>
+                       Show information about host's instance (including IP
+                       address and hostname if available)
+    add <org_name> <env_name>
+                       Add an host
+    update <org_name> <env_name> <host_name>
+                       Update a host
+    delete <org_name> <env_name> <host_name>
+                       Delete a host
+    provision <org_name> <env_name> <host_name>
+                       Provision a host
+    start <org_name> <env_name> <host_name>
+                       Start a host
+    pause <org_name> <env_name> <host_name>
+                       Pause a host
+    resume <org_name> <env_name> <host_name>
+                       Resume a host's execution
+    shutdown <org_name> <env_name> <host_name>
+                       Shutdown a host
+    poweroff <org_name> <env_name> <host_name>
+                       Power-off a host
 '''

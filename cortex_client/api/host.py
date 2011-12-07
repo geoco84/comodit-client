@@ -148,7 +148,19 @@ class SettingFactory(object):
         return Setting(json_data)
 
 
-class InstanceInfo(JsonWrapper):
+class Vnc(JsonWrapper):
+    def get_hostname(self):
+        return self._get_field("host")
+
+    def get_port(self):
+        return self._get_field("port")
+
+    def show(self, indent = 0):
+        print " "*indent, "hostname:", self.get_hostname()
+        print " "*indent, "port:", self.get_port()
+
+
+class Instance(JsonWrapper):
     """
     Runtime host instance information.
     """
@@ -161,21 +173,14 @@ class InstanceInfo(JsonWrapper):
         """
         return self._get_field("state")
 
-    def get_platform_hostname(self):
-        """
-        Provides instance's platform host name.
-        @return: A platform state
-        @rtype: String
-        """
-        return self._get_field("platformHostName")
+    def get_ip(self):
+        return self._get_field("ip")
 
-    def get_vnc_port(self):
-        """
-        Provides VNC port of the instance
-        @return: A port
-        @rtype: Integer
-        """
-        return int(self._get_field("vncPort"))
+    def get_hostname(self):
+        return self._get_field("hostname")
+
+    def get_vnc(self):
+        return Vnc(self._get_field("vnc"))
 
     def get_synapse_state(self):
         """
@@ -184,6 +189,9 @@ class InstanceInfo(JsonWrapper):
         @rtype: String
         """
         return self._get_field("synapseState")
+
+    def get_properties(self):
+        return self._get_list_field("properties", PropertyFactory())
 
     def show(self, indent = 0):
         """
@@ -194,9 +202,18 @@ class InstanceInfo(JsonWrapper):
         @type indent: Integer
         """
         print " "*indent, "State:", self.get_state()
-        print " "*indent, "Platform host name:", self.get_platform_hostname()
-        print " "*indent, "VNC port:", self.get_vnc_port()
         print " "*indent, "Synapse state:", self.get_synapse_state()
+        print " "*indent, "IP:", self.get_ip()
+        print " "*indent, "Hostname:", self.get_hostname()
+        print " "*indent, "Vnc:"
+        self.get_vnc().show(indent + 2)
+
+    def show_properties(self, indent = 0):
+        print " "*indent, "Properties:"
+        props = self.get_properties()
+        for p in props:
+            if not p.get_key() in ("ip", "hostname", "synapseState"):
+                print " "*(indent + 2), p.get_key(), ":", p.get_value()
 
 class Host(Resource):
     """
@@ -303,25 +320,6 @@ class Host(Resource):
         """
         return self._get_list_field("properties", PropertyFactory())
 
-    def set_properties(self, properties):
-        """
-        Sets host's properties. Properties are generally set and handled
-        by cortex server.
-        Modifying this values is therefore potentially dangerous.
-        @param properties: Host's new properties.
-        @type properties: list of L{Property}
-        """
-        self._set_list_field("properties", properties)
-
-    def add_property(self, prop):
-        """
-        Adds a property to this host. Properties are generally set  and handled
-        by cortex server. Modifying this values is therefore potentially dangerous.
-        @param prop: A property.
-        @type prop: L{Property}
-        """
-        self._add_to_list_field("properties", prop)
-
     def get_applications(self):
         """
         Provides host's applications.
@@ -370,7 +368,7 @@ class Host(Resource):
         """
         if(delete_vm):
             try:
-                self._get_client().update(self._get_path() + "VM/_delete",
+                self._get_client().update(self._get_path() + "instance/_delete",
                                               decode = False)
             except ApiException, e:
                 if(e.code == 400):
@@ -387,7 +385,7 @@ class Host(Resource):
         """
         return self._get_field("state")
 
-    def get_instance_info(self):
+    def get_instance(self):
         """
         Provides host's instance information.
         @return: Host's instance information.
@@ -397,8 +395,8 @@ class Host(Resource):
         if self.get_state() == "DEFINED":
             raise PythonApiException("Host must first be provision(ed|ing)")
 
-        info_json = self._get_client().read(self._get_path() + "VM/state")
-        return InstanceInfo(info_json)
+        info_json = self._get_client().read(self._get_path() + "instance")
+        return Instance(info_json)
 
     def _show(self, indent = 0):
         print " "*indent, "Name:", self.get_name()
@@ -423,20 +421,6 @@ class Host(Resource):
             s.show(indent = (indent + 2))
             print
 
-    def show_properties(self, indent = 0):
-        """
-        Prints Host's properties to standard output in a user-friendly way.
-        
-        @param indent: The number of spaces to put in front of each displayed
-        line.
-        @type indent: Integer
-        """
-        print " "*indent, "Properties:"
-        props = self.get_properties()
-        for p in props:
-            p.show(indent + 2)
-            print
-
     def provision(self):
         """
         Provisions host.
@@ -454,7 +438,7 @@ class Host(Resource):
         @raise PythonApiException: If host could not be started.
         """
         try:
-            result = self._get_client().update(self._get_path() + "VM/_start", decode = False)
+            result = self._get_client().update(self._get_path() + "instance/_start", decode = False)
             if(result.getcode() != 202):
                 raise PythonApiException("Call not accepted by server")
         except ApiException, e:
@@ -465,7 +449,7 @@ class Host(Resource):
         Pauses host.
         @raise PythonApiException: If host could not be paused.
         """
-        result = self._get_client().update(self._get_path() + "VM/_pause", decode = False)
+        result = self._get_client().update(self._get_path() + "instance/_pause", decode = False)
         if(result.getcode() != 202):
             raise PythonApiException("Call not accepted by server")
 
@@ -474,7 +458,7 @@ class Host(Resource):
         Resumes host's execution (after pause).
         @raise PythonApiException: If host's execution could not be resumed.
         """
-        result = self._get_client().update(self._get_path() + "VM/_resume", decode = False)
+        result = self._get_client().update(self._get_path() + "instance/_resume", decode = False)
         if(result.getcode() != 202):
             raise PythonApiException("Call not accepted by server")
 
@@ -483,7 +467,7 @@ class Host(Resource):
         Shutdowns host.
         @raise PythonApiException: If host could not be shutdown.
         """
-        result = self._get_client().update(self._get_path() + "VM/_stop", decode = False)
+        result = self._get_client().update(self._get_path() + "instance/_stop", decode = False)
         if(result.getcode() != 202):
             raise PythonApiException("Call not accepted by server")
 
@@ -493,7 +477,7 @@ class Host(Resource):
         @raise PythonApiException: If host could not be powered-off.
         """
         try:
-            result = self._get_client().update(self._get_path() + "VM/_off", decode = False)
+            result = self._get_client().update(self._get_path() + "instance/_off", decode = False)
             if(result.getcode() != 202):
                 raise PythonApiException("Call not accepted by server")
         except ApiException, e:
