@@ -18,7 +18,6 @@ from control.hosts import HostsController
 from control.organizations import OrganizationsController
 from control.sync.sync import SyncController
 from control.users import UsersController
-from control.rendering import RenderingController
 
 from rest.exceptions import ApiException
 from util import globals
@@ -40,10 +39,9 @@ def run(argv):
     control.router.register(["organizations"], OrganizationsController())
     control.router.register(["environments"], EnvironmentsController())
     control.router.register(["hosts"], HostsController())
-    control.router.register(["sync"], SyncController())
 
     # services
-    control.router.register(["rendering"], RenderingController());
+    control.router.register(["sync"], SyncController())
 
     _parse(argv)
 
@@ -207,5 +205,5 @@ Resources:
     hosts               Host defined within an environment
 
 Services:
-    rendering           Rendering of templates
+    sync                Synchronization service
 '''

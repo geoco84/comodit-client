@@ -323,26 +323,19 @@ class Host(Resource):
     def get_applications(self):
         """
         Provides host's applications.
-        @return: Host's applications.
-        @rtype: list of L{Application}
+        @return: Application names
+        @rtype: list of L{String}
         """
-        app_uuids = self._get_list_field("applications", StringFactory())
-        apps = []
-        for uuid in app_uuids:
-            apps.append(self._api.get_application_collection().get_resource(uuid))
-        return apps
+        return self._get_list_field("applications", StringFactory())
 
     def set_applications(self, applications):
         """
         Sets host's applications. Note that, for a provisioned host, applications
         must be added or removed using change requests.
         @param applications: Host's applications.
-        @type applications: list of L{Application}
+        @type applications: list of L{String}
         """
-        self._set_list_field("applications", [])
-        for app in applications:
-            uuid = app.get_uuid()
-            self._add_to_list_field("applications", uuid)
+        self._set_list_field("applications", applications)
 
     def add_application(self, app_name):
         """
@@ -421,6 +414,12 @@ class Host(Resource):
             s.show(indent = (indent + 2))
             print
 
+    def show_applications(self, indent = 0):
+        print " "*indent, "Applications:"
+        apps = self.get_applications()
+        for app in apps:
+            print " "*(indent + 2), app
+
     def provision(self):
         """
         Provisions host.
@@ -482,3 +481,17 @@ class Host(Resource):
                 raise PythonApiException("Call not accepted by server")
         except ApiException, e:
             raise PythonApiException("Unable to poweroff host: " + e.message)
+
+    def render_file(self, app_name, file_name):
+        try:
+            result = self._get_client().read(self._get_path() + "applications/" + app_name + "/files/" + file_name, decode = False)
+            return result
+        except ApiException, e:
+            raise PythonApiException("Unable to render file: " + e.message)
+
+    def render_kickstart(self):
+        try:
+            result = self._get_client().read(self._get_path() + "kickstart", decode = False)
+            return result
+        except ApiException, e:
+            raise PythonApiException("Unable to render kickstart: " + e.message)
