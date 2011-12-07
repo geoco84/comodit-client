@@ -8,6 +8,7 @@
 # authorization from Guardis.
 
 from cortex_client.control.resource import ResourceController
+from cortex_client.control.exceptions import ArgumentException
 
 class OrganizationsController(ResourceController):
 
@@ -19,13 +20,18 @@ class OrganizationsController(ResourceController):
     def get_collection(self, argv):
         return self._api.organizations()
 
+    def _get_name_argument(self, argv):
+        if len(argv) < 1:
+            raise ArgumentException("An organization name must be provided");
+        return argv[0]
+
     def _help(self, argv):
         print '''You must provide an action to perform on this resource.
 
 Actions:
-    list            List all organizations visible to the user
-    show <id>       Show the details of an organization
-    add             Add an organization
-    update <id>     Update an organization
-    delete <id>     Delete an organization
+    list                   List all organizations visible to the user
+    show <org_name>        Show the details of an organization
+    add                    Add an organization
+    update <org_name>      Update an organization
+    delete <org_name>      Delete an organization
 '''

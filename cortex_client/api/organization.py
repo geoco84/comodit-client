@@ -41,6 +41,9 @@ class Organization(Resource):
         """
         return self._get_list_field("environments", StringFactory())
 
+    def get_groups(self):
+        return self._get_list_field("groups", StringFactory())
+
     def get_version(self):
         """
         Provides organization's version number.
@@ -56,6 +59,10 @@ class Organization(Resource):
         environments = self.get_environments()
         for e in environments:
             print " "*(indent + 2), e
+        print " "*indent, "Groups:"
+        groups = self.get_groups()
+        for g in groups:
+            print " "*(indent + 2), g
 
     def get_identifier(self):
         return self.get_name()
