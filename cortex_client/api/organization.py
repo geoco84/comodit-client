@@ -16,6 +16,7 @@ from platform import Platform
 from platform_collection import PlatformCollection
 from application import Application
 from application_collection import ApplicationCollection
+from cortex_client.api.group_collection import GroupCollection
 
 class Organization(Resource):
     """
@@ -147,3 +148,6 @@ class Organization(Resource):
         env.set_name(name)
         env.set_organization(self.get_name())
         return env
+
+    def groups(self):
+        return GroupCollection(self._get_api(), self._get_path() + "groups/")
