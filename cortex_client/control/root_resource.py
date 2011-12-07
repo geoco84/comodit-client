@@ -16,7 +16,7 @@ class RootResourceController(ResourceController):
         super(RootResourceController, self).__init__()
 
     def _get_name_argument(self, argv):
-        if len(argv == 0):
+        if len(argv) == 0:
             raise ArgumentException("A resource name must be provided");
         return argv[0]
 
