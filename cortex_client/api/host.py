@@ -494,3 +494,10 @@ class Host(Resource):
             return result
         except ApiException, e:
             raise PythonApiException("Unable to render kickstart: " + e.message)
+
+    def clone(self):
+        try:
+            result = self._get_client().update(self._get_path() + "_clone")
+            return Host(result)
+        except ApiException, e:
+            raise PythonApiException("Unable to clone host: " + e.message)

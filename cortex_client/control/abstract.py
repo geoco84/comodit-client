@@ -74,6 +74,8 @@ class AbstractController(object):
             return
         name = name.replace("\\", "\\\\")
         name = name.replace(" ", "\\ ")
+        name = name.replace("(", "\\(")
+        name = name.replace(")", "\\)")
         print name.encode("utf-8")
 
     def _print_escaped_names(self, name_list):

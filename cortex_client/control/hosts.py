@@ -32,6 +32,7 @@ class HostsController(ResourceController):
         self._register(["render-file"], self._render_file, self._print_file_completions)
         self._register(["render-ks"], self._render_ks, self._print_resource_completions)
         self._register(["render-tree"], self._render_tree, self._print_tree_completions)
+        self._register(["clone"], self._clone, self._print_resource_completions)
 
     def get_collection(self, argv):
         if len(argv) < 2:
@@ -165,6 +166,13 @@ class HostsController(ResourceController):
 
         options = globals.options
         renderer.render(root_dir, options.skip_chmod, options.skip_chown)
+
+    def _clone(self, argv):
+        if len(argv) != 3:
+            raise MissingException("This action takes 3 arguments")
+
+        host = self._get_resource(argv)
+        host.clone()
 
     def _help(self, argv):
         print '''You must provide an action to perform on this resource.

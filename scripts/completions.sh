@@ -106,7 +106,7 @@ _print_debug()
 # This helper function was written in order to overcome a bash issue with
 # string substitutions: when a string contains a non-ASCII character,
 # substitution does not work.
-_escape_spaces()
+_escape_string()
 {
     __escaped_string=""
     local to_escape=$1
@@ -118,6 +118,12 @@ _escape_spaces()
         if [[ "${cur_char}" == " " ]]
         then
             __escaped_string=${__escaped_string}"\\ "
+        elif [[ "${cur_char}" == "(" ]]
+        then
+            __escaped_string=${__escaped_string}"\("
+        elif [[ "${cur_char}" == ")" ]]
+        then
+            __escaped_string=${__escaped_string}"\)"
         else
             __escaped_string=${__escaped_string}${cur_char}
         fi
@@ -209,7 +215,7 @@ _cortex_client()
                 while ((cur_comp < num_of_comps))
                 do
                     local to_escape=${COMPREPLY[$cur_comp]}
-                    _escape_spaces $to_escape
+                    _escape_string $to_escape
                     local escaped=${__escaped_string}
                     COMPREPLY[$cur_comp]=$escaped
                     ((cur_comp++))
