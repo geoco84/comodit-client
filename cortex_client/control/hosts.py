@@ -63,8 +63,9 @@ class HostsController(ResourceController):
         host = self._get_resource(argv)
 
         if (prompt.confirm(prompt = "Delete " + host.get_name() + " ?", resp = False)) :
-            delete_vm = prompt.confirm(prompt = "Delete VM also ?", resp = False)
-            host.delete(delete_vm)
+            if prompt.confirm(prompt = "Delete VM also ?", resp = False):
+                host.deleteInstance()
+            host.delete()
 
     def _provision(self, argv):
         host = self._get_resource(argv)

@@ -26,7 +26,10 @@ class Client:
         if len(parameters) > 0:
             url = url + "?" + urllib.urlencode(parameters)
 
-        req = urllibx.RequestWithMethod(url, method = "POST", headers = self._headers(), data = json.dumps(item))
+        if item:
+            req = urllibx.RequestWithMethod(url, method = "POST", headers = self._headers(), data = json.dumps(item))
+        else:
+            req = urllibx.RequestWithMethod(url, method = "POST", headers = self._headers())
         raw = self._urlopen(req)
         if decode:
             return json.load(raw)

@@ -354,21 +354,20 @@ class Host(Resource):
         """
         return int(self._get_field("version"))
 
-    def delete(self, delete_vm = False):
+    def delete(self):
         """
-        Deletes this host. Associated VM may also be destroyed.
-        @param delete_vm: If True, VM associated to this host is destroyed.
+        Deletes this host.
         """
-        if(delete_vm):
-            try:
-                self._get_client().update(self._get_path() + "instance/_delete",
-                                              decode = False)
-            except ApiException, e:
-                if(e.code == 400):
-                    print "Could not delete VM:", e.message
-                else:
-                    raise e
-        self._get_client().delete(self._get_path())
+        try:
+            self._get_client().delete(self._get_path())
+        except ApiException, e:
+            raise PythonApiException("Unable to delete host", e.message)
+
+    def deleteInstance(self):
+        try:
+            self._get_client().delete(self._get_path() + "instance")
+        except ApiException, e:
+            raise PythonApiException("Unable to delete instance", e.message)
 
     def get_state(self):
         """
@@ -427,7 +426,7 @@ class Host(Resource):
         """
         client = self._get_client()
         try:
-            client.update(self._get_path() + "_provision", decode = False)
+            client.create(self._get_path() + "instance", None, decode = False)
         except ApiException, e:
             raise PythonApiException("Unable to provision host: " + e.message)
 

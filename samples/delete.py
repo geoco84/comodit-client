@@ -65,9 +65,16 @@ def delete_resources():
         pass
 
     print "="*80
-    print "Delete host (and VM)"
+    print "Delete host instance"
     try:
-        host.delete(delete_vm = True)
+        host.deleteInstance()
+    except Exception, e:
+        print e.message
+
+    print "="*80
+    print "Delete host"
+    try:
+        host.delete()
     except Exception, e:
         print e.message
 

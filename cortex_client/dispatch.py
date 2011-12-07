@@ -59,10 +59,6 @@ def _get_value_options(parser):
     options = [
                 "-f", "--file",
                 "-j", "--json",
-                "--org",
-                "--org-path",
-                "--env",
-                "--env-path",
                 "--api",
                 "--user",
                 "--pass",
@@ -87,12 +83,6 @@ def _parse(argv):
     parser.add_option("-f", "--file", dest = "filename", help = "input file with a JSON object")
     parser.add_option("-j", "--json", dest = "json", help = "input JSON object via command line")
     parser.add_option("--raw", dest = "raw", help = "output the raw JSON results", action = "store_true", default = False,)
-
-    parser.add_option("--org", dest = "org", help = "Path or UUID of the parent organization (conditioned by --with-uuid)")
-    parser.add_option("--org-path", dest = "org_path", help = "Path to the parent organization")
-
-    parser.add_option("--env", dest = "env", help = "Path or UUID of the parent environment (conditioned by --with-uuid)")
-    parser.add_option("--env-path", dest = "env_path", help = "Path to the parent environment")
 
     parser.add_option("--skip-chown", dest = "skip_chown", help = "Path to the parent environment", action = "store_true", default = False)
     parser.add_option("--skip-chmod", dest = "skip_chmod", help = "UUID of the parent environment", action = "store_true", default = False)
