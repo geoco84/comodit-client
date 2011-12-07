@@ -76,6 +76,10 @@ class AbstractController(object):
         name = name.replace(" ", "\\ ")
         print name.encode("utf-8")
 
+    def _print_escaped_names(self, name_list):
+        for name in name_list:
+            self._print_escaped_name(name)
+
     def _equals_identifiers(self, id1, id2):
         if id1 is None or id2 is None:
             return False
@@ -92,3 +96,9 @@ class AbstractController(object):
     def _print_resource_identifiers(self, res_list, current_id = None):
         for r in res_list:
             self._print_escaped_name(r.get_identifier())
+
+    def _print_file_completions(self):
+        exit(1)
+
+    def _print_dir_completions(self):
+        exit(2)

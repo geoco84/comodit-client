@@ -19,19 +19,19 @@ class HostsController(ResourceController):
 
     def __init__(self):
         super(HostsController, self).__init__()
-        self._register(["provision"], self._provision, self._print_show_completions)
-        self._register(["start"], self._start, self._print_show_completions)
-        self._register(["pause"], self._pause, self._print_show_completions)
-        self._register(["resume"], self._resume, self._print_show_completions)
-        self._register(["shutdown"], self._shutdown, self._print_show_completions)
-        self._register(["poweroff"], self._poweroff, self._print_show_completions)
-        self._register(["settings"], self._settings, self._print_show_completions)
-        self._register(["applications"], self._applications)
-        self._register(["properties"], self._properties, self._print_show_completions)
-        self._register(["instance"], self._instance, self._print_show_completions)
-        self._register(["render-file"], self._render_file)
-        self._register(["render-ks"], self._render_ks)
-        self._register(["render-tree"], self._render_tree)
+        self._register(["provision"], self._provision, self._print_resource_completions)
+        self._register(["start"], self._start, self._print_resource_completions)
+        self._register(["pause"], self._pause, self._print_resource_completions)
+        self._register(["resume"], self._resume, self._print_resource_completions)
+        self._register(["shutdown"], self._shutdown, self._print_resource_completions)
+        self._register(["poweroff"], self._poweroff, self._print_resource_completions)
+        self._register(["settings"], self._settings, self._print_resource_completions)
+        self._register(["applications"], self._applications, self._print_resource_completions)
+        self._register(["properties"], self._properties, self._print_resource_completions)
+        self._register(["instance"], self._instance, self._print_resource_completions)
+        self._register(["render-file"], self._render_file, self._print_file_completions)
+        self._register(["render-ks"], self._render_ks, self._print_resource_completions)
+        self._register(["render-tree"], self._render_tree, self._print_tree_completions)
 
     def get_collection(self, argv):
         if len(argv) < 2:
@@ -40,6 +40,21 @@ class HostsController(ResourceController):
         org = self._api.organizations().get_resource(argv[0])
         env = org.environments().get_resource(argv[1])
         return env.hosts()
+
+    def _print_collection_completions(self, param_num, argv):
+        if param_num == 0:
+            self._print_identifiers(self._api.organizations())
+        elif len(argv) > 0 and param_num == 1:
+            org = self._api.organizations().get_resource(argv[0])
+            self._print_identifiers(org.environments())
+
+    def _print_resource_completions(self, param_num, argv):
+        if param_num < 2:
+            self._print_collection_completions(param_num, argv)
+        elif len(argv) > 1 and param_num == 2:
+            org = self._api.organizations().get_resource(argv[0])
+            env = org.environments().get_resource(argv[1])
+            self._print_identifiers(env.hosts())
 
     def _get_name_argument(self, argv):
         if len(argv) < 3:
@@ -99,6 +114,24 @@ class HostsController(ResourceController):
         except PythonApiException, e:
             print e.message
 
+    def _print_file_completions(self, param_num, argv):
+        if param_num < 3:
+            self._print_resource_completions(param_num, argv)
+        elif len(argv) > 2:
+            org = self._api.organizations().get_resource(argv[0])
+            env = org.environments().get_resource(argv[1])
+            host = env.hosts().get_resource(argv[2])
+
+            if param_num == 3:
+                apps = host.get_applications()
+                self._print_escaped_names(apps)
+            elif len(argv) > 3 and param_num == 4:
+                apps = host.get_applications()
+                app = org.applications().get_resource(argv[3])
+                app_files = app.get_files()
+                for f in app_files:
+                    self._print_escaped_name(f.get_name())
+
     def _render_file(self, argv):
         if len(argv) != 5:
             raise ArgumentException("Wrong number of arguments");
@@ -112,6 +145,12 @@ class HostsController(ResourceController):
     def _render_ks(self, argv):
         host = self._get_resource(argv)
         print host.render_kickstart().read()
+
+    def _print_tree_completions(self, param_num, argv):
+        if param_num < 3:
+            self._print_resource_completions(param_num, argv)
+        elif param_num == 3:
+            self._print_dir_completions()
 
     def _render_tree(self, argv):
         if len(argv) != 4:
@@ -146,8 +185,8 @@ Actions:
                        Renders a file of a given application
     render-ks <org_name> <env_name> <host_name>
                        Renders kickstart
-    tree <org_name> <env_name> <host_name> <output directory> [--skip-chown]
-    [--skip-chmod]
+    render-tree <org_name> <env_name> <host_name> <output directory>
+    [--skip-chown] [--skip-chmod]
                     Outputs all files associated to a particular host to a
                     given directory. Note that if a file c has path /a/b/c and
                     output directory's path is /d/e/, the file will be written

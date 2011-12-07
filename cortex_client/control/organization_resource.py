@@ -29,3 +29,29 @@ class OrganizationResourceController(ResourceController):
 
         org = self._api.organizations().get_resource(argv[0])
         return self._get_collection(org)
+
+    def _print_collection_completions(self, param_num, argv):
+        if param_num == 0:
+            self._print_identifiers(self._api.organizations())
+
+    def _print_resource_completions(self, param_num, argv):
+        if param_num < 1:
+            self._print_collection_completions(param_num, argv)
+        elif len(argv) > 0 and param_num == 1:
+            org = self._api.organizations().get_resource(argv[0])
+            self._print_identifiers(self._get_collection(org))
+
+    def _print_list_completions(self, param_num, argv):
+        self._print_collection_completions(param_num, argv)
+
+    def _print_show_completions(self, param_num, argv):
+        self._print_resource_completions(param_num, argv)
+
+    def _print_add_completions(self, param_num, argv):
+        self._print_collection_completions(param_num, argv)
+
+    def _print_update_completions(self, param_num, argv):
+        self._print_resource_completions(param_num, argv)
+
+    def _print_delete_completions(self, param_num, argv):
+        self._print_resource_completions(param_num, argv)

@@ -361,13 +361,13 @@ class Host(Resource):
         try:
             self._get_client().delete(self._get_path())
         except ApiException, e:
-            raise PythonApiException("Unable to delete host", e.message)
+            raise PythonApiException("Unable to delete host: " + e.message)
 
     def deleteInstance(self):
         try:
             self._get_client().delete(self._get_path() + "instance")
         except ApiException, e:
-            raise PythonApiException("Unable to delete instance", e.message)
+            raise PythonApiException("Unable to delete instance: " + e.message)
 
     def get_state(self):
         """

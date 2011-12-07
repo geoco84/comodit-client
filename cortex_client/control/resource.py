@@ -19,12 +19,12 @@ class ResourceController(AbstractController):
 
     def __init__(self):
         super(ResourceController, self).__init__()
-        self._register(["list"], self._list, self._print_list_completions)
-        self._register(["show"], self._show, self._print_show_completions)
-        self._register(["add"], self._add, self._print_add_completions)
-        self._register(["update"], self._update, self._print_update_completions)
-        self._register(["delete"], self._delete, self._print_delete_completions)
-        self._register(["help"], self._help, self._print_help_completions)
+        self._register(["list"], self._list, self._print_collection_completions)
+        self._register(["show"], self._show, self._print_resource_completions)
+        self._register(["add"], self._add, self._print_collection_completions)
+        self._register(["update"], self._update, self._print_resource_completions)
+        self._register(["delete"], self._delete, self._print_resource_completions)
+        self._register(["help"], self._help)
         self._default_action = self._help
 
     def _print_list_completions(self, param_num, argv):
@@ -38,17 +38,14 @@ class ResourceController(AbstractController):
             for r in resources_list:
                 print r.get_identifier()
 
-    def _print_identifiers(self, argv):
-        resources_list = self._get_resources(argv)
+    def _print_identifiers(self, collection):
+        self._print_resource_identifiers(collection.get_resources())
 
-        if len(argv) > 0:
-            self._print_resource_identifiers(resources_list, argv[0])
-        else:
-            self._print_resource_identifiers(resources_list)
+    def _print_collection_completions(self, param_num, argv):
+        pass
 
-    def _print_show_completions(self, param_num, argv):
-        if(param_num == 0):
-            self._print_identifiers(argv)
+    def _print_resource_completions(self, param_num, argv):
+        pass
 
     def _show(self, argv):
         res = self._get_resource(argv)
@@ -59,9 +56,6 @@ class ResourceController(AbstractController):
             res.show(as_json = True)
         else:
             res.show()
-
-    def _print_add_completions(self, param_num, argv):
-        pass
 
     def _add(self, argv):
         options = globals.options
@@ -82,10 +76,6 @@ class ResourceController(AbstractController):
 
         res.create()
         res.show(as_json = options.raw)
-
-    def _print_update_completions(self, param_num, argv):
-        if(param_num == 0):
-            self._print_identifiers(argv)
 
     def _update(self, argv):
         options = globals.options
@@ -109,16 +99,10 @@ class ResourceController(AbstractController):
         res.commit(options.force)
         res.show(as_json = options.raw)
 
-    def _print_delete_completions(self, param_num, argv):
-        self._print_identifiers(argv)
-
     def _delete(self, argv):
         res = self._get_resource(argv)
         if (prompt.confirm(prompt = "Delete " + res.get_name() + " ?", resp = False)) :
             res.delete()
-
-    def _print_help_completions(self, param_num, argv):
-        pass
 
     def _help(self, argv):
         print "Oops, this piece is missing some documentation"

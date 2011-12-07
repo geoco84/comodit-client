@@ -8,7 +8,7 @@ sys.path.append("..")
 
 from cortex_client.api.api import CortexApi
 from cortex_client.api.collection import ResourceNotFoundException
-from cortex_client.api.application import Package
+from cortex_client.api.application import Package, ApplicationFile
 from cortex_client.api.host import Setting
 from cortex_client.api.file import Parameter, File
 
@@ -106,7 +106,15 @@ def create_app(org):
         app_pck.set_name(p)
         app.add_package(app_pck)
 
+    for f in app_files:
+        app.add_file(ApplicationFile(f[0]))
+
     app.create()
+
+    # Upload files content
+    for f in app_files:
+        app.set_file_content(f[0].get("name"), f[1])
+
     return app
 
 def create_plat(org):

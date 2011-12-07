@@ -24,22 +24,14 @@ class ApplicationsController(OrganizationResourceController):
     def _get_collection(self, org):
         return org.applications()
 
-    def _print_applications(self, argv):
-        apps = self._api.get_application_collection().get_resources()
-        for a in apps:
-            self._print_escaped_name(a.get_name())
-
-    def _print_files(self, argv):
-        if(len(argv) > 0):
-            app = self._get_application(argv[0])
+    def _print_show_file_completions(self, param_num, argv):
+        if param_num < 2:
+            self._print_resource_completions(param_num, argv)
+        elif len(argv) > 1 and param_num == 2:
+            org = self._api.organizations().get_resource(argv[0])
+            app = org.applications().get_resource(argv[1])
             for f in app.get_files():
                 self._print_escaped_name(f.get_name())
-
-    def _print_show_file_completions(self, param_num, argv):
-        if param_num == 0:
-            self._print_applications(argv)
-        elif param_num == 1:
-            self._print_files(argv)
 
     def _show_file(self, argv):
         if len(argv) != 3:
@@ -50,12 +42,10 @@ class ApplicationsController(OrganizationResourceController):
         print app.get_file_content(file_name).read()
 
     def _print_set_file_completions(self, param_num, argv):
-        if param_num == 0:
-            self._print_applications(argv)
-        elif param_num == 1:
-            self._print_files(argv)
-        elif param_num == 2:
-            exit(1)
+        if param_num < 3:
+            self._print_show_file_completions(param_num, argv)
+        elif len(argv) > 2 and param_num == 3:
+            self._print_file_completions()
 
     def _set_file(self, argv):
         if len(argv) != 4:

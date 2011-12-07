@@ -15,6 +15,32 @@ app_name = "htop2"
 app_packages = ["htop"]
 app_description = "Htop Application"
 
+app_file_meta = {
+            "group": "root",
+            "mode": "644",
+            "name": "httpd.conf",
+            "path": "/etc/httpd/conf/httpd.conf",
+            "template": {
+                "parameters": [
+                    {
+                        "description": "The httpd port",
+                        "key": "httpd_port",
+                        "name": "Httpd Port",
+                        "value": "80"
+                    },
+                    {
+                        "description": "The user",
+                        "key": "http_user",
+                        "name": "Apache User",
+                        "value": "apache"
+                    }
+                ]
+            }
+        }
+app_file_content = "co6.ks"
+
+app_files = [(app_file_meta, app_file_content)]
+
 # Define platform
 plat_name = "Local2"
 plat_description = "Local QEMU"

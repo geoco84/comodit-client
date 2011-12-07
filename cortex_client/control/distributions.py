@@ -16,7 +16,7 @@ class DistributionsController(OrganizationResourceController):
 
     def __init__(self):
         super(DistributionsController, self).__init__()
-        self._register(["sk", "show-kick"], self._show_kickstart, self._print_show_kick_completions)
+        self._register(["sk", "show-kick"], self._show_kickstart, self._print_resource_completions)
         self._register(["set-kick"], self._set_kickstart, self._print_set_kick_completions)
 
     def _get_collection(self, org):
@@ -27,18 +27,14 @@ class DistributionsController(OrganizationResourceController):
         for d in dists:
             self._print_escaped_name(d.get_name())
 
-    def _print_show_kick_completions(self, param_num, argv):
-        if param_num == 0:
-            self._print_distributions(argv)
-
     def _show_kickstart(self, argv):
         dist = self._get_resource(argv)
         print dist.get_kickstart_content().read()
 
     def _print_set_kick_completions(self, param_num, argv):
-        if param_num == 0:
-            self._print_distributions(argv)
-        elif param_num == 1:
+        if param_num < 2:
+            self._print_resource_completions(param_num, argv)
+        elif param_num == 2:
             exit(1)
 
     def _set_kickstart(self, argv):

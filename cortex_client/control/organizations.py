@@ -7,10 +7,9 @@
 # This software cannot be used and/or distributed without prior
 # authorization from Guardis.
 
-from cortex_client.control.resource import ResourceController
-from cortex_client.control.exceptions import ArgumentException
+from cortex_client.control.root_resource import RootResourceController
 
-class OrganizationsController(ResourceController):
+class OrganizationsController(RootResourceController):
 
     _template = "organization.json"
 
@@ -19,11 +18,6 @@ class OrganizationsController(ResourceController):
 
     def get_collection(self, argv):
         return self._api.organizations()
-
-    def _get_name_argument(self, argv):
-        if len(argv) < 1:
-            raise ArgumentException("An organization name must be provided");
-        return argv[0]
 
     def _help(self, argv):
         print '''You must provide an action to perform on this resource.
