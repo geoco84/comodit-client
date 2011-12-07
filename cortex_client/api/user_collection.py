@@ -22,7 +22,7 @@ class UserCollection(Collection):
         @param api: Access point to a server
         @type api: L{CortexApi}
         """
-        super(UserCollection, self).__init__("users", api)
+        super(UserCollection, self).__init__("users/", api)
 
     def _new_resource(self, json_data):
         """
