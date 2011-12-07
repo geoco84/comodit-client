@@ -73,14 +73,14 @@ class ApplicationsController(OrganizationResourceController):
 Actions:
     list <org_name>          List all application profiles available to the user
     show <org_name> <app_name>
-                             Show the details of an application profile
+                             Show the details of an application
     show-file <org_name> <app_name> <name>
                              Show the content of a file resource's template
     set-file <org_name> <app_name> <name> <path>
                              Update the content of a file resource's template
-    add   <org_name>         Add an application profile
+    add   <org_name>         Add an application
     update <org_name> <app_name>
-                             Update an application profile
+                             Update an application
     delete <org_name> <app_name>
-                             Delete an application profile
+                             Delete an application
 '''

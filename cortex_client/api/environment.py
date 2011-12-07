@@ -86,7 +86,7 @@ class Environment(Resource):
         @return: Environment's identifier
         @rtype: String
         """
-        return self.get_organization() + "/" + self.get_name()
+        return self.get_name()
 
     def hosts(self):
         """
