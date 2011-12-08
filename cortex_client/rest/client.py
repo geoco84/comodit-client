@@ -21,7 +21,7 @@ class Client:
         self.username = username
         self.password = password
 
-    def create(self, resource, item, parameters = {}, decode = True):
+    def create(self, resource, item = None, parameters = {}, decode = True):
         url = self.endpoint + "/" + urllib.quote(resource)
         if len(parameters) > 0:
             url = url + "?" + urllib.urlencode(parameters)

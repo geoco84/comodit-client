@@ -32,7 +32,9 @@ class Resource(JsonWrapper):
         @type collection: L{Collection}
         """
         super(Resource, self).__init__(json_data)
+        self._collection = collection
 
+    def set_collection(self, collection):
         if collection is None:
             raise Exception("Collection must be set")
         self._collection = collection
@@ -46,6 +48,10 @@ class Resource(JsonWrapper):
         """
         return self._collection.get_path() + self.get_name() + "/"
 
+    def __enforce_connected(self):
+        if self._collection is None:
+            raise Exception("Resource is not connected")
+
     def _get_client(self):
         """
         Provides rest client to server.
@@ -53,6 +59,7 @@ class Resource(JsonWrapper):
         @return: The rest client
         @rtype: L{Client}
         """
+        self.__enforce_connected()
         return self._collection.get_client()
 
     def _get_api(self):
@@ -62,6 +69,7 @@ class Resource(JsonWrapper):
         @return: The rest client
         @rtype: L{CortexApi}
         """
+        self.__enforce_connected()
         return self._collection.get_api()
 
     def get_name(self):
@@ -135,6 +143,7 @@ class Resource(JsonWrapper):
 
         @raise PythonApiException: If server access point is not set.
         """
+        self.__enforce_connected()
         self._collection.add_resource(self)
 
     def delete(self):
@@ -143,6 +152,7 @@ class Resource(JsonWrapper):
 
         @raise PythonApiException: If server access point is not set.
         """
+        self.__enforce_connected()
         self._get_client().delete(self._get_path())
 
     def show(self, as_json = False, indent = 0):

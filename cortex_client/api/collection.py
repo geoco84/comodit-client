@@ -82,8 +82,7 @@ class Collection(object):
             result = self._api.get_client().create(self._resource_path,
                                                    resource.get_json())
         except ApiException, e:
-            raise PythonApiException("Could not create resource " +
-                                     resource.get_name() + ": " + e.message)
+            raise PythonApiException("Could not create resource: " + e.message)
         resource.set_json(result)
 
     def get_resources(self):

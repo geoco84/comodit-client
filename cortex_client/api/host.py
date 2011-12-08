@@ -11,6 +11,7 @@ from cortex_client.api.resource import Resource
 from cortex_client.rest.exceptions import ApiException
 from cortex_client.util.json_wrapper import JsonWrapper, StringFactory
 from exceptions import PythonApiException
+from cortex_client.api.settings import SettingCollection, SettingFactory
 
 class Property(JsonWrapper):
     """
@@ -80,73 +81,6 @@ class PropertyFactory(object):
         @rtype: L{Property}
         """
         return Property(json_data)
-
-class Setting(JsonWrapper):
-    """
-    A host's setting. A setting has a key, a value and a version number. Note
-    that in order to add a setting to a host, a change request must be used. Same
-    applies to setting's deletion and update. Therefore, a setting does not
-    feature setters.
-    """
-    def __init__(self, json_data = None):
-        super(Setting, self).__init__(json_data)
-
-    def get_value(self):
-        """
-        Provides setting's value.
-        @return: The value
-        @rtype: String
-        """
-        return self._get_field("value")
-
-    def get_key(self):
-        """
-        Provides setting's key.
-        @return: The key
-        @rtype: String
-        """
-        return self._get_field("key")
-
-    def get_version(self):
-        """
-        Provides setting's version number.
-        @return: The version number
-        @rtype: Integer
-        """
-        return int(self._get_field("version"))
-
-    def show(self, indent = 0):
-        """
-        Prints this property's state to standard output in a user-friendly way.
-        
-        @param indent: The number of spaces to put in front of each displayed
-        line.
-        @type indent: Integer
-        """
-        print " "*indent, "Key:", self.get_key()
-        print " "*indent, "Value:", self.get_value()
-        print " "*indent, "Version:", self.get_version()
-
-
-class SettingFactory(object):
-    """
-    Host's setting factory.
-    
-    @see: L{Setting}
-    @see: L{cortex_client.util.json_wrapper.JsonWrapper._get_list_field}
-    """
-    def new_object(self, json_data):
-        """
-        Instantiates a L{Setting} object using given state.
-        
-        @param json_data: A quasi-JSON representation of a Property instance's state.
-        @type json_data: String, dict or list
-        
-        @return: A setting
-        @rtype: L{Setting}
-        """
-        return Setting(json_data)
-
 
 class Vnc(JsonWrapper):
     def get_hostname(self):
@@ -501,3 +435,30 @@ class Host(Resource):
             return Host(result)
         except ApiException, e:
             raise PythonApiException("Unable to clone host: " + e.message)
+
+    def install_application(self, app_name):
+        if self.get_state() != "PROVISIONED":
+            raise PythonApiException("Host must be provisioned")
+
+        if app_name in self.get_applications():
+            raise PythonApiException("Application is already installed")
+
+        try:
+            self._get_client().create(self._get_path() + "applications/" + app_name)
+        except ApiException, e:
+            raise PythonApiException("Unable to install application: " + e.message)
+
+    def uninstall_application(self, app_name):
+        if self.get_state() != "PROVISIONED":
+            raise PythonApiException("Host must be provisioned")
+
+        if not app_name in self.get_applications():
+            raise PythonApiException("Application is not installed")
+
+        try:
+            self._get_client().delete(self._get_path() + "applications/" + app_name)
+        except ApiException, e:
+            raise PythonApiException("Unable to uninstall application: " + e.message)
+
+    def settings(self):
+        return SettingCollection(self._get_api(), self._get_path() + "settings/")

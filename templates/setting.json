@@ -1,5 +1,4 @@
 {
    "key":"<setting key>",
-   "value":"<setting value>",
-   "host":"<target host uuid>"
+   "value":"<setting value>"
 }
