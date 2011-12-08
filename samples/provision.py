@@ -43,7 +43,7 @@ def provision_host():
 
     print "="*80
     print "Waiting for the end of installation..."
-    while host.get_instance().get_state() == "RUNNING":
+    while host.get_instance().get_state() != "STOPPED":
         time.sleep(3)
 
     print "="*80

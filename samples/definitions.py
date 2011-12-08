@@ -11,14 +11,16 @@ org_name = "Guardis2"
 org_description = "Guardis2's organization"
 
 # Define application
-app_name = "htop2"
-app_packages = ["htop"]
-app_description = "Htop Application"
+app_name = "WebServer"
+app_packages = ["httpd", "mod_ssl"]
+app_description = "Apache web server"
 
+app_file_name = "httpd.conf"
 app_file_meta = {
+            "owner": "root",
             "group": "root",
             "mode": "644",
-            "name": "httpd.conf",
+            "name": app_file_name,
             "path": "/etc/httpd/conf/httpd.conf",
             "template": {
                 "parameters": [
@@ -27,19 +29,36 @@ app_file_meta = {
                         "key": "httpd_port",
                         "name": "Httpd Port",
                         "value": "80"
-                    },
-                    {
-                        "description": "The user",
-                        "key": "http_user",
-                        "name": "Apache User",
-                        "value": "apache"
                     }
                 ]
             }
         }
-app_file_content = "co6.ks"
-
+app_file_content = "httpd.conf"
 app_files = [(app_file_meta, app_file_content)]
+
+app_service_name = "httpd"
+app_services = [{
+            "name": app_service_name,
+            "enabled": "true"
+        }]
+
+app_handlers = [
+        {
+            "do": [
+                {
+                    "action": "update",
+                    "resource": "file://" + app_file_name
+                },
+                {
+                    "action": "restart",
+                    "resource": "service://" + app_service_name
+                }
+            ],
+            "on": [
+                "httpd_port"
+            ]
+        }
+    ]
 
 # Define platform
 plat_name = "Local2"
@@ -70,10 +89,10 @@ host_name = "test2"
 host_description = "Single host of Test2 environment"
 host_dist = dist_name
 host_plat = plat_name
-host_apps = [app_name]
+host_apps = [] # Application will be installed after provisioning
 host_settings = [{"key":"vm_arch", "value":"i686"},
 {"key":"vm_bridge", "value":"br0"},
-{"key":"vm_memory", "value":"1024"},
-{"key":"vm_capacity", "value":"3072"},
+{"key":"vm_memory", "value":"512"},
+{"key":"vm_capacity", "value":"2048"},
 {"key":"vm_nvirtcpus", "value":"1"}]
 
