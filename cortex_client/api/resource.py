@@ -6,7 +6,7 @@ Base resource class module.
 @copyright: 2011 Guardis SPRL, Liège, Belgium.
 """
 
-import os, urllib
+import os
 
 from cortex_client.util.json_wrapper import JsonWrapper
 
@@ -44,7 +44,7 @@ class Resource(JsonWrapper):
         @return: The path to this resource
         @rtype: String
         """
-        return self._collection.get_path() + urllib.quote(self.get_name()) + "/"
+        return self._collection.get_path() + self.get_name() + "/"
 
     def _get_client(self):
         """

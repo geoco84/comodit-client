@@ -22,7 +22,7 @@ class Client:
         self.password = password
 
     def create(self, resource, item, parameters = {}, decode = True):
-        url = self.endpoint + "/" + resource
+        url = self.endpoint + "/" + urllib.quote(resource)
         if len(parameters) > 0:
             url = url + "?" + urllib.urlencode(parameters)
 
@@ -70,28 +70,13 @@ class Client:
         self._urlopen(req)
         return
 
-    def upload_new_file(self, file_name, upload_url = None):
-        with open(file_name, 'r') as f:
-            if upload_url is None:
-                url = urlparse.urlparse(self.endpoint + "/files")
-            else:
-                url = upload_url
-            response = fileupload.post_multipart(url.netloc, url.path,
-                                                 [("test", "none")],
-                                                 [("file", file_name, f.read())],
-                                                 {"Authorization": "Basic " + (self.username + ":" + self.password).encode("base64").rstrip()})
-
-        return json.loads(response)[0];
-
-    def upload_to_exising_file(self, file_name, uuid):
-        return self.upload_to_exising_file_with_path(file_name, "files/" + uuid)
-
     def upload_to_exising_file_with_path(self, file_name, path):
         url = urlparse.urlparse(self.endpoint + "/" + path)
         response = fileupload.post_multipart(url.netloc, url.path,
                                              [("test", "none")],
                                              [("file", file_name)],
                                              {"Authorization": "Basic " + (self.username + ":" + self.password).encode("base64").rstrip()})
+        return response
 
     def _headers(self):
         s = self.username + ":" + self.password
