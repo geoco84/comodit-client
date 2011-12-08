@@ -10,6 +10,7 @@ from resource import Resource
 from cortex_client.util.json_wrapper import StringFactory
 from host import Host
 from host_collection import HostCollection
+from cortex_client.api.settings import SettingCollection
 
 class Environment(Resource):
     """
@@ -109,3 +110,6 @@ class Environment(Resource):
         host.set_organization(self.get_organization())
         host.set_environment(self.get_name())
         return host
+
+    def settings(self):
+        return SettingCollection(self._get_api(), self._get_path() + "settings/")

@@ -124,6 +124,12 @@ _escape_string()
         elif [[ "${cur_char}" == ")" ]]
         then
             __escaped_string=${__escaped_string}"\)"
+        elif [[ "${cur_char}" == "<" ]]
+        then
+            __escaped_string=${__escaped_string}"\<"
+        elif [[ "${cur_char}" == ">" ]]
+        then
+            __escaped_string=${__escaped_string}"\>"
         else
             __escaped_string=${__escaped_string}${cur_char}
         fi

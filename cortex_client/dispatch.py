@@ -6,7 +6,9 @@
 #
 # This software cannot be used and/or distributed without prior 
 # authorization from Guardis.
-from cortex_client.control.settings import HostSettingsController
+from cortex_client.control.settings import HostSettingsController, \
+    EnvironmentSettingsController, OrganizationSettingsController, \
+    ApplicationSettingsController
 VERSION = "0.7.5-SNAPSHOT"
 RELEASE = "** ongoing development **"
 
@@ -41,6 +43,9 @@ def run(argv):
     control.router.register(["environments"], EnvironmentsController())
     control.router.register(["hosts"], HostsController())
     control.router.register(["host-settings"], HostSettingsController())
+    control.router.register(["env-settings"], EnvironmentSettingsController())
+    control.router.register(["org-settings"], OrganizationSettingsController())
+    control.router.register(["app-settings"], ApplicationSettingsController())
 
     # services
     control.router.register(["sync"], SyncController())
