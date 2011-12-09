@@ -226,7 +226,7 @@ class Host(Resource):
         @return: Host's settings.
         @rtype: list of L{Setting}
         """
-        return self._get_list_field("settings", SettingFactory())
+        return self._get_list_field("settings", SettingFactory(self.settings()))
 
     def set_settings(self, settings):
         """
@@ -464,4 +464,4 @@ class Host(Resource):
         return SettingCollection(self._get_api(), self._get_path() + "settings/")
 
     def application_settings(self, app_name):
-        return SettingCollection(self._get_api(), self._get_path() + "applications/" + app_name + "/settings")
+        return SettingCollection(self._get_api(), self._get_path() + "applications/" + app_name + "/settings/")

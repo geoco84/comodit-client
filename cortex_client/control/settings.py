@@ -23,9 +23,8 @@ class ApplicationSettingsController(ResourceController):
         org = self._api.organizations().get_resource(argv[0])
         env = org.environments().get_resource(argv[1])
         host = env.hosts().get_resource(argv[2])
-        app = host.applications().get_resource(argv[3])
 
-        return app.settings()
+        return host.application_settings(argv[3])
 
     def _print_collection_completions(self, param_num, argv):
         if param_num == 0:
@@ -41,7 +40,7 @@ class ApplicationSettingsController(ResourceController):
             org = self._api.organizations().get_resource(argv[0])
             env = org.environments().get_resource(argv[1])
             host = env.hosts().get_resource(argv[2])
-            self._print_escaped_names(host.applications())
+            self._print_escaped_names(host.get_applications())
 
     def _print_resource_completions(self, param_num, argv):
         if param_num < 4:

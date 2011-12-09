@@ -133,7 +133,7 @@ def create_plat(org):
     plat.set_driver(plat_driver)
 
     for s in plat_settings:
-        plat.add_setting(Setting(s))
+        plat.add_setting(Setting(None, s))
 
     plat.create()
     return plat

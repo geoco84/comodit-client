@@ -56,6 +56,10 @@ class Setting(Resource):
 
 
 class SettingFactory(object):
+
+    def __init__(self, collection):
+        self._collection = collection
+
     """
     Host's setting factory.
     
@@ -72,7 +76,7 @@ class SettingFactory(object):
         @return: A setting
         @rtype: L{Setting}
         """
-        return Setting(json_data)
+        return Setting(self._collection, json_data)
 
 
 class SettingCollection(Collection):

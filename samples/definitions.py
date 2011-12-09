@@ -63,7 +63,7 @@ app_handlers = [
 # Define platform
 plat_name = "Local2"
 plat_description = "Local QEMU"
-plat_driver = "com.guardis.cortex.server.services.provisioning.LibvirtDriver"
+plat_driver = "com.guardis.cortex.server.driver.LibvirtDriver"
 plat_settings = [{"key":"libvirt.connectUrl",
 "value":"qemu:///system"}]
 

@@ -39,29 +39,13 @@ class Platform(Resource):
         """
         return self._set_field("driver", driver)
 
-    def get_owner(self):
-        """
-        Provides platform's owner UUID.
-        @return: A user's UUID
-        @rtype: String
-        """
-        return self._get_field("owner")
-
-    def set_owner(self, owner):
-        """
-        Sets platform's owner.
-        @param owner: A user's UUID
-        @type owner: String
-        """
-        return self._set_field("owner", owner)
-
     def get_settings(self):
         """
         Provides platform's settings.
         @return: A list of settings
         @rtype: list of L{Setting}
         """
-        return self._get_list_field("settings", SettingFactory())
+        return self._get_list_field("settings", SettingFactory(None))
 
     def set_settings(self, settings):
         """
@@ -90,8 +74,7 @@ class Platform(Resource):
     def _show(self, indent = 0):
         super(Platform, self)._show(indent)
         print " "*indent, "Driver:", self.get_driver()
-        print " "*indent, "Owner:", self.get_owner()
         print " "*indent, "Settings:"
         settings = self.get_settings()
         for s in settings:
-            s.show(indent + 2)
+            s._show(indent + 2)
