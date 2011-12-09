@@ -468,3 +468,6 @@ class Host(Resource):
 
     def platform_settings(self):
         return SettingCollection(self._get_api(), self._get_path() + "platform/settings/")
+
+    def distribution_settings(self):
+        return SettingCollection(self._get_api(), self._get_path() + "distribution/settings/")

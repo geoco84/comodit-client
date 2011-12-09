@@ -3,12 +3,12 @@
 from cortex_client.control.resource import ResourceController
 from cortex_client.control.exceptions import ArgumentException
 
-class PlatformSettingsController(ResourceController):
+class HostAbstractSettingsController(ResourceController):
 
     _template = "setting.json"
 
     def __init__(self):
-        super(PlatformSettingsController, self).__init__()
+        super(HostAbstractSettingsController, self).__init__()
 
     def _get_name_argument(self, argv):
         if len(argv) < 4:
@@ -24,7 +24,7 @@ class PlatformSettingsController(ResourceController):
         env = org.environments().get_resource(argv[1])
         host = env.hosts().get_resource(argv[2])
 
-        return host.platform_settings()
+        return self._get_settings(host, argv)
 
     def _print_collection_completions(self, param_num, argv):
         if param_num == 0:
@@ -44,7 +44,7 @@ class PlatformSettingsController(ResourceController):
             org = self._api.organizations().get_resource(argv[0])
             env = org.environments().get_resource(argv[1])
             host = env.hosts().get_resource(argv[2])
-            self._print_identifiers(host.platform_settings())
+            self._print_identifiers(self._get_settings(host, argv))
 
     def _help(self, argv):
         print '''You must provide an action to perform on this resource.
@@ -61,6 +61,25 @@ Actions:
     delete <org_name> <env_name> <host_name> <setting_name>
                             Delete a setting
 '''
+
+
+class PlatformSettingsController(HostAbstractSettingsController):
+
+    def __init__(self):
+        super(PlatformSettingsController, self).__init__()
+
+    def _get_settings(self, host, argv):
+        return host.platform_settings()
+
+
+class DistributionSettingsController(HostAbstractSettingsController):
+
+    def __init__(self):
+        super(DistributionSettingsController, self).__init__()
+
+    def _get_settings(self, host, argv):
+        return host.distribution_settings()
+
 
 class ApplicationSettingsController(ResourceController):
 
