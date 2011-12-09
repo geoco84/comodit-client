@@ -8,7 +8,7 @@
 # authorization from Guardis.
 from cortex_client.control.settings import HostSettingsController, \
     EnvironmentSettingsController, OrganizationSettingsController, \
-    ApplicationSettingsController
+    ApplicationSettingsController, PlatformSettingsController
 VERSION = "0.7.5-SNAPSHOT"
 RELEASE = "** ongoing development **"
 
@@ -46,6 +46,7 @@ def run(argv):
     control.router.register(["env-settings"], EnvironmentSettingsController())
     control.router.register(["org-settings"], OrganizationSettingsController())
     control.router.register(["app-settings"], ApplicationSettingsController())
+    control.router.register(["plat-settings"], PlatformSettingsController())
 
     # services
     control.router.register(["sync"], SyncController())

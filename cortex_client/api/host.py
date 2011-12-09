@@ -465,3 +465,6 @@ class Host(Resource):
 
     def application_settings(self, app_name):
         return SettingCollection(self._get_api(), self._get_path() + "applications/" + app_name + "/settings/")
+
+    def platform_settings(self):
+        return SettingCollection(self._get_api(), self._get_path() + "platform/settings/")
