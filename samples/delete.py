@@ -22,38 +22,39 @@ def delete_resources():
     org_coll = api.organizations()
     try:
         org = org_coll.get_resource(org_name)
+
+        app_coll = org.applications()
+        try:
+            app = app_coll.get_resource(app_name)
+        except:
+            print "Application does not exist"
+
+        plat_coll = org.platforms()
+        try:
+            plat = plat_coll.get_resource(plat_name)
+        except:
+            print "Platform does not exist"
+
+        dist_coll = org.distributions()
+        try:
+            dist = dist_coll.get_resource(dist_name)
+        except:
+            print "Distribution does not exist"
+
+        env_coll = org.environments()
+        try:
+            env = env_coll.get_resource(env_name)
+
+            host_coll = env.hosts()
+            try:
+                host = host_coll.get_resource(host_name)
+            except:
+                print "Host does not exist"
+        except:
+            print "Environment does not exist"
     except:
         print "Organization does not exist"
 
-    app_coll = org.applications()
-    try:
-        app = app_coll.get_resource(app_name)
-    except:
-        print "Application does not exist"
-
-    plat_coll = org.platforms()
-    try:
-        plat = plat_coll.get_resource(plat_name)
-    except:
-        print "Platform does not exist"
-
-    dist_coll = org.distributions()
-    try:
-        dist = dist_coll.get_resource(dist_name)
-    except:
-        print "Distribution does not exist"
-
-    env_coll = org.environments()
-    try:
-        env = env_coll.get_resource(env_name)
-    except:
-        print "Environment does not exist"
-
-    host_coll = env.hosts()
-    try:
-        host = host_coll.get_resource(host_name)
-    except:
-        print "Host does not exist"
 
     ###################
     # Delete entities #
