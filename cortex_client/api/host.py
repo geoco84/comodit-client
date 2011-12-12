@@ -149,6 +149,43 @@ class Instance(JsonWrapper):
             if not p.get_key() in ("ip", "hostname", "synapseState"):
                 print " "*(indent + 2), p.get_key(), ":", p.get_value()
 
+
+class Task(JsonWrapper):
+    def __init__(self, json_data = None):
+        super(Task, self).__init__(json_data)
+
+    def get_description(self):
+        return self._get_field("description")
+
+    def get_status(self):
+        return self._get_field("status")
+
+    def show(self, indent = 0):
+        print " "*indent, "Description:", self.get_description()
+        print " "*indent, "Status:", self.get_status()
+
+class TaskFactory(object):
+    def new_object(self, json_data):
+        return Task(json_data)
+
+
+class Change(JsonWrapper):
+    def __init__(self, json_data = None):
+        super(Change, self).__init__(json_data)
+
+    def get_description(self):
+        return self._get_field("description")
+
+    def get_tasks(self):
+        return self._get_list_field("tasks", TaskFactory())
+
+    def show(self, indent = 0):
+        print " "*indent, "Description:", self.get_description()
+        print " "*indent, "Tasks:"
+        tasks = self.get_tasks()
+        for t in tasks:
+            t.show(indent + 2)
+
 class Host(Resource):
     """
     A host. A host is part of an environment and has settings and properties
@@ -471,3 +508,19 @@ class Host(Resource):
 
     def distribution_settings(self):
         return SettingCollection(self._get_api(), self._get_path() + "distribution/settings/")
+
+    def get_changes(self):
+        if self.get_state() != "PROVISIONED":
+            raise PythonApiException("Host must be provisioned")
+
+        try:
+            json_changes = self._get_client().read(self._get_path() + "changes/")
+            changes = []
+            if json_changes["count"] == "0":
+                return changes
+
+            for json_change in json_changes["items"]:
+                changes.append(Change(json_change))
+            return changes
+        except ApiException, e:
+            raise PythonApiException("Unable to get changes: " + e.message)

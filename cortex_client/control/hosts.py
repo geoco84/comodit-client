@@ -33,6 +33,7 @@ class HostsController(ResourceController):
         self._register(["render-ks"], self._render_ks, self._print_resource_completions)
         self._register(["render-tree"], self._render_tree, self._print_tree_completions)
         self._register(["clone"], self._clone, self._print_resource_completions)
+        self._register(["changes"], self._changes, self._print_resource_completions)
 
     def get_collection(self, argv):
         if len(argv) < 2:
@@ -174,6 +175,16 @@ class HostsController(ResourceController):
         host = self._get_resource(argv)
         host.clone()
 
+    def _changes(self, argv):
+        if len(argv) != 3:
+            raise MissingException("This action takes 3 arguments")
+
+        host = self._get_resource(argv)
+        changes = host.get_changes()
+        print "Changes:"
+        for c in changes:
+            c.show()
+
     def _help(self, argv):
         print '''You must provide an action to perform on this resource.
 
@@ -189,6 +200,8 @@ Actions:
     instance <org_name> <env_name> <host_name>
                        Show information about host's instance (including IP
                        address and hostname if available)
+    changes <org_name> <env_name> <host_name>
+                       Show pending changes
     render-file <org_name> <env_name> <host_name> <app_name> <file_name>
                        Renders a file of a given application
     render-ks <org_name> <env_name> <host_name>
