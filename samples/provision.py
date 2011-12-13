@@ -1,13 +1,6 @@
-#==============================================================================
-# This file illustrates the use of Python API to handle cortex entities.
-# Definitions section (after imports) provides the description of several
-# entities this script will create (it may need to be updated).
-# Script section (after definitions) contains the actual operations (entities
-# creation, host provisioning, shutdown and entities removal).
-#==============================================================================
-
 # Setup Python path
 import sys
+
 sys.path.append("..")
 
 
@@ -17,6 +10,7 @@ sys.path.append("..")
 import time
 
 from cortex_client.api.api import CortexApi
+from cortex_client.api.exceptions import PythonApiException
 
 from definitions import *
 
@@ -43,8 +37,17 @@ def provision_host():
 
     print "="*80
     print "Waiting for the end of installation..."
-    while host.get_instance().get_state() != "STOPPED":
+    state = None
+    try:
+        state = host.get_instance().get_state()
+    except PythonApiException, e:
+        print e.message
+    while state != "STOPPED":
         time.sleep(3)
+        try:
+            state = host.get_instance().get_state()
+        except PythonApiException, e:
+            print e.message
 
     print "="*80
     print "Restarting..."

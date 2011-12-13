@@ -27,6 +27,9 @@ class Setting(Resource):
         """
         return self._get_field("value")
 
+    def set_value(self, value):
+        return self._set_field("value", value)
+
     def get_key(self):
         """
         Provides setting's key.
@@ -34,9 +37,6 @@ class Setting(Resource):
         @rtype: String
         """
         return self._get_field("key")
-
-    def get_status(self):
-        return self._get_field("status")
 
     def get_version(self):
         """
@@ -56,7 +56,6 @@ class Setting(Resource):
         """
         print " "*indent, "Key:", self.get_key()
         print " "*indent, "Value:", self.get_value()
-        print " "*indent, "Status:", self.get_status()
 
 
 class SettingFactory(object):
