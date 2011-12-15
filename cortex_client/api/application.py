@@ -9,6 +9,7 @@ Application module.
 from cortex_client.util.json_wrapper import JsonWrapper, StringFactory
 from resource import Resource
 from file import File
+from cortex_client.api.file import Parameter
 
 class ApplicationResource(JsonWrapper):
     """
@@ -81,6 +82,50 @@ class PackageFactory(object):
         @rtype: L{Package}
         """
         return Package(json_data)
+
+
+class User(ApplicationResource):
+    def __init__(self, json_data = None):
+        super(User, self).__init__(json_data)
+
+    def get_login_group(self):
+        return self._get_field("loginGroup")
+
+    def get_groups(self):
+        return self._get_list_field("groups", StringFactory())
+
+    def get_password(self):
+        json_data = self._get_field("password")
+        if json_data is None:
+            return None
+        return Parameter(json_data)
+
+    def show(self, indent = 0):
+        print " "*indent, self.get_name() + ":"
+        print " "*(indent + 2), "Login group:", self.get_login_group()
+        print " "*(indent + 2), "Groups:"
+        for g in self.get_groups():
+            print " "*(indent + 4), g
+        print " "*(indent + 2), "Password:"
+        password = self.get_password()
+        if not password is None:
+            password.show(indent + 4)
+
+class UserFactory(object):
+    def new_object(self, json_data):
+        return User(json_data)
+
+
+class Group(ApplicationResource):
+    def __init__(self, json_data = None):
+        super(Group, self).__init__(json_data)
+
+    def show(self, indent = 0):
+        print " "*indent, self.get_name()
+
+class GroupFactory(object):
+    def new_object(self, json_data):
+        return Group(json_data)
 
 
 class Service(ApplicationResource):
@@ -415,6 +460,12 @@ class Application(Resource):
         """
         return self._get_list_field("packages", PackageFactory())
 
+    def get_groups(self):
+        return self._get_list_field("groups", GroupFactory())
+
+    def get_users(self):
+        return self._get_list_field("users", UserFactory())
+
     def set_packages(self, packages):
         """
         Sets the packages associated to this application.
@@ -544,6 +595,14 @@ class Application(Resource):
         files = self.get_files()
         for f in files:
             f.show(indent + 2)
+        print " "*indent, "Groups:"
+        groups = self.get_groups()
+        for g in groups:
+            g.show(indent + 2)
+        print " "*indent, "Users:"
+        users = self.get_users()
+        for u in users:
+            u.show(indent + 2)
         print " "*indent, "Handlers:"
         handlers = self.get_handlers()
         for f in handlers:

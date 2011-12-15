@@ -7,10 +7,14 @@
 # This software cannot be used and/or distributed without prior
 # authorization from Guardis.
 
-import os
+import os, json
 
+from cortex_client.util import globals
 from cortex_client.control.organization_resource import OrganizationResourceController
 from cortex_client.control.exceptions import MissingException, ArgumentException
+from cortex_client.util.editor import edit_text
+from cortex_client.config import Config
+from cortex_client.api.host import ApplicationContext
 
 class ApplicationsController(OrganizationResourceController):
 
@@ -86,12 +90,26 @@ class ApplicationsController(OrganizationResourceController):
             self._print_resource_identifiers(org.applications().get_resources())
 
     def _install(self, argv):
-        if len(argv) != 4:
-            raise MissingException("This action takes 4 arguments")
+        if len(argv) != 3:
+            raise MissingException("This action takes 3 arguments")
+
+        options = globals.options
+        if options.filename:
+            with open(options.filename, 'r') as f:
+                item = json.load(f)
+                app = ApplicationContext(item)
+        elif options.json:
+            item = json.loads(options.json)
+            app = ApplicationContext(item)
+        else :
+            template = open(os.path.join(Config().templates_path, "application_context.json")).read()
+            #template = "# To abort the request; just exit your editor without saving this file.\n\n" + template
+            updated = edit_text(template)
+            #updated = re.sub(r'#.*$', "", updated)
+            app = ApplicationContext(json.loads(updated))
 
         host = self._get_host(argv)
-        app_name = argv[3]
-        host.install_application(app_name)
+        host.install_application(app)
 
     def _print_uninstall_completions(self, param_num, argv):
         if param_num < 3:
@@ -124,7 +142,7 @@ Actions:
                              Update an application
     delete <org_name> <app_name>
                              Delete an application
-    install <org_name> <env_name> <host_name> <app_name>
+    install <org_name> <env_name> <host_name>
                             Installs an application on a given host
     uninstall <org_name> <env_name> <host_name> <app_name>
                             Uninstalls an application on a given host

@@ -11,7 +11,8 @@ from cortex_client.api.resource import Resource
 from cortex_client.rest.exceptions import ApiException
 from cortex_client.util.json_wrapper import JsonWrapper, StringFactory
 from exceptions import PythonApiException
-from cortex_client.api.settings import SettingCollection, SettingFactory
+from cortex_client.api.settings import SettingCollection, SettingFactory, \
+    Setting
 
 class Property(JsonWrapper):
     """
@@ -185,6 +186,27 @@ class Change(JsonWrapper):
         tasks = self.get_tasks()
         for t in tasks:
             t.show(indent + 2)
+
+
+class ApplicationContext(JsonWrapper):
+    def __init__(self, json_data = None):
+        super(ApplicationContext, self).__init__(json_data)
+
+    def get_application(self):
+        return self._get_field("application")
+
+    def set_application(self, application):
+        return self._set_field("application", application)
+
+    def get_settings(self):
+        return self._get_list_field("settings", SettingFactory(None))
+
+    def add_setting(self, setting):
+        self._add_to_list_field("settings", setting)
+
+    def get_setting(self, key):
+        return self._get_field("settings").get(key)
+
 
 class Host(Resource):
     """
@@ -473,15 +495,15 @@ class Host(Resource):
         except ApiException, e:
             raise PythonApiException("Unable to clone host: " + e.message)
 
-    def install_application(self, app_name):
+    def install_application(self, context):
         if self.get_state() != "PROVISIONED":
             raise PythonApiException("Host must be provisioned")
 
-        if app_name in self.get_applications():
+        if context.get_application() in self.get_applications():
             raise PythonApiException("Application is already installed")
 
         try:
-            self._get_client().create(self._get_path() + "applications/" + app_name)
+            self._get_client().create(self._get_path() + "applications/", context.get_json())
         except ApiException, e:
             raise PythonApiException("Unable to install application: " + e.message)
 

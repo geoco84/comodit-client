@@ -92,7 +92,15 @@ class Client:
         except HTTPError as err:
             try:
                 data = json.load(err)
-                message = data["error"]
+                msg_list = data["error"]
+                message = "["
+                if len(msg_list) > 0:
+                    i = 0
+                    while i < len(msg_list) - 1:
+                        message += msg_list[i]
+                        message += ", "
+                    message += msg_list[len(msg_list) - 1]
+                message += "]"
                 errno = err.code
             except:
                 message = err.msg

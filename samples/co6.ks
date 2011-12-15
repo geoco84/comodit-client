@@ -111,7 +111,6 @@ cat << EOF > /etc/synapse/synapse.conf
 type = amqp
 host = mahogany.angleur.guardis.be
 queue = vm.${_hostid}
-exchange = status
 username = guest
 password = guest
 

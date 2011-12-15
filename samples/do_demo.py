@@ -10,6 +10,7 @@ sys.path.append("..")
 import time
 
 from cortex_client.api.api import CortexApi
+from cortex_client.api.host import ApplicationContext
 
 from definitions import comodit_url, comodit_user, comodit_pass, app_name, org_name, env_name, host_name
 
@@ -65,7 +66,9 @@ def do_demo():
     host = env.hosts().get_resource(host_name)
 
     print "Installing web server..."
-    host.install_application(app_name)
+    context = ApplicationContext()
+    context.set_application(app_name)
+    host.install_application(context)
     while len(host.get_changes()) > 0:
         time.sleep(3)
 

@@ -7,8 +7,6 @@ sys.path.append("..")
 #==============================================================================
 # Imports section
 
-import time
-
 from cortex_client.api.api import CortexApi
 from cortex_client.api.exceptions import PythonApiException
 
@@ -22,8 +20,6 @@ def __unset_httpd_port_setting(host, conf):
     try:
         setting = conf.settings().get_resource("httpd_port")
         setting.delete()
-        while len(host.get_changes()) > 0:
-            time.sleep(3)
     except PythonApiException, e:
         print e.message
 
@@ -31,8 +27,6 @@ def __unset_httpd_port_setting_at_app(host):
     try:
         setting = host.application_settings().get_resource("httpd_port")
         setting.delete()
-        while len(host.get_changes()) > 0:
-            time.sleep(3)
     except PythonApiException, e:
         print e.message
 
@@ -48,8 +42,6 @@ def undo_demo():
     print "Uninstalling web server..."
     try:
         host.uninstall_application(app_name)
-        while len(host.get_changes()) > 0:
-            time.sleep(3)
     except PythonApiException, e:
         print e.message
 
