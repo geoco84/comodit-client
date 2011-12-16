@@ -11,7 +11,7 @@ from cortex_client.api.collection import ResourceNotFoundException
 from cortex_client.api.application import Package, ApplicationFile, Service, \
     Handler
 from cortex_client.api.settings import Setting
-from cortex_client.api.file import Parameter, File
+from cortex_client.api.file import File
 
 from definitions import *
 
@@ -135,7 +135,14 @@ def create_plat(org):
     for s in plat_settings:
         plat.add_setting(Setting(None, s))
 
+    for f in plat_files:
+        plat.add_file(File(f))
+
     plat.create()
+
+    for f in plat.get_files():
+        plat.set_file_content(f.get_name(), plat_files_content.get(f.get_name()))
+
     return plat
 
 def create_dist(org):
@@ -144,19 +151,16 @@ def create_dist(org):
     """
     dist = org.new_distribution(dist_name)
     dist.set_description(dist_description)
-    dist.set_initrd(dist_initrd)
-    dist.set_vmlinuz(dist_vmlinuz)
 
-    # Create kickstart template
-    kickstart_file = File()
-    kickstart_file.set_name(dist_name + " kickstart")
-    for p in dist_kickstart_params:
-        kickstart_file.add_parameter(Parameter(p))
+    for s in dist_settings:
+        dist.add_setting(Setting(None, s))
 
-    dist.set_kickstart(kickstart_file)
+    for f in dist_files:
+        dist.add_file(File(f))
+
     dist.create()
 
-    dist.set_kickstart_content(dist_kickstart)
+    dist.set_file_content(dist_kickstart, dist_kickstart_content)
 
     return dist
 

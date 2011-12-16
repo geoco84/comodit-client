@@ -2,7 +2,26 @@
     "name":"my-platform",
     "description":"My application example",
     "driver": "com.guardis.*",
-    "settings": [
-    	{"key": "<key>", "value":"<value>"}
+    "settings":
+    [
+        {
+            "key": "<key>",
+            "value":"<value>"
+        }
+    ],
+    "files":
+    [
+        {
+            "name": "<a file name>",
+            "parameters":
+            [
+                {
+                    "key": "<a key>",
+                    "value": "<a value>",
+                    "name": "<a name>",
+                    "description": "<a description>"
+                }
+            ]
+        }
     ]
 }

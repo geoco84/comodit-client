@@ -1,18 +1,34 @@
 {
     "name":"my-distro",
     "description":"A linux distribution",
-    "initrd":"/var/lib/cortex/dist/my-distro/initrd.img",
-    "vmlinuz":"/var/lib/cortex/dist/my-distro/vmlinuz",
-    "kickstart":
-    {
-        "name": "<file name>",
-        "parameters": [
-            {
-                "key": "<a key>",
-                "value": "<a value>",
-                "name": "<a name>",
-                "description": "<a description>"
-            }
-        ]
-    }
+    "settings":
+    [
+        {
+            "key":"kickstartName",
+            "value":"<kickstart file name>",
+        },
+        {
+            "key":"vmlinuzPath",
+            "value":"<an absolute path>",
+        },
+        {
+            "key":"initrdPath",
+            "value":"<an absolute path>",
+        }
+    ],
+    "files":
+    [
+        {
+            "name": "<a file name>",
+            "parameters":
+            [
+                {
+                    "key": "<a key>",
+                    "value": "<a value>",
+                    "name": "<a name>",
+                    "description": "<a description>"
+                }
+            ]
+        }
+    ]
 }

@@ -8,6 +8,7 @@ Distribution module.
 
 from resource import Resource
 from file import File
+from cortex_client.api.settings import SettingFactory
 
 class Distribution(Resource):
     """
@@ -23,65 +24,60 @@ class Distribution(Resource):
         """
         super(Distribution, self).__init__(collection, json_data)
 
-    def _get_kickstart_path(self):
-        return self._get_path() + "kickstart"
+    def _get_file_path(self, name):
+        return self._get_path() + "files/" + name
 
-    def get_kickstart(self):
-        """
-        Provides the UUID of kickstart's template.
-        @return: Kickstart's template (UUID)
-        @rtype: L{File}
-        """
-        data = self._get_field("kickstart")
+    def get_files(self):
+        data = self._get_field("files")
         if data is None:
             return None
-        return File(json_data = data)
+        files = []
+        for json_f in data:
+            files.append(File(json_data = json_f))
+        return files
 
-    def set_kickstart(self, kickstart):
-        """
-        Sets the UUID of kickstart's template.
-        @param kickstart: Kickstart's template
-        @type kickstart: L{File}
-        """
-        self._set_field("kickstart", kickstart.get_json())
+    def get_file(self, name):
+        files = self._get_field("files")
+        if files is None:
+            return None
+        for json_f in files:
+            f = File(json_f)
+            if f.get_name() == name:
+                return f
+        return None
 
-    def set_kickstart_content(self, path):
-        self._get_client().upload_to_exising_file_with_path(path, self._get_kickstart_path())
+    def add_file(self, f):
+        self._add_to_list_field("files", f)
 
-    def get_kickstart_content(self):
-        return self._get_client().read(self._get_kickstart_path(), decode = False)
+    def set_file_content(self, name, path):
+        self._get_client().upload_to_exising_file_with_path(path, self._get_file_path(name))
 
-    def get_initrd(self):
-        """
-        Provides the path to distribution's initrd.
-        @return: A path
-        @rtype: String
-        """
-        return self._get_field("initrd")
+    def get_file_content(self, name):
+        return self._get_client().read(self._get_file_path(name), decode = False)
 
-    def set_initrd(self, initrd):
+    def get_settings(self):
         """
-        Sets the path to distribution's initrd.
-        @param initrd: A path
-        @type initrd: String
+        Provides platform's settings.
+        @return: A list of settings
+        @rtype: list of L{Setting}
         """
-        return self._set_field("initrd", initrd)
+        return self._get_list_field("settings", SettingFactory(None))
 
-    def get_vmlinuz(self):
+    def set_settings(self, settings):
         """
-        Provides the path to distribution's vmlinuz.
-        @return: A path
-        @rtype: String
+        Sets platform's settings.
+        @param settings: A list of settings
+        @type settings: list of L{Setting}
         """
-        return self._get_field("vmlinuz")
+        return self._set_list_field("settings", settings)
 
-    def set_vmlinuz(self, vmlinuz):
+    def add_setting(self, setting):
         """
-        Sets the path to distribution's vmlinuz.
-        @param vmlinuz: A path
-        @type vmlinuz: String
+        Adds a setting to platform.
+        @param setting: A setting
+        @type setting: L{Setting}
         """
-        return self._set_field("vmlinuz", vmlinuz)
+        self._add_to_list_field("settings", setting)
 
     def get_version(self):
         """
@@ -93,9 +89,12 @@ class Distribution(Resource):
 
     def _show(self, indent = 0):
         super(Distribution, self)._show(indent)
-        kickstart = self.get_kickstart()
-        if kickstart:
-            print " "*indent, "Kickstart:"
-            kickstart.show(indent = indent + 2)
-        print " "*indent, "Initrd:", self.get_initrd()
-        print " "*indent, "Vmlinuz:", self.get_vmlinuz()
+        print " "*indent, "Settings:"
+        settings = self.get_settings()
+        for s in settings:
+            s._show(indent + 2)
+        print " "*indent, "Files:"
+        files = self.get_files()
+        for f in files:
+            f.show(indent + 2)
+

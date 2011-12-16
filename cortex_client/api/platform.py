@@ -8,6 +8,7 @@ Platform module.
 
 from resource import Resource
 from host import SettingFactory
+from cortex_client.api.file import File
 
 class Platform(Resource):
     """
@@ -63,6 +64,37 @@ class Platform(Resource):
         """
         self._add_to_list_field("settings", setting)
 
+    def _get_file_path(self, name):
+        return self._get_path() + "files/" + name
+
+    def get_files(self):
+        data = self._get_field("files")
+        if data is None:
+            return None
+        files = []
+        for json_f in data:
+            files.append(File(json_data = json_f))
+        return files
+
+    def get_file(self, name):
+        files = self._get_field("files")
+        if files is None:
+            return None
+        for json_f in files:
+            f = File(json_f)
+            if f.get_name() == name:
+                return f
+        return None
+
+    def add_file(self, f):
+        self._add_to_list_field("files", f)
+
+    def set_file_content(self, name, path):
+        self._get_client().upload_to_exising_file_with_path(path, self._get_file_path(name))
+
+    def get_file_content(self, name):
+        return self._get_client().read(self._get_file_path(name), decode = False)
+
     def get_version(self):
         """
         Provides platform's version number.
@@ -78,3 +110,7 @@ class Platform(Resource):
         settings = self.get_settings()
         for s in settings:
             s._show(indent + 2)
+        print " "*indent, "Files:"
+        files = self.get_files()
+        for f in files:
+            f.show(indent + 2)
