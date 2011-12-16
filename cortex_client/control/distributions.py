@@ -22,11 +22,6 @@ class DistributionsController(OrganizationResourceController):
     def _get_collection(self, org):
         return org.distributions()
 
-    def _print_distributions(self, argv):
-        dists = self._api.get_distribution_collection().get_resources()
-        for d in dists:
-            self._print_escaped_name(d.get_name())
-
     def _print_show_file_completions(self, param_num, argv):
         if param_num < 2:
             self._print_resource_completions(param_num, argv)
