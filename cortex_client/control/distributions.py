@@ -16,8 +16,8 @@ class DistributionsController(OrganizationResourceController):
 
     def __init__(self):
         super(DistributionsController, self).__init__()
-        self._register(["sk", "show-kick"], self._show_kickstart, self._print_resource_completions)
-        self._register(["set-kick"], self._set_kickstart, self._print_set_kick_completions)
+        self._register(["show-file"], self._show_file, self._print_show_file_completions)
+        self._register(["set-file"], self._set_file, self._print_set_file_completions)
 
     def _get_collection(self, org):
         return org.distributions()
@@ -27,23 +27,36 @@ class DistributionsController(OrganizationResourceController):
         for d in dists:
             self._print_escaped_name(d.get_name())
 
-    def _show_kickstart(self, argv):
-        dist = self._get_resource(argv)
-        print dist.get_kickstart_content().read()
-
-    def _print_set_kick_completions(self, param_num, argv):
+    def _print_show_file_completions(self, param_num, argv):
         if param_num < 2:
             self._print_resource_completions(param_num, argv)
         elif param_num == 2:
-            exit(1)
+            dist = self._get_resource(argv)
+            files = dist.get_files()
+            for f in files:
+                self._print_escaped_name(f.get_name())
 
-    def _set_kickstart(self, argv):
-        dist = self._get_resource(argv)
+    def _show_file(self, argv):
 
         if len(argv) != 3:
             raise MissingException("Wrong number of arguments")
 
-        dist.set_kickstart_content(argv[2])
+        dist = self._get_resource(argv)
+        print dist.get_file_content(argv[2]).read()
+
+    def _print_set_file_completions(self, param_num, argv):
+        if param_num < 3:
+            self._print_show_file_completions(param_num, argv)
+        elif param_num == 3:
+            exit(1)
+
+    def _set_file(self, argv):
+
+        if len(argv) != 4:
+            raise MissingException("Wrong number of arguments")
+
+        dist = self._get_resource(argv)
+        dist.set_file_content(argv[2], argv[3])
 
     def _help(self, argv):
         print '''You must provide an action to perform on this resource.
@@ -53,10 +66,10 @@ Actions:
                 List all distribution profiles available to the user
     show <org_name> <dist_name>
                 Show the details of a distribution
-    show-kick <org_name> <dist_name>
-                Show distribution's kickstart template
-    set-kick <org_name> <dist_name> <path>
-                Set distribution's kickstart template's content
+    show-file <org_name> <dist_name> <file_name>
+                Show a distribution's file template
+    set-kick <org_name> <dist_name> <file_name> <path>
+                Set a distribution's file template's content
     add <org_name>
                 Add a distribution profile
     update <org_name> <dist_name>
