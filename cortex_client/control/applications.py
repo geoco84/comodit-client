@@ -24,7 +24,7 @@ class ApplicationsController(OrganizationResourceController):
         super(ApplicationsController, self).__init__()
         self._register(["show-file"], self._show_file, self._print_show_file_completions)
         self._register(["set-file"], self._set_file, self._print_set_file_completions)
-        self._register(["install"], self._install, self._print_install_completions)
+        self._register(["install"], self._install, self._print_hosts_completions)
         self._register(["uninstall"], self._uninstall, self._print_uninstall_completions)
 
     def _get_collection(self, org):
@@ -81,13 +81,6 @@ class ApplicationsController(OrganizationResourceController):
             self._print_identifiers(self._get_environments(argv))
         elif len(argv) > 1 and param_num == 2:
             self._print_identifiers(self._get_hosts(argv))
-
-    def _print_install_completions(self, param_num, argv):
-        if param_num < 3:
-            self._print_hosts_completions(param_num, argv)
-        elif len(argv) > 1 and param_num == 3:
-            org = self._api.organizations().get_resource(argv[0])
-            self._print_resource_identifiers(org.applications().get_resources())
 
     def _install(self, argv):
         if len(argv) != 3:
