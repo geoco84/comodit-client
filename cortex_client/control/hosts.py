@@ -29,6 +29,7 @@ class HostsController(ResourceController):
         self._register(["applications"], self._applications, self._print_resource_completions)
         self._register(["properties"], self._properties, self._print_resource_completions)
         self._register(["instance"], self._instance, self._print_resource_completions)
+        self._register(["del-instance"], self._delete_instance, self._print_resource_completions)
         self._register(["render-file"], self._render_file, self._print_file_completions)
         self._register(["render-ks"], self._render_ks, self._print_resource_completions)
         self._register(["render-tree"], self._render_tree, self._print_tree_completions)
@@ -113,6 +114,14 @@ class HostsController(ResourceController):
         try:
             info = host.get_instance()
             info.show()
+        except PythonApiException, e:
+            print e.message
+
+    def _delete_instance(self, argv):
+        host = self._get_resource(argv)
+        try:
+            if (prompt.confirm(prompt = "Delete " + host.get_name() + "'s instance ?", resp = False)) :
+                host.deleteInstance()
         except PythonApiException, e:
             print e.message
 
