@@ -11,7 +11,7 @@ from cortex_client.api.collection import ResourceNotFoundException
 from cortex_client.api.application import Package, ApplicationFile, Service, \
     Handler
 from cortex_client.api.settings import Setting
-from cortex_client.api.file import File
+from cortex_client.api.file import File, Parameter
 
 from definitions import *
 
@@ -107,6 +107,9 @@ def create_app(org):
         app_pck.set_name(p)
         app.add_package(app_pck)
 
+    for p in app_parameters:
+        app.add_parameter(Parameter(p))
+
     for f in app_files:
         app.add_file(ApplicationFile(f[0]))
 
@@ -135,6 +138,9 @@ def create_plat(org):
     for s in plat_settings:
         plat.add_setting(Setting(None, s))
 
+    for p in plat_parameters:
+        plat.add_parameter(Parameter(p))
+
     for f in plat_files:
         plat.add_file(File(f))
 
@@ -154,6 +160,9 @@ def create_dist(org):
 
     for s in dist_settings:
         dist.add_setting(Setting(None, s))
+
+    for p in dist_parameters:
+        dist.add_parameter(Parameter(p))
 
     for f in dist_files:
         dist.add_file(File(f))

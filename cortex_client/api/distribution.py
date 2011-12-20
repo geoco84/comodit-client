@@ -9,6 +9,7 @@ Distribution module.
 from resource import Resource
 from file import File
 from cortex_client.api.settings import SettingFactory
+from cortex_client.api.file import ParameterFactory
 
 class Distribution(Resource):
     """
@@ -87,12 +88,32 @@ class Distribution(Resource):
         """
         return int(self._get_field("version"))
 
+    def get_parameters(self):
+        """
+        Provides the list of parameters associated to this template.
+        @return: The list of parameters
+        @rtype: list of L{Parameter}
+        """
+        return self._get_list_field("parameters", ParameterFactory())
+
+    def add_parameter(self, parameter):
+        """
+        Adds a parameter to the list of parameters associated to this template.
+        @param parameter: The parameter
+        @type parameter: L{Parameter}
+        """
+        self._add_to_list_field("parameters", parameter)
+
     def _show(self, indent = 0):
         super(Distribution, self)._show(indent)
         print " "*indent, "Settings:"
         settings = self.get_settings()
         for s in settings:
             s._show(indent + 2)
+        print " "*indent, "Parameters:"
+        params = self.get_parameters()
+        for p in params:
+            p.show(indent + 2)
         print " "*indent, "Files:"
         files = self.get_files()
         for f in files:

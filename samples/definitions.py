@@ -23,19 +23,20 @@ app_file_meta = {
             "name": app_file_name,
             "path": "/etc/httpd/conf/httpd.conf",
             "template": {
-                "name":app_file_name,
-                "parameters": [
-                    {
-                        "description": "The httpd port",
-                        "key": "httpd_port",
-                        "name": "Httpd Port",
-                        "value": "80"
-                    }
-                ]
+                "name":app_file_name
             }
         }
 app_file_content = "httpd.conf"
 app_files = [(app_file_meta, app_file_content)]
+app_parameters = \
+    [
+        {
+            "description": "The httpd port",
+            "key": "httpd_port",
+            "name": "Httpd Port",
+            "value": "80"
+        }
+    ]
 
 app_service_name = "httpd"
 app_services = [{
@@ -70,28 +71,10 @@ plat_settings = [{"key":"libvirt.connectUrl",
 plat_files = \
     [
         {
-            "name":"libvirt.domain.fmt",
-            "parameters":
-                [
-                    {"key": "_libvirt_uuid", "value":""},
-                    {"key": "_name", "value":""},
-                    {"key": "_kernel", "value":""},
-                    {"key": "_initrd", "value":""},
-                    {"key": "_kickstart", "value":""},
-                    {"key": "_path", "value":""},
-                    {"key": "vm_memory", "value":""},
-                    {"key": "vm_nvirtcpus", "value":""},
-                    {"key": "vm_arch", "value":""},
-                    {"key": "vm_mac", "value":""}
-                ]
+            "name":"libvirt.domain.fmt"
         },
         {
-            "name":"libvirt.disk.fmt",
-            "parameters":
-                [
-                    {"key": "_uuid", "value":""},
-                    {"key": "vm_capacity", "value":""}
-                ]
+            "name":"libvirt.disk.fmt"
         }
     ]
 plat_files_content = \
@@ -99,6 +82,21 @@ plat_files_content = \
         "libvirt.domain.fmt": "libvirt.domain.fmt.nat",
         "libvirt.disk.fmt": "libvirt.disk.fmt"
     }
+plat_parameters = \
+    [
+        {"key": "_libvirt_uuid", "value":""},
+        {"key": "_name", "value":""},
+        {"key": "_kernel", "value":""},
+        {"key": "_initrd", "value":""},
+        {"key": "_kickstart", "value":""},
+        {"key": "_path", "value":""},
+        {"key": "_uuid", "value":""},
+        {"key": "vm_memory", "value":""},
+        {"key": "vm_nvirtcpus", "value":""},
+        {"key": "vm_arch", "value":""},
+        {"key": "vm_mac", "value":""},
+        {"key": "vm_capacity", "value":""}
+    ]
 
 # Define distribution (kickstart template is in same folder)
 dist_name = "co6i686"
@@ -122,19 +120,18 @@ dist_settings = \
 dist_files = \
     [
         {
-            "name":dist_kickstart,
-            "parameters":
-                [
-                    {"key": "zone", "value":"angleur"},
-                    {"key": "vm_arch", "value":"i686"},
-                    {"key": "vm_base_arch", "value":"i386"},
-                    {"key": "enable_trunk", "value":"true"},
-                    {"key": "ks_rootpw_one", "value":"secret"}
-                ]
+            "name":dist_kickstart
         }
     ]
-
 dist_kickstart_content = "co6.ks"
+dist_parameters = \
+    [
+        {"key": "zone", "value":"angleur"},
+        {"key": "vm_arch", "value":"i686"},
+        {"key": "vm_base_arch", "value":"i386"},
+        {"key": "enable_trunk", "value":"true"},
+        {"key": "ks_rootpw_one", "value":"secret"}
+    ]
 
 # Define environments
 env_name = "Test2"

@@ -137,33 +137,5 @@ class File(JsonWrapper):
         """
         self._set_field("name", name)
 
-    def get_parameters(self):
-        """
-        Provides the list of parameters associated to this template.
-        @return: The list of parameters
-        @rtype: list of L{Parameter}
-        """
-        return self._get_list_field("parameters", ParameterFactory())
-
-    def set_parameters(self, parameters):
-        """
-        Sets the list of parameters associated to this template.
-        @param parameters: The list of parameters
-        @type parameters: list of L{Parameter}
-        """
-        self._set_list_field("parameters", parameters)
-
-    def add_parameter(self, parameter):
-        """
-        Adds a parameter to the list of parameters associated to this template.
-        @param parameter: The parameter
-        @type parameter: L{Parameter}
-        """
-        self._add_to_list_field("parameters", parameter)
-
     def show(self, indent = 0):
         print " "*indent, "Name:", self.get_name()
-        print " "*indent, "Parameters:"
-        parameters = self.get_parameters()
-        for p in parameters:
-            p.show(indent + 2)

@@ -9,7 +9,7 @@ Application module.
 from cortex_client.util.json_wrapper import JsonWrapper, StringFactory
 from resource import Resource
 from file import File
-from cortex_client.api.file import Parameter
+from cortex_client.api.file import Parameter, ParameterFactory
 
 class ApplicationResource(JsonWrapper):
     """
@@ -562,6 +562,22 @@ class Application(Resource):
         """
         return int(self._get_field("version"))
 
+    def get_parameters(self):
+        """
+        Provides the list of parameters associated to this template.
+        @return: The list of parameters
+        @rtype: list of L{Parameter}
+        """
+        return self._get_list_field("parameters", ParameterFactory())
+
+    def add_parameter(self, parameter):
+        """
+        Adds a parameter to the list of parameters associated to this template.
+        @param parameter: The parameter
+        @type parameter: L{Parameter}
+        """
+        self._add_to_list_field("parameters", parameter)
+
     def _get_file_path(self, name):
         return self._get_path() + "files/" + name
 
@@ -583,6 +599,10 @@ class Application(Resource):
         """
         print " "*indent, "Name:", self.get_name()
         print " "*indent, "Description:", self.get_description()
+        print " "*indent, "Parameters:"
+        params = self.get_parameters()
+        for p in params:
+            p.show(indent + 2)
         print " "*indent, "Packages:"
         packages = self.get_packages()
         for p in packages:
