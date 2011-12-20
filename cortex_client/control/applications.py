@@ -14,7 +14,7 @@ from cortex_client.control.organization_resource import OrganizationResourceCont
 from cortex_client.control.exceptions import MissingException, ArgumentException
 from cortex_client.util.editor import edit_text
 from cortex_client.config import Config
-from cortex_client.api.host import ApplicationContext
+from cortex_client.api.contexts import ApplicationContext
 
 class ApplicationsController(OrganizationResourceController):
 

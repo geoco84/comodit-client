@@ -71,7 +71,7 @@ class Client:
         return
 
     def upload_to_exising_file_with_path(self, file_name, path):
-        url = urlparse.urlparse(self.endpoint + "/" + path)
+        url = urlparse.urlparse(self.endpoint + "/" + urllib.quote(path))
         response = fileupload.post_multipart(url.netloc, url.path,
                                              [("test", "none")],
                                              [("file", file_name)],

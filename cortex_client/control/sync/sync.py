@@ -20,50 +20,41 @@ class SyncController(AbstractController):
 
     def __init__(self):
         super(SyncController, self).__init__()
-        self._register(["pull"], self._pull)
-        self._register(["push"], self._push)
+        self._register(["pull"], self._pull, self._print_pull_completions)
+        self._register(["push"], self._push, self._print_push_completions)
         self._register(["help"], self._help)
         self._default_action = self._help
 
-    def _request_dir_competion(self):
-        exit(2)
-
     def _print_pull_completions(self, param_num, argv):
         if param_num == 0:
-            self._request_dir_competion()
+            self._print_resource_identifiers(self._api.organizations().get_resources())
+        elif param_num == 1:
+            self._print_dir_completions()
 
     def _pull(self, argv):
         self._options = globals.options
-        if self._options.param_completions >= 0:
-            self._print_pull_completions(self._options.param_completions, argv)
-            return
 
-        if not self._options.username:
-            raise MissingException("Pull requires a username to be defined")
-
-        if len(argv) > 1:
-            raise ArgumentException("Pull takes no or one argument")
+        if len(argv) != 1:
+            raise ArgumentException("Wrong number of arguments")
 
         # Set output folder
-        if len(argv) == 1:
-            self._root = argv[0]
-        else:
-            # No output folder given
-            self._root = "cortex." + self._options.username
+        self._root = argv[0]
 
         # Ensures local repository does not contain stale data
         if(os.path.exists(self._root) and len(os.listdir(self._root)) > 0):
             raise SyncException(self._root + " already exists and is not empty.")
 
         self._ensureFolders()
-        self._dumpApplications()
-        self._dumpDistributions()
-        self._dumpOrganizations()
-        self._dumpPlatforms()
+
+        org = self._api.organizations().get_resource(argv[0])
+        self._dumpApplications(org)
+        self._dumpDistributions(org)
+        self._dumpEnvironments(org)
+        self._dumpPlatforms(org)
 
     def _print_push_completions(self, param_num, argv):
         if param_num == 0:
-            self._request_dir_competion()
+            self._print_dir_completions()
 
     def _push(self, argv):
         """
@@ -74,22 +65,12 @@ class SyncController(AbstractController):
         push data.
         """
         self._options = globals.options
-        if self._options.param_completions >= 0:
-            self._print_push_completions(self._options.param_completions, argv)
-            return
 
-        if not self._options.username:
-            raise MissingException("Push requires a username")
-
-        if len(argv) > 1:
-            raise ArgumentException("Pull takes no or one argument")
+        if len(argv) != 1:
+            raise ArgumentException("Wrong number of arguments")
 
         # Set source folder
-        if len(argv) == 1:
-            self._root = argv[0]
-        else:
-            # No source folder given
-            self._root = "cortex." + self._options.username
+        self._root = argv[0]
 
         self._readRemoteEntities()
 
@@ -145,7 +126,7 @@ Actions:
     def _ensureFolders(self):
         path.ensure(os.path.join(self._root, "applications"))
         path.ensure(os.path.join(self._root, "distributions"))
-        path.ensure(os.path.join(self._root, "organizations"))
+        path.ensure(os.path.join(self._root, "environments"))
         path.ensure(os.path.join(self._root, "platforms"))
 
     def _pushKickstartTemplate(self, src_file, dist):
@@ -244,21 +225,15 @@ Actions:
             with open(os.path.join(dist_folder, "kickstart"), "w") as f:
                 f.write(d.get_kickstart_content().read())
 
-    def _dumpOrganizations(self):
-        orgs = self._api.get_organization_collection().get_resources()
-        orgs_folder = os.path.join(self._root, "organizations")
-        for o in orgs:
-            org_folder = os.path.join(orgs_folder, o.get_name())
-            o.dump(org_folder)
+    def _dumpEnvironments(self, org):
+        envs = org.environments().get_resources()
+        for e in envs:
+            env_folder = os.path.join(org_folder, e.get_name())
+            e.dump(env_folder)
 
-            envs = self._api.get_environment_collection().get_resources({"organizationId" : o.get_uuid()})
-            for e in envs:
-                env_folder = os.path.join(org_folder, e.get_name())
-                e.dump(env_folder)
-
-                hosts = self._api.get_host_collection().get_resources({"environmentId" : e.get_uuid()})
-                for h in hosts:
-                    h.dump(os.path.join(env_folder, h.get_name()))
+            hosts = self._api.get_host_collection().get_resources({"environmentId" : e.get_uuid()})
+            for h in hosts:
+                h.dump(os.path.join(env_folder, h.get_name()))
 
     def _pushOrganizations(self):
         if(not os.path.exists(self._root + "/organizations")):

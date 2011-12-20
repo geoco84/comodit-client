@@ -11,8 +11,7 @@ from cortex_client.api.resource import Resource
 from cortex_client.rest.exceptions import ApiException
 from cortex_client.util.json_wrapper import JsonWrapper, StringFactory
 from exceptions import PythonApiException
-from cortex_client.api.settings import SettingCollection, SettingFactory, \
-    Setting
+from cortex_client.api.settings import SettingCollection, SettingFactory
 
 class Property(JsonWrapper):
     """
@@ -188,26 +187,6 @@ class Change(JsonWrapper):
             t.show(indent + 2)
 
 
-class ApplicationContext(JsonWrapper):
-    def __init__(self, json_data = None):
-        super(ApplicationContext, self).__init__(json_data)
-
-    def get_application(self):
-        return self._get_field("application")
-
-    def set_application(self, application):
-        return self._set_field("application", application)
-
-    def get_settings(self):
-        return self._get_list_field("settings", SettingFactory(None))
-
-    def add_setting(self, setting):
-        self._add_to_list_field("settings", setting)
-
-    def get_setting(self, key):
-        return self._get_field("settings").get(key)
-
-
 class Host(Resource):
     """
     A host. A host is part of an environment and has settings and properties
@@ -263,6 +242,12 @@ class Host(Resource):
         """
         self._set_field("platform", platform)
 
+    def set_platform_context(self, context):
+        try:
+            self._get_client().create(self._get_path() + "platform/", context)
+        except ApiException, e:
+            raise PythonApiException("Could not set distribution context: " + e.message)
+
     def get_distribution(self):
         """
         Provides the environment this host is part of.
@@ -278,6 +263,12 @@ class Host(Resource):
         @type distribution: String
         """
         self._set_field("distribution", distribution)
+
+    def set_distribution_context(self, context):
+        try:
+            self._get_client().create(self._get_path() + "distribution/", context)
+        except ApiException, e:
+            raise PythonApiException("Could not set distribution context: " + e.message)
 
     def get_settings(self):
         """

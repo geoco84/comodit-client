@@ -10,7 +10,7 @@ sys.path.append("..")
 import time
 
 from cortex_client.api.api import CortexApi
-from cortex_client.api.host import ApplicationContext
+from cortex_client.api.contexts import ApplicationContext
 
 from definitions import comodit_url, comodit_user, comodit_pass, app_name, org_name, env_name, host_name
 

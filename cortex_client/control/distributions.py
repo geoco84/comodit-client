@@ -63,7 +63,7 @@ Actions:
                 Show the details of a distribution
     show-file <org_name> <dist_name> <file_name>
                 Show a distribution's file template
-    set-kick <org_name> <dist_name> <file_name> <path>
+    set-file <org_name> <dist_name> <file_name> <path>
                 Set a distribution's file template's content
     add <org_name>
                 Add a distribution profile
