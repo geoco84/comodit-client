@@ -585,7 +585,6 @@ class Application(Resource):
         self._get_client().upload_to_exising_file_with_path(path, self._get_file_path(file_name))
 
     def get_file_content(self, file_name):
-        print self._get_file_path(file_name)
         return self._get_client().read(self._get_file_path(file_name), decode = False)
 
     def _show(self, indent = 0):

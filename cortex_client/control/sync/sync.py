@@ -25,6 +25,14 @@ class SyncController(AbstractController):
         self._register(["help"], self._help)
         self._default_action = self._help
 
+    def __set_root_folder(self, argv):
+        if len(argv) < 1:
+            raise ArgumentException("Wrong number of arguments")
+
+        self._root = argv[0] # By default, use organization name as folder name
+        if len(argv) > 1:
+            self._root = argv[1]
+
     def _print_pull_completions(self, param_num, argv):
         if param_num == 0:
             self._print_resource_identifiers(self._api.organizations().get_resources())
@@ -34,23 +42,19 @@ class SyncController(AbstractController):
     def _pull(self, argv):
         self._options = globals.options
 
-        if len(argv) != 1:
-            raise ArgumentException("Wrong number of arguments")
-
-        # Set output folder
-        self._root = argv[0]
+        self.__set_root_folder(argv)
 
         # Ensures local repository does not contain stale data
         if(os.path.exists(self._root) and len(os.listdir(self._root)) > 0):
             raise SyncException(self._root + " already exists and is not empty.")
 
-        self._ensureFolders()
-
         org = self._api.organizations().get_resource(argv[0])
+        self._dumpOrganization(org)
+        self._dumpGroups(org)
         self._dumpApplications(org)
         self._dumpDistributions(org)
-        self._dumpEnvironments(org)
         self._dumpPlatforms(org)
+        self._dumpEnvironments(org)
 
     def _print_push_completions(self, param_num, argv):
         if param_num == 0:
@@ -66,19 +70,15 @@ class SyncController(AbstractController):
         """
         self._options = globals.options
 
-        if len(argv) != 1:
-            raise ArgumentException("Wrong number of arguments")
-
-        # Set source folder
-        self._root = argv[0]
+        self.__set_root_folder(argv)
 
         self._readRemoteEntities()
 
         self._actions = ActionsQueue()
+        self._pushOrganization()
         self._pushApplications()
         self._pushDistributions()
         self._pushPlatforms()
-        self._pushOrganizations()
 
         if(self._actions.isFastForward() or self._options.force):
             uuid_convert = UuidConversionTable()
@@ -112,16 +112,6 @@ class SyncController(AbstractController):
         self._remote_platforms = {}
         for plat in plats_list:
             self._remote_platforms[plat.get_name()] = plat
-
-    def _help(self, argv):
-        print """You must provide an action to perform.
-
-Actions:
-    pull [path]     Retrieves data from cortex server (local data are overwrit-
-                    ten)
-    push [path]     Updates data on cortex server (remote data may be overwrit-
-                    ten if --force option is set)
-"""
 
     def _ensureFolders(self):
         path.ensure(os.path.join(self._root, "applications"))
@@ -182,8 +172,18 @@ Actions:
         else:
             self._actions.addAction(CreateResource(True, local_res))
 
-    def _dumpApplications(self):
-        apps = self._api.get_application_collection().get_resources()
+    def _dumpOrganization(self, org):
+        org.dump(self._root)
+
+    def _dumpGroups(self, org):
+        groups = org.groups().get_resources()
+        groups_folder = os.path.join(self._root, "groups")
+        for g in groups:
+            group_folder = os.path.join(groups_folder, g.get_name())
+            g.dump(group_folder)
+
+    def _dumpApplications(self, org):
+        apps = org.applications().get_resources()
         apps_folder = os.path.join(self._root, "applications")
         for a in apps:
             app_folder = os.path.join(apps_folder, a.get_name())
@@ -214,24 +214,31 @@ Actions:
             ks_content = os.path.join(dist_folder, "kickstart")
             self._pushKickstartTemplate(ks_content, dist)
 
-    def _dumpDistributions(self):
-        dists = self._api.get_distribution_collection().get_resources()
+    def _dumpDistributions(self, org):
+        dists = org.distributions().get_resources()
         dists_folder = os.path.join(self._root, "distributions")
         for d in dists:
             dist_folder = os.path.join(dists_folder, d.get_name())
             d.dump(dist_folder)
 
-            # Dump kickstart's content to disk
-            with open(os.path.join(dist_folder, "kickstart"), "w") as f:
-                f.write(d.get_kickstart_content().read())
+            # Dump files' content to disk
+            files_folder = os.path.join(dist_folder, "files")
+            path.ensure(files_folder)
+            file_list = d.get_files()
+            for f in file_list:
+                file_name = f.get_name()
+                with open(os.path.join(files_folder, file_name), "w") as f:
+                    f.write(d.get_file_content(file_name).read())
 
     def _dumpEnvironments(self, org):
         envs = org.environments().get_resources()
+        envs_folder = os.path.join(self._root, "environments")
         for e in envs:
-            env_folder = os.path.join(org_folder, e.get_name())
+            env_folder = os.path.join(envs_folder, e.get_name())
             e.dump(env_folder)
 
-            hosts = self._api.get_host_collection().get_resources({"environmentId" : e.get_uuid()})
+            # Dump hosts
+            hosts = e.hosts().get_resources()
             for h in hosts:
                 h.dump(os.path.join(env_folder, h.get_name()))
 
@@ -292,11 +299,21 @@ Actions:
         # Create host
         self._pushResource(host, self._remote_hosts)
 
-    def _dumpPlatforms(self):
-        plats = self._api.get_platform_collection().get_resources()
+    def _dumpPlatforms(self, org):
+        plats = org.platforms().get_resources()
         plats_folder = os.path.join(self._root, "platforms")
         for p in plats:
-            p.dump(os.path.join(plats_folder, p.get_name()))
+            plat_folder = os.path.join(plats_folder, p.get_name())
+            p.dump(plat_folder)
+
+            # Dump files' content to disk
+            files_folder = os.path.join(plat_folder, "files")
+            path.ensure(files_folder)
+            file_list = p.get_files()
+            for f in file_list:
+                file_name = f.get_name()
+                with open(os.path.join(files_folder, file_name), "w") as f:
+                    f.write(p.get_file_content(file_name).read())
 
     def _pushPlatforms(self):
         if(not os.path.exists(self._root + "/platforms")):
@@ -309,3 +326,14 @@ Actions:
             plat_folder = os.path.join(plats_folder, plat_name)
             plat.load(plat_folder)
             self._pushResource(plat, self._remote_platforms)
+
+    def _help(self, argv):
+        print """You must provide an action to perform.
+
+Actions:
+    pull <org_name> [path]         Retrieves data from cortex server (local data
+                                   are overwritten)
+    push <org_name> [path]         Updates data on cortex server (remote data
+                                   may be overwritten if --force option is set)
+"""
+
