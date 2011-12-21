@@ -78,24 +78,29 @@ class ResourceController(AbstractController):
         res.show(as_json = options.raw)
 
     def _update(self, argv):
-        options = globals.options
+        # First, get resource
+        res = self._get_resource(argv)
 
+        options = globals.options
         if options.filename:
             with open(options.filename, 'r') as f:
                 item = json.load(f)
-                res = self._new_resource(item)
         elif options.json:
             item = json.loads(options.json)
-            res = self._new_resource(item)
         elif len(argv) > 0:
-            res = self._get_resource(argv)
             # Edit the resource
             original = json.dumps(res.get_json(), sort_keys = True, indent = 4)
             #original = "# To abort the request; just exit your editor without saving this file.\n\n" + original
             updated = edit_text(original)
             #updated = re.sub(r'#.*$', "", updated)
-            res.set_json(json.loads(updated))
+            item = json.loads(updated)
 
+        # Check if name has changed
+        new_name = item["name"]
+        res.rename(new_name)
+
+        # Update resource
+        res.set_json(item)
         res.commit(options.force)
         res.show(as_json = options.raw)
 

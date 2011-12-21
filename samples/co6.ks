@@ -12,8 +12,8 @@ text
 network --bootproto=dhcp --device=eth0
 
 # Use the following installation channels
-url --url=http://oak.${zone}.guardis.be/public/centos/6.1/os/${vm_base_arch}/
-repo --name=updates --baseurl=http://oak.${zone}.guardis.be/public/centos/6.1/updates/${vm_base_arch}/
+url --url=http://oak.${zone}.guardis.be/public/centos/6/os/${vm_base_arch}/
+repo --name=updates --baseurl=http://oak.${zone}.guardis.be/public/centos/6/updates/${vm_base_arch}/
 repo --name=epel --baseurl=http://oak.${zone}.guardis.be/public/epel/6/${vm_base_arch}/
 
 repo --name=comodit --baseurl=http://devel.bruxelles.guardis.be/public/comodit/centos/6/${vm_arch}/

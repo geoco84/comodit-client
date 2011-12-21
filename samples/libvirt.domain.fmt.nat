@@ -10,7 +10,7 @@
     <#if _mode = "create">
     <kernel>${_kernel}</kernel>
     <initrd>${_initrd}</initrd>
-    <cmdline>${_kernel_params}</cmdline>
+    <cmdline>${_cmdline}</cmdline>
     </#if>
     <boot dev='hd'/>
   </os>

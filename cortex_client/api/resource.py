@@ -119,6 +119,11 @@ class Resource(JsonWrapper):
         """
         self.set_json(self._get_client().read(self._get_path()))
 
+    def rename(self, new_name):
+        current_path = self._get_path()
+        self.set_name(new_name)
+        self.set_json(self._get_client().update(current_path, self.get_json()))
+
     def commit(self, force = False):
         """
         Updates the state of the resource on the server with state of local
