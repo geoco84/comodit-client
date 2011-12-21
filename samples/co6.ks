@@ -117,4 +117,4 @@ password = guest
 EOF
 
 # Synapse for one time install
-/usr/bin/synapse --uri ${_api}/organizations/${_orgName}/environments/${_envName}/hosts/${_hostName}/setup.json
+/usr/bin/synapse --uri ${_api}/organizations/${_orgName?url}/environments/${_envName?url}/hosts/${_hostName?url}/setup.json

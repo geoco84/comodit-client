@@ -106,7 +106,7 @@ dist_settings = \
     [
         {
             "key": "kernel_params",
-            "value": "text ks=${_api}/organizations/${_org_name}/environments/${_env_name}/hosts/${_host_name}/distribution/files/" + dist_kickstart
+            "value": "text ks=${_api}/organizations/${_org_name?url}/environments/${_env_name?url}/hosts/${_host_name?url}/distribution/files/" + dist_kickstart
         },
         {
             "key":"initrd_path",
