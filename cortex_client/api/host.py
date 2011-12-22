@@ -404,7 +404,7 @@ class Host(Resource):
     def set_instance_properties(self, props):
         client = self._get_client()
         try:
-            client.create(self._get_path() + "instance", props, decode = False)
+            client.create(self._get_path() + "instance/properties", props, decode = False)
         except ApiException, e:
             raise PythonApiException("Unable to set instance properties: " + e.message)
 
@@ -415,7 +415,7 @@ class Host(Resource):
         """
         client = self._get_client()
         try:
-            client.create(self._get_path() + "instance", None, decode = False)
+            client.create(self._get_path() + "instance", decode = False)
         except ApiException, e:
             raise PythonApiException("Unable to provision host: " + e.message)
 
