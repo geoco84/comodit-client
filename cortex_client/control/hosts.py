@@ -113,7 +113,12 @@ class HostsController(ResourceController):
         host = self._get_resource(argv)
         try:
             info = host.get_instance()
-            info.show()
+            # Display the result
+            options = globals.options
+            if options.raw:
+                info.show(as_json = True)
+            else:
+                info.show()
         except PythonApiException, e:
             print e.message
 

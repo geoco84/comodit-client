@@ -10,6 +10,9 @@ class Group(Resource):
     def get_name(self):
         return self._get_field("name")
 
+    def get_uuid(self):
+        return self._get_field("uuid")
+
     def get_users(self):
         return self._get_list_field("users", StringFactory())
 

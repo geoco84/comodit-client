@@ -7,14 +7,22 @@
 # This software cannot be used and/or distributed without prior
 # authorization from Guardis.
 
-import os
+import os, json
 
 from cortex_client.util import globals, path
 from cortex_client.control.abstract import AbstractController
-from cortex_client.control.exceptions import MissingException, ArgumentException
-from cortex_client.rest.exceptions import ApiException
+from cortex_client.control.exceptions import ArgumentException
 
 from actions import *
+from cortex_client.api.collection import ResourceNotFoundException
+from cortex_client.api.group import Group
+from cortex_client.api.host import Instance
+from cortex_client.api.organization import Organization
+from cortex_client.control.sync.exceptions import SyncException
+from cortex_client.api.application import Application
+from cortex_client.api.distribution import Distribution
+from cortex_client.api.environment import Environment
+from cortex_client.api.platform import Platform
 
 class SyncController(AbstractController):
 
@@ -49,12 +57,7 @@ class SyncController(AbstractController):
             raise SyncException(self._root + " already exists and is not empty.")
 
         org = self._api.organizations().get_resource(argv[0])
-        self._dumpOrganization(org)
-        self._dumpGroups(org)
-        self._dumpApplications(org)
-        self._dumpDistributions(org)
-        self._dumpPlatforms(org)
-        self._dumpEnvironments(org)
+        self._dump_organization(org)
 
     def _print_push_completions(self, param_num, argv):
         if param_num == 0:
@@ -72,78 +75,37 @@ class SyncController(AbstractController):
 
         self.__set_root_folder(argv)
 
-        self._readRemoteEntities()
-
         self._actions = ActionsQueue()
-        self._pushOrganization()
-        self._pushApplications()
-        self._pushDistributions()
-        self._pushPlatforms()
+        self._push_organization()
 
         if(self._actions.isFastForward() or self._options.force):
-            uuid_convert = UuidConversionTable()
-            self._actions.executeActions(uuid_convert)
+            self._actions.executeActions()
         else:
             print "Push not fast-forward:"
             self._actions.display()
 
-    def _readRemoteEntities(self):
-        app_list = self._api.get_application_collection().get_resources()
-        self._remote_applications = {}
-        for app in app_list:
-            self._remote_applications[app.get_name()] = app
+    def _push_file_content(self, src_file, app, name):
+        self._actions.addAction(UploadContent(src_file, app, name))
 
-        dist_list = self._api.get_distribution_collection().get_resources()
-        self._remote_distributions = {}
-        for dist in dist_list:
-            self._remote_distributions[dist.get_name()] = dist
-
-        host_list = self._api.get_host_collection().get_resources()
-        self._remote_hosts = {}
-        for host in host_list:
-            self._remote_hosts[host.get_name()] = host
-
-        org_list = self._api.get_organization_collection().get_resources()
-        self._remote_organizations = {}
-        for org in org_list:
-            self._remote_organizations[org.get_name()] = org
-
-        plats_list = self._api.get_platform_collection().get_resources()
-        self._remote_platforms = {}
-        for plat in plats_list:
-            self._remote_platforms[plat.get_name()] = plat
-
-    def _ensureFolders(self):
-        path.ensure(os.path.join(self._root, "applications"))
-        path.ensure(os.path.join(self._root, "distributions"))
-        path.ensure(os.path.join(self._root, "environments"))
-        path.ensure(os.path.join(self._root, "platforms"))
-
-    def _pushKickstartTemplate(self, src_file, dist):
-        self._actions.addAction(UploadKickstart(src_file, dist))
-
-    def _pushApplicationFileTemplate(self, src_file, app, name):
-        self._actions.addAction(UploadApplicationFileResource(src_file, app, name))
-
-    def _pushApplications(self):
-        if(not os.path.exists(self._root + "/applications")):
+    def _push_applications(self, org):
+        apps_folder = self._get_application_folder()
+        if not os.path.exists(apps_folder):
             return
 
-        apps_folder = os.path.join(self._root, "applications")
         apps_list = os.listdir(apps_folder)
         for app_name in apps_list:
-            app = self._api.new_application()
+            app = Application(org.applications(), None)
             app_folder = os.path.join(apps_folder, app_name)
             app.load(app_folder)
 
-            self._pushResource(app, self._remote_applications)
+            self._push_resource(app)
 
             # Push files' content
             file_list = app.get_files()
             for f in file_list:
                 file_name = f.get_name()
                 content_file = os.path.join(app_folder, "files", file_name)
-                self._pushApplicationFileTemplate(content_file, app, file_name)
+                self._push_file_content(content_file, app, file_name)
 
     def _getUniqueName(self, base_name, names_dict):
         if(not names_dict.has_key(base_name)):
@@ -157,34 +119,77 @@ class SyncController(AbstractController):
 
         return new_name
 
-    def _pushResource(self, local_res, available_resources):
+    def _push_resource(self, local_res):
         res_name = local_res.get_name()
         local_uuid = local_res.get_uuid()
-        if(available_resources.has_key(res_name)):
-            remote_res = available_resources[res_name]
+
+        # Retrieve remote resource (if it exists)
+        collection = local_res.get_collection()
+        remote_res = None
+        try:
+            collection.get_resource(res_name)
+        except ResourceNotFoundException:
+            pass
+
+        # In function of remote resource existence, queue an action
+        if remote_res != None:
             remote_uuid = remote_res.get_uuid()
             if(remote_uuid == local_uuid):
                 self._actions.addAction(UpdateResource(False, local_res))
-            else:
-                new_name = self._getUniqueName(res_name, available_resources)
-                local_res.set_name(new_name)
-                self._actions.addAction(CreateResource(False, local_res))
+#            else:
+#                new_name = self._getUniqueName(res_name, collection)
+#                local_res.set_name(new_name)
+#                self._actions.addAction(CreateResource(False, local_res))
         else:
             self._actions.addAction(CreateResource(True, local_res))
 
-    def _dumpOrganization(self, org):
+    def _push_group(self, local_group):
+        self._actions.addAction(UpdateResource(True, local_group))
+
+    def _push_instance(self, host, instance):
+        try:
+            host.get_instance()
+            return
+        except:
+            self._actions.addAction(CreateInstance(True, host, instance))
+
+    def _dump_organization(self, org):
         org.dump(self._root)
 
-    def _dumpGroups(self, org):
+        self._dump_groups(org)
+        self._dump_applications(org)
+        self._dump_distributions(org)
+        self._dump_platforms(org)
+        self._dump_environments(org)
+
+    def _dump_groups(self, org):
         groups = org.groups().get_resources()
-        groups_folder = os.path.join(self._root, "groups")
+        groups_folder = self._get_group_folder()
         for g in groups:
             group_folder = os.path.join(groups_folder, g.get_name())
             g.dump(group_folder)
 
-    def _dumpApplications(self, org):
+    def _get_group_folder(self):
+        return os.path.join(self._root, "groups")
+
+    def _get_application_folder(self):
+        return os.path.join(self._root, "applications")
+
+    def _get_distribution_folder(self):
+        return os.path.join(self._root, "distributions")
+
+    def _get_platform_folder(self):
+        return os.path.join(self._root, "platforms")
+
+    def _get_environment_folder(self):
+        return os.path.join(self._root, "environments")
+
+    def _get_instance_file(self, host_folder):
+        return os.path.join(host_folder, "instance.json")
+
+    def _dump_applications(self, org):
         apps = org.applications().get_resources()
-        apps_folder = os.path.join(self._root, "applications")
+        apps_folder = self._get_application_folder()
         for a in apps:
             app_folder = os.path.join(apps_folder, a.get_name())
             a.dump(app_folder)
@@ -198,25 +203,29 @@ class SyncController(AbstractController):
                 with open(os.path.join(files_folder, file_name), "w") as f:
                     f.write(a.get_file_content(file_name).read())
 
-    def _pushDistributions(self):
-        if(not os.path.exists(self._root + "/distributions")):
+    def _push_distributions(self, org):
+        dists_folder = self._get_distribution_folder()
+        if not os.path.exists(dists_folder):
             return
 
-        dists_folder = os.path.join(self._root, "distributions")
         dists_list = os.listdir(dists_folder)
         for dist_name in dists_list:
-            dist = self._api.new_distribution()
+            dist = Distribution(org.distributions(), None)
             dist_folder = os.path.join(dists_folder, dist_name)
             dist.load(dist_folder)
 
-            self._pushResource(dist, self._remote_distributions)
+            self._push_resource(dist)
 
-            ks_content = os.path.join(dist_folder, "kickstart")
-            self._pushKickstartTemplate(ks_content, dist)
+            # Push files' content
+            file_list = dist.get_files()
+            for f in file_list:
+                file_name = f.get_name()
+                content_file = os.path.join(dist_folder, "files", file_name)
+                self._push_file_content(content_file, dist, file_name)
 
-    def _dumpDistributions(self, org):
+    def _dump_distributions(self, org):
         dists = org.distributions().get_resources()
-        dists_folder = os.path.join(self._root, "distributions")
+        dists_folder = self._get_distribution_folder()
         for d in dists:
             dist_folder = os.path.join(dists_folder, d.get_name())
             d.dump(dist_folder)
@@ -230,9 +239,9 @@ class SyncController(AbstractController):
                 with open(os.path.join(files_folder, file_name), "w") as f:
                     f.write(d.get_file_content(file_name).read())
 
-    def _dumpEnvironments(self, org):
+    def _dump_environments(self, org):
         envs = org.environments().get_resources()
-        envs_folder = os.path.join(self._root, "environments")
+        envs_folder = self._get_environment_folder()
         for e in envs:
             env_folder = os.path.join(envs_folder, e.get_name())
             e.dump(env_folder)
@@ -240,68 +249,75 @@ class SyncController(AbstractController):
             # Dump hosts
             hosts = e.hosts().get_resources()
             for h in hosts:
-                h.dump(os.path.join(env_folder, h.get_name()))
+                host_folder = os.path.join(env_folder, h.get_name())
+                h.dump(host_folder)
 
-    def _pushOrganizations(self):
-        if(not os.path.exists(self._root + "/organizations")):
-            return
+                try:
+                    instance = h.get_instance()
+                    instance_file = self._get_instance_file(host_folder)
+                    instance.dump_json(instance_file)
+                except:
+                    pass
 
-        org_folder = os.path.join(self._root, "organizations")
-        orgs_list = os.listdir(org_folder)
-        for org in orgs_list:
-            self._pushOrganization(os.path.join(org_folder, org))
-
-    def _pushOrganization(self, org_folder):
-        org = self._api.new_organization()
-        org.load(org_folder)
+    def _push_organization(self):
+        # Create unconnected organization
+        local_org = Organization(self._api.organizations(), None)
+        local_org.load(self._root)
 
         # Create organization
-        self._pushResource(org, self._remote_organizations)
+        self._push_resource(local_org)
+        self._push_groups(local_org)
 
-        # Get environments
-        available_environments = {}
-        if(org.get_uuid()):
-            try:
-                env_list = self._api.get_environment_collection().get_resources({"organizationId" : org.get_uuid()})
-                for env in env_list:
-                    available_environments[env.get_name()] = env
-            except ApiException, e:
-                if(e.code == 404):
-                    pass
-                else:
-                    raise e
+        self._push_applications(local_org)
+        self._push_distributions(local_org)
+        self._push_platforms(local_org)
+        self._push_environments(local_org)
 
-        # Create environments
-        envs_list = os.listdir(org_folder)
-        for env in envs_list:
-            env_folder = os.path.join(org_folder, env)
-            if(os.path.isdir(env_folder)):
-                self._pushEnvironment(env_folder, available_environments)
+    def _push_groups(self, org):
+        groups_folder = self._get_group_folder()
+        if not os.path.exists(groups_folder):
+            return
 
-    def _pushEnvironment(self, env_folder, available_environments):
-        env = self._api.new_environment()
-        env.load(env_folder)
+        groups_list = org.get_groups()
+        for group_name in groups_list:
+            group = Group(org.groups(), None)
+            group_folder = os.path.join(groups_folder, group_name)
+            group.load(group_folder)
 
-        self._pushResource(env, available_environments)
-        self._pushHosts(env_folder)
+            self._push_group(group)
 
-    def _pushHosts(self, env_folder):
-        hosts_list = os.listdir(env_folder)
-        for host in hosts_list:
-            if(os.path.isdir(os.path.join(env_folder, host))):
-                self._pushHost(env_folder, host)
+    def _push_environments(self, org):
+        envs_folder = self._get_environment_folder()
+        if not os.path.exists(envs_folder):
+            return
 
-    def _pushHost(self, env_folder, host):
-        host_folder = os.path.join(env_folder, host)
-        host = self._api.new_host()
-        host.load(host_folder)
+        envs_list = org.get_environments()
+        for env_name in envs_list:
+            env = Environment(org.environments(), None)
+            env_folder = os.path.join(envs_folder, env_name)
+            env.load(env_folder)
 
-        # Create host
-        self._pushResource(host, self._remote_hosts)
+            self._push_resource(env)
 
-    def _dumpPlatforms(self, org):
+            # Push hosts
+            hosts_list = env.get_hosts()
+            for host_name in hosts_list:
+                host = Host(env.hosts(), None)
+                host_folder = os.path.join(env_folder, host_name)
+                host.load(host_folder)
+
+                self._push_resource(host)
+
+                # Push instance
+                instance_file = self._get_instance_file(host_folder)
+                if os.path.exists(instance_file):
+                    with open(instance_file, "r") as f:
+                        instance = Instance(json.load(f))
+                        self._push_instance(host, instance)
+
+    def _dump_platforms(self, org):
         plats = org.platforms().get_resources()
-        plats_folder = os.path.join(self._root, "platforms")
+        plats_folder = self._get_platform_folder()
         for p in plats:
             plat_folder = os.path.join(plats_folder, p.get_name())
             p.dump(plat_folder)
@@ -315,17 +331,25 @@ class SyncController(AbstractController):
                 with open(os.path.join(files_folder, file_name), "w") as f:
                     f.write(p.get_file_content(file_name).read())
 
-    def _pushPlatforms(self):
-        if(not os.path.exists(self._root + "/platforms")):
+    def _push_platforms(self, org):
+        plats_folder = self._get_platform_folder()
+        if not os.path.exists(plats_folder):
             return
 
-        plats_folder = os.path.join(self._root, "platforms")
         plats_list = os.listdir(plats_folder)
         for plat_name in plats_list:
-            plat = self._api.new_platform()
+            plat = Platform(org.platforms(), None)
             plat_folder = os.path.join(plats_folder, plat_name)
             plat.load(plat_folder)
-            self._pushResource(plat, self._remote_platforms)
+
+            self._push_resource(plat)
+
+            # Push files' content
+            file_list = plat.get_files()
+            for f in file_list:
+                file_name = f.get_name()
+                content_file = os.path.join(plat_folder, "files", file_name)
+                self._push_file_content(content_file, plat, file_name)
 
     def _help(self, argv):
         print """You must provide an action to perform.

@@ -127,7 +127,7 @@ class Instance(JsonWrapper):
     def get_properties(self):
         return self._get_list_field("properties", PropertyFactory())
 
-    def show(self, indent = 0):
+    def show(self, as_json = False, indent = 0):
         """
         Prints instance's information to standard output in a user-friendly way.
         
@@ -135,12 +135,15 @@ class Instance(JsonWrapper):
         line.
         @type indent: Integer
         """
-        print " "*indent, "State:", self.get_state()
-        print " "*indent, "Synapse state:", self.get_synapse_state()
-        print " "*indent, "IP:", self.get_ip()
-        print " "*indent, "Hostname:", self.get_hostname()
-        print " "*indent, "Vnc:"
-        self.get_vnc().show(indent + 2)
+        if as_json:
+            self.print_json()
+        else:
+            print " "*indent, "State:", self.get_state()
+            print " "*indent, "Synapse state:", self.get_synapse_state()
+            print " "*indent, "IP:", self.get_ip()
+            print " "*indent, "Hostname:", self.get_hostname()
+            print " "*indent, "Vnc:"
+            self.get_vnc().show(indent + 2)
 
     def show_properties(self, indent = 0):
         print " "*indent, "Properties:"
@@ -202,6 +205,9 @@ class Host(Resource):
         @type json_data: dict, list or String
         """
         super(Host, self).__init__(collection, json_data)
+
+    def get_uuid(self):
+        return self._get_field("uuid")
 
     def get_organization(self):
         """
@@ -295,14 +301,6 @@ class Host(Resource):
         @type setting: {Setting}
         """
         self._add_to_list_field("settings", setting)
-
-    def get_properties(self):
-        """
-        Provides host's properties.
-        @return: Host's properties.
-        @rtype: list of L{Property}
-        """
-        return self._get_list_field("properties", PropertyFactory())
 
     def get_applications(self):
         """
@@ -402,6 +400,13 @@ class Host(Resource):
         apps = self.get_applications()
         for app in apps:
             print " "*(indent + 2), app
+
+    def set_instance_properties(self, props):
+        client = self._get_client()
+        try:
+            client.create(self._get_path() + "instance", props, decode = False)
+        except ApiException, e:
+            raise PythonApiException("Unable to set instance properties: " + e.message)
 
     def provision(self):
         """

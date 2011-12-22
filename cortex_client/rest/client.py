@@ -97,13 +97,12 @@ class Client:
                 if len(msg_list) > 0:
                     i = 0
                     while i < len(msg_list) - 1:
-                        message += msg_list[i]
+                        message += msg_list[i] if msg_list[i] else "None"
                         message += ", "
-                    message += msg_list[len(msg_list) - 1]
+                    message += msg_list[len(msg_list) - 1] if msg_list[len(msg_list) - 1] else "None"
                 message += "]"
-                errno = err.code
-            except:
-                message = err.msg
-                errno = err.code
-            raise ApiException(message, errno)
+            except Exception, e:
+                message = e.message
+
+            raise ApiException(message, err.code)
 

@@ -25,6 +25,9 @@ class Distribution(Resource):
         """
         super(Distribution, self).__init__(collection, json_data)
 
+    def get_uuid(self):
+        return self._get_field("uuid")
+
     def _get_file_path(self, name):
         return self._get_path() + "files/" + name
 

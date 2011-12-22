@@ -24,6 +24,9 @@ class Platform(Resource):
         """
         super(Platform, self).__init__(collection, json_data)
 
+    def get_uuid(self):
+        return self._get_field("uuid")
+
     def get_driver(self):
         """
         Provides platform's driver class name.

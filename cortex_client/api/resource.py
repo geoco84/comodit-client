@@ -39,6 +39,9 @@ class Resource(JsonWrapper):
             raise Exception("Collection must be set")
         self._collection = collection
 
+    def get_collection(self):
+        return self._collection
+
     def _get_path(self):
         """
         Provides the path to this resource.
