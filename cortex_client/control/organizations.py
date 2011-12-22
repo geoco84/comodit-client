@@ -16,11 +16,18 @@ class OrganizationsController(RootResourceController):
 
     def __init__(self):
         super(OrganizationsController, self).__init__()
-        self._register("show-group", self._show_group)
-        self._register("add-user", self._add_user)
+        self._register("show-group", self._show_group, self._print_group_completions)
+        self._register("add-user", self._add_user, self._print_group_completions)
 
     def get_collection(self, argv):
         return self._api.organizations()
+
+    def _print_group_completions(self, param_num, argv):
+        if param_num < 1:
+            self._print_resource_completions(param_num, argv)
+        elif param_num == 1:
+            org = self._get_resource(argv)
+            self._print_identifiers(org.groups())
 
     def _show_group(self, argv):
         if len(argv) != 2:
