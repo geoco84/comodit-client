@@ -24,7 +24,7 @@ class ApplicationsController(OrganizationResourceController):
         super(ApplicationsController, self).__init__()
         self._register(["show-file"], self._show_file, self._print_show_file_completions)
         self._register(["set-file"], self._set_file, self._print_set_file_completions)
-        self._register(["install"], self._install, self._print_hosts_completions)
+        self._register(["install"], self._install, self._print_install_completions)
         self._register(["uninstall"], self._uninstall, self._print_uninstall_completions)
 
     def _get_collection(self, org):
@@ -82,25 +82,32 @@ class ApplicationsController(OrganizationResourceController):
         elif len(argv) > 1 and param_num == 2:
             self._print_identifiers(self._get_hosts(argv))
 
+    def _print_install_completions(self, param_num, argv):
+        if param_num < 3:
+            self._print_hosts_completions(param_num, argv)
+        elif len(argv) > 0 and param_num == 3:
+            org = self._api.organizations().get_resource(argv[0])
+            self._print_identifiers(org.applications())
+
     def _install(self, argv):
-        if len(argv) != 3:
-            raise MissingException("This action takes 3 arguments")
+        if len(argv) != 4:
+            raise MissingException("This action takes 4 arguments")
 
         options = globals.options
         if options.filename:
             with open(options.filename, 'r') as f:
                 item = json.load(f)
-                app = ApplicationContext(item)
         elif options.json:
             item = json.loads(options.json)
-            app = ApplicationContext(item)
-        else :
-            template = open(os.path.join(Config().templates_path, "application_context.json")).read()
+        else:
+            template_json = json.load(open(os.path.join(Config().templates_path, "application_context.json")))
             #template = "# To abort the request; just exit your editor without saving this file.\n\n" + template
-            updated = edit_text(template)
+            template_json["application"] = argv[3]
+            updated = edit_text(json.dumps(template_json, indent = 4))
             #updated = re.sub(r'#.*$', "", updated)
-            app = ApplicationContext(json.loads(updated))
+            item = json.loads(updated)
 
+        app = ApplicationContext(item)
         host = self._get_host(argv)
         host.install_application(app)
 
@@ -135,7 +142,7 @@ Actions:
                              Update an application
     delete <org_name> <app_name>
                              Delete an application
-    install <org_name> <env_name> <host_name>
+    install <org_name> <env_name> <host_name> <app_name>
                             Installs an application on a given host
     uninstall <org_name> <env_name> <host_name> <app_name>
                             Uninstalls an application on a given host
