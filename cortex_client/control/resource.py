@@ -57,23 +57,26 @@ class ResourceController(AbstractController):
         else:
             res.show()
 
+    def _complete_template(self, argv, template_json):
+        pass
+
     def _add(self, argv):
         options = globals.options
 
         if options.filename:
             with open(options.filename, 'r') as f:
                 item = json.load(f)
-                res = self.get_collection(argv)._new_resource(item)
         elif options.json:
             item = json.loads(options.json)
-            res = self.get_collection(argv)._new_resource(item)
         else :
-            template = open(os.path.join(Config().templates_path, self._template)).read()
+            template_json = json.load(open(os.path.join(Config().templates_path, self._template)))
             #template = "# To abort the request; just exit your editor without saving this file.\n\n" + template
-            updated = edit_text(template)
+            self._complete_template(argv, template_json)
+            updated = edit_text(json.dumps(template_json, indent = 4))
             #updated = re.sub(r'#.*$', "", updated)
-            res = self.get_collection(argv)._new_resource(json.loads(updated))
+            item = json.loads(updated)
 
+        res = self.get_collection(argv)._new_resource(item)
         res.create()
         res.show(as_json = options.raw)
 

@@ -59,6 +59,12 @@ class HostsController(ResourceController):
             env = org.environments().get_resource(argv[1])
             self._print_identifiers(env.hosts())
 
+    def _complete_template(self, argv, template_json):
+        if len(argv) < 2:
+            raise ArgumentException("Wrong number of arguments");
+        template_json["organization"] = argv[0]
+        template_json["environment"] = argv[1]
+
     def _get_name_argument(self, argv):
         if len(argv) < 3:
             raise ArgumentException("Wrong number of arguments");
