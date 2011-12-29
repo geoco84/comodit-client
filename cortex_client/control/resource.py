@@ -99,8 +99,9 @@ class ResourceController(AbstractController):
             item = json.loads(updated)
 
         # Check if name has changed
-        new_name = item["name"]
-        res.rename(new_name)
+        if item.has_key("name"):
+            new_name = item["name"]
+            res.rename(new_name)
 
         # Update resource
         res.set_json(item)
