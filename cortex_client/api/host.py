@@ -503,6 +503,9 @@ class Host(Resource):
         except ApiException, e:
             raise PythonApiException("Unable to install application: " + e.message)
 
+        # Update state as new application was added
+        self.update()
+
     def uninstall_application(self, app_name):
         if self.get_state() != "PROVISIONED":
             raise PythonApiException("Host must be provisioned")
@@ -514,6 +517,9 @@ class Host(Resource):
             self._get_client().delete(self._get_path() + "applications/" + app_name)
         except ApiException, e:
             raise PythonApiException("Unable to uninstall application: " + e.message)
+
+        # Update state as application was removed
+        self.update()
 
     def settings(self):
         return SettingCollection(self._get_api(), self._get_path() + "settings/")
