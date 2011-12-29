@@ -15,7 +15,7 @@ def define_web_server():
     desc = Expendable()
     global_vars.apps[name] = desc
 
-    desc.name = "WebServer"
+    desc.name = name
     desc.description = "Apache web server"
 
     # Packages
@@ -82,6 +82,65 @@ def define_web_server():
             }
         ]
 
+def define_simple_web_page():
+    name = "SimpleWebPage"
+    global_vars.simple_web_page_name = name
+
+    desc = Expendable()
+    global_vars.apps[name] = desc
+
+    desc.name = name
+    desc.description = "A simple web page"
+
+    # Packages
+    desc.packages = []
+
+    # Files
+    desc.files = []
+
+    # 'index.html' file
+    desc.files.append(Expendable())
+    desc.files[0].meta = {
+                "owner": "root",
+                "group": "root",
+                "mode": "644",
+                "name": "index.html",
+                "path": "/var/www/html/index.html",
+                "template": {
+                    "name": "index.html"
+                }
+            }
+    desc.files[0].content = "index.html"
+
+    # Services
+    desc.services = []
+
+    # Handlers
+    desc.handlers = [
+            {
+                "do": [
+                    {
+                        "action": "update",
+                        "resource": "file://" + desc.files[0].meta["name"]
+                    }
+                ],
+                "on": [
+                    "simple_web_page"
+                ]
+            }
+        ]
+
+    # Parameters
+    desc.parameters = \
+        [
+            {
+                "description": "A parameter whose value is displayed",
+                "key": "simple_web_page",
+                "name": "Simple web page's parameter",
+                "value": "hello"
+            }
+        ]
+
 def define():
     # Define organization
     global_vars.org_name = "Guardis2"
@@ -89,8 +148,8 @@ def define():
 
     # Define applications
     global_vars.apps = {}
-
     define_web_server()
+    define_simple_web_page()
 
     # Define platform
     global_vars.plat_name = "Local2"

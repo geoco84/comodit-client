@@ -7,11 +7,13 @@ import test_utils, setup, definitions, delete, create, provision
 
 import test_webserver
 import test_simple_settings
+import test_simple_web_page
 
 test_modules = \
     [
         test_webserver.__name__,
-        test_simple_settings.__name__
+        test_simple_settings.__name__,
+        test_simple_web_page.__name__,
      ]
 
 if __name__ == "__main__":
