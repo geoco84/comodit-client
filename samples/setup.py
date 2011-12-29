@@ -86,6 +86,12 @@ def create_kickstart():
         with open("co6.ks", "w") as g:
             g.write(content)
 
+def delete_kickstart():
+    try:
+        os.remove("co6.ks")
+    except:
+        pass
+
 if __name__ == "__main__":
     setup()
     create_kickstart()
