@@ -3,35 +3,76 @@ import setup
 #==============================================================================
 # Definitions section
 
-class Globals(object):
+class Expendable(object):
     pass
 
-global_vars = Globals()
+global_vars = Expendable()
 
-def define():
-    # Define organization
-    global_vars.org_name = "Guardis2"
-    global_vars.org_description = "Guardis2's organization"
+def define_web_server():
+    name = "WebServer"
+    global_vars.web_server_name = name
 
-    # Define application
-    global_vars.app_name = "WebServer"
-    global_vars.app_packages = ["httpd", "mod_ssl"]
-    global_vars.app_description = "Apache web server"
+    desc = Expendable()
+    global_vars.apps[name] = desc
 
-    global_vars.app_file_name = "httpd.conf"
-    global_vars.app_file_meta = {
+    desc.name = "WebServer"
+    desc.description = "Apache web server"
+
+    # Packages
+    desc.packages = \
+        [
+            {"name": "httpd"},
+            {"name": "mod_ssl"}
+        ]
+
+    # Files
+    desc.files = []
+
+    # 'httpd.conf' file
+    desc.files.append(Expendable())
+    desc.files[0].meta = {
                 "owner": "root",
                 "group": "root",
                 "mode": "644",
-                "name": global_vars.app_file_name,
+                "name": "httpd.conf",
                 "path": "/etc/httpd/conf/httpd.conf",
                 "template": {
-                    "name": global_vars.app_file_name
+                    "name": "httpd.conf"
                 }
             }
-    global_vars.app_file_content = "httpd.conf"
-    global_vars.app_files = [(global_vars.app_file_meta, global_vars.app_file_content)]
-    global_vars.app_parameters = \
+    desc.files[0].content = "httpd.conf"
+
+    # Services
+    desc.services = \
+        [
+            {
+                "name": "httpd",
+                "enabled": "true"
+            }
+        ]
+
+    # Handlers
+    desc.handlers = \
+        [
+            {
+                "do": [
+                    {
+                        "action": "update",
+                        "resource": "file://" + desc.files[0].meta["name"]
+                    },
+                    {
+                        "action": "restart",
+                        "resource": "service://" + desc.services[0]["name"]
+                    }
+                ],
+                "on": [
+                    "httpd_port"
+                ]
+            }
+        ]
+
+    # Parameters
+    desc.parameters = \
         [
             {
                 "description": "The httpd port",
@@ -41,29 +82,15 @@ def define():
             }
         ]
 
-    global_vars.app_service_name = "httpd"
-    global_vars.app_services = [{
-                "name": global_vars.app_service_name,
-                "enabled": "true"
-            }]
+def define():
+    # Define organization
+    global_vars.org_name = "Guardis2"
+    global_vars.org_description = "Guardis2's organization"
 
-    global_vars.app_handlers = [
-            {
-                "do": [
-                    {
-                        "action": "update",
-                        "resource": "file://" + global_vars.app_file_name
-                    },
-                    {
-                        "action": "restart",
-                        "resource": "service://" + global_vars.app_service_name
-                    }
-                ],
-                "on": [
-                    "httpd_port"
-                ]
-            }
-        ]
+    # Define applications
+    global_vars.apps = {}
+
+    define_web_server()
 
     # Define platform
     global_vars.plat_name = "Local2"

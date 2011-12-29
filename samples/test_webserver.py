@@ -36,7 +36,7 @@ def setup():
 
     print "Installing web server..."
     context = ApplicationContext()
-    context.set_application(defs.global_vars.app_name)
+    context.set_application(defs.global_vars.web_server_name)
     host.install_application(context)
     while len(host.get_changes()) > 0:
         time.sleep(3)
@@ -61,7 +61,7 @@ def tear_down():
 
     print "Uninstalling web server..."
     try:
-        host.uninstall_application(defs.global_vars.app_name)
+        host.uninstall_application(defs.global_vars.web_server_name)
         while len(host.get_changes()) > 0:
             time.sleep(3)
     except PythonApiException, e:

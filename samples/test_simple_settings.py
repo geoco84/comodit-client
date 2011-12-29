@@ -34,7 +34,7 @@ def __update_httpd_port_setting(conf, host, port):
     test_web_server_default(host, port)
 
 def __set_httpd_port_setting_at_app(host, port):
-    setting = host.application_settings(defs.global_vars.app_name)._new_resource(__get_httpd_port_json(port))
+    setting = host.application_settings(defs.global_vars.web_server_name)._new_resource(__get_httpd_port_json(port))
     setting.create()
     test_web_server_default(host, port)
 
@@ -58,7 +58,7 @@ def __unset_httpd_port_setting_and_test(conf, host, port):
     test_web_server_default(host, port)
 
 def __unset_httpd_port_setting_at_app_and_test(host, port):
-    setting = host.application_settings(defs.global_vars.app_name).get_resource("httpd_port")
+    setting = host.application_settings(defs.global_vars.web_server_name).get_resource("httpd_port")
     setting.delete()
     test_web_server_default(host, port)
 
@@ -71,7 +71,7 @@ def setup():
 
     print "Installing web server..."
     context = ApplicationContext()
-    context.set_application(defs.global_vars.app_name)
+    context.set_application(defs.global_vars.web_server_name)
     host.install_application(context)
     while len(host.get_changes()) > 0:
         time.sleep(3)
@@ -122,7 +122,7 @@ def tear_down():
 
     print "Uninstalling web server..."
     try:
-        host.uninstall_application(defs.global_vars.app_name)
+        host.uninstall_application(defs.global_vars.web_server_name)
         while len(host.get_changes()) > 0:
             time.sleep(3)
     except PythonApiException, e:

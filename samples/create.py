@@ -38,16 +38,17 @@ def create_resources():
         print "Organization is created"
     org.show()
 
-    print "="*80
-    print "Application"
     app_coll = org.applications()
-    try:
-        app = app_coll.get_resource(defs.global_vars.app_name)
-        print "Application already exists"
-    except ResourceNotFoundException:
-        app = create_app(org)
-        print "Application is created"
-    app.show()
+    for (name, desc) in defs.global_vars.apps.iteritems():
+        print "="*80
+        print "Application"
+        try:
+            app = app_coll.get_resource(name)
+            print "Application already exists"
+        except ResourceNotFoundException:
+            app = create_app(org, desc)
+            print "Application is created"
+        app.show()
 
     print "="*80
     print "Platform"
@@ -94,35 +95,33 @@ def create_resources():
         print "Host is created"
     host.show()
 
-def create_app(org):
+def create_app(org, desc):
     """
     Creates an application linked to given API api
     """
-    app = org.new_application(defs.global_vars.app_name)
-    app.set_description(defs.global_vars.app_description)
+    app = org.new_application(desc.name)
+    app.set_description(desc.description)
 
-    for p in defs.global_vars.app_packages:
-        app_pck = Package()
-        app_pck.set_name(p)
-        app.add_package(app_pck)
+    for p in desc.packages:
+        app.add_package(Package(p))
 
-    for p in defs.global_vars.app_parameters:
+    for p in desc.parameters:
         app.add_parameter(Parameter(p))
 
-    for f in defs.global_vars.app_files:
-        app.add_file(ApplicationFile(f[0]))
+    for f in desc.files:
+        app.add_file(ApplicationFile(f.meta))
 
-    for s in defs.global_vars.app_services:
+    for s in desc.services:
         app.add_service(Service(s))
 
-    for h in defs.global_vars.app_handlers:
+    for h in desc.handlers:
         app.add_handler(Handler(h))
 
     app.create()
 
     # Upload file contents
-    for f in defs.global_vars.app_files:
-        app.set_file_content(f[0].get("name"), f[1])
+    for f in desc.files:
+        app.set_file_content(f.meta["name"], f.content)
 
     return app
 
