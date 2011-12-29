@@ -23,10 +23,12 @@ def delete_resources():
         org = org_coll.get_resource(defs.global_vars.org_name)
 
         app_coll = org.applications()
-        try:
-            app = app_coll.get_resource(defs.global_vars.app_name)
-        except:
-            print "Application does not exist"
+        apps = []
+        for name in defs.global_vars.apps.keys():
+            try:
+                apps.append(app_coll.get_resource(name))
+            except:
+                print "Application", name, "does not exist"
 
         plat_coll = org.platforms()
         try:
@@ -79,9 +81,13 @@ def delete_resources():
         print e.message
 
     print "="*80
-    print "Delete application"
+    print "Delete applications"
     try:
-        app.delete()
+        for app in apps:
+            try:
+                app.delete()
+            except Exception, e:
+                print e.message
     except Exception, e:
         print e.message
 
