@@ -1,5 +1,6 @@
 # Setup Python path
-import sys
+import sys, setup
+import definitions as defs
 sys.path.append("..")
 
 
@@ -8,8 +9,6 @@ sys.path.append("..")
 
 from cortex_client.api.api import CortexApi
 
-from definitions import *
-
 
 #==============================================================================
 # Script
@@ -17,37 +16,37 @@ from definitions import *
 def delete_resources():
     # API from server cortex listening on port 8000 of localhost is used
     # Username "admin" and password "secret" are used for authentification
-    api = CortexApi(comodit_url, comodit_user, comodit_pass)
+    api = CortexApi(setup.global_vars.comodit_url, setup.global_vars.comodit_user, setup.global_vars.comodit_pass)
 
     org_coll = api.organizations()
     try:
-        org = org_coll.get_resource(org_name)
+        org = org_coll.get_resource(defs.global_vars.org_name)
 
         app_coll = org.applications()
         try:
-            app = app_coll.get_resource(app_name)
+            app = app_coll.get_resource(defs.global_vars.app_name)
         except:
             print "Application does not exist"
 
         plat_coll = org.platforms()
         try:
-            plat = plat_coll.get_resource(plat_name)
+            plat = plat_coll.get_resource(defs.global_vars.plat_name)
         except:
             print "Platform does not exist"
 
         dist_coll = org.distributions()
         try:
-            dist = dist_coll.get_resource(dist_name)
+            dist = dist_coll.get_resource(defs.global_vars.dist_name)
         except:
             print "Distribution does not exist"
 
         env_coll = org.environments()
         try:
-            env = env_coll.get_resource(env_name)
+            env = env_coll.get_resource(defs.global_vars.env_name)
 
             host_coll = env.hosts()
             try:
-                host = host_coll.get_resource(host_name)
+                host = host_coll.get_resource(defs.global_vars.host_name)
             except:
                 print "Host does not exist"
         except:
@@ -118,4 +117,6 @@ def delete_resources():
 #==============================================================================
 # Entry point
 if __name__ == "__main__":
+    setup.setup()
+    defs.define()
     delete_resources()

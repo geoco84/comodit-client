@@ -1,6 +1,6 @@
 # Setup Python path
-import sys
-
+import sys, setup, urllib2
+import definitions as defs
 sys.path.append("..")
 
 
@@ -9,8 +9,6 @@ sys.path.append("..")
 
 from cortex_client.api.api import CortexApi
 from cortex_client.api.exceptions import PythonApiException
-
-from definitions import comodit_url, comodit_user, comodit_pass, org_name, env_name, host_name, app_name
 
 
 #==============================================================================
@@ -33,15 +31,15 @@ def __unset_httpd_port_setting_at_app(host):
 def undo_demo():
     # API from server cortex listening on port 8000 of localhost is used
     # Username "admin" and password "secret" are used for authentification
-    api = CortexApi(comodit_url, comodit_user, comodit_pass)
+    api = CortexApi(setup.global_vars.comodit_url, setup.global_vars.comodit_user, setup.global_vars.comodit_pass)
 
-    org = api.organizations().get_resource(org_name)
-    env = org.environments().get_resource(env_name)
-    host = env.hosts().get_resource(host_name)
+    org = api.organizations().get_resource(defs.global_vars.org_name)
+    env = org.environments().get_resource(defs.global_vars.env_name)
+    host = env.hosts().get_resource(defs.global_vars.host_name)
 
     print "Uninstalling web server..."
     try:
-        host.uninstall_application(app_name)
+        host.uninstall_application(defs.global_vars.app_name)
     except PythonApiException, e:
         print e.message
 
@@ -59,4 +57,6 @@ def undo_demo():
 #==============================================================================
 # Entry point
 if __name__ == "__main__":
+    setup.setup()
+    defs.define()
     undo_demo()

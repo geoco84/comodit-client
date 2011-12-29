@@ -1,6 +1,6 @@
 # Setup Python path
-import sys
-
+import sys, setup
+import definitions as defs
 sys.path.append("..")
 
 
@@ -12,8 +12,6 @@ import time
 from cortex_client.api.api import CortexApi
 from cortex_client.api.exceptions import PythonApiException
 
-from definitions import *
-
 
 #==============================================================================
 # Script
@@ -21,9 +19,9 @@ from definitions import *
 def provision_host():
     # API from server cortex listening on port 8000 of localhost is used
     # Username "admin" and password "secret" are used for authentification
-    api = CortexApi(comodit_url, comodit_user, comodit_pass)
+    api = CortexApi(setup.global_vars.comodit_url, setup.global_vars.comodit_user, setup.global_vars.comodit_pass)
 
-    host = api.organizations().get_resource(org_name).environments().get_resource(env_name).hosts().get_resource(host_name)
+    host = api.organizations().get_resource(defs.global_vars.org_name).environments().get_resource(defs.global_vars.env_name).hosts().get_resource(defs.global_vars.host_name)
 
 
     #############
@@ -31,7 +29,7 @@ def provision_host():
     #############
 
     print "="*80
-    print "Provisioning host " + host_name
+    print "Provisioning host " + defs.global_vars.host_name
     host.provision()
     host.update()
 
@@ -62,4 +60,6 @@ def provision_host():
 #==============================================================================
 # Entry point
 if __name__ == "__main__":
+    setup.setup()
+    defs.define()
     provision_host()

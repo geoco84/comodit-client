@@ -42,7 +42,7 @@
       <#if vm_mac??>
       <mac address='${vm_mac}'/>
       </#if>
-      <source bridge='br0'/>
+      <source bridge='${vm_bridge}'/>
     </interface>
     <input type='mouse' bus='ps2'/>
     <graphics type='vnc' autoport='yes'/>

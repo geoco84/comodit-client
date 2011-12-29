@@ -12,13 +12,13 @@ text
 network --bootproto=dhcp --device=eth0
 
 # Use the following installation channels
-url --url=http://oak.${zone}.guardis.be/public/centos/6/os/${vm_base_arch}/
-repo --name=updates --baseurl=http://oak.${zone}.guardis.be/public/centos/6/updates/${vm_base_arch}/
-repo --name=epel --baseurl=http://oak.${zone}.guardis.be/public/epel/6/${vm_base_arch}/
+url --url=##repos_base_url##
+repo --name=updates --baseurl=##repos_updates##
+repo --name=epel --baseurl=##repos_epel##
 
-repo --name=comodit --baseurl=http://devel.bruxelles.guardis.be/public/comodit/centos/6/${vm_arch}/
+repo --name=comodit --baseurl=##repos_comodit##
 <#if enable_trunk="true">
-repo --name=comodit-dev --baseurl=http://devel.bruxelles.guardis.be/public/comodit-dev/centos/6/${vm_arch}/
+repo --name=comodit-dev --baseurl=##repos_comodit-dev##
 </#if>
 
 # Do not configure the X Window System
@@ -109,7 +109,7 @@ cat << EOF > /etc/synapse/synapse.conf
 
 [rabbitmq]
 type = amqp
-host = mahogany.angleur.guardis.be
+host = ${amqp_server}
 queue = vm.${_hostid}
 username = guest
 password = guest
@@ -117,4 +117,4 @@ password = guest
 EOF
 
 # Synapse for one time install
-/usr/bin/synapse --uri ${_api}/organizations/${_orgName?url}/environments/${_envName?url}/hosts/${_hostName?url}/setup.json
+/usr/bin/synapse --uri "${_api}/organizations/${_orgName?url}/environments/${_envName?url}/hosts/${_hostName?url}/setup.json"

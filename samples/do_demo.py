@@ -1,6 +1,6 @@
 # Setup Python path
-import sys, urllib2
-
+import sys, setup, urllib2
+import definitions as defs
 sys.path.append("..")
 
 
@@ -11,8 +11,6 @@ import time
 
 from cortex_client.api.api import CortexApi
 from cortex_client.api.contexts import ApplicationContext
-
-from definitions import comodit_url, comodit_user, comodit_pass, app_name, org_name, env_name, host_name
 
 
 #==============================================================================
@@ -38,12 +36,12 @@ def __unset_httpd_port_setting(conf, host, port):
     __test_web_server(host, port)
 
 def __set_httpd_port_setting_at_app(host, port):
-    setting = host.application_settings(app_name)._new_resource(__get_httpd_port_json(port))
+    setting = host.application_settings(defs.global_vars.app_name)._new_resource(__get_httpd_port_json(port))
     setting.create()
     __test_web_server(host, port)
 
 def __unset_httpd_port_setting_at_app(host, port):
-    setting = host.application_settings(app_name).get_resource("httpd_port")
+    setting = host.application_settings(defs.global_vars.app_name).get_resource("httpd_port")
     setting.delete()
     __test_web_server(host, port)
 
@@ -59,15 +57,15 @@ def __test_web_server(host, port):
 def do_demo():
     # API from server cortex listening on port 8000 of localhost is used
     # Username "admin" and password "secret" are used for authentification
-    api = CortexApi(comodit_url, comodit_user, comodit_pass)
+    api = CortexApi(setup.global_vars.comodit_url, setup.global_vars.comodit_user, setup.global_vars.comodit_pass)
 
-    org = api.organizations().get_resource(org_name)
-    env = org.environments().get_resource(env_name)
-    host = env.hosts().get_resource(host_name)
+    org = api.organizations().get_resource(defs.global_vars.org_name)
+    env = org.environments().get_resource(defs.global_vars.env_name)
+    host = env.hosts().get_resource(defs.global_vars.host_name)
 
     print "Installing web server..."
     context = ApplicationContext()
-    context.set_application(app_name)
+    context.set_application(defs.global_vars.app_name)
     host.install_application(context)
     while len(host.get_changes()) > 0:
         time.sleep(3)
@@ -108,4 +106,6 @@ def do_demo():
 #==============================================================================
 # Entry point
 if __name__ == "__main__":
+    setup.setup()
+    defs.define()
     do_demo()
