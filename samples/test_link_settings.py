@@ -92,6 +92,52 @@ def run():
     if content.find("Setting value: hello world") == -1:
         raise Exception("Unexpected page content")
 
+    print "Creating simple setting at organization level..."
+    setting = org.new_setting("key")
+    setting.set_value("simple://value")
+    setting.create()
+
+    print "Creating link setting at environment level..."
+    setting = env.new_setting("key")
+    setting.set_value("link://organizations/" + defs.global_vars.org_name + "/settings/key")
+    setting.create()
+
+    print "Updating simple setting of simple web page to link setting..."
+    setting = host.application_settings(defs.global_vars.simple_web_page_name).get_resource("simple_web_page")
+    setting.set_value("link://organizations/" + defs.global_vars.org_name + "/environments/" + defs.global_vars.env_name + "/settings/key")
+    setting.commit()
+
+    while len(host.get_changes()) > 0:
+        time.sleep(3)
+
+    content_reader = test_web_server_page(host, 80, "/index.html")
+    content = content_reader.read()
+    if content.find("Setting value: value") == -1:
+        raise Exception("Unexpected page content")
+
+    print "Creating a loop..."
+    setting = org.settings().get_resource("key")
+    setting.set_value("link://organizations/" + defs.global_vars.org_name + "/environments/" + defs.global_vars.env_name + "/hosts/" + defs.global_vars.host_name + "/applications/" + defs.global_vars.simple_web_page_name + "/settings/simple_web_page:default")
+    setting.commit()
+
+    content_reader = test_web_server_page(host, 80, "/index.html")
+    content = content_reader.read()
+    if content.find("Setting value: default") == -1:
+        raise Exception("Unexpected page content")
+
+    print "Updating loop..."
+    setting = org.settings().get_resource("key")
+    setting.set_value("link://organizations/" + defs.global_vars.org_name + "/environments/" + defs.global_vars.env_name + "/settings/key:default2")
+    setting.commit()
+
+    while len(host.get_changes()) > 0:
+        time.sleep(3)
+
+    content_reader = test_web_server_page(host, 80, "/index.html")
+    content = content_reader.read()
+    if content.find("Setting value: default2") == -1:
+        raise Exception("Unexpected page content")
+
 def tear_down():
     api = CortexApi(test_setup.global_vars.comodit_url, test_setup.global_vars.comodit_user, test_setup.global_vars.comodit_pass)
 
@@ -112,6 +158,20 @@ def tear_down():
         host.uninstall_application(defs.global_vars.web_server_name)
         while len(host.get_changes()) > 0:
             time.sleep(3)
+    except PythonApiException, e:
+        print e.message
+
+    print "Removing setting at organization level..."
+    try:
+        setting = org.settings().get_resource("key")
+        setting.delete()
+    except PythonApiException, e:
+        print e.message
+
+    print "Creating link setting at environment level..."
+    try:
+        setting = env.settings().get_resource("key")
+        setting.delete()
     except PythonApiException, e:
         print e.message
 
