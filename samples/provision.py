@@ -31,25 +31,24 @@ def provision_host():
     print "="*80
     print "Provisioning host " + defs.global_vars.host_name
     host.provision()
-    host.update()
 
     print "="*80
     print "Waiting for the end of installation..."
     state = None
     try:
-        state = host.get_instance().get_state()
+        state = host.instance().get_single_resource().get_state()
     except PythonApiException, e:
         print e.message
     while state != "STOPPED":
         time.sleep(3)
         try:
-            state = host.get_instance().get_state()
+            state = host.instance().get_single_resource().get_state()
         except PythonApiException, e:
             print e.message
 
     print "="*80
     print "Restarting..."
-    host.start()
+    host.instance().get_single_resource().start()
     host.update()
     while host.get_state() == "PROVISIONING":
         time.sleep(3)

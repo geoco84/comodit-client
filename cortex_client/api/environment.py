@@ -6,13 +6,12 @@ Environment module.
 @copyright: 2011 Guardis SPRL, Liège, Belgium.
 """
 
-from resource import Resource
 from cortex_client.util.json_wrapper import StringFactory
 from host import Host
 from host_collection import HostCollection
-from cortex_client.api.settings import SettingCollection
+from cortex_client.api.settings import Configurable
 
-class Environment(Resource):
+class Environment(Configurable):
     """
     Representation of an environment. An environment is enclosed in an
     organization and may contain hosts.
@@ -114,5 +113,3 @@ class Environment(Resource):
         host.set_environment(self.get_name())
         return host
 
-    def settings(self):
-        return SettingCollection(self._get_api(), self._get_path() + "settings/")

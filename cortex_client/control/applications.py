@@ -107,9 +107,9 @@ class ApplicationsController(OrganizationResourceController):
             #updated = re.sub(r'#.*$', "", updated)
             item = json.loads(updated)
 
-        app = ApplicationContext(item)
         host = self._get_host(argv)
-        host.install_application(app)
+        app = host.applications()._new_resource(item)
+        app.create()
 
     def _print_uninstall_completions(self, param_num, argv):
         if param_num < 3:
@@ -123,8 +123,8 @@ class ApplicationsController(OrganizationResourceController):
             raise MissingException("This action takes 4 arguments")
 
         host = self._get_host(argv)
-        app_name = argv[3]
-        host.uninstall_application(app_name)
+        app = host.applications().get_resource(argv[3])
+        app.delete()
 
     def _help(self, argv):
         print '''You must provide an action to perform on this resource.

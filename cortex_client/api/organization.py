@@ -17,9 +17,9 @@ from platform_collection import PlatformCollection
 from application import Application
 from application_collection import ApplicationCollection
 from cortex_client.api.group_collection import GroupCollection
-from cortex_client.api.settings import SettingCollection
+from cortex_client.api.settings import Configurable
 
-class Organization(Resource):
+class Organization(Configurable):
     """
     An organization. An organization may contain environments.
     
@@ -155,7 +155,3 @@ class Organization(Resource):
 
     def groups(self):
         return GroupCollection(self._get_api(), self._get_path() + "groups/")
-
-    def settings(self):
-        return SettingCollection(self._get_api(), self._get_path() + "settings/")
-

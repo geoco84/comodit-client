@@ -97,28 +97,28 @@ class HostsController(ResourceController):
 
     def _start(self, argv):
         host = self._get_resource(argv)
-        host.start()
+        host.instance().get_single_resource().start()
 
     def _pause(self, argv):
         host = self._get_resource(argv)
-        host.pause()
+        host.instance().get_single_resource().pause()
 
     def _resume(self, argv):
         host = self._get_resource(argv)
-        host.resume()
+        host.instance().get_single_resource().resume()
 
     def _shutdown(self, argv):
         host = self._get_resource(argv)
-        host.shutdown()
+        host.instance().get_single_resource().shutdown()
 
     def _poweroff(self, argv):
         host = self._get_resource(argv)
-        host.poweroff()
+        host.instance().get_single_resource().poweroff()
 
     def _instance(self, argv):
         host = self._get_resource(argv)
         try:
-            info = host.get_instance()
+            info = host.instance().get_single_resource()
             # Display the result
             options = globals.options
             if options.raw:
@@ -132,7 +132,7 @@ class HostsController(ResourceController):
         host = self._get_resource(argv)
         try:
             if (prompt.confirm(prompt = "Delete " + host.get_name() + "'s instance ?", resp = False)) :
-                host.deleteInstance()
+                host.instance().get_single_resource().delete()
         except PythonApiException, e:
             print e.message
 

@@ -7,11 +7,14 @@ settings.
 @copyright: 2011 Guardis SPRL, Liège, Belgium.
 """
 
-from cortex_client.api.resource import Resource
 from cortex_client.rest.exceptions import ApiException
 from cortex_client.util.json_wrapper import JsonWrapper, StringFactory
 from exceptions import PythonApiException
-from cortex_client.api.settings import SettingCollection, SettingFactory
+from cortex_client.api.settings import Configurable, SettingFactory
+from cortex_client.api.contexts import ApplicationContextCollection, \
+    PlatformContextCollection, DistributionContextCollection
+from cortex_client.api.resource import Resource
+from cortex_client.api.collection import Collection
 
 class Property(JsonWrapper):
     """
@@ -94,10 +97,43 @@ class Vnc(JsonWrapper):
         print " "*indent, "port:", self.get_port()
 
 
-class Instance(JsonWrapper):
+class InstanceCollection(Collection):
+    def __init__(self, api, collection_path):
+        super(InstanceCollection, self).__init__(collection_path, api)
+
+    def _new_resource(self, json_data):
+        return Instance(self, json_data)
+
+
+class Instance(Resource):
     """
     Runtime host instance information.
     """
+
+    def __init__(self, collection, json_data = None):
+        super(Instance, self).__init__(collection, json_data)
+
+    def _get_path(self):
+        return self._collection.get_path()
+
+    def rename(self, new_name):
+        raise PythonApiException("Renaming is unsupported for instance")
+
+    def commit(self, force = False):
+        raise PythonApiException("Committing is unsupported for instance")
+
+    def create(self):
+        """
+        Creates a new resource on the server using this object's state for
+        initialization.
+
+        @raise PythonApiException: If server access point is not set.
+        """
+        props = self.get_properties()
+        if len(props) == 0:
+            self._collection.add_resource(self)
+        else:
+            self.set_json(self._get_client().create(self._get_path() + "properties", props))
 
     def get_state(self):
         """
@@ -127,7 +163,61 @@ class Instance(JsonWrapper):
     def get_properties(self):
         return self._get_list_field("properties", PropertyFactory())
 
-    def show(self, as_json = False, indent = 0):
+    def add_property(self, prop):
+        self._add_to_list_field("properties", prop)
+
+    def start(self):
+        """
+        Starts host.
+        @raise PythonApiException: If host could not be started.
+        """
+        try:
+            result = self._get_client().update(self._get_path() + "_start", decode = False)
+            if(result.getcode() != 202):
+                raise PythonApiException("Call not accepted by server")
+        except ApiException, e:
+            raise PythonApiException("Unable to start host: " + e.message)
+
+    def pause(self):
+        """
+        Pauses host.
+        @raise PythonApiException: If host could not be paused.
+        """
+        result = self._get_client().update(self._get_path() + "_pause", decode = False)
+        if(result.getcode() != 202):
+            raise PythonApiException("Call not accepted by server")
+
+    def resume(self):
+        """
+        Resumes host's execution (after pause).
+        @raise PythonApiException: If host's execution could not be resumed.
+        """
+        result = self._get_client().update(self._get_path() + "_resume", decode = False)
+        if(result.getcode() != 202):
+            raise PythonApiException("Call not accepted by server")
+
+    def shutdown(self):
+        """
+        Shutdowns host.
+        @raise PythonApiException: If host could not be shutdown.
+        """
+        result = self._get_client().update(self._get_path() + "_stop", decode = False)
+        if(result.getcode() != 202):
+            raise PythonApiException("Call not accepted by server")
+
+    def poweroff(self):
+        """
+        Power-off host.
+        @raise PythonApiException: If host could not be powered-off.
+        """
+        try:
+            result = self._get_client().update(self._get_path() + "_off", decode = False)
+            if(result.getcode() != 202):
+                raise PythonApiException("Call not accepted by server")
+        except ApiException, e:
+            raise PythonApiException("Unable to poweroff host: " + e.message)
+
+    def _show(self, indent = 0):
         """
         Prints instance's information to standard output in a user-friendly way.
         
@@ -135,15 +225,12 @@ class Instance(JsonWrapper):
         line.
         @type indent: Integer
         """
-        if as_json:
-            self.print_json()
-        else:
-            print " "*indent, "State:", self.get_state()
-            print " "*indent, "Synapse state:", self.get_synapse_state()
-            print " "*indent, "IP:", self.get_ip()
-            print " "*indent, "Hostname:", self.get_hostname()
-            print " "*indent, "Vnc:"
-            self.get_vnc().show(indent + 2)
+        print " "*indent, "State:", self.get_state()
+        print " "*indent, "Synapse state:", self.get_synapse_state()
+        print " "*indent, "IP:", self.get_ip()
+        print " "*indent, "Hostname:", self.get_hostname()
+        print " "*indent, "Vnc:"
+        self.get_vnc().show(indent + 2)
 
     def show_properties(self, indent = 0):
         print " "*indent, "Properties:"
@@ -190,7 +277,7 @@ class Change(JsonWrapper):
             t.show(indent + 2)
 
 
-class Host(Resource):
+class Host(Configurable):
     """
     A host. A host is part of an environment and has settings and properties
     associated to it. It features a list of installed applications, is associated
@@ -282,16 +369,7 @@ class Host(Resource):
         @return: Host's settings.
         @rtype: list of L{Setting}
         """
-        return self._get_list_field("settings", SettingFactory(self.settings()))
-
-    def set_settings(self, settings):
-        """
-        Sets host's settings. Note that, for a provisioned host, settings must
-        be added, removed and/or updated using change requests.
-        @return: Host's settings.
-        @rtype: list of L{Setting}
-        """
-        self._set_list_field("settings", settings)
+        return self._get_list_field("settings", SettingFactory(None))
 
     def add_setting(self, setting):
         """
@@ -345,12 +423,6 @@ class Host(Resource):
         except ApiException, e:
             raise PythonApiException("Unable to delete host: " + e.message)
 
-    def deleteInstance(self):
-        try:
-            self._get_client().delete(self._get_path() + "instance")
-        except ApiException, e:
-            raise PythonApiException("Unable to delete instance: " + e.message)
-
     def get_state(self):
         """
         Provides host's state.
@@ -359,18 +431,14 @@ class Host(Resource):
         """
         return self._get_field("state")
 
-    def get_instance(self):
+    def instance(self):
         """
         Provides host's instance information.
         @return: Host's instance information.
         @rtype: L{InstanceInfo}
         @raise PythonApiException: If host was not yet provisioned
         """
-        if self.get_state() == "DEFINED":
-            raise PythonApiException("Host must first be provision(ed|ing)")
-
-        info_json = self._get_client().read(self._get_path() + "instance")
-        return Instance(info_json)
+        return InstanceCollection(self._get_api(), self._get_path() + "instance/")
 
     def _show(self, indent = 0):
         print " "*indent, "Name:", self.get_name()
@@ -413,62 +481,8 @@ class Host(Resource):
         Provisions host.
         @raise PythonApiException: If host could not be provisioned.
         """
-        client = self._get_client()
-        try:
-            client.create(self._get_path() + "instance", decode = False)
-        except ApiException, e:
-            raise PythonApiException("Unable to provision host: " + e.message)
-
-    def start(self):
-        """
-        Starts host.
-        @raise PythonApiException: If host could not be started.
-        """
-        try:
-            result = self._get_client().update(self._get_path() + "instance/_start", decode = False)
-            if(result.getcode() != 202):
-                raise PythonApiException("Call not accepted by server")
-        except ApiException, e:
-            raise PythonApiException("Unable to start host: " + e.message)
-
-    def pause(self):
-        """
-        Pauses host.
-        @raise PythonApiException: If host could not be paused.
-        """
-        result = self._get_client().update(self._get_path() + "instance/_pause", decode = False)
-        if(result.getcode() != 202):
-            raise PythonApiException("Call not accepted by server")
-
-    def resume(self):
-        """
-        Resumes host's execution (after pause).
-        @raise PythonApiException: If host's execution could not be resumed.
-        """
-        result = self._get_client().update(self._get_path() + "instance/_resume", decode = False)
-        if(result.getcode() != 202):
-            raise PythonApiException("Call not accepted by server")
-
-    def shutdown(self):
-        """
-        Shutdowns host.
-        @raise PythonApiException: If host could not be shutdown.
-        """
-        result = self._get_client().update(self._get_path() + "instance/_stop", decode = False)
-        if(result.getcode() != 202):
-            raise PythonApiException("Call not accepted by server")
-
-    def poweroff(self):
-        """
-        Power-off host.
-        @raise PythonApiException: If host could not be powered-off.
-        """
-        try:
-            result = self._get_client().update(self._get_path() + "instance/_off", decode = False)
-            if(result.getcode() != 202):
-                raise PythonApiException("Call not accepted by server")
-        except ApiException, e:
-            raise PythonApiException("Unable to poweroff host: " + e.message)
+        instance = InstanceCollection(self._get_api(), self._get_path() + "instance/")._new_resource({})
+        instance.create()
 
     def render_file(self, app_name, file_name):
         try:
@@ -491,47 +505,23 @@ class Host(Resource):
         except ApiException, e:
             raise PythonApiException("Unable to clone host: " + e.message)
 
-    def install_application(self, context):
+    def applications(self):
         if self.get_state() != "PROVISIONED":
             raise PythonApiException("Host must be provisioned")
 
-        if context.get_application() in self.get_applications():
-            raise PythonApiException("Application is already installed")
+        return ApplicationContextCollection(self._get_api(), self._get_path() + "applications/")
 
-        try:
-            self._get_client().create(self._get_path() + "applications/", context.get_json())
-        except ApiException, e:
-            raise PythonApiException("Unable to install application: " + e.message)
-
-        # Update state as new application was added
-        self.update()
-
-    def uninstall_application(self, app_name):
+    def platform(self):
         if self.get_state() != "PROVISIONED":
             raise PythonApiException("Host must be provisioned")
 
-        if not app_name in self.get_applications():
-            raise PythonApiException("Application is not installed")
+        return PlatformContextCollection(self._get_api(), self._get_path() + "platform/")
 
-        try:
-            self._get_client().delete(self._get_path() + "applications/" + app_name)
-        except ApiException, e:
-            raise PythonApiException("Unable to uninstall application: " + e.message)
+    def distribution(self):
+        if self.get_state() != "PROVISIONED":
+            raise PythonApiException("Host must be provisioned")
 
-        # Update state as application was removed
-        self.update()
-
-    def settings(self):
-        return SettingCollection(self._get_api(), self._get_path() + "settings/")
-
-    def application_settings(self, app_name):
-        return SettingCollection(self._get_api(), self._get_path() + "applications/" + app_name + "/settings/")
-
-    def platform_settings(self):
-        return SettingCollection(self._get_api(), self._get_path() + "platform/settings/")
-
-    def distribution_settings(self):
-        return SettingCollection(self._get_api(), self._get_path() + "distribution/settings/")
+        return DistributionContextCollection(self._get_api(), self._get_path() + "distribution/")
 
     def get_changes(self):
         if self.get_state() != "PROVISIONED":

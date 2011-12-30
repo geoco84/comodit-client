@@ -2,30 +2,57 @@
 import sys, urllib2, test_utils
 import definitions as defs
 import setup as test_setup
+from test_webserver import wait_changes, install_web_server, uninstall_web_server
 sys.path.append("..")
 
 
 #==============================================================================
 # Imports section
 
-import time
-
 from cortex_client.api.api import CortexApi
-from cortex_client.api.contexts import ApplicationContext
 from cortex_client.api.exceptions import PythonApiException
-from cortex_client.api.settings import Setting
 
 
 #==============================================================================
 # Script
 
 def test_web_server_page(host, port, page):
-    while len(host.get_changes()) > 0:
-        time.sleep(3)
+    wait_changes(host)
+    ip = host.instance().get_single_resource().get_ip()
     try:
-        return urllib2.urlopen("http://" + host.get_instance().get_ip() + ":" + str(port) + page)
+        return urllib2.urlopen("http://" + ip + ":" + str(port) + page)
     except urllib2.HTTPError, e:
         raise Exception("Unexpected HTTP error: " + str(e.code))
+
+def install_simple_web_page(host, settings):
+    print "Installing simple web page..."
+    context = host.applications()._new_resource()
+    context.set_application(defs.global_vars.simple_web_page_name)
+
+    for s in settings:
+        context.add_setting(s["key"], s["value"])
+
+    host.applications().add_resource(context)
+    wait_changes(host)
+    print "Simple web page successfully installed."
+
+def uninstall_simple_web_page(host):
+    print "Uninstalling simple web page..."
+    try:
+        host.applications().get_resource(defs.global_vars.simple_web_page_name).delete()
+        wait_changes(host)
+    except PythonApiException, e:
+        print e.message
+    print "Simple web page successfully installed."
+
+def check_page_content(host, port, page, value):
+    content_reader = test_web_server_page(host, port, page)
+    content = content_reader.read()
+    if content.find("Setting value: " + value) == -1:
+        raise Exception("Unexpected page content")
+
+def get_setting_json(key, value):
+    return {"key": key, "value": value}
 
 def setup():
     api = CortexApi(test_setup.global_vars.comodit_url, test_setup.global_vars.comodit_user, test_setup.global_vars.comodit_pass)
@@ -34,21 +61,8 @@ def setup():
     env = org.environments().get_resource(defs.global_vars.env_name)
     host = env.hosts().get_resource(defs.global_vars.host_name)
 
-    print "Installing web server..."
-    context = ApplicationContext()
-    context.set_application(defs.global_vars.web_server_name)
-    context.add_setting(Setting({"key":"httpd_port", "value":"simple://80"}))
-    host.install_application(context)
-    while len(host.get_changes()) > 0:
-        time.sleep(3)
-
-    print "Installing simple web page..."
-    context = ApplicationContext()
-    context.set_application(defs.global_vars.simple_web_page_name)
-    context.add_setting(Setting({"key":"simple_web_page", "value":"simple://hello"}))
-    host.install_application(context)
-    while len(host.get_changes()) > 0:
-        time.sleep(3)
+    install_web_server(host, [get_setting_json("httpd_port", "80")])
+    install_simple_web_page(host, [get_setting_json("simple_web_page", "simple://hello")])
 
 def run():
     api = CortexApi(test_setup.global_vars.comodit_url, test_setup.global_vars.comodit_user, test_setup.global_vars.comodit_pass)
@@ -57,12 +71,7 @@ def run():
     env = org.environments().get_resource(defs.global_vars.env_name)
     host = env.hosts().get_resource(defs.global_vars.host_name)
 
-    content_reader = test_web_server_page(host, 80, "/index.html")
-    content = content_reader.read()
-    if content.find("Setting value: hello") == -1:
-        raise Exception("Unexpected page content")
-
-    print "Simple web page was successfully installed."
+    check_page_content(host, 80, "/index.html", "hello")
 
 def tear_down():
     api = CortexApi(test_setup.global_vars.comodit_url, test_setup.global_vars.comodit_user, test_setup.global_vars.comodit_pass)
@@ -71,21 +80,8 @@ def tear_down():
     env = org.environments().get_resource(defs.global_vars.env_name)
     host = env.hosts().get_resource(defs.global_vars.host_name)
 
-    print "Uninstalling simple web page..."
-    try:
-        host.uninstall_application(defs.global_vars.simple_web_page_name)
-        while len(host.get_changes()) > 0:
-            time.sleep(3)
-    except PythonApiException, e:
-        print e.message
-
-    print "Uninstalling web server..."
-    try:
-        host.uninstall_application(defs.global_vars.web_server_name)
-        while len(host.get_changes()) > 0:
-            time.sleep(3)
-    except PythonApiException, e:
-        print e.message
+    uninstall_web_server(host)
+    uninstall_simple_web_page(host)
 
 def test():
     setup()

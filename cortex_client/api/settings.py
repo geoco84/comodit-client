@@ -19,6 +19,9 @@ class Setting(Resource):
     def get_name(self):
         return self.get_key()
 
+    def set_name(self, name):
+        self.set_key(name)
+
     def get_value(self):
         """
         Provides setting's value.
@@ -28,7 +31,10 @@ class Setting(Resource):
         return self._get_field("value")
 
     def set_value(self, value):
-        return self._set_field("value", value)
+        self._set_field("value", value)
+
+    def set_key(self, key):
+        self._set_field("key", key)
 
     def get_key(self):
         """
@@ -88,3 +94,12 @@ class SettingCollection(Collection):
 
     def _new_resource(self, json_data):
         return Setting(self, json_data)
+
+class Configurable(Resource):
+    def settings(self):
+        return SettingCollection(self._get_api(), self._get_path() + "settings/")
+
+    def new_setting(self, key):
+        setting = Setting(self.settings())
+        setting.set_key(key)
+        return setting

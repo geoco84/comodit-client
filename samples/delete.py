@@ -62,14 +62,14 @@ def delete_resources():
     ###################
 
     try:
-        host.poweroff()
+        host.instance().get_single_resource().poweroff()
     except:
         pass
 
     print "="*80
     print "Delete host instance"
     try:
-        host.deleteInstance()
+        host.instance().get_single_resource().delete()
     except Exception, e:
         print e.message
 

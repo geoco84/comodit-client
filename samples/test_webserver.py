@@ -11,21 +11,45 @@ sys.path.append("..")
 import time
 
 from cortex_client.api.api import CortexApi
-from cortex_client.api.contexts import ApplicationContext
 from cortex_client.api.exceptions import PythonApiException
 
 
 #==============================================================================
 # Script
 
-def test_web_server_default(host, port):
+def wait_changes(host):
     while len(host.get_changes()) > 0:
         time.sleep(3)
+
+def test_web_server_default(host, port):
+    wait_changes(host)
+    ip = host.instance().get_single_resource().get_ip()
     try:
-        urllib2.urlopen("http://" + host.get_instance().get_ip() + ":" + str(port))
+        urllib2.urlopen("http://" + ip + ":" + str(port))
     except urllib2.HTTPError, e:
         if e.code != 403:
             raise Exception("Unexpected HTTP error: " + str(e.code))
+
+def install_web_server(host, settings = []):
+    print "Installing web server..."
+    context = host.applications()._new_resource()
+    context.set_application(defs.global_vars.web_server_name)
+
+    for s in settings:
+        context.add_setting(s["key"], s["value"])
+
+    host.applications().add_resource(context)
+    wait_changes(host)
+    print "Web server successfully installed."
+
+def uninstall_web_server(host):
+    print "Uninstalling web server..."
+    try:
+        host.applications().get_resource(defs.global_vars.web_server_name).delete()
+        wait_changes(host)
+    except PythonApiException, e:
+        print e.message
+    print "Web server successfully uninstalled."
 
 def setup():
     api = CortexApi(test_setup.global_vars.comodit_url, test_setup.global_vars.comodit_user, test_setup.global_vars.comodit_pass)
@@ -34,12 +58,7 @@ def setup():
     env = org.environments().get_resource(defs.global_vars.env_name)
     host = env.hosts().get_resource(defs.global_vars.host_name)
 
-    print "Installing web server..."
-    context = ApplicationContext()
-    context.set_application(defs.global_vars.web_server_name)
-    host.install_application(context)
-    while len(host.get_changes()) > 0:
-        time.sleep(3)
+    install_web_server(host)
 
 def run():
     api = CortexApi(test_setup.global_vars.comodit_url, test_setup.global_vars.comodit_user, test_setup.global_vars.comodit_pass)
@@ -50,8 +69,6 @@ def run():
 
     test_web_server_default(host, 80)
 
-    print "Web server was successfully installed."
-
 def tear_down():
     api = CortexApi(test_setup.global_vars.comodit_url, test_setup.global_vars.comodit_user, test_setup.global_vars.comodit_pass)
 
@@ -59,15 +76,7 @@ def tear_down():
     env = org.environments().get_resource(defs.global_vars.env_name)
     host = env.hosts().get_resource(defs.global_vars.host_name)
 
-    print "Uninstalling web server..."
-    try:
-        host.uninstall_application(defs.global_vars.web_server_name)
-        while len(host.get_changes()) > 0:
-            time.sleep(3)
-    except PythonApiException, e:
-        print e.message
-
-    print "Web server was successfully uninstalled."
+    uninstall_web_server(host)
 
 def test():
     setup()

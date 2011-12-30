@@ -33,6 +33,17 @@ def run_tear_downs(module_names):
         except Exception, e:
             print "Error:", e.message
 
+def run_tests_only(module_names):
+    for name in module_names:
+        test_module = sys.modules[name]
+        try:
+            print "="*80
+            print "Testing module (no setup, no tear down)", name
+            test_module.run()
+            print "OK"
+        except Exception, e:
+            print "Error:", e.message
+
 def test_wrapper(module_names):
     """
     """
@@ -48,6 +59,8 @@ def test_wrapper(module_names):
             run_setups(module_names)
         elif sys.argv[1] == "tear_down":
             run_tear_downs(module_names)
+        elif sys.argv[1] == "run":
+            run_tests_only(module_names)
         else:
             print "Unrecognized action."
-            print "Accepted actions: setup, tear_down"
+            print "Accepted actions: setup, run, tear_down"

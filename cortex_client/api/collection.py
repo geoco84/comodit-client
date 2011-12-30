@@ -110,7 +110,7 @@ class Collection(object):
             else:
                 raise PythonApiException("Could not get elements: " + e.message)
 
-    def _new_resource(self, json_data):
+    def _new_resource(self, json_data = None):
         """
         Instantiates a new resource object. New object's state is set using
         provided JSON data (organized as a dict).
@@ -145,3 +145,6 @@ class Collection(object):
                 raise ResourceNotFoundException(e_id)
             else:
                 raise PythonApiException("Could not get resource " + e_id + ":" + e.message)
+
+    def get_single_resource(self):
+        return self.get_resource("")

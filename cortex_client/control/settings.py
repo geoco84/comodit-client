@@ -102,7 +102,7 @@ class ApplicationSettingsController(ResourceController):
         env = org.environments().get_resource(argv[1])
         host = env.hosts().get_resource(argv[2])
 
-        return host.application_settings(argv[3])
+        return host.applications().get_resource(argv[3]).settings()
 
     def _print_collection_completions(self, param_num, argv):
         if param_num == 0:
@@ -127,7 +127,7 @@ class ApplicationSettingsController(ResourceController):
             org = self._api.organizations().get_resource(argv[0])
             env = org.environments().get_resource(argv[1])
             host = env.hosts().get_resource(argv[2])
-            self._print_identifiers(host.application_settings(argv[3]))
+            self._print_identifiers(host.applications().get_resource(argv[3]).settings())
 
     def _help(self, argv):
         print '''You must provide an action to perform on this resource.

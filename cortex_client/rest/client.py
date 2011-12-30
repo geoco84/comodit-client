@@ -27,12 +27,19 @@ class Client:
             url = url + "?" + urllib.urlencode(parameters)
 
         if item:
-            req = urllibx.RequestWithMethod(url, method = "POST", headers = self._headers(), data = json.dumps(item))
+            try:
+                json_data = json.dumps(item)
+            except Exception, e:
+                raise ApiException("Could not encode given data: " + item, 0)
+            req = urllibx.RequestWithMethod(url, method = "POST", headers = self._headers(), data = json_data)
         else:
             req = urllibx.RequestWithMethod(url, method = "POST", headers = self._headers())
         raw = self._urlopen(req)
         if decode:
-            return json.load(raw)
+            try:
+                return json.load(raw)
+            except Exception, e:
+                raise ApiException("Could not decode response: " + raw, 0)
         else:
             return raw
 

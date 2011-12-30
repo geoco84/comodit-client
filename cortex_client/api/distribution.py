@@ -6,12 +6,11 @@ Distribution module.
 @copyright: 2011 Guardis SPRL, Liège, Belgium.
 """
 
-from resource import Resource
 from file import File
-from cortex_client.api.settings import SettingFactory
+from cortex_client.api.settings import SettingFactory, Configurable
 from cortex_client.api.file import ParameterFactory
 
-class Distribution(Resource):
+class Distribution(Configurable):
     """
     Represents a distribution. A distribution is described by a kickstart file,
     the base URL of its repository, an initrd and a vmlinuz.

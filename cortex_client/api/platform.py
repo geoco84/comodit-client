@@ -6,11 +6,11 @@ Platform module.
 @copyright: 2011 Guardis SPRL, Liège, Belgium.
 """
 
-from resource import Resource
 from host import SettingFactory
 from cortex_client.api.file import File, ParameterFactory
+from cortex_client.api.settings import Configurable
 
-class Platform(Resource):
+class Platform(Configurable):
     """
     Platform's description. A platform is described by a driver and a list of
     settings.

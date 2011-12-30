@@ -1,37 +1,22 @@
-This folder contains scripts illustrating the use of cortex-client Python API
-and data files associated to these scripts. Below a short description of each
-script.
+This folder contains a integration test suite for both client and server APIs.
+A complete test run has following phases (executed when invoking 'python test.py'):
 
-definitions.py
-==============
+- setup: global variables are set (architecture, repositories, etc.) and
+kickstart is generated in function (see setup.py). To override default settings,
+create a 'var.py' file containing new settings.
 
-Contains definitions that may be used by below scripts. These definitions
-include information about organization, environment, distribution, platform,
-application and host to be created/used.
+- definition: ComodIT resources required for tests are defined but not yet
+created (see definitions.py).
 
-create.py
-=========
+- creation: Resources described at definition phase are created (see create.py).
 
-Creates resources (organization, environment, distribution, platform,
-application and host).
+- provisioning: Host instantiated in creation phase is provisioned on libvirt
+hypervisor provided at setup.
 
-provision.py
-============
+- testing: Integration tests described in 'test_*.py' files are executed. Each
+test is composed of 3 steps: setup, run and tear_down.
 
-Provisions created host (create.py must have been called first). This script
-blocks until host is completely provisioned.
+- clean-up: Finally, all created resources are deleted and kickstart file
+generated during setup is deleted.
 
-To be able to provision host, a libvirt daemon must run on local host. Initrd
-and vmlinuz files must also be available (see definitions.py). Also, pay
-attention to distribution's definition (see definitions.py).
-
-delete.py
-=========
-
-Deletes all created resources.
-
-create_provision_delete.py
-==========================
-
-Is equivalent to the execution of sequence of scripts 'create.py', 'provision.py'
-and 'delete.py'.
+Note that most phases may be executed separately by calling associated module.
