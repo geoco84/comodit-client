@@ -26,10 +26,10 @@ def setup():
 
     # Default repos, see co6.ks.template
     repos = {"base_url" : "http://oak.${zone}.guardis.be/public/centos/6/os/${vm_base_arch}/",
-             "updates" : "http://oak.${zone}.angleur.guardis.be/public/centos/6/updates/${vm_base_arch}/",
-             "epel": "http://oak.${zone}.angleur.guardis.be/public/epel/6/${vm_base_arch}/",
+             "updates" : "http://oak.${zone}.guardis.be/public/centos/6/updates/${vm_base_arch}/",
+             "epel": "http://oak.${zone}.guardis.be/public/epel/6/${vm_base_arch}/",
              "comodit": "http://devel.bruxelles.guardis.be/public/comodit/centos/6/${vm_arch}/",
-             "comodit-dev": "http://devel.bruxelles.angleur.guardis.be/public/comodit-dev/centos/6/${vm_arch}/"}
+             "comodit-dev": "http://devel.bruxelles.guardis.be/public/comodit-dev/centos/6/${vm_arch}/"}
 
     # Override default values with values from file 'var.py'
     if os.path.exists("var.py"):
