@@ -63,30 +63,30 @@ Actions:
 '''
 
 
-class PlatformSettingsController(HostAbstractSettingsController):
+class PlatformContextSettingsController(HostAbstractSettingsController):
 
     def __init__(self):
-        super(PlatformSettingsController, self).__init__()
+        super(PlatformContextSettingsController, self).__init__()
 
     def _get_settings(self, host, argv):
         return host.platform().get_single_resource().settings()
 
 
-class DistributionSettingsController(HostAbstractSettingsController):
+class DistributionContextSettingsController(HostAbstractSettingsController):
 
     def __init__(self):
-        super(DistributionSettingsController, self).__init__()
+        super(DistributionContextSettingsController, self).__init__()
 
     def _get_settings(self, host, argv):
         return host.distribution().get_single_resource().settings()
 
 
-class ApplicationSettingsController(ResourceController):
+class ApplicationContextSettingsController(ResourceController):
 
     _template = "setting.json"
 
     def __init__(self):
-        super(ApplicationSettingsController, self).__init__()
+        super(ApplicationContextSettingsController, self).__init__()
 
     def _get_name_argument(self, argv):
         if len(argv) < 5:
@@ -256,6 +256,114 @@ Actions:
     update <org_name> <env_name> <setting_name>
                             Update a setting
     delete <org_name> <env_name> <setting_name>
+                            Delete a setting
+'''
+
+
+class DistributionSettingsController(ResourceController):
+
+    _template = "setting.json"
+
+    def __init__(self):
+        super(DistributionSettingsController, self).__init__()
+
+    def _get_name_argument(self, argv):
+        if len(argv) < 3:
+            raise ArgumentException("An organization, a distribution and a setting name must be provided");
+
+        return argv[2]
+
+    def get_collection(self, argv):
+        if len(argv) < 2:
+            raise ArgumentException("An organization and a distribution must be provided");
+
+        org = self._api.organizations().get_resource(argv[0])
+        dist = org.distributions().get_resource(argv[1])
+
+        return dist.settings()
+
+    def _print_collection_completions(self, param_num, argv):
+        if param_num == 0:
+            self._print_identifiers(self._api.organizations())
+        elif len(argv) > 0 and param_num == 1:
+            org = self._api.organizations().get_resource(argv[0])
+            self._print_identifiers(org.distributions())
+
+    def _print_resource_completions(self, param_num, argv):
+        if param_num < 2:
+            self._print_collection_completions(param_num, argv)
+        elif len(argv) > 1 and param_num == 2:
+            org = self._api.organizations().get_resource(argv[0])
+            dist = org.distributions().get_resource(argv[1])
+            self._print_identifiers(dist.settings())
+
+    def _help(self, argv):
+        print '''You must provide an action to perform on this resource.
+
+Actions:
+    list <org_name> <dist_name>
+                            List all settings of a given distribution
+    show <org_name> <dist_name> <setting_name>
+                            Show the details of a setting
+    add <org_name> <dist_name>
+                            Add a setting
+    update <org_name> <dist_name> <setting_name>
+                            Update a setting
+    delete <org_name> <dist_name> <setting_name>
+                            Delete a setting
+'''
+
+
+class PlatformSettingsController(ResourceController):
+
+    _template = "setting.json"
+
+    def __init__(self):
+        super(PlatformSettingsController, self).__init__()
+
+    def _get_name_argument(self, argv):
+        if len(argv) < 3:
+            raise ArgumentException("An organization, a platform and a setting name must be provided");
+
+        return argv[2]
+
+    def get_collection(self, argv):
+        if len(argv) < 2:
+            raise ArgumentException("An organization and a platform must be provided");
+
+        org = self._api.organizations().get_resource(argv[0])
+        plat = org.platforms().get_resource(argv[1])
+
+        return plat.settings()
+
+    def _print_collection_completions(self, param_num, argv):
+        if param_num == 0:
+            self._print_identifiers(self._api.organizations())
+        elif len(argv) > 0 and param_num == 1:
+            org = self._api.organizations().get_resource(argv[0])
+            self._print_identifiers(org.platforms())
+
+    def _print_resource_completions(self, param_num, argv):
+        if param_num < 2:
+            self._print_collection_completions(param_num, argv)
+        elif len(argv) > 1 and param_num == 2:
+            org = self._api.organizations().get_resource(argv[0])
+            plat = org.platforms().get_resource(argv[1])
+            self._print_identifiers(plat.settings())
+
+    def _help(self, argv):
+        print '''You must provide an action to perform on this resource.
+
+Actions:
+    list <org_name> <dist_name>
+                            List all settings of a given platform
+    show <org_name> <dist_name> <setting_name>
+                            Show the details of a setting
+    add <org_name> <dist_name>
+                            Add a setting
+    update <org_name> <dist_name> <setting_name>
+                            Update a setting
+    delete <org_name> <dist_name> <setting_name>
                             Delete a setting
 '''
 

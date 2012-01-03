@@ -8,8 +8,8 @@
 # authorization from Guardis.
 from cortex_client.control.settings import HostSettingsController, \
     EnvironmentSettingsController, OrganizationSettingsController, \
-    ApplicationSettingsController, PlatformSettingsController, \
-    DistributionSettingsController
+    ApplicationContextSettingsController, PlatformContextSettingsController, \
+    DistributionContextSettingsController
 VERSION = "0.7.5-SNAPSHOT"
 RELEASE = "** ongoing development **"
 

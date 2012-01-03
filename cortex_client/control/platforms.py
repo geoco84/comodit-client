@@ -9,6 +9,7 @@
 
 from cortex_client.control.organization_resource import OrganizationResourceController
 from cortex_client.control.exceptions import MissingException
+from cortex_client.control.settings import PlatformSettingsController
 
 class PlatformsController(OrganizationResourceController):
 
@@ -16,6 +17,9 @@ class PlatformsController(OrganizationResourceController):
 
     def __init__(self):
         super(PlatformsController, self).__init__()
+
+        # subcontrollers
+        self._register_subcontroller(["settings"], PlatformSettingsController())
 
         # actions
         self._register(["show-file"], self._show_file, self._print_show_file_completions)
@@ -64,4 +68,5 @@ Actions:
     add <org_name>                  Add a platform
     update <org_name> <plat_name>   Update a platform
     delete <org_name> <plat_name>   Delete a platform
+    settings <...>                  Settings handling
 '''

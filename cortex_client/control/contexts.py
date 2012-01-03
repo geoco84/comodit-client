@@ -9,8 +9,8 @@
 
 from cortex_client.control.exceptions import ArgumentException
 from cortex_client.control.resource import ResourceController
-from cortex_client.control.settings import ApplicationSettingsController, \
-    PlatformSettingsController, DistributionSettingsController
+from cortex_client.control.settings import ApplicationContextSettingsController, \
+    PlatformContextSettingsController, DistributionContextSettingsController
 
 class ApplicationContextController(ResourceController):
 
@@ -20,7 +20,7 @@ class ApplicationContextController(ResourceController):
         super(ApplicationContextController, self).__init__()
 
         # subcontroller
-        self._register_subcontroller(["settings"], ApplicationSettingsController())
+        self._register_subcontroller(["settings"], ApplicationContextSettingsController())
 
         # actions
         self._register(["install"], self._install, self._print_install_completions)
@@ -112,7 +112,7 @@ class PlatformContextController(ResourceController):
         super(PlatformContextController, self).__init__()
 
         # subcontroller
-        self._register_subcontroller(["settings"], PlatformSettingsController())
+        self._register_subcontroller(["settings"], PlatformContextSettingsController())
 
         self._unregister(["update", "list"])
 
@@ -170,7 +170,7 @@ class DistributionContextController(ResourceController):
         super(DistributionContextController, self).__init__()
 
         # subcontroller
-        self._register_subcontroller(["settings"], DistributionSettingsController())
+        self._register_subcontroller(["settings"], DistributionContextSettingsController())
 
         self._unregister(["update", "list"])
 
