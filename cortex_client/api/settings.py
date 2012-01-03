@@ -103,3 +103,9 @@ class Configurable(Resource):
         setting = Setting(self.settings())
         setting.set_key(key)
         return setting
+
+    def _show_settings(self, indent = 0):
+        settings = self.settings().get_resources()
+        print " "*indent, "Settings:"
+        for s in settings:
+            s._show(indent + 2)

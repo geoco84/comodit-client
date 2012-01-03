@@ -481,7 +481,7 @@ class Host(Configurable):
         Provisions host.
         @raise PythonApiException: If host could not be provisioned.
         """
-        instance = InstanceCollection(self._get_api(), self._get_path() + "instance/")._new_resource({})
+        instance = self.instance()._new_resource({})
         instance.create()
 
     def render_file(self, app_name, file_name):

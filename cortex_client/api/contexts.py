@@ -40,11 +40,21 @@ class ApplicationContext(AbstractContext):
     def _get_path(self):
         return self._collection.get_path() + self.get_application() + "/"
 
+    def get_identifier(self):
+        return self.get_application()
+
+    def get_name(self):
+        return self.get_application()
+
     def get_application(self):
         return self._get_field("application")
 
     def set_application(self, application):
         return self._set_field("application", application)
+
+    def _show(self, indent = 0):
+        print " "*indent, "Application:", self.get_application()
+        self._show_settings(indent)
 
 
 class DistributionContextCollection(Collection):
@@ -68,6 +78,10 @@ class DistributionContext(AbstractContext):
     def set_distribution(self, distribution):
         return self._set_field("distribution", distribution)
 
+    def _show(self, indent = 0):
+        print " "*indent, "Distribution:", self.get_distribution()
+        self._show_settings(indent)
+
 
 class PlatformContextCollection(Collection):
     def __init__(self, api, collection_path):
@@ -89,3 +103,7 @@ class PlatformContext(AbstractContext):
 
     def set_platform(self, platform):
         return self._set_field("platform", platform)
+
+    def _show(self, indent = 0):
+        print " "*indent, "Platform:", self.get_platform()
+        self._show_settings(indent)

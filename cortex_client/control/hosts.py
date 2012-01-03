@@ -10,9 +10,11 @@
 from cortex_client.util import prompt, globals
 from cortex_client.control.resource import ResourceController
 from cortex_client.control.exceptions import ArgumentException, MissingException
-from cortex_client.api.exceptions import PythonApiException
 from cortex_client.control.tree_rendering import TreeRenderer
 from cortex_client.control.settings import HostSettingsController
+from cortex_client.control.instances import InstancesController
+from cortex_client.control.contexts import PlatformContextController, \
+    DistributionContextController, ApplicationContextController
 
 class HostsController(ResourceController):
 
@@ -23,18 +25,13 @@ class HostsController(ResourceController):
 
         # subcontrollers
         self._register_subcontroller(["settings"], HostSettingsController())
+        self._register_subcontroller(["instance"], InstancesController())
+        self._register_subcontroller(["applications"], ApplicationContextController())
+        self._register_subcontroller(["distribution"], DistributionContextController())
+        self._register_subcontroller(["platform"], PlatformContextController())
 
         # actions
         self._register(["provision"], self._provision, self._print_resource_completions)
-        self._register(["start"], self._start, self._print_resource_completions)
-        self._register(["pause"], self._pause, self._print_resource_completions)
-        self._register(["resume"], self._resume, self._print_resource_completions)
-        self._register(["shutdown"], self._shutdown, self._print_resource_completions)
-        self._register(["poweroff"], self._poweroff, self._print_resource_completions)
-        self._register(["applications"], self._applications, self._print_resource_completions)
-        self._register(["properties"], self._properties, self._print_resource_completions)
-        self._register(["instance"], self._instance, self._print_resource_completions)
-        self._register(["del-instance"], self._delete_instance, self._print_resource_completions)
         self._register(["render-file"], self._render_file, self._print_file_completions)
         self._register(["render-ks"], self._render_ks, self._print_resource_completions)
         self._register(["render-tree"], self._render_tree, self._print_tree_completions)
@@ -76,70 +73,15 @@ class HostsController(ResourceController):
 
         return argv[2]
 
-    def _settings(self, argv):
-        host = self._get_resource(argv)
-        host.show_settings()
-
     def _applications(self, argv):
         host = self._get_resource(argv)
         host.show_applications()
-
-    def _properties(self, argv):
-        host = self._get_resource(argv)
-        host.show_properties()
 
     def _delete(self, argv):
         host = self._get_resource(argv)
 
         if (prompt.confirm(prompt = "Delete " + host.get_name() + " ?", resp = False)) :
-            if prompt.confirm(prompt = "Delete VM also ?", resp = False):
-                host.deleteInstance()
             host.delete()
-
-    def _provision(self, argv):
-        host = self._get_resource(argv)
-        host.provision()
-
-    def _start(self, argv):
-        host = self._get_resource(argv)
-        host.instance().get_single_resource().start()
-
-    def _pause(self, argv):
-        host = self._get_resource(argv)
-        host.instance().get_single_resource().pause()
-
-    def _resume(self, argv):
-        host = self._get_resource(argv)
-        host.instance().get_single_resource().resume()
-
-    def _shutdown(self, argv):
-        host = self._get_resource(argv)
-        host.instance().get_single_resource().shutdown()
-
-    def _poweroff(self, argv):
-        host = self._get_resource(argv)
-        host.instance().get_single_resource().poweroff()
-
-    def _instance(self, argv):
-        host = self._get_resource(argv)
-        try:
-            info = host.instance().get_single_resource()
-            # Display the result
-            options = globals.options
-            if options.raw:
-                info.show(as_json = True)
-            else:
-                info.show()
-        except PythonApiException, e:
-            print e.message
-
-    def _delete_instance(self, argv):
-        host = self._get_resource(argv)
-        try:
-            if (prompt.confirm(prompt = "Delete " + host.get_name() + "'s instance ?", resp = False)) :
-                host.instance().get_single_resource().delete()
-        except PythonApiException, e:
-            print e.message
 
     def _print_file_completions(self, param_num, argv):
         if param_num < 3:
@@ -210,6 +152,10 @@ class HostsController(ResourceController):
         for c in changes:
             c.show()
 
+    def _provision(self, argv):
+        host = self._get_resource(argv)
+        host.provision()
+
     def _help(self, argv):
         print '''You must provide an action to perform on this resource.
 
@@ -218,13 +164,12 @@ Actions:
                        List all hosts, optionally within an environment
     show <org_name> <env_name> <host_name>
                        Show the details of a host
-    settings <org_name> <env_name> <host_name>
-                       Show the settings of a host
-    applications <org_name> <env_name> <host_name>
-                       Show the applications installed on a host
-    instance <org_name> <env_name> <host_name>
-                       Show information about host's instance (including IP
-                       address and hostname if available)
+    applications <...>
+                       Application contexts handling
+    settings <...>
+                       Settings handling
+    instance <...>
+                       Instance handling
     changes <org_name> <env_name> <host_name>
                        Show pending changes
     render-file <org_name> <env_name> <host_name> <app_name> <file_name>
@@ -245,16 +190,4 @@ Actions:
                        Update a host
     delete <org_name> <env_name> <host_name>
                        Delete a host
-    provision <org_name> <env_name> <host_name>
-                       Provision a host
-    start <org_name> <env_name> <host_name>
-                       Start a host
-    pause <org_name> <env_name> <host_name>
-                       Pause a host
-    resume <org_name> <env_name> <host_name>
-                       Resume a host's execution
-    shutdown <org_name> <env_name> <host_name>
-                       Shutdown a host
-    poweroff <org_name> <env_name> <host_name>
-                       Power-off a host
 '''
