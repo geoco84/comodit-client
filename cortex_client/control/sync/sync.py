@@ -143,9 +143,6 @@ class SyncController(AbstractController):
         else:
             self._actions.addAction(CreateResource(True, local_res))
 
-    def _push_group(self, local_group):
-        self._actions.addAction(UpdateResource(True, local_group))
-
     def _push_instance(self, host, instance):
         try:
             host.get_instance()
@@ -278,20 +275,20 @@ class SyncController(AbstractController):
         if not os.path.exists(groups_folder):
             return
 
-        groups_list = org.get_groups()
+        groups_list = os.listdir(groups_folder)
         for group_name in groups_list:
             group = Group(org.groups(), None)
             group_folder = os.path.join(groups_folder, group_name)
             group.load(group_folder)
 
-            self._push_group(group)
+            self._actions.addAction(UpdateResource(True, group))
 
     def _push_environments(self, org):
         envs_folder = self._get_environment_folder()
         if not os.path.exists(envs_folder):
             return
 
-        envs_list = org.get_environments()
+        envs_list = os.listdir(envs_folder)
         for env_name in envs_list:
             env = Environment(org.environments(), None)
             env_folder = os.path.join(envs_folder, env_name)
@@ -300,8 +297,12 @@ class SyncController(AbstractController):
             self._push_resource(env)
 
             # Push hosts
-            hosts_list = env.get_hosts()
+            hosts_list = os.listdir(env_folder)
             for host_name in hosts_list:
+                # Skip files
+                if os.path.isfile(host_name):
+                    continue
+
                 host = Host(env.hosts(), None)
                 host_folder = os.path.join(env_folder, host_name)
                 host.load(host_folder)
