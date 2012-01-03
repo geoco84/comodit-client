@@ -7,8 +7,6 @@
 # This software cannot be used and/or distributed without prior
 # authorization from Guardis.
 
-import sys
-
 from cortex_client.util import globals
 from cortex_client.control.exceptions import ControllerException
 
@@ -17,6 +15,7 @@ class AbstractController(object):
 
     def __init__(self):
         self._actions = {}
+        self._subcontrollers = {}
         self._completions = {}
         self._register("__available_actions", self._available_actions)
         self._default_action = lambda x : self._error("No default action defined", -1)
@@ -26,19 +25,26 @@ class AbstractController(object):
         self._api = api
         self._pre(argv)
 
-        if len(argv) == 0:
-            self._default_action(argv[1:])
+        param_num = globals.options.param_completions
+        if param_num >= 0:
+            if len(argv) == 0 or param_num == 0:
+                self._available_actions()
+            elif self._subcontrollers.has_key(argv[0]):
+                globals.options.param_completions -= 1
+                self._subcontrollers[argv[0]].run(api, argv[1:])
+            elif self._completions.has_key(argv[0]):
+                self._completions[argv[0]](param_num - 1, argv[1:])
         else:
-            action = argv[0]
-            if globals.options.param_completions >= 0:
-                if self._completions.has_key(action):
-                    self._completions[action](globals.options.param_completions, argv[1:])
-                return
-
-            if self._actions.has_key(action):
-                self._actions[action](argv[1:])
+            if len(argv) == 0:
+                self._default_action(argv)
             else:
-                raise ControllerException("Pardon Monsieur ? I'm not sure I understand your request")
+                action = argv[0]
+                if self._actions.has_key(action):
+                    self._actions[action](argv[1:])
+                elif self._subcontrollers.has_key(action):
+                    self._subcontrollers[action].run(api, argv[1:])
+                else:
+                    raise ControllerException("Pardon Monsieur ? I'm not sure I understand your request")
 
         self._post(argv)
         self._api = None
@@ -64,8 +70,18 @@ class AbstractController(object):
             if print_complete:
                     self._completions[action] = print_complete
 
-    def _available_actions(self, argv):
+    def _register_subcontroller(self, action, controller):
+        if isinstance(action, (list, tuple)):
+            for a in action:
+                self._subcontrollers[a] = controller
+        else:
+            self._subcontrollers[action] = controller
+
+    def _available_actions(self):
         for k in self._actions.keys():
+            if k[0] != '_':
+                print k
+        for k in self._subcontrollers.keys():
             if k[0] != '_':
                 print k
 

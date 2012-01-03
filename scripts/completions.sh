@@ -172,7 +172,7 @@ _cortex_client()
     #
     #  Cortex-client's resources and services.
     #
-    local resources=`${__no_opts[0]} --resources`
+    local resources=`${__no_opts[0]} --completions 0`
 
     #  Complete resources
     if [[ ${__no_opts_cur} == 1 || ${#__no_opts[@]} == 1 ]]
@@ -182,31 +182,17 @@ _cortex_client()
         return 0
     fi
 
-    #  Complete action if no argument is yet given
-    if [[ ${__no_opts_cur} == 2 || ${#__no_opts[@]} == 2 ]]
-    then
-        local resource=${__no_opts[1]}
-        local actions
-        actions=`${COMP_WORDS[0]} ${resource} __available_actions`
-        if [[ $? == 0 ]]
-        then
-            COMPREPLY=( $(compgen -W "${actions}" ${cur}) )
-        fi
-        _clean
-        return 0
-    fi
-
-    #  Complete parameters
-    if [[ ${__no_opts_cur} > 2  || ${#__no_opts[@]} > 2 ]]
+    #  Complete actions and parameters
+    if [[ ${__no_opts_cur} > 1  || ${#__no_opts[@]} > 1 ]]
     then
         local params
         local cur_arg
 
         if [[ ${__no_opts_cur} == -1 ]]
         then
-            ((cur_arg=${#__no_opts[@]}-3))
+            ((cur_arg=${#__no_opts[@]}-1))
         else
-            ((cur_arg=__no_opts_cur-3))
+            ((cur_arg=__no_opts_cur-1))
         fi
         params=`${COMP_WORDS[@]} --completions ${cur_arg}`
         case "$?" in

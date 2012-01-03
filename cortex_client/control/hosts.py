@@ -12,6 +12,7 @@ from cortex_client.control.resource import ResourceController
 from cortex_client.control.exceptions import ArgumentException, MissingException
 from cortex_client.api.exceptions import PythonApiException
 from cortex_client.control.tree_rendering import TreeRenderer
+from cortex_client.control.settings import HostSettingsController
 
 class HostsController(ResourceController):
 
@@ -19,13 +20,17 @@ class HostsController(ResourceController):
 
     def __init__(self):
         super(HostsController, self).__init__()
+
+        # subcontrollers
+        self._register_subcontroller(["settings"], HostSettingsController())
+
+        # actions
         self._register(["provision"], self._provision, self._print_resource_completions)
         self._register(["start"], self._start, self._print_resource_completions)
         self._register(["pause"], self._pause, self._print_resource_completions)
         self._register(["resume"], self._resume, self._print_resource_completions)
         self._register(["shutdown"], self._shutdown, self._print_resource_completions)
         self._register(["poweroff"], self._poweroff, self._print_resource_completions)
-        self._register(["settings"], self._settings, self._print_resource_completions)
         self._register(["applications"], self._applications, self._print_resource_completions)
         self._register(["properties"], self._properties, self._print_resource_completions)
         self._register(["instance"], self._instance, self._print_resource_completions)

@@ -16,6 +16,8 @@ class PlatformsController(OrganizationResourceController):
 
     def __init__(self):
         super(PlatformsController, self).__init__()
+
+        # actions
         self._register(["show-file"], self._show_file, self._print_show_file_completions)
         self._register(["set-file"], self._set_file, self._print_set_file_completions)
 

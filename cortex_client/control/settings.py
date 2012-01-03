@@ -69,7 +69,7 @@ class PlatformSettingsController(HostAbstractSettingsController):
         super(PlatformSettingsController, self).__init__()
 
     def _get_settings(self, host, argv):
-        return host.platform_settings()
+        return host.platform().settings()
 
 
 class DistributionSettingsController(HostAbstractSettingsController):
@@ -78,7 +78,7 @@ class DistributionSettingsController(HostAbstractSettingsController):
         super(DistributionSettingsController, self).__init__()
 
     def _get_settings(self, host, argv):
-        return host.distribution_settings()
+        return host.distribution().settings()
 
 
 class ApplicationSettingsController(ResourceController):

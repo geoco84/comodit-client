@@ -8,6 +8,7 @@
 # authorization from Guardis.
 
 from cortex_client.control.organization_resource import OrganizationResourceController
+from cortex_client.control.settings import EnvironmentSettingsController
 
 class EnvironmentsController(OrganizationResourceController):
 
@@ -15,6 +16,11 @@ class EnvironmentsController(OrganizationResourceController):
 
     def __init__(self):
         super(EnvironmentsController, self).__init__()
+
+        # subcontrollers
+        self._register_subcontroller(["settings"], EnvironmentSettingsController())
+
+        # actions
 
     def _get_collection(self, org):
         return org.environments()

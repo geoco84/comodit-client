@@ -43,12 +43,6 @@ def run(argv):
     control.router.register(["organizations"], OrganizationsController())
     control.router.register(["environments"], EnvironmentsController())
     control.router.register(["hosts"], HostsController())
-    control.router.register(["host-settings"], HostSettingsController())
-    control.router.register(["env-settings"], EnvironmentSettingsController())
-    control.router.register(["org-settings"], OrganizationSettingsController())
-    control.router.register(["app-settings"], ApplicationSettingsController())
-    control.router.register(["plat-settings"], PlatformSettingsController())
-    control.router.register(["dist-settings"], DistributionSettingsController())
 
     # services
     control.router.register(["sync"], SyncController())
@@ -133,10 +127,15 @@ def _parse(argv):
         control.router.print_keywords()
         exit(0)
 
-    if (len(args) == 0):
+    if len(args) == 0 and globals.options.param_completions < 0:
         parser.print_help()
         print_resources()
         exit(-1)
+    elif globals.options.param_completions == 0:
+        control.router.print_keywords()
+        exit(0)
+    else:
+        globals.options.param_completions -= 1
 
     # Use profile data to configure server API connector. Options provided
     # on command-line have priority.
