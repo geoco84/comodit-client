@@ -6,10 +6,6 @@
 #
 # This software cannot be used and/or distributed without prior 
 # authorization from Guardis.
-from cortex_client.control.settings import HostSettingsController, \
-    EnvironmentSettingsController, OrganizationSettingsController, \
-    ApplicationContextSettingsController, PlatformContextSettingsController, \
-    DistributionContextSettingsController
 VERSION = "0.7.5-SNAPSHOT"
 RELEASE = "** ongoing development **"
 
@@ -104,7 +100,6 @@ def _parse(argv):
 
     parser.add_option("--options", dest = "show_options", help = "display options", action = "store_true", default = False)
     parser.add_option("--options-with-value", dest = "show_options_with_value", help = "display options", action = "store_true", default = False)
-    parser.add_option("--resources", dest = "show_resources", help = "display resources", action = "store_true", default = False)
     parser.add_option("--completions", dest = "param_completions", type = "int", help = "parameter to complete", default = -1)
 
     (globals.options, args) = parser.parse_args()
@@ -121,10 +116,6 @@ def _parse(argv):
     if globals.options.show_options_with_value:
         for o in _get_value_options(parser):
             print o
-        exit(0)
-
-    if globals.options.show_resources:
-        control.router.print_keywords()
         exit(0)
 
     if len(args) == 0 and globals.options.param_completions < 0:
@@ -202,7 +193,6 @@ Resources:
     organizations       Top-level organization
     environments        Environment defined within an organization
     hosts               Host defined within an environment
-    host-settings       Settings of a host
 
 Services:
     sync                Synchronization service
