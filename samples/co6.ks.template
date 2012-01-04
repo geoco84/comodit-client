@@ -83,6 +83,12 @@ vim-enhanced
 # The additional distributions
 epel-release
 
+# ComodIT repositories
+comodit-release
+<#if enable_trunk="true">
+comodit-release-dev
+</#if>
+
 # Openssh
 openssh
 openssh-clients
