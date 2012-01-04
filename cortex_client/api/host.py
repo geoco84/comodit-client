@@ -58,7 +58,7 @@ class Property(JsonWrapper):
     def show(self, indent = 0):
         """
         Prints this property's state to standard output in a user-friendly way.
-        
+
         @param indent: The number of spaces to put in front of each displayed
         line.
         @type indent: Integer
@@ -69,17 +69,17 @@ class Property(JsonWrapper):
 class PropertyFactory(object):
     """
     Host's property factory.
-    
+
     @see: L{Property}
     @see: L{cortex_client.util.json_wrapper.JsonWrapper._get_list_field}
     """
     def new_object(self, json_data):
         """
         Instantiates a L{Property} object using given state.
-        
+
         @param json_data: A quasi-JSON representation of a Property instance's state.
         @type json_data: String, dict or list
-        
+
         @return: A property
         @rtype: L{Property}
         """
@@ -220,7 +220,7 @@ class Instance(Resource):
     def _show(self, indent = 0):
         """
         Prints instance's information to standard output in a user-friendly way.
-        
+
         @param indent: The number of spaces to put in front of each displayed
         line.
         @type indent: Integer
@@ -452,7 +452,7 @@ class Host(Configurable):
     def show_settings(self, indent = 0):
         """
         Prints Host's settings to standard output in a user-friendly way.
-        
+
         @param indent: The number of spaces to put in front of each displayed
         line.
         @type indent: Integer
@@ -506,21 +506,12 @@ class Host(Configurable):
             raise PythonApiException("Unable to clone host: " + e.message)
 
     def applications(self):
-        if self.get_state() != "PROVISIONED":
-            raise PythonApiException("Host must be provisioned")
-
         return ApplicationContextCollection(self._get_api(), self._get_path() + "applications/")
 
     def platform(self):
-        if self.get_state() != "PROVISIONED":
-            raise PythonApiException("Host must be provisioned")
-
         return PlatformContextCollection(self._get_api(), self._get_path() + "platform/")
 
     def distribution(self):
-        if self.get_state() != "PROVISIONED":
-            raise PythonApiException("Host must be provisioned")
-
         return DistributionContextCollection(self._get_api(), self._get_path() + "distribution/")
 
     def get_changes(self):
