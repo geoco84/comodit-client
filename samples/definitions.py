@@ -175,18 +175,18 @@ def define():
         }
     global_vars.plat_parameters = \
         [
-            {"key": "_libvirt_uuid", "value":""},
-            {"key": "_name", "value":""},
-            {"key": "_kernel", "value":""},
-            {"key": "_initrd", "value":""},
-            {"key": "_kickstart", "value":""},
-            {"key": "_path", "value":""},
-            {"key": "_uuid", "value":""},
-            {"key": "vm_memory", "value":""},
-            {"key": "vm_nvirtcpus", "value":""},
-            {"key": "vm_arch", "value":""},
-            {"key": "vm_mac", "value":""},
-            {"key": "vm_capacity", "value":""}
+            {"key": "_libvirt_uuid", "value":"", "name":"libvirtUuid"},
+            {"key": "_name", "value":"", "name":"Name"},
+            {"key": "_kernel", "value":"", "name":"Kernel"},
+            {"key": "_initrd", "value":"", "name":"Initrd"},
+            {"key": "_kickstart", "value":"", "name":"Kickstart"},
+            {"key": "_path", "value":"", "name":"Path"},
+            {"key": "_uuid", "value":"", "name":"Uuid"},
+            {"key": "vm_memory", "value":"", "name":"Memory"},
+            {"key": "vm_nvirtcpus", "value":"", "name":"VirtCpus"},
+            {"key": "vm_arch", "value":"", "name":"Architecture"},
+            {"key": "vm_mac", "value":"", "name":"MacAddress"},
+            {"key": "vm_capacity", "value":"", "name":"Capacity"}
         ]
 
     # Define distribution (kickstart template is in same folder)
@@ -217,12 +217,12 @@ def define():
     global_vars.dist_kickstart_content = "co6.ks"
     global_vars.dist_parameters = \
         [
-            {"key": "zone", "value": setup.global_vars.zone},
-            {"key": "vm_arch", "value": setup.global_vars.vm_arch},
-            {"key": "vm_base_arch", "value": setup.global_vars.vm_base_arch},
-            {"key": "enable_trunk", "value": "true"},
-            {"key": "ks_rootpw_one", "value": "secret"},
-            {"key": "amqp_server", "value": setup.global_vars.amqp_server}
+            {"key": "zone", "value": setup.global_vars.zone, "name": "Zone"},
+            {"key": "vm_arch", "value": setup.global_vars.vm_arch, "name": "Architecture"},
+            {"key": "vm_base_arch", "value": setup.global_vars.vm_base_arch, "name": "Base architecture"},
+            {"key": "enable_trunk", "value": "true", "name": "Enable trunk"},
+            {"key": "ks_rootpw_one", "value": "secret", "name": "Root password"},
+            {"key": "amqp_server", "value": setup.global_vars.amqp_server, "name": "AMQP server"}
         ]
 
     # Define environments
