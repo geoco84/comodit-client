@@ -13,6 +13,12 @@ class Group(Resource):
     def get_description(self):
         return self._get_field("description")
 
+    def set_description(self, desc):
+        return self._set_field("description", desc)
+
+    def get_organization(self):
+        return self._get_field("organization")
+
     def get_uuid(self):
         return self._get_field("uuid")
 
@@ -32,6 +38,7 @@ class Group(Resource):
     def _show(self, indent = 0):
         print " "*indent, "Name:", self.get_name()
         print " "*indent, "Description:", self.get_description()
+        print " "*indent, "Organization:", self.get_organization()
         print " "*indent, "Users:"
         users = self.get_users()
         for u in users:
