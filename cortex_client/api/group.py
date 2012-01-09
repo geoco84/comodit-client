@@ -10,6 +10,9 @@ class Group(Resource):
     def get_name(self):
         return self._get_field("name")
 
+    def get_description(self):
+        return self._get_field("description")
+
     def get_uuid(self):
         return self._get_field("uuid")
 
@@ -19,11 +22,16 @@ class Group(Resource):
     def add_user(self, user):
         return self._add_to_list_field("users", user)
 
+    def remove_user(self, user):
+        users = self._get_field("users")
+        users.remove(user)
+
     def clear_users(self, user):
         return self._set_list_field("users", [])
 
     def _show(self, indent = 0):
         print " "*indent, "Name:", self.get_name()
+        print " "*indent, "Description:", self.get_description()
         print " "*indent, "Users:"
         users = self.get_users()
         for u in users:

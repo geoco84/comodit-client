@@ -68,7 +68,7 @@ class Platform(Configurable):
         self._add_to_list_field("settings", setting)
 
     def _get_file_path(self, name):
-        return self._get_path() + "files/" + name
+        return self._get_path() + "files/" + name + "/content"
 
     def get_files(self):
         data = self._get_field("files")

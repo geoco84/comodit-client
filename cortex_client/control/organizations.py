@@ -24,6 +24,7 @@ class OrganizationsController(RootResourceController):
         # actions
         self._register("show-group", self._show_group, self._print_group_completions)
         self._register("add-user", self._add_user, self._print_group_completions)
+        self._register("del-user", self._del_user, self._print_group_completions)
 
     def get_collection(self, argv):
         return self._api.organizations()
@@ -52,6 +53,16 @@ class OrganizationsController(RootResourceController):
 
         group = org.groups().get_resource(argv[1])
         group.add_user(argv[2])
+        group.commit()
+
+    def _del_user(self, argv):
+        if len(argv) != 3:
+            raise ArgumentException("This action takes 3 arguments")
+
+        org = self._get_resource(argv)
+
+        group = org.groups().get_resource(argv[1])
+        group.remove_user(argv[2])
         group.commit()
 
     def _help(self, argv):
