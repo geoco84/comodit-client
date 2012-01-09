@@ -10,6 +10,7 @@
 from cortex_client.control.root_resource import RootResourceController
 from cortex_client.control.exceptions import ArgumentException
 from cortex_client.control.settings import OrganizationSettingsController
+from cortex_client.control.groups import GroupsController
 
 class OrganizationsController(RootResourceController):
 
@@ -20,11 +21,7 @@ class OrganizationsController(RootResourceController):
 
         # subcontrollers
         self._register_subcontroller(["settings"], OrganizationSettingsController())
-
-        # actions
-        self._register("show-group", self._show_group, self._print_group_completions)
-        self._register("add-user", self._add_user, self._print_group_completions)
-        self._register("del-user", self._del_user, self._print_group_completions)
+        self._register_subcontroller(["groups"], GroupsController())
 
     def get_collection(self, argv):
         return self._api.organizations()

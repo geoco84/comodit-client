@@ -6,7 +6,6 @@ Organization module.
 @copyright: 2011 Guardis SPRL, Liège, Belgium.
 """
 
-from resource import Resource
 from cortex_client.util.json_wrapper import StringFactory
 from environment import Environment
 from environment_collection import EnvironmentCollection
