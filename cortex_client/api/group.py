@@ -1,7 +1,7 @@
 # coding: utf-8
 
 from resource import Resource
-from cortex_client.util.json_wrapper import StringFactory
+from cortex_client.api.user import UserFactory
 
 class Group(Resource):
     def __init__(self, collection, json_data = None):
@@ -23,7 +23,7 @@ class Group(Resource):
         return self._get_field("uuid")
 
     def get_users(self):
-        return self._get_list_field("users", StringFactory())
+        return self._get_list_field("users", UserFactory())
 
     def add_user(self, user):
         return self._add_to_list_field("users", user)
@@ -42,4 +42,7 @@ class Group(Resource):
         print " "*indent, "Users:"
         users = self.get_users()
         for u in users:
-            print " "*(indent + 2), u
+            print " "*(indent + 2), "Username:", u.get_name()
+            print " "*(indent + 2), "Full name:", u.get_full_name()
+            print " "*(indent + 2), "E-mail:", u.get_email()
+            print
