@@ -68,6 +68,8 @@ class User(Resource):
 
     def _show(self, indent = 0):
         print " "*indent, "Username:", self.get_name()
+        print " "*indent, "Full name:", self.get_full_name()
+        print " "*indent, "E-mail:", self.get_email()
         print " "*indent, "Roles:"
         roles = self.get_roles()
         for r in roles:
