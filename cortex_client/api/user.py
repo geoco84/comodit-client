@@ -7,7 +7,6 @@ User module.
 """
 
 from resource import Resource
-from cortex_client.util.json_wrapper import StringFactory
 
 class UserFactory(object):
     def new_object(self, json_data):
@@ -50,30 +49,27 @@ class User(Resource):
     def set_email(self, email):
         return self._set_field("email", email)
 
-    def get_roles(self):
+    def get_role(self):
         """
-        Provides the list of roles associated to this user.
-        @return: A list of roles
-        @rtype: list of String
+        Provides the role associated to this user.
+        @return: A role
+        @rtype: String
         """
-        return self._get_list_field("roles", StringFactory())
+        return self._get_field("role")
 
-    def set_roles(self, roles):
+    def set_role(self, role):
         """
-        Sets the list of roles associated to this user.
-        @param roles: A list of roles
-        @type roles: list of String
+        Sets the role associated to this user.
+        @param role: A roles
+        @type roles: String
         """
-        return self._set_list_field("roles", roles)
+        return self._set_field("role", role)
 
     def _show(self, indent = 0):
         print " "*indent, "Username:", self.get_name()
         print " "*indent, "Full name:", self.get_full_name()
         print " "*indent, "E-mail:", self.get_email()
-        print " "*indent, "Roles:"
-        roles = self.get_roles()
-        for r in roles:
-            print " "*(indent + 2), r
+        print " "*indent, "Role:", self.get_role()
 
     def dump(self, output_folder):
         raise NotImplementedError

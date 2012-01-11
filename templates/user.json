@@ -3,10 +3,5 @@
     "password": "<user password>",
     "fullname": "<full name>",
     "email": "<user@server>",
-    "roles": [
-        "USER",
-        "ADMIN",
-        "MANAGER",
-        "GUEST"
-    ]
+    "role": "<GUEST, USER, MANAGER or ADMIN>"
 }
