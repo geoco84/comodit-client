@@ -76,7 +76,7 @@ class File(FileResource):
     def set_delimiter(self, delim):
         self._set_field("delimiter", delim)
 
-    def show(self, indent = 0):
+    def _show(self, indent = 0):
         print " "*indent, "Name:", self.get_name()
         print " "*indent, "Delimiter:"
         self.get_delimiter().show(indent + 2)
@@ -90,3 +90,26 @@ class FileCollection(Collection):
         res = File(self, json_data)
         return res
 
+
+class FileFactory(object):
+    def __init__(self, collection = None):
+        self._collection = collection
+
+    """
+    Application's file factory.
+    
+    @see: L{Application}
+    @see: L{cortex_client.util.json_wrapper.JsonWrapper._get_list_field}
+    """
+    def new_object(self, json_data):
+        """
+        Instantiates an ApplicationFile object using given state.
+        
+        @param json_data: A quasi-JSON representation of an ApplicationFile
+        instance's state.
+        @type json_data: String, dict or list
+        
+        @return: A file object
+        @rtype: L{ApplicationFile}
+        """
+        return File(self._collection, json_data)

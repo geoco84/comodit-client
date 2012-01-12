@@ -1,7 +1,9 @@
 # Setup Python path
-import sys, setup
-import definitions as defs
+import sys
 sys.path.append("..")
+import setup
+import definitions as defs
+
 
 
 #==============================================================================
@@ -12,7 +14,8 @@ from cortex_client.api.collection import ResourceNotFoundException
 from cortex_client.api.application import Package, ApplicationFile, Service, \
     Handler
 from cortex_client.api.settings import Setting
-from cortex_client.api.file import File, Parameter
+from cortex_client.api.file import File
+from cortex_client.api.parameters import Parameter
 
 #==============================================================================
 # Script
@@ -109,7 +112,7 @@ def create_app(org, desc):
         app.add_parameter(Parameter(p))
 
     for f in desc.files:
-        app.add_file(ApplicationFile(f.meta))
+        app.add_file(ApplicationFile(None, f.meta))
 
     for s in desc.services:
         app.add_service(Service(s))
@@ -117,11 +120,14 @@ def create_app(org, desc):
     for h in desc.handlers:
         app.add_handler(Handler(h))
 
+    app.show()
+
     app.create()
 
     # Upload file contents
     for f in desc.files:
-        app.set_file_content(f.meta["name"], f.content)
+        file_res = app.files().get_resource(f.meta["name"])
+        file_res.set_content(f.content)
 
     return app
 
@@ -140,7 +146,7 @@ def create_plat(org):
         plat.add_parameter(Parameter(p))
 
     for f in defs.global_vars.plat_files:
-        plat.add_file(File(f))
+        plat.add_file(File(None, f))
 
     plat.create()
 
@@ -163,7 +169,7 @@ def create_dist(org):
         dist.add_parameter(Parameter(p))
 
     for f in defs.global_vars.dist_files:
-        dist.add_file(File(f))
+        dist.add_file(File(None, f))
 
     dist.create()
 

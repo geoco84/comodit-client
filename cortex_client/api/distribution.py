@@ -9,6 +9,7 @@ Distribution module.
 from file import File
 from cortex_client.api.settings import SettingFactory, Configurable
 from cortex_client.api.parameters import ParameterFactory
+from cortex_client.api.file import FileFactory
 
 class Distribution(Configurable):
     """
@@ -31,20 +32,14 @@ class Distribution(Configurable):
         return self._get_path() + "files/" + name + "/content"
 
     def get_files(self):
-        data = self._get_field("files")
-        if data is None:
-            return None
-        files = []
-        for json_f in data:
-            files.append(File(json_data = json_f))
-        return files
+        return self._get_list_field("files", FileFactory(None))
 
     def get_file(self, name):
         files = self._get_field("files")
         if files is None:
             return None
         for json_f in files:
-            f = File(json_f)
+            f = File(None, json_f)
             if f.get_name() == name:
                 return f
         return None
@@ -119,5 +114,5 @@ class Distribution(Configurable):
         print " "*indent, "Files:"
         files = self.get_files()
         for f in files:
-            f.show(indent + 2)
+            f._show(indent + 2)
 
