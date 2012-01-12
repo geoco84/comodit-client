@@ -7,117 +7,50 @@ File module.
 """
 
 from cortex_client.util.json_wrapper import JsonWrapper
+from cortex_client.api.collection import Collection
+from cortex_client.api.resource import Resource
 
-class Parameter(JsonWrapper):
-    """
-    A template's parameter. A parameter is reprensented by a key, a default value
-    and a name. A version is also associated to the parameter by the server.
-    """
+
+class Delimiter(JsonWrapper):
     def __init__(self, json_data = None):
-        super(Parameter, self).__init__(json_data)
+        super(Delimiter, self).__init__(json_data)
 
-    def get_key(self):
-        """
-        Provides parameter's key.
-        @return: The key
-        @rtype: String
-        """
-        return self._get_field("key")
+    def get_start(self):
+        return self._get_field("start")
 
-    def set_key(self, key):
-        """
-        Sets parameter's key.
-        @param key: The key
-        @type key: String
-        """
-        return self._set_field("key", key)
-
-    def get_value(self):
-        """
-        Provides parameter's default value.
-        @return: The default value
-        @rtype: String
-        """
-        return self._get_field("value")
-
-    def set_value(self, value):
-        """
-        Sets parameter's default value.
-        @param value: The default value
-        @type value: String
-        """
-        return self._set_field("value", value)
-
-    def get_name(self):
-        """
-        Provides parameter's name.
-        @return: The name
-        @rtype: String
-        """
-        return self._get_field("name")
-
-    def set_name(self, name):
-        """
-        Sets parameter's name.
-        @param name: The name
-        @type name: String
-        """
-        return self._set_field("name", name)
-
-    def get_version(self):
-        """
-        Provides parameter's version number.
-        @return: The version number
-        @rtype: Integer
-        """
-        return int(self._get_field("version"))
+    def get_end(self):
+        return self._get_field("end")
 
     def show(self, indent = 0):
-        """
-        Prints parameter's state to standard output in a user-friendly way.
-        
-        @param indent: The number of spaces to put in front of each displayed
-        line.
-        @type indent: Integer
-        """
-        print " "*indent, "Key:", self.get_key()
-        print " "*indent, "Value:", self.get_value()
+        print " "*indent, "Start:", self.get_start()
+        print " "*indent, "End:", self.get_end()
 
 
-class ParameterFactory(object):
-    """
-    File parameter factory.
-    
-    @see: L{Parameter}
-    @see: L{cortex_client.util.json_wrapper.JsonWrapper._get_list_field}
-    """
-    def new_object(self, json_data):
-        """
-        Instantiates a L{Parameter} object using given state.
-        
-        @param json_data: A quasi-JSON representation of a Package instance's state.
-        @type json_data: String, dict or list
-        
-        @return: A parameter
-        @rtype: L{Parameter}
-        """
-        return Parameter(json_data)
+class FileResource(Resource):
+    def _get_content_path(self):
+        return self._get_path() + "content"
+
+    def set_content(self, path):
+        self._get_client().upload_to_exising_file_with_path(path, self._get_content_path())
+
+    def get_content(self):
+        return self._get_client().read(self._get_content_path(), decode = False)
 
 
-class File(JsonWrapper):
+class File(FileResource):
     """
     A file template. A template is the representation of a parametrized file.
     A template may be rendered after values are given to its parameters (see
     L{RenderingService}).
     """
-    def __init__(self, json_data = None):
+    def __init__(self, collection, json_data = None):
         """
         @param api: An access point.
         @type api: L{CortexApi}
         @param json_data: A quasi-JSON representation of application's state.
         @type json_data: dict, list or String
         """
-        super(File, self).__init__(json_data)
+        super(File, self).__init__(collection, json_data)
 
     def get_name(self):
         """
@@ -137,5 +70,23 @@ class File(JsonWrapper):
         """
         self._set_field("name", name)
 
+    def get_delimiter(self):
+        return Delimiter(self._get_field("delimiter"))
+
+    def set_delimiter(self, delim):
+        self._set_field("delimiter", delim)
+
     def show(self, indent = 0):
         print " "*indent, "Name:", self.get_name()
+        print " "*indent, "Delimiter:"
+        self.get_delimiter().show(indent + 2)
+
+
+class FileCollection(Collection):
+    def __init__(self, api, collection_path):
+        super(FileCollection, self).__init__(collection_path, api)
+
+    def _new_resource(self, json_data):
+        res = File(self, json_data)
+        return res
+

@@ -8,7 +8,7 @@ Distribution module.
 
 from file import File
 from cortex_client.api.settings import SettingFactory, Configurable
-from cortex_client.api.file import ParameterFactory
+from cortex_client.api.parameters import ParameterFactory
 
 class Distribution(Configurable):
     """

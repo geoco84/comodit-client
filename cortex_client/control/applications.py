@@ -14,7 +14,7 @@ from cortex_client.control.organization_resource import OrganizationResourceCont
 from cortex_client.control.exceptions import MissingException, ArgumentException
 from cortex_client.util.editor import edit_text
 from cortex_client.config import Config
-from cortex_client.api.contexts import ApplicationContext
+from cortex_client.control.files import ApplicationFilesController
 
 class ApplicationsController(OrganizationResourceController):
 
@@ -22,8 +22,11 @@ class ApplicationsController(OrganizationResourceController):
 
     def __init__(self):
         super(ApplicationsController, self).__init__()
-        self._register(["show-file"], self._show_file, self._print_show_file_completions)
-        self._register(["set-file"], self._set_file, self._print_set_file_completions)
+
+        # sub-controllers
+        self._register_subcontroller(["files"], ApplicationFilesController())
+
+        # actions
         self._register(["install"], self._install, self._print_install_completions)
         self._register(["uninstall"], self._uninstall, self._print_uninstall_completions)
 

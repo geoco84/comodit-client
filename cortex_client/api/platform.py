@@ -7,8 +7,9 @@ Platform module.
 """
 
 from host import SettingFactory
-from cortex_client.api.file import File, ParameterFactory
+from cortex_client.api.file import File
 from cortex_client.api.settings import Configurable
+from cortex_client.api.parameters import ParameterFactory
 
 class Platform(Configurable):
     """

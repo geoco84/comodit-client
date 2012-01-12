@@ -9,7 +9,9 @@ Application module.
 from cortex_client.util.json_wrapper import JsonWrapper, StringFactory
 from resource import Resource
 from file import File
-from cortex_client.api.file import Parameter, ParameterFactory
+from cortex_client.api.parameters import Parameter, ParameterFactory
+from cortex_client.api.collection import Collection
+from cortex_client.api.file import FileResource
 
 class ApplicationResource(JsonWrapper):
     """
@@ -176,12 +178,33 @@ class ServiceFactory(object):
         return Service(json_data)
 
 
-class ApplicationFile(ApplicationResource):
+class ApplicationFile(FileResource):
     """
     Application's file resource.
     
     @see: L{Application}
     """
+
+    def __init__(self, collection, json_data = None):
+        super(ApplicationFile, self).__init__(collection, json_data)
+
+    def get_name(self):
+        """
+        Provides the name of the resource
+        
+        @return: The name of the resource
+        @rtype: String
+        """
+        return self._get_field("name")
+
+    def set_name(self, name):
+        """
+        Sets the name of the resource
+
+        @param name: The new name of the resource
+        @type name: String
+        """
+        return self._set_field("name", name)
 
     def get_owner(self):
         """
@@ -223,7 +246,7 @@ class ApplicationFile(ApplicationResource):
         @rtype: L{File}
         """
         data = self._get_field("template")
-        return File(data)
+        return File(None, data)
 
     def set_template(self, template):
         """
@@ -231,9 +254,9 @@ class ApplicationFile(ApplicationResource):
         @param template: A template
         @type template: L{File}
         """
-        self._set_field("template", template.get_json())
+        self._set_field("template", template)
 
-    def show(self, indent = 0):
+    def _show(self, indent = 0):
         """
         Prints the state of this object to standard output in a user-friendly
         way.
@@ -253,7 +276,19 @@ class ApplicationFile(ApplicationResource):
             template.show(indent + 4)
 
 
+class ApplicationFileCollection(Collection):
+    def __init__(self, api, collection_path):
+        super(ApplicationFileCollection, self).__init__(collection_path, api)
+
+    def _new_resource(self, json_data):
+        res = ApplicationFile(self, json_data)
+        return res
+
+
 class ApplicationFileFactory(object):
+    def __init__(self, collection = None):
+        self._collection = collection
+
     """
     Application's file factory.
     
@@ -271,7 +306,7 @@ class ApplicationFileFactory(object):
         @return: A file object
         @rtype: L{ApplicationFile}
         """
-        return ApplicationFile(json_data)
+        return ApplicationFile(self._collection, json_data)
 
 
 class Action(JsonWrapper):
@@ -530,6 +565,9 @@ class Application(Resource):
         """
         self._add_to_list_field("files", app_file)
 
+    def files(self):
+        return ApplicationFileCollection(self._get_api(), self._get_path() + "files/")
+
     def get_handlers(self):
         """
         Provides the handlers associated to this application.
@@ -629,3 +667,4 @@ class Application(Resource):
         handlers = self.get_handlers()
         for f in handlers:
             f.show(indent + 2)
+
