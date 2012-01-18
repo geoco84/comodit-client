@@ -141,6 +141,145 @@ def define_simple_web_page():
             }
         ]
 
+def define_guardis_repositories():
+    name = "GuardisRepos"
+    global_vars.guardis_repos_name = name
+
+    desc = Expendable()
+    global_vars.apps[name] = desc
+
+    desc.name = name
+    desc.description = "Guardis repositories"
+
+    # Packages
+    desc.packages = []
+
+    # Files
+    desc.files = []
+
+    # 'CentOS-Base.repo' file
+    desc.files.append(Expendable())
+    desc.files[len(desc.files) - 1].meta = {
+                "owner": "root",
+                "group": "root",
+                "mode": "644",
+                "name": "CentOS-Base.repo",
+                "path": "/etc/yum.repos.d/CentOS-Base.repo",
+                "template": {
+                    "name": "CentOS-Base.repo"
+                }
+            }
+    desc.files[len(desc.files) - 1].content = "CentOS-Base.repo"
+
+    # 'comodit.repo' file
+    desc.files.append(Expendable())
+    desc.files[len(desc.files) - 1].meta = {
+                "owner": "root",
+                "group": "root",
+                "mode": "644",
+                "name": "comodit.repo",
+                "path": "/etc/yum.repos.d/comodit.repo",
+                "template": {
+                    "name": "comodit.repo"
+                }
+            }
+    desc.files[len(desc.files) - 1].content = "comodit.repo"
+
+    # 'comodit-dev.repo' file
+    desc.files.append(Expendable())
+    desc.files[len(desc.files) - 1].meta = {
+                "owner": "root",
+                "group": "root",
+                "mode": "644",
+                "name": "comodit-dev.repo",
+                "path": "/etc/yum.repos.d/comodit-dev.repo",
+                "template": {
+                    "name": "comodit-dev.repo"
+                }
+            }
+    desc.files[len(desc.files) - 1].content = "comodit-dev.repo"
+
+    # 'epel.repo' file
+    desc.files.append(Expendable())
+    desc.files[len(desc.files) - 1].meta = {
+                "owner": "root",
+                "group": "root",
+                "mode": "644",
+                "name": "epel.repo",
+                "path": "/etc/yum.repos.d/epel.repo",
+                "template": {
+                    "name": "epel.repo"
+                }
+            }
+    desc.files[len(desc.files) - 1].content = "epel.repo"
+
+    # 'yum_clean.sh' file
+    desc.files.append(Expendable())
+    desc.files[len(desc.files) - 1].meta = {
+                "owner": "root",
+                "group": "root",
+                "mode": "755",
+                "name": "yum_clean.sh",
+                "path": "/etc/yum.repos.d/yum_clean.sh",
+                "template": {
+                    "name": "yum_clean.sh"
+                }
+            }
+    desc.files[len(desc.files) - 1].content = "yum_clean.sh"
+
+    # Services
+    desc.services = []
+
+    # Handlers
+    actions = []
+    for file_desc in desc.files:
+        actions.append({
+                        "action": "update",
+                        "resource": "file://" + file_desc.meta["name"]
+                        })
+    desc.handlers = [
+            {
+                "do": actions,
+                "on": [
+                    "zone", "vm_arch", "vm_base_arch"
+                ]
+            },
+            {
+                "do": [
+                    {
+                        "action": "execute",
+                        "resource": "file://yum_clean.sh"
+                    }
+                ],
+                "on": [
+                    "_install"
+                ]
+            }
+        ]
+
+    # Parameters
+    desc.parameters = \
+        [
+            {
+                "description": "The geographical zone of the VM",
+                "key": "zone",
+                "name": "Zone",
+                "value": setup.global_vars.zone
+            },
+            {
+                "description": "The base arch of the VM",
+                "key": "vm_base_arch",
+                "name": "VmBaseArch",
+                "value": setup.global_vars.vm_base_arch
+            },
+            {
+                "description": "The arch of the VM",
+                "key": "vm_arch",
+                "name": "VmArch",
+                "value": setup.global_vars.vm_arch
+            }
+        ]
+
 def define():
     # Define organization
     global_vars.org_name = "Guardis2"
@@ -150,6 +289,7 @@ def define():
     global_vars.apps = {}
     define_web_server()
     define_simple_web_page()
+    define_guardis_repositories()
 
     # Define platform
     global_vars.plat_name = "Local2"
@@ -234,7 +374,7 @@ def define():
     global_vars.host_description = "Single host of Test2 environment"
     global_vars.host_dist = global_vars.dist_name
     global_vars.host_plat = global_vars.plat_name
-    global_vars.host_apps = [] # Application will be installed after provisioning
+    global_vars.host_apps = [global_vars.guardis_repos_name]
     global_vars.host_settings = \
         [
             {"key":"vm_arch", "value": setup.global_vars.vm_arch},

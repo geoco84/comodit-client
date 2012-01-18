@@ -1,0 +1,19 @@
+[comodit-dev]
+name=Comodit $releasever - $basearch
+baseurl=##repos_comodit-dev##
+failovermethod=priority
+<#if enable_trunk="true">
+enabled=1
+<#else>
+enabled=0
+</#if>
+gpgcheck=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-COMODIT
+
+[comodit-dev-source]
+name=Comodit $releasever - source
+baseurl=##repos_comodit-dev##SRPMS/
+failovermethod=priority
+enabled=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-COMODIT
+gpgcheck=0

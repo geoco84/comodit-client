@@ -86,6 +86,27 @@ def create_kickstart():
         with open("co6.ks", "w") as g:
             g.write(content)
 
+def create_repo_files():
+    global repos
+
+    files = ["CentOS-Base.repo.template",
+             "comodit.repo.template",
+             "comodit-dev.repo.template",
+             "epel.repo.template"]
+
+    for name in files:
+        repo_name = name[:-9]
+        with open(name, "r") as f:
+            content = f.read()
+            content = content.replace("##repos_base_url##", repos["base_url"])
+            content = content.replace("##repos_updates##", repos["updates"])
+            content = content.replace("##repos_epel##", repos["epel"])
+            content = content.replace("##repos_comodit##", repos["comodit"])
+            content = content.replace("##repos_comodit-dev##", repos["comodit-dev"])
+
+            with open(repo_name, "w") as g:
+                g.write(content)
+
 def delete_kickstart():
     try:
         os.remove("co6.ks")
@@ -95,4 +116,5 @@ def delete_kickstart():
 if __name__ == "__main__":
     setup()
     create_kickstart()
+    create_repo_files()
 
