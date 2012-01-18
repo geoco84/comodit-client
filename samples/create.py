@@ -120,8 +120,6 @@ def create_app(org, desc):
     for h in desc.handlers:
         app.add_handler(Handler(h))
 
-    app.show()
-
     app.create()
 
     # Upload file contents

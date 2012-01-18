@@ -1,5 +1,5 @@
 <volume>
-  <name>${_uuid}.img</name>
+  <name>${_host_uuid}.img</name>
   <capacity unit="M" >${vm_capacity}</capacity>
   <target>
     <format type='raw'/>

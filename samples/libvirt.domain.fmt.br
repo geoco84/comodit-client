@@ -2,7 +2,7 @@
   <#if _mode = "define">
   <uuid>${_libvirt_uuid}</uuid>
   </#if>
-  <name>${_name}</name>
+  <name>${_host_name}</name>
   <memory>${vm_memory}000</memory>
   <vcpu>${vm_nvirtcpus}</vcpu>
   <os>
