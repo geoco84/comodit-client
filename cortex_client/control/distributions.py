@@ -45,4 +45,5 @@ Actions:
                 Delete a distribution profile
     settings <...>
                 Settings handling
+    files <...> Files handling
 '''
