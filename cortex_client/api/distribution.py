@@ -10,6 +10,17 @@ from file import File
 from cortex_client.api.settings import SettingFactory, Configurable
 from cortex_client.api.parameters import ParameterFactory
 from cortex_client.api.file import FileFactory
+from cortex_client.api.collection import Collection
+
+
+class DistributionFileCollection(Collection):
+    def __init__(self, api, collection_path):
+        super(DistributionFileCollection, self).__init__(collection_path, api)
+
+    def _new_resource(self, json_data):
+        res = File(self, json_data)
+        return res
+
 
 class Distribution(Configurable):
     """
@@ -30,6 +41,9 @@ class Distribution(Configurable):
 
     def _get_file_path(self, name):
         return self._get_path() + "files/" + name + "/content"
+
+    def files(self):
+        return DistributionFileCollection(self._get_api(), self._get_path() + "files/")
 
     def get_files(self):
         return self._get_list_field("files", FileFactory(None))

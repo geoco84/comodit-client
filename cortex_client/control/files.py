@@ -59,12 +59,19 @@ class ApplicationFilesController(AbstractFilesController):
         org = self._api.organizations().get_resource(argv[0])
         return org.applications().get_resource(argv[1])
 
+    def _print_collection_completions(self, param_num, argv):
+        if param_num == 0:
+            self._print_identifiers(self._api.organizations())
+        elif len(argv) > 0 and param_num == 1:
+            org = self._api.organizations().get_resource(argv[0])
+            self._print_identifiers(org.applications())
+
     def _help(self, argv):
         print '''You must provide an action to perform on this resource.
 
 Actions:
     list <org_name> <app_name>
-                            List all file resources of a given platform
+                            List all file resources of a given application
     show <org_name> <app_name> <file_name>
                             Show the details of a file resource
     add <org_name> <app_name> <file_name>
@@ -75,3 +82,49 @@ Actions:
                             Delete a file resource
 '''
 
+
+class DistributionFilesController(AbstractFilesController):
+
+    def __init__(self):
+        super(DistributionFilesController, self).__init__()
+
+    def _get_file_position(self):
+        return 2
+
+    def _get_path_position(self):
+        return 3
+
+    def _get_name_argument(self, argv):
+        if len(argv) < 3:
+            raise ArgumentException("An organization, a distribution and a file name must be provided");
+        return argv[2]
+
+    def _get_owning_resource(self, argv):
+        if len(argv) < 2:
+            raise ArgumentException("An organization and a distribution name must be provided");
+
+        org = self._api.organizations().get_resource(argv[0])
+        return org.distributions().get_resource(argv[1])
+
+    def _print_collection_completions(self, param_num, argv):
+        if param_num == 0:
+            self._print_identifiers(self._api.organizations())
+        elif len(argv) > 0 and param_num == 1:
+            org = self._api.organizations().get_resource(argv[0])
+            self._print_identifiers(org.distributions())
+
+    def _help(self, argv):
+        print '''You must provide an action to perform on this resource.
+
+Actions:
+    list <org_name> <app_name>
+                            List all files of a given distribution
+    show <org_name> <app_name> <file_name>
+                            Show the details of a file
+    add <org_name> <app_name> <file_name>
+                            Add a file
+    update <org_name> <app_name> <file_name>
+                            Update a file
+    delete <org_name> <app_name> <file_name>
+                            Delete a file
+'''
