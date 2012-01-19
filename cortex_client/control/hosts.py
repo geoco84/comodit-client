@@ -7,7 +7,11 @@
 # This software cannot be used and/or distributed without prior
 # authorization from Guardis.
 
+import json, os
+
 from cortex_client.util import prompt, globals
+from cortex_client.util.editor import edit_text
+from cortex_client.config import Config
 from cortex_client.control.resource import ResourceController
 from cortex_client.control.exceptions import ArgumentException, MissingException
 from cortex_client.control.tree_rendering import TreeRenderer
@@ -15,6 +19,7 @@ from cortex_client.control.settings import HostSettingsController
 from cortex_client.control.instances import InstancesController
 from cortex_client.control.contexts import PlatformContextController, \
     DistributionContextController, ApplicationContextController
+
 
 class HostsController(ResourceController):
 
