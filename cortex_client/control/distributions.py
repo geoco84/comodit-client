@@ -10,6 +10,7 @@
 from cortex_client.control.organization_resource import OrganizationResourceController
 from cortex_client.control.settings import DistributionSettingsController
 from cortex_client.control.files import DistributionFilesController
+from cortex_client.control.parameters import DistributionParametersController
 
 class DistributionsController(OrganizationResourceController):
 
@@ -21,6 +22,7 @@ class DistributionsController(OrganizationResourceController):
         # subcontrollers
         self._register_subcontroller(["settings"], DistributionSettingsController())
         self._register_subcontroller(["files"], DistributionFilesController())
+        self._register_subcontroller(["parameters"], DistributionParametersController())
 
     def _get_collection(self, org):
         return org.distributions()

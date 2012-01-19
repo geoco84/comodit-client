@@ -15,6 +15,7 @@ from cortex_client.control.exceptions import MissingException, ArgumentException
 from cortex_client.util.editor import edit_text
 from cortex_client.config import Config
 from cortex_client.control.files import ApplicationFilesController
+from cortex_client.control.parameters import ApplicationParametersController
 
 class ApplicationsController(OrganizationResourceController):
 
@@ -25,6 +26,7 @@ class ApplicationsController(OrganizationResourceController):
 
         # sub-controllers
         self._register_subcontroller(["files"], ApplicationFilesController())
+        self._register_subcontroller(["parameters"], ApplicationParametersController())
 
         # actions
         self._register(["install"], self._install, self._print_install_completions)

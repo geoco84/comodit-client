@@ -9,7 +9,7 @@ Platform module.
 from host import SettingFactory
 from cortex_client.api.file import File, FileFactory
 from cortex_client.api.settings import Configurable
-from cortex_client.api.parameters import ParameterFactory
+from cortex_client.api.parameters import ParameterFactory, Parameter
 from cortex_client.api.collection import Collection
 
 
@@ -19,6 +19,15 @@ class PlatformFileCollection(Collection):
 
     def _new_resource(self, json_data):
         res = File(self, json_data)
+        return res
+
+
+class PlatformParameterCollection(Collection):
+    def __init__(self, api, collection_path):
+        super(PlatformParameterCollection, self).__init__(collection_path, api)
+
+    def _new_resource(self, json_data):
+        res = Parameter(self, json_data)
         return res
 
 
@@ -130,6 +139,9 @@ class Platform(Configurable):
         @type parameter: L{Parameter}
         """
         self._add_to_list_field("parameters", parameter)
+
+    def parameters(self):
+        return PlatformParameterCollection(self._get_api(), self._get_path() + "parameters/")
 
     def _show(self, indent = 0):
         super(Platform, self)._show(indent)

@@ -7,6 +7,8 @@
 # This software cannot be used and/or distributed without prior
 # authorization from Guardis.
 
+import re
+
 from cortex_client.util import globals
 from cortex_client.control.exceptions import ControllerException
 
@@ -94,13 +96,13 @@ class AbstractController(object):
             if k[0] != '_':
                 print k
 
+    def __match_replacement(self, match):
+        return "\\" + match.group(0)
+
     def _print_escaped_name(self, name):
         if name is None:
             return
-        name = name.replace("\\", "\\\\")
-        name = name.replace(" ", "\\ ")
-        name = name.replace("(", "\\(")
-        name = name.replace(")", "\\)")
+        name = re.sub(r'[ \\ ()<>\']', self.__match_replacement, name)
         print name.encode("utf-8")
 
     def _print_escaped_names(self, name_list):

@@ -108,33 +108,8 @@ _print_debug()
 # substitution does not work.
 _escape_string()
 {
-    __escaped_string=""
-    local to_escape=$1
-    local string_size=${#to_escape}
-    local i=0
-    while (( i < string_size ))
-    do
-        cur_char=${to_escape:$i:1}
-        if [[ "${cur_char}" == " " ]]
-        then
-            __escaped_string=${__escaped_string}"\\ "
-        elif [[ "${cur_char}" == "(" ]]
-        then
-            __escaped_string=${__escaped_string}"\("
-        elif [[ "${cur_char}" == ")" ]]
-        then
-            __escaped_string=${__escaped_string}"\)"
-        elif [[ "${cur_char}" == "<" ]]
-        then
-            __escaped_string=${__escaped_string}"\<"
-        elif [[ "${cur_char}" == ">" ]]
-        then
-            __escaped_string=${__escaped_string}"\>"
-        else
-            __escaped_string=${__escaped_string}${cur_char}
-        fi
-        ((i++))
-    done
+    local to_escape="$1"
+    __escaped_string=$(echo $to_escape | sed "s/[ ()<>']/\\\\&/g")
 }
 
 _cortex_client()
@@ -206,7 +181,7 @@ _cortex_client()
                 local num_of_comps=${#COMPREPLY[@]}
                 while ((cur_comp < num_of_comps))
                 do
-                    local to_escape=${COMPREPLY[$cur_comp]}
+                    local to_escape="${COMPREPLY[$cur_comp]}"
                     _escape_string $to_escape
                     local escaped=${__escaped_string}
                     COMPREPLY[$cur_comp]=$escaped

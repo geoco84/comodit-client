@@ -8,9 +8,9 @@
 # authorization from Guardis.
 
 from cortex_client.control.organization_resource import OrganizationResourceController
-from cortex_client.control.exceptions import MissingException
 from cortex_client.control.settings import PlatformSettingsController
 from cortex_client.control.files import PlatformFilesController
+from cortex_client.control.parameters import PlatformParametersController
 
 class PlatformsController(OrganizationResourceController):
 
@@ -22,6 +22,7 @@ class PlatformsController(OrganizationResourceController):
         # subcontrollers
         self._register_subcontroller(["settings"], PlatformSettingsController())
         self._register_subcontroller(["files"], PlatformFilesController())
+        self._register_subcontroller(["parameters"], PlatformParametersController())
 
     def _get_collection(self, org):
         return org.platforms()

@@ -1,12 +1,12 @@
-from cortex_client.util.json_wrapper import JsonWrapper
+from cortex_client.api.resource import Resource
 
-class Parameter(JsonWrapper):
+class Parameter(Resource):
     """
     A template's parameter. A parameter is reprensented by a key, a default value
     and a name. A version is also associated to the parameter by the server.
     """
-    def __init__(self, json_data = None):
-        super(Parameter, self).__init__(json_data)
+    def __init__(self, collection, json_data = None):
+        super(Parameter, self).__init__(collection, json_data)
 
     def get_key(self):
         """
@@ -56,6 +56,12 @@ class Parameter(JsonWrapper):
         """
         return self._set_field("name", name)
 
+    def get_description(self):
+        return self._get_field("description")
+
+    def set_description(self, description):
+        return self._set_field("description", description)
+
     def get_version(self):
         """
         Provides parameter's version number.
@@ -64,7 +70,7 @@ class Parameter(JsonWrapper):
         """
         return int(self._get_field("version"))
 
-    def show(self, indent = 0):
+    def _show(self, indent = 0):
         """
         Prints parameter's state to standard output in a user-friendly way.
         
@@ -72,11 +78,16 @@ class Parameter(JsonWrapper):
         line.
         @type indent: Integer
         """
+        print " "*indent, "Name:", self.get_name()
+        print " "*indent, "Description:", self.get_description()
         print " "*indent, "Key:", self.get_key()
-        print " "*indent, "Value:", self.get_value()
+        print " "*indent, "Default value:", self.get_value()
 
 
 class ParameterFactory(object):
+    def __init__(self, collection = None):
+        self._collection = collection
+
     """
     File parameter factory.
     
@@ -93,4 +104,4 @@ class ParameterFactory(object):
         @return: A parameter
         @rtype: L{Parameter}
         """
-        return Parameter(json_data)
+        return Parameter(self._collection, json_data)

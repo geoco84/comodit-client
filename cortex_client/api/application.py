@@ -285,6 +285,15 @@ class ApplicationFileCollection(Collection):
         return res
 
 
+class ApplicationParameterCollection(Collection):
+    def __init__(self, api, collection_path):
+        super(ApplicationParameterCollection, self).__init__(collection_path, api)
+
+    def _new_resource(self, json_data):
+        res = Parameter(self, json_data)
+        return res
+
+
 class ApplicationFileFactory(object):
     def __init__(self, collection = None):
         self._collection = collection
@@ -618,6 +627,9 @@ class Application(Resource):
         @type parameter: L{Parameter}
         """
         self._add_to_list_field("parameters", parameter)
+
+    def parameters(self):
+        return ApplicationParameterCollection(self._get_api(), self._get_path() + "parameters/")
 
     def _show(self, indent = 0):
         """
