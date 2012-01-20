@@ -109,7 +109,7 @@ def create_app(org, desc):
         app.add_package(Package(p))
 
     for p in desc.parameters:
-        app.add_parameter(Parameter(p))
+        app.add_parameter(Parameter(None, p))
 
     for f in desc.files:
         app.add_file(ApplicationFile(None, f.meta))
@@ -141,7 +141,7 @@ def create_plat(org):
         plat.add_setting(Setting(None, s))
 
     for p in defs.global_vars.plat_parameters:
-        plat.add_parameter(Parameter(p))
+        plat.add_parameter(Parameter(None, p))
 
     for f in defs.global_vars.plat_files:
         plat.add_file(File(None, f))
@@ -164,7 +164,7 @@ def create_dist(org):
         dist.add_setting(Setting(None, s))
 
     for p in defs.global_vars.dist_parameters:
-        dist.add_parameter(Parameter(p))
+        dist.add_parameter(Parameter(None, p))
 
     for f in defs.global_vars.dist_files:
         dist.add_file(File(None, f))
