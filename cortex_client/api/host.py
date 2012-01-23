@@ -143,8 +143,8 @@ class Instance(Resource):
         """
         return self._get_field("state")
 
-    def get_ip(self):
-        return self._get_field("ip")
+    def get_ips(self):
+        return self._get_list_field("ips", PropertyFactory())
 
     def get_hostname(self):
         return self._get_field("hostname")
@@ -227,10 +227,16 @@ class Instance(Resource):
         """
         print " "*indent, "State:", self.get_state()
         print " "*indent, "Synapse state:", self.get_synapse_state()
-        print " "*indent, "IP:", self.get_ip()
         print " "*indent, "Hostname:", self.get_hostname()
         print " "*indent, "Vnc:"
         self.get_vnc().show(indent + 2)
+        self.show_ips(indent)
+
+    def show_ips(self, indent = 0):
+        print " "*indent, "IPs:"
+        ips = self.get_ips()
+        for p in ips:
+            print " "*(indent + 2), p.get_key(), ":", p.get_value()
 
     def show_properties(self, indent = 0):
         print " "*indent, "Properties:"
