@@ -42,6 +42,7 @@ class HostsController(ResourceController):
         self._register(["render-tree"], self._render_tree, self._print_tree_completions)
         self._register(["clone"], self._clone, self._print_resource_completions)
         self._register(["changes"], self._changes, self._print_resource_completions)
+        self._register(["clear-changes"], self._clear_changes, self._print_resource_completions)
 
     def get_collection(self, argv):
         if len(argv) < 2:
@@ -156,6 +157,13 @@ class HostsController(ResourceController):
         print "Changes:"
         for c in changes:
             c.show()
+
+    def _clear_changes(self, argv):
+        if len(argv) != 3:
+            raise MissingException("This action takes 3 arguments")
+
+        host = self._get_resource(argv)
+        host.clear_changes()
 
     def _provision(self, argv):
         host = self._get_resource(argv)

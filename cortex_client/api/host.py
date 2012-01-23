@@ -542,3 +542,8 @@ class Host(Configurable):
             return changes
         except ApiException, e:
             raise PythonApiException("Unable to get changes: " + e.message)
+
+    def clear_changes(self):
+        if self.get_state() != "PROVISIONED":
+            raise PythonApiException("Host must be provisioned")
+        self._get_client().delete(self._get_path() + "changes/")
