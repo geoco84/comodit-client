@@ -146,6 +146,13 @@ class Instance(Resource):
     def get_ips(self):
         return self._get_list_field("ips", PropertyFactory())
 
+    def get_ip(self, interface):
+        ips_list = self._get_field("ips")
+        for p in ips_list:
+            if p["key"] == interface:
+                return p["value"]
+        return None
+
     def get_hostname(self):
         return self._get_field("hostname")
 

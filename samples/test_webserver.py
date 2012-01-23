@@ -23,7 +23,7 @@ def wait_changes(host):
 
 def test_web_server_default(host, port):
     wait_changes(host)
-    ip = host.instance().get_single_resource().get_ip()
+    ip = host.instance().get_single_resource().get_ip("eth0")
     try:
         urllib2.urlopen("http://" + ip + ":" + str(port))
     except urllib2.HTTPError, e:

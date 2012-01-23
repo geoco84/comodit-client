@@ -18,7 +18,7 @@ from cortex_client.api.exceptions import PythonApiException
 
 def test_web_server_page(host, port, page):
     wait_changes(host)
-    ip = host.instance().get_single_resource().get_ip()
+    ip = host.instance().get_single_resource().get_ip("eth0")
     try:
         return urllib2.urlopen("http://" + ip + ":" + str(port) + page)
     except urllib2.HTTPError, e:

@@ -2,7 +2,7 @@
   <name>${_host_uuid}.img</name>
   <capacity unit="M" >${vm_capacity}</capacity>
   <target>
-    <format type='raw'/>
+    <format type='qcow2'/>
     <permissions>
       <mode>0600</mode>
       <owner>0</owner>
