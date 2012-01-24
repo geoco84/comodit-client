@@ -315,13 +315,6 @@ def define():
         }
     global_vars.plat_parameters = \
         [
-            {"key": "_libvirt_uuid", "value":"", "name":"libvirtUuid"},
-            {"key": "_name", "value":"", "name":"Name"},
-            {"key": "_kernel", "value":"", "name":"Kernel"},
-            {"key": "_initrd", "value":"", "name":"Initrd"},
-            {"key": "_kickstart", "value":"", "name":"Kickstart"},
-            {"key": "_path", "value":"", "name":"Path"},
-            {"key": "_uuid", "value":"", "name":"Uuid"},
             {"key": "vm_memory", "value":"", "name":"Memory"},
             {"key": "vm_nvirtcpus", "value":"", "name":"VirtCpus"},
             {"key": "vm_arch", "value":"", "name":"Architecture"},

@@ -645,7 +645,7 @@ class Application(Resource):
         print " "*indent, "Parameters:"
         params = self.get_parameters()
         for p in params:
-            p.show(indent + 2)
+            p._show(indent + 2)
         print " "*indent, "Packages:"
         packages = self.get_packages()
         for p in packages:

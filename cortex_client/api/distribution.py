@@ -136,7 +136,7 @@ class Distribution(Configurable):
         print " "*indent, "Parameters:"
         params = self.get_parameters()
         for p in params:
-            p.show(indent + 2)
+            p._show(indent + 2)
         print " "*indent, "Files:"
         files = self.get_files()
         for f in files:
