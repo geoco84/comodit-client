@@ -9,10 +9,22 @@ class AbstractContext(Configurable):
     def get_settings(self):
         return self._get_list_field("settings", SettingFactory(self.settings()))
 
-    def add_setting(self, key, value):
+    def add_simple_setting(self, key, value):
         setting = Setting(self.settings())
         setting.set_key(key)
         setting.set_value(value)
+        self._add_to_list_field("settings", setting)
+
+    def add_link_setting(self, key, link):
+        setting = Setting(self.settings())
+        setting.set_key(key)
+        setting.set_link(link)
+        self._add_to_list_field("settings", setting)
+
+    def add_property_setting(self, key, prop):
+        setting = Setting(self.settings())
+        setting.set_key(key)
+        setting.set_property(prop)
         self._add_to_list_field("settings", setting)
 
     def get_setting(self, key):

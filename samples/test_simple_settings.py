@@ -3,7 +3,7 @@ import sys, test_utils
 import definitions as defs
 import setup as test_setup
 from test_webserver import test_web_server_default, install_web_server, uninstall_web_server
-from test_simple_web_page import get_setting_json
+from test_simple_web_page import get_simple_setting_json
 sys.path.append("..")
 
 
@@ -17,11 +17,11 @@ from cortex_client.api.exceptions import PythonApiException
 #==============================================================================
 # Script
 
-def add_setting(conf, key, value):
-    setting = conf.settings()._new_resource(get_setting_json(key, value))
+def add_simple_setting(conf, key, value):
+    setting = conf.settings()._new_resource(get_simple_setting_json(key, value))
     setting.create()
 
-def update_setting(conf, key, value):
+def update_to_simple_setting(conf, key, value):
     setting = conf.settings().get_resource(key)
     setting.set_value(value)
     setting.commit()
@@ -31,11 +31,11 @@ def delete_setting(conf, key):
     setting.delete()
 
 def __set_httpd_port_setting(conf, host, port):
-    add_setting(conf, "httpd_port", str(port))
+    add_simple_setting(conf, "httpd_port", str(port))
     test_web_server_default(host, port)
 
 def __update_httpd_port_setting(conf, host, port):
-    update_setting(conf, "httpd_port", str(port))
+    update_to_simple_setting(conf, "httpd_port", str(port))
     test_web_server_default(host, port)
 
 def __unset_httpd_port_setting(host, conf):

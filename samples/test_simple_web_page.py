@@ -3,6 +3,7 @@ import sys, urllib2, test_utils
 import definitions as defs
 import setup as test_setup
 from test_webserver import wait_changes, install_web_server, uninstall_web_server
+
 sys.path.append("..")
 
 
@@ -30,7 +31,12 @@ def install_simple_web_page(host, settings):
     context.set_application(defs.global_vars.simple_web_page_name)
 
     for s in settings:
-        context.add_setting(s["key"], s["value"])
+        if s.has_key("value"):
+            context.add_simple_setting(s["key"], s["value"])
+        elif s.has_key("link"):
+            context.add_link_setting(s["key"], s["link"])
+        elif s.has_key("property"):
+            context.add_property_setting(s["key"], s["property"])
 
     host.applications().add_resource(context)
     wait_changes(host)
@@ -51,7 +57,7 @@ def check_page_content(host, port, page, value):
     if content.find("Setting value: " + value) == -1:
         raise Exception("Unexpected page content")
 
-def get_setting_json(key, value):
+def get_simple_setting_json(key, value):
     return {"key": key, "value": value}
 
 def setup():
@@ -61,8 +67,8 @@ def setup():
     env = org.environments().get_resource(defs.global_vars.env_name)
     host = env.hosts().get_resource(defs.global_vars.host_name)
 
-    install_web_server(host, [get_setting_json("httpd_port", "80")])
-    install_simple_web_page(host, [get_setting_json("simple_web_page", "simple://hello")])
+    install_web_server(host, [get_simple_setting_json("httpd_port", "80")])
+    install_simple_web_page(host, [get_simple_setting_json("simple_web_page", "hello")])
 
 def run():
     api = CortexApi(test_setup.global_vars.comodit_url, test_setup.global_vars.comodit_user, test_setup.global_vars.comodit_pass)

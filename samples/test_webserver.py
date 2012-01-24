@@ -36,7 +36,12 @@ def install_web_server(host, settings = []):
     context.set_application(defs.global_vars.web_server_name)
 
     for s in settings:
-        context.add_setting(s["key"], s["value"])
+        if s.has_key("value"):
+            context.add_simple_setting(s["key"], s["value"])
+        elif s.has_key("link"):
+            context.add_link_setting(s["key"], s["link"])
+        elif s.has_key("property"):
+            context.add_property_setting(s["key"], s["property"])
 
     host.applications().add_resource(context)
     wait_changes(host)

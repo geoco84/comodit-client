@@ -73,6 +73,10 @@ class JsonWrapper(object):
         """
         self.__json_data[field] = value
 
+    def _del_field(self, field):
+        if self.__json_data.has_key(field):
+            del self.__json_data[field]
+
     def _get_list_field(self, field, factory):
         """
         Returns the value of a field as a list of objects. Each object of the

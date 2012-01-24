@@ -23,15 +23,28 @@ class Setting(Resource):
         self.set_key(name)
 
     def get_value(self):
-        """
-        Provides setting's value.
-        @return: The value
-        @rtype: String
-        """
         return self._get_field("value")
 
     def set_value(self, value):
         self._set_field("value", value)
+        self._del_field("link")
+        self._del_field("property")
+
+    def get_link(self):
+        return self._get_field("link")
+
+    def set_link(self, value):
+        self._del_field("value")
+        self._set_field("link", value)
+        self._del_field("property")
+
+    def get_property(self):
+        return self._get_field("property")
+
+    def set_property(self, value):
+        self._del_field("value")
+        self._del_field("link")
+        self._set_field("property", value)
 
     def set_key(self, key):
         self._set_field("key", key)
@@ -61,7 +74,12 @@ class Setting(Resource):
         @type indent: Integer
         """
         print " "*indent, "Key:", self.get_key()
-        print " "*indent, "Value:", self.get_value()
+        if self.get_value() != None:
+            print " "*indent, "Value:", self.get_value()
+        elif self.get_value() != None:
+            print " "*indent, "Link:", self.get_link()
+        elif self.get_value() != None:
+            print " "*indent, "Porperty:", self.get_property()
 
 
 class SettingFactory(object):
