@@ -31,12 +31,12 @@ def install_simple_web_page(host, settings):
     context.set_application(defs.global_vars.simple_web_page_name)
 
     for s in settings:
-        if s.has_key("value"):
-            context.add_simple_setting(s["key"], s["value"])
-        elif s.has_key("link"):
-            context.add_link_setting(s["key"], s["link"])
-        elif s.has_key("property"):
+        if s.has_key("property"):
             context.add_property_setting(s["key"], s["property"])
+        elif s.has_key("link"):
+            context.add_link_setting(s["key"], s["link"], s["value"])
+        elif s.has_key("value"):
+            context.add_simple_setting(s["key"], s["value"])
 
     host.applications().add_resource(context)
     wait_changes(host)

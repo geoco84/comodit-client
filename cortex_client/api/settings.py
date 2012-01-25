@@ -33,9 +33,9 @@ class Setting(Resource):
     def get_link(self):
         return self._get_field("link")
 
-    def set_link(self, value):
-        self._del_field("value")
-        self._set_field("link", value)
+    def set_link(self, link, value):
+        self._set_field("value", value)
+        self._set_field("link", link)
         self._del_field("property")
 
     def get_property(self):
@@ -76,9 +76,9 @@ class Setting(Resource):
         print " "*indent, "Key:", self.get_key()
         if self.get_value() != None:
             print " "*indent, "Value:", self.get_value()
-        elif self.get_value() != None:
+        elif self.get_link() != None:
             print " "*indent, "Link:", self.get_link()
-        elif self.get_value() != None:
+        elif self.get_property() != None:
             print " "*indent, "Porperty:", self.get_property()
 
 

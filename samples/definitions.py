@@ -289,6 +289,12 @@ def define_guardis_repositories():
                 "key": "vm_arch",
                 "name": "VmArch",
                 "value": setup.global_vars.vm_arch
+            },
+            {
+                "description": "Flag to enable comodit-dev repository",
+                "key": "enable_trunk",
+                "name": "Enable trunk",
+                "value": "true"
             }
         ]
 

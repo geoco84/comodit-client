@@ -15,10 +15,10 @@ class AbstractContext(Configurable):
         setting.set_value(value)
         self._add_to_list_field("settings", setting)
 
-    def add_link_setting(self, key, link):
+    def add_link_setting(self, key, link, default):
         setting = Setting(self.settings())
         setting.set_key(key)
-        setting.set_link(link)
+        setting.set_link(link, default)
         self._add_to_list_field("settings", setting)
 
     def add_property_setting(self, key, prop):

@@ -22,16 +22,16 @@ from cortex_client.api.api import CortexApi
 #==============================================================================
 # Script
 
-def get_link_setting_json(key, link):
-    return {"key": key, "link": link}
+def get_link_setting_json(key, link, default_value):
+    return {"key": key, "link": link, "value": default_value}
 
-def update_to_link_setting(conf, key, link):
+def update_to_link_setting(conf, key, link, default):
     setting = conf.settings().get_resource(key)
-    setting.set_link(link)
+    setting.set_link(link, default)
     setting.commit()
 
-def add_link_setting(conf, key, link):
-    setting = conf.settings()._new_resource(get_link_setting_json(key, link))
+def add_link_setting(conf, key, link, default_value):
+    setting = conf.settings()._new_resource(get_link_setting_json(key, link, default_value))
     setting.create()
 
 def setup():
@@ -42,7 +42,7 @@ def setup():
     host = env.hosts().get_resource(defs.global_vars.host_name)
 
     install_web_server(host, [get_simple_setting_json("httpd_port", "80")])
-    install_simple_web_page(host, [get_link_setting_json("simple_web_page", "organizations/" + defs.global_vars.org_name + "/environments/" + defs.global_vars.env_name + "/hosts/" + defs.global_vars.host_name + "/applications/" + defs.global_vars.web_server_name + "/settings/httpd_port:hello")])
+    install_simple_web_page(host, [get_link_setting_json("simple_web_page", "organizations/" + defs.global_vars.org_name + "/environments/" + defs.global_vars.env_name + "/hosts/" + defs.global_vars.host_name + "/applications/" + defs.global_vars.web_server_name + "/settings/httpd_port", "hello")])
 
 def run():
     api = CortexApi(test_setup.global_vars.comodit_url, test_setup.global_vars.comodit_user, test_setup.global_vars.comodit_pass)
@@ -74,10 +74,10 @@ def run():
     add_simple_setting(org, "key", "value")
 
     print "Creating link setting at environment level..."
-    add_link_setting(env, "key", "organizations/" + defs.global_vars.org_name + "/settings/key")
+    add_link_setting(env, "key", "organizations/" + defs.global_vars.org_name + "/settings/key", "")
 
     print "Updating simple setting of simple web page to link setting..."
-    update_to_link_setting(host.applications().get_resource(defs.global_vars.simple_web_page_name), "simple_web_page", "organizations/" + defs.global_vars.org_name + "/environments/" + defs.global_vars.env_name + "/settings/key")
+    update_to_link_setting(host.applications().get_resource(defs.global_vars.simple_web_page_name), "simple_web_page", "organizations/" + defs.global_vars.org_name + "/environments/" + defs.global_vars.env_name + "/settings/key", "")
 
     while len(host.get_changes()) > 0:
         time.sleep(3)
@@ -85,11 +85,11 @@ def run():
     check_page_content(host, 80, "/index.html", "Setting value: value")
 
     print "Creating a loop..."
-    update_to_link_setting(org, "key", "organizations/" + defs.global_vars.org_name + "/environments/" + defs.global_vars.env_name + "/hosts/" + defs.global_vars.host_name + "/applications/" + defs.global_vars.simple_web_page_name + "/settings/simple_web_page:default")
+    update_to_link_setting(org, "key", "organizations/" + defs.global_vars.org_name + "/environments/" + defs.global_vars.env_name + "/hosts/" + defs.global_vars.host_name + "/applications/" + defs.global_vars.simple_web_page_name + "/settings/simple_web_page", "default")
     check_page_content(host, 80, "/index.html", "Setting value: default")
 
     print "Updating loop..."
-    update_to_link_setting(org, "key", "organizations/" + defs.global_vars.org_name + "/environments/" + defs.global_vars.env_name + "/settings/key:default2")
+    update_to_link_setting(org, "key", "organizations/" + defs.global_vars.org_name + "/environments/" + defs.global_vars.env_name + "/settings/key", "default2")
 
     while len(host.get_changes()) > 0:
         time.sleep(3)
