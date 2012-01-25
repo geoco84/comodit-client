@@ -6,5 +6,14 @@
     <p>Hello world !</p>
     <p>Setting key: simple_web_page</p>
     <p>Setting value: ${simple_web_page}</p>
+    
+    <ul>
+    <#list list_setting as l>
+        <li>${l}</li>
+    </#list>
+    </ul>
+    
+    <p>Struct a: ${struct_setting.a}</p>
+    <p>Struct b: ${struct_setting.b}</p>
 </body>
 </html>

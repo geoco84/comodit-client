@@ -125,7 +125,7 @@ def define_simple_web_page():
                     }
                 ],
                 "on": [
-                    "simple_web_page"
+                    "simple_web_page", "list_setting", "struct_setting"
                 ]
             }
         ]
@@ -136,8 +136,20 @@ def define_simple_web_page():
             {
                 "description": "A parameter whose value is displayed",
                 "key": "simple_web_page",
-                "name": "Simple web page's parameter",
+                "name": "Simple web page's simple parameter",
                 "value": "hello"
+            },
+            {
+                "description": "A parameter whose value is displayed",
+                "key": "list_setting",
+                "name": "Simple web page's list parameter",
+                "value": ["one", "two", "three"]
+            },
+            {
+                "description": "A parameter whose value is displayed",
+                "key": "struct_setting",
+                "name": "Simple web page's struct parameter",
+                "value": {"a": "a value", "b": "b value"}
             }
         ]
 

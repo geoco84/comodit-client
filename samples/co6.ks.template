@@ -120,6 +120,9 @@ queue = vm.${_hostid}
 username = guest
 password = guest
 
+[status]
+update_interval = 1
+
 EOF
 
 # Synapse for one time install

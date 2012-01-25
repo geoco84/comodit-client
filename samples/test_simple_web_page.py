@@ -54,7 +54,7 @@ def uninstall_simple_web_page(host):
 def check_page_content(host, port, page, value):
     content_reader = test_web_server_page(host, port, page)
     content = content_reader.read()
-    if content.find("Setting value: " + value) == -1:
+    if content.find(value) == -1:
         raise Exception("Unexpected page content")
 
 def get_simple_setting_json(key, value):
@@ -77,7 +77,7 @@ def run():
     env = org.environments().get_resource(defs.global_vars.env_name)
     host = env.hosts().get_resource(defs.global_vars.host_name)
 
-    check_page_content(host, 80, "/index.html", "hello")
+    check_page_content(host, 80, "/index.html", "Setting value: hello")
 
 def tear_down():
     api = CortexApi(test_setup.global_vars.comodit_url, test_setup.global_vars.comodit_user, test_setup.global_vars.comodit_pass)
