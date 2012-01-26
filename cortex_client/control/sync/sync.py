@@ -78,7 +78,11 @@ class SyncController(AbstractController):
         self._actions = ActionsQueue()
         self._push_organization()
 
-        if(self._actions.isFastForward() or self._options.force):
+        if self._actions.isFastForward():
+            print "Fast-forward push"
+            self._actions.executeActions()
+        elif not self._actions.isFastForward() and self._options.force:
+            print "Push not fast-forward, forcing"
             self._actions.executeActions()
         else:
             print "Push not fast-forward:"
@@ -127,7 +131,7 @@ class SyncController(AbstractController):
         collection = local_res.get_collection()
         remote_res = None
         try:
-            collection.get_resource(res_name)
+            remote_res = collection.get_resource(res_name)
         except ResourceNotFoundException:
             pass
 
@@ -136,6 +140,9 @@ class SyncController(AbstractController):
             remote_uuid = remote_res.get_uuid()
             if(remote_uuid == local_uuid):
                 self._actions.addAction(UpdateResource(False, local_res))
+            else:
+                raise SyncException("There is a conflict for resource " + res_name)
+
 #            else:
 #                new_name = self._getUniqueName(res_name, collection)
 #                local_res.set_name(new_name)
@@ -194,11 +201,7 @@ class SyncController(AbstractController):
             # Dump files' content to disk
             files_folder = os.path.join(app_folder, "files")
             path.ensure(files_folder)
-            file_list = a.get_files()
-            for f in file_list:
-                file_name = f.get_name()
-                with open(os.path.join(files_folder, file_name), "w") as f:
-                    f.write(a.get_file_content(file_name).read())
+            self.__dump_files_content(a, files_folder)
 
     def _push_distributions(self, org):
         dists_folder = self._get_distribution_folder()
@@ -220,6 +223,12 @@ class SyncController(AbstractController):
                 content_file = os.path.join(dist_folder, "files", file_name)
                 self._push_file_content(content_file, dist, file_name)
 
+    def __dump_files_content(self, resource, output_folder):
+        for template in resource.files().get_resources():
+            file_name = template.get_name()
+            with open(os.path.join(output_folder, file_name), "w") as f:
+                f.write(template.get_content().read())
+
     def _dump_distributions(self, org):
         dists = org.distributions().get_resources()
         dists_folder = self._get_distribution_folder()
@@ -230,11 +239,7 @@ class SyncController(AbstractController):
             # Dump files' content to disk
             files_folder = os.path.join(dist_folder, "files")
             path.ensure(files_folder)
-            file_list = d.get_files()
-            for f in file_list:
-                file_name = f.get_name()
-                with open(os.path.join(files_folder, file_name), "w") as f:
-                    f.write(d.get_file_content(file_name).read())
+            self.__dump_files_content(d, files_folder)
 
     def _dump_environments(self, org):
         envs = org.environments().get_resources()
@@ -299,18 +304,19 @@ class SyncController(AbstractController):
             # Push hosts
             hosts_list = os.listdir(env_folder)
             for host_name in hosts_list:
+                host_dir = os.path.join(env_folder, host_name)
+
                 # Skip files
-                if os.path.isfile(host_name):
+                if os.path.isfile(host_dir):
                     continue
 
                 host = Host(env.hosts(), None)
-                host_folder = os.path.join(env_folder, host_name)
-                host.load(host_folder)
+                host.load(host_dir)
 
                 self._push_resource(host)
 
                 # Push instance
-                instance_file = self._get_instance_file(host_folder)
+                instance_file = self._get_instance_file(host_dir)
                 if os.path.exists(instance_file):
                     with open(instance_file, "r") as f:
                         instance = Instance(json.load(f))
@@ -326,11 +332,7 @@ class SyncController(AbstractController):
             # Dump files' content to disk
             files_folder = os.path.join(plat_folder, "files")
             path.ensure(files_folder)
-            file_list = p.get_files()
-            for f in file_list:
-                file_name = f.get_name()
-                with open(os.path.join(files_folder, file_name), "w") as f:
-                    f.write(p.get_file_content(file_name).read())
+            self.__dump_files_content(p, files_folder)
 
     def _push_platforms(self, org):
         plats_folder = self._get_platform_folder()

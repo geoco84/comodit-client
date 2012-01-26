@@ -28,7 +28,8 @@ class UploadContent(Action):
         return "Upload file " + self._src_file
 
     def executeAction(self):
-        self._res.set_file_content(self._file_name, self._src_file)
+        file_res = self._res.files().get_resource(self._file_name)
+        file_res.set_content(self._src_file)
 
 class ResourceAction(Action):
     def __init__(self, is_fast_forward, res_object):
