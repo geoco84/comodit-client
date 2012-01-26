@@ -46,7 +46,6 @@ class HostsController(ResourceController):
         self._update_action_doc_params("update", "<org_name>  <env_name> <res_name>")
         self._update_action_doc_params("show", "<org_name>  <env_name> <res_name>")
         self._register_action_doc(self._provision_doc())
-        self._register_action_doc(self._render_ks_doc())
         self._register_action_doc(self._render_tree_doc())
         self._register_action_doc(self._clone_doc())
         self._register_action_doc(self._changes_doc())
@@ -110,14 +109,6 @@ class HostsController(ResourceController):
                 app_files = app.get_files()
                 for f in app_files:
                     self._print_escaped_name(f.get_name())
-
-    def _render_ks(self, argv):
-        host = self._get_resource(argv)
-        print host.render_kickstart().read()
-
-    def _render_ks_doc(self):
-        return ActionDoc("render-ks", "<org_name> <env_name> <res_name>", """
-        Render a host's kickstart.""")
 
     def _print_tree_completions(self, param_num, argv):
         if param_num < 3:
