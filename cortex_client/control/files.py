@@ -12,7 +12,7 @@ class AbstractFilesController(ResourceController):
         super(AbstractFilesController, self).__init__()
 
         self._register(["show-content"], self._show_content, self._print_resource_completions)
-        self._register(["set-content"], self._set_content, self._print_resource_completions)
+        self._register(["set-content"], self._set_content, self._print_set_content_completions)
 
         self._doc = "Files handling."
         self._register_action_doc(self._show_content_doc())
@@ -30,6 +30,13 @@ class AbstractFilesController(ResourceController):
             res = self._get_owning_resource(argv)
             self._print_identifiers(res.files())
 
+    def _print_set_content_completions(self, param_num, argv):
+        file_pos = self._get_file_position()
+        if param_num <= file_pos:
+            self._print_resource_completions(param_num, argv)
+        elif param_num == file_pos + 1:
+            self._print_file_completions()
+
     def _show_content(self, argv):
         file_res = self._get_resource(argv)
         print file_res.get_content().read()
@@ -39,6 +46,9 @@ class AbstractFilesController(ResourceController):
         Show file's content.""")
 
     def _set_content(self, argv):
+        if len(argv) <= self._get_path_position():
+            raise ArgumentException("Wrong number of arguments")
+
         file_res = self._get_resource(argv)
         file_res.set_content(argv[self._get_path_position()])
 
