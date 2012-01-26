@@ -29,6 +29,8 @@ class ApplicationContextController(ResourceController):
         # 'install' and 'uninstall' are aliases for 'add' and 'delete'
         self._unregister(["add", "delete"])
 
+        self._doc = "Application contexts handling."
+
     def get_collection(self, argv):
         if len(argv) < 3:
             raise ArgumentException("Wrong number of arguments");
@@ -116,6 +118,8 @@ class PlatformContextController(ResourceController):
 
         self._unregister(["update", "list"])
 
+        self._doc = "Distribution contexts handling."
+
     def get_collection(self, argv):
         if len(argv) < 3:
             raise ArgumentException("Wrong number of arguments");
@@ -173,6 +177,8 @@ class DistributionContextController(ResourceController):
         self._register_subcontroller(["settings"], DistributionContextSettingsController())
 
         self._unregister(["update", "list"])
+
+        self._doc = "Distribution contexts handling."
 
     def get_collection(self, argv):
         if len(argv) < 3:

@@ -13,6 +13,7 @@ from cortex_client.config import Config
 from cortex_client.control.abstract import AbstractController
 from cortex_client.util import globals, prompt
 from cortex_client.util.editor import edit_text
+from cortex_client.control.doc import ActionDoc
 
 
 class ResourceController(AbstractController):
@@ -26,6 +27,13 @@ class ResourceController(AbstractController):
         self._register(["delete"], self._delete, self._print_resource_completions)
         self._register(["help"], self._help)
         self._default_action = self._help
+
+        self._doc = "Generic resources handling."
+        self._register_action_doc(self._list_doc())
+        self._register_action_doc(self._show_doc())
+        self._register_action_doc(self._add_doc())
+        self._register_action_doc(self._update_doc())
+        self._register_action_doc(self._delete_doc())
 
     def _print_list_completions(self, param_num, argv):
         pass
@@ -114,7 +122,7 @@ class ResourceController(AbstractController):
             res.delete()
 
     def _help(self, argv):
-        print "Oops, this piece is missing some documentation"
+        self._print_doc()
 
     def _get_resource(self, argv):
         return self.get_collection(argv).get_resource(self._get_name_argument(argv))
@@ -124,3 +132,38 @@ class ResourceController(AbstractController):
 
     def get_collection(self, argv):
         raise NotImplementedError
+
+    def _list_params(self):
+        return ""
+
+    def _list_doc(self):
+        return ActionDoc("list", self._list_params(), """
+        List available resources.""")
+
+    def _add_params(self):
+        return ""
+
+    def _add_doc(self):
+        return ActionDoc("add", self._list_params(), """
+        Add a new resource.""")
+
+    def _update_params(self):
+        return ""
+
+    def _update_doc(self):
+        return ActionDoc("update", self._list_params(), """
+        Update an existing resource.""")
+
+    def _delete_params(self):
+        return ""
+
+    def _delete_doc(self):
+        return ActionDoc("delete", self._list_params(), """
+        Delete an existing resource.""")
+
+    def _show_params(self):
+        return ""
+
+    def _show_doc(self):
+        return ActionDoc("show", self._list_params(), """
+        Show a resource.""")

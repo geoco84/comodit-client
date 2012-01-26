@@ -2,6 +2,7 @@
 
 from cortex_client.control.resource import ResourceController
 from cortex_client.control.exceptions import ArgumentException
+from cortex_client.control.doc import ActionDoc
 
 class AbstractFilesController(ResourceController):
 
@@ -12,6 +13,10 @@ class AbstractFilesController(ResourceController):
 
         self._register(["show-content"], self._show_content, self._print_resource_completions)
         self._register(["set-content"], self._set_content, self._print_resource_completions)
+
+        self._doc = "Files handling."
+        self._register_action_doc(self._show_content_doc())
+        self._register_action_doc(self._set_content_doc())
 
     def get_collection(self, argv):
         res = self._get_owning_resource(argv)
@@ -29,9 +34,17 @@ class AbstractFilesController(ResourceController):
         file_res = self._get_resource(argv)
         print file_res.get_content().read()
 
+    def _show_content_doc(self):
+        return ActionDoc("show-content", "", """
+        Show file's content.""")
+
     def _set_content(self, argv):
         file_res = self._get_resource(argv)
         file_res.set_content(argv[self._get_path_position()])
+
+    def _set_content_doc(self):
+        return ActionDoc("set-content", "", """
+        Set file's content.""")
 
 
 class ApplicationFilesController(AbstractFilesController):
@@ -40,6 +53,14 @@ class ApplicationFilesController(AbstractFilesController):
 
     def __init__(self):
         super(ApplicationFilesController, self).__init__()
+
+        self._update_action_doc_params("list", "<org_name> <app_name>")
+        self._update_action_doc_params("add", "<org_name>  <app_name>")
+        self._update_action_doc_params("delete", "<org_name>  <app_name> <file_name>")
+        self._update_action_doc_params("update", "<org_name>  <app_name> <file_name>")
+        self._update_action_doc_params("show", "<org_name>  <app_name> <file_name>")
+        self._update_action_doc_params("show-content", "<org_name>  <app_name> <file_name>")
+        self._update_action_doc_params("set-content", "<org_name>  <app_name> <file_name>")
 
     def _get_file_position(self):
         return 2
@@ -66,27 +87,19 @@ class ApplicationFilesController(AbstractFilesController):
             org = self._api.organizations().get_resource(argv[0])
             self._print_identifiers(org.applications())
 
-    def _help(self, argv):
-        print '''You must provide an action to perform on this resource.
-
-Actions:
-    list <org_name> <app_name>
-                            List all file resources of a given application
-    show <org_name> <app_name> <file_name>
-                            Show the details of a file resource
-    add <org_name> <app_name> <file_name>
-                            Add a file resource
-    update <org_name> <app_name> <file_name>
-                            Update a file resource
-    delete <org_name> <app_name> <file_name>
-                            Delete a file resource
-'''
-
 
 class DistributionFilesController(AbstractFilesController):
 
     def __init__(self):
         super(DistributionFilesController, self).__init__()
+
+        self._update_action_doc_params("list", "<org_name> <dist_name>")
+        self._update_action_doc_params("add", "<org_name>  <dist_name>")
+        self._update_action_doc_params("delete", "<org_name>  <dist_name> <file_name>")
+        self._update_action_doc_params("update", "<org_name>  <dist_name> <file_name>")
+        self._update_action_doc_params("show", "<org_name>  <dist_name> <file_name>")
+        self._update_action_doc_params("show-content", "<org_name>  <dist_name> <file_name>")
+        self._update_action_doc_params("set-content", "<org_name>  <dist_name> <file_name>")
 
     def _get_file_position(self):
         return 2
@@ -113,27 +126,19 @@ class DistributionFilesController(AbstractFilesController):
             org = self._api.organizations().get_resource(argv[0])
             self._print_identifiers(org.distributions())
 
-    def _help(self, argv):
-        print '''You must provide an action to perform on this resource.
-
-Actions:
-    list <org_name> <app_name>
-                            List all files of a given distribution
-    show <org_name> <app_name> <file_name>
-                            Show the details of a file
-    add <org_name> <app_name> <file_name>
-                            Add a file
-    update <org_name> <app_name> <file_name>
-                            Update a file
-    delete <org_name> <app_name> <file_name>
-                            Delete a file
-'''
-
 
 class PlatformFilesController(AbstractFilesController):
 
     def __init__(self):
         super(PlatformFilesController, self).__init__()
+
+        self._update_action_doc_params("list", "<org_name> <plat_name>")
+        self._update_action_doc_params("add", "<org_name> <plat_name>")
+        self._update_action_doc_params("delete", "<org_name> <plat_name> <file_name>")
+        self._update_action_doc_params("update", "<org_name> <plat_name> <file_name>")
+        self._update_action_doc_params("show", "<org_name> <plat_name> <file_name>")
+        self._update_action_doc_params("show-content", "<org_name> <plat_name> <file_name>")
+        self._update_action_doc_params("set-content", "<org_name> <plat_name> <file_name>")
 
     def _get_file_position(self):
         return 2
@@ -159,19 +164,3 @@ class PlatformFilesController(AbstractFilesController):
         elif len(argv) > 0 and param_num == 1:
             org = self._api.organizations().get_resource(argv[0])
             self._print_identifiers(org.platforms())
-
-    def _help(self, argv):
-        print '''You must provide an action to perform on this resource.
-
-Actions:
-    list <org_name> <app_name>
-                            List all files of a given platform
-    show <org_name> <app_name> <file_name>
-                            Show the details of a file
-    add <org_name> <app_name> <file_name>
-                            Add a file
-    update <org_name> <app_name> <file_name>
-                            Update a file
-    delete <org_name> <app_name> <file_name>
-                            Delete a file
-'''

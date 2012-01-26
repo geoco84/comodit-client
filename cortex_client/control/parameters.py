@@ -10,6 +10,8 @@ class AbstractParametersController(ResourceController):
     def __init__(self):
         super(AbstractParametersController, self).__init__()
 
+        self._doc = "Parameters handling."
+
     def get_collection(self, argv):
         res = self._get_owning_resource(argv)
         return res.parameters()
@@ -27,6 +29,12 @@ class ApplicationParametersController(AbstractParametersController):
 
     def __init__(self):
         super(ApplicationParametersController, self).__init__()
+
+        self._update_action_doc_params("list", "<org_name> <app_name>")
+        self._update_action_doc_params("add", "<org_name> <app_name>")
+        self._update_action_doc_params("delete", "<org_name>  <app_name> <param_name>")
+        self._update_action_doc_params("update", "<org_name> <app_name> <param_name>")
+        self._update_action_doc_params("show", "<org_name> <app_name> <param_name>")
 
     def _get_parameter_position(self):
         return 2
@@ -50,27 +58,17 @@ class ApplicationParametersController(AbstractParametersController):
             org = self._api.organizations().get_resource(argv[0])
             self._print_identifiers(org.applications())
 
-    def _help(self, argv):
-        print '''You must provide an action to perform on this resource.
-
-Actions:
-    list <org_name> <app_name>
-                            List all parameters of a given application
-    show <org_name> <app_name> <file_name>
-                            Show the details of a parameter
-    add <org_name> <app_name> <file_name>
-                            Add a parameter
-    update <org_name> <app_name> <file_name>
-                            Update a parameter
-    delete <org_name> <app_name> <file_name>
-                            Delete a parameter
-'''
-
 
 class DistributionParametersController(AbstractParametersController):
 
     def __init__(self):
         super(DistributionParametersController, self).__init__()
+
+        self._update_action_doc_params("list", "<org_name> <dist_name>")
+        self._update_action_doc_params("add", "<org_name> <dist_name>")
+        self._update_action_doc_params("delete", "<org_name>  <dist_name> <param_name>")
+        self._update_action_doc_params("update", "<org_name> <dist_name> <param_name>")
+        self._update_action_doc_params("show", "<org_name> <dist_name> <param_name>")
 
     def _get_parameter_position(self):
         return 2
@@ -94,27 +92,17 @@ class DistributionParametersController(AbstractParametersController):
             org = self._api.organizations().get_resource(argv[0])
             self._print_identifiers(org.distributions())
 
-    def _help(self, argv):
-        print '''You must provide an action to perform on this resource.
-
-Actions:
-    list <org_name> <app_name>
-                            List all parameters of a given distribution
-    show <org_name> <app_name> <file_name>
-                            Show the details of a parameter
-    add <org_name> <app_name> <file_name>
-                            Add a parameter
-    update <org_name> <app_name> <file_name>
-                            Update a parameter
-    delete <org_name> <app_name> <file_name>
-                            Delete a parameter
-'''
-
 
 class PlatformParametersController(AbstractParametersController):
 
     def __init__(self):
         super(PlatformParametersController, self).__init__()
+
+        self._update_action_doc_params("list", "<org_name> <plat_name>")
+        self._update_action_doc_params("add", "<org_name> <plat_name>")
+        self._update_action_doc_params("delete", "<org_name>  <plat_name> <param_name>")
+        self._update_action_doc_params("update", "<org_name> <plat_name> <param_name>")
+        self._update_action_doc_params("show", "<org_name> <plat_name> <param_name>")
 
     def _get_parameter_position(self):
         return 2
@@ -137,19 +125,3 @@ class PlatformParametersController(AbstractParametersController):
         elif len(argv) > 0 and param_num == 1:
             org = self._api.organizations().get_resource(argv[0])
             self._print_identifiers(org.platforms())
-
-    def _help(self, argv):
-        print '''You must provide an action to perform on this resource.
-
-Actions:
-    list <org_name> <app_name>
-                            List all parameters of a given platform
-    show <org_name> <app_name> <file_name>
-                            Show the details of a parameter
-    add <org_name> <app_name> <file_name>
-                            Add a parameter
-    update <org_name> <app_name> <file_name>
-                            Update a parameter
-    delete <org_name> <app_name> <file_name>
-                            Delete a parameter
-'''

@@ -23,6 +23,7 @@ from cortex_client.api.application import Application
 from cortex_client.api.distribution import Distribution
 from cortex_client.api.environment import Environment
 from cortex_client.api.platform import Platform
+from cortex_client.control.doc import ActionDoc
 
 class SyncController(AbstractController):
 
@@ -32,6 +33,10 @@ class SyncController(AbstractController):
         self._register(["push"], self._push, self._print_push_completions)
         self._register(["help"], self._help)
         self._default_action = self._help
+
+        self._doc = "Synchronization service."
+        self._register_action_doc(self._pull_doc())
+        self._register_action_doc(self._push_doc())
 
     def __set_root_folder(self, argv):
         if len(argv) < 1:
@@ -58,6 +63,10 @@ class SyncController(AbstractController):
 
         org = self._api.organizations().get_resource(argv[0])
         self._dump_organization(org)
+
+    def _pull_doc(self):
+        return ActionDoc("pull", "<org_name> [<output_folder>]", """
+        Pull data from server.""")
 
     def _print_push_completions(self, param_num, argv):
         if param_num == 0:
@@ -87,6 +96,10 @@ class SyncController(AbstractController):
         else:
             print "Push not fast-forward:"
             self._actions.display()
+
+    def _push_doc(self):
+        return ActionDoc("push", "<org_name> [<output_folder>]", """
+        Pull data from server.""")
 
     def _push_file_content(self, src_file, app, name):
         self._actions.addAction(UploadContent(src_file, app, name))
@@ -360,7 +373,7 @@ class SyncController(AbstractController):
 Actions:
     pull <org_name> [path]         Retrieves data from cortex server (local data
                                    are overwritten)
-    push <org_name> [path]         Updates data on cortex server (remote data
+    push [path]                    Updates data on cortex server (remote data
                                    may be overwritten if --force option is set)
 """
 

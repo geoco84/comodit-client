@@ -22,23 +22,7 @@ class ApplicationsController(OrganizationResourceController):
         self._register_subcontroller(["files"], ApplicationFilesController())
         self._register_subcontroller(["parameters"], ApplicationParametersController())
 
+        self._doc = "Applications handling."
+
     def _get_collection(self, org):
         return org.applications()
-
-    def _help(self, argv):
-        print '''You must provide an action to perform on this resource.
-
-Actions:
-    list <org_name>          List all application profiles available to the user
-    show <org_name> <app_name>
-                             Show the details of an application
-    add   <org_name>         Add an application
-    update <org_name> <app_name>
-                             Update an application
-    delete <org_name> <app_name>
-                             Delete an application
-    files <...>
-                             File resources handling
-    parameters <...>
-                             Parameters handling
-'''

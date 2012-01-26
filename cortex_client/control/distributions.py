@@ -24,28 +24,7 @@ class DistributionsController(OrganizationResourceController):
         self._register_subcontroller(["files"], DistributionFilesController())
         self._register_subcontroller(["parameters"], DistributionParametersController())
 
+        self._doc = "Distributions handling."
+
     def _get_collection(self, org):
         return org.distributions()
-
-    def _help(self, argv):
-        print '''You must provide an action to perform on this resource.
-
-Actions:
-    list <org_name>
-                List all distribution profiles available to the user
-    show <org_name> <dist_name>
-                Show the details of a distribution
-    show-file <org_name> <dist_name> <file_name>
-                Show a distribution's file template
-    set-file <org_name> <dist_name> <file_name> <path>
-                Set a distribution's file template's content
-    add <org_name>
-                Add a distribution profile
-    update <org_name> <dist_name>
-                Update a distribution profile
-    delete <org_name> <dist_name>
-                Delete a distribution profile
-    settings <...>
-                Settings handling
-    files <...> Files handling
-'''

@@ -11,6 +11,8 @@ class GroupsController(ResourceController):
         # Unregister unsupported actions
         self._unregister(["add", "delete"])
 
+        self._doc = "Groups handling."
+
     def get_collection(self, argv):
         if len(argv) < 1:
             raise ArgumentException("Wrong number of arguments");
@@ -33,15 +35,3 @@ class GroupsController(ResourceController):
         if len(argv) < 2:
             raise ArgumentException("An organization name and a group name must be provided")
         return argv[1]
-
-    def _help(self, argv):
-        print '''You must provide an action to perform on this resource.
-
-Actions:
-    list <org_name>
-                       List the groups of an organization
-    show <org_name> <group_name>
-                       Show the details of a group
-    update <org_name> <group_name>
-                       Updates a group
-'''

@@ -11,6 +11,7 @@ import re
 
 from cortex_client.util import globals
 from cortex_client.control.exceptions import ControllerException
+from cortex_client.control.doc import ActionDoc
 
 class AbstractController(object):
     '''The default (abstract) controller'''
@@ -19,6 +20,7 @@ class AbstractController(object):
         self._actions = {}
         self._subcontrollers = {}
         self._completions = {}
+        self._docs = {}
         self._register("__available_actions", self._available_actions)
         self._default_action = lambda x : self._error("No default action defined", -1)
 
@@ -70,16 +72,24 @@ class AbstractController(object):
         else:
             self._actions[action] = command
             if print_complete:
-                    self._completions[action] = print_complete
+                self._completions[action] = print_complete
+
+    def _register_action_doc(self, doc):
+        self._docs[doc.get_action()] = doc
+
+    def _update_action_doc_params(self, action, params):
+        self._docs[action].set_param_string(params)
 
     def _unregister(self, action):
         if isinstance(action, (list, tuple)):
             for a in action:
                 del self._actions[a]
                 del self._completions[a]
+                del self._docs[a]
         else:
             del self._actions[action]
             del self._completions[action]
+            del self._docs[action]
 
     def _register_subcontroller(self, action, controller):
         if isinstance(action, (list, tuple)):
@@ -131,3 +141,16 @@ class AbstractController(object):
 
     def _print_dir_completions(self):
         exit(2)
+
+    def _print_doc(self):
+        if self._doc:
+            print self._doc
+        print
+        print "Available actions:"
+        for doc in self._docs.values():
+            doc.print_doc()
+        print
+        for (action, ctrl) in self._subcontrollers.items():
+            doc = ActionDoc(action, "<...>", """
+        """ + ctrl._doc)
+            doc.print_doc()

@@ -7,18 +7,15 @@
 # This software cannot be used and/or distributed without prior
 # authorization from Guardis.
 
-import json, os
-
 from cortex_client.util import prompt, globals
-from cortex_client.util.editor import edit_text
-from cortex_client.config import Config
 from cortex_client.control.resource import ResourceController
 from cortex_client.control.exceptions import ArgumentException, MissingException
-from cortex_client.control.tree_rendering import TreeRenderer
 from cortex_client.control.settings import HostSettingsController
 from cortex_client.control.instances import InstancesController
 from cortex_client.control.contexts import PlatformContextController, \
     DistributionContextController, ApplicationContextController
+from cortex_client.control.tree_rendering import TreeRenderer
+from cortex_client.control.doc import ActionDoc
 
 
 class HostsController(ResourceController):
@@ -43,6 +40,20 @@ class HostsController(ResourceController):
         self._register(["clone"], self._clone, self._print_resource_completions)
         self._register(["changes"], self._changes, self._print_resource_completions)
         self._register(["clear-changes"], self._clear_changes, self._print_resource_completions)
+
+        self._doc = "Hosts handling."
+        self._update_action_doc_params("list", "<org_name> <env_name>")
+        self._update_action_doc_params("add", "<org_name>  <env_name>")
+        self._update_action_doc_params("delete", "<org_name>  <env_name> <res_name>")
+        self._update_action_doc_params("update", "<org_name>  <env_name> <res_name>")
+        self._update_action_doc_params("show", "<org_name>  <env_name> <res_name>")
+        self._register_action_doc(self._provision_doc())
+        self._register_action_doc(self._render_file_doc())
+        self._register_action_doc(self._render_ks_doc())
+        self._register_action_doc(self._render_tree_doc())
+        self._register_action_doc(self._clone_doc())
+        self._register_action_doc(self._changes_doc())
+        self._register_action_doc(self._clear_changes_doc())
 
     def get_collection(self, argv):
         if len(argv) < 2:
@@ -79,10 +90,6 @@ class HostsController(ResourceController):
 
         return argv[2]
 
-    def _applications(self, argv):
-        host = self._get_resource(argv)
-        host.show_applications()
-
     def _delete(self, argv):
         host = self._get_resource(argv)
 
@@ -117,9 +124,17 @@ class HostsController(ResourceController):
 
         print host.render_file(app_name, file_name).read()
 
+    def _render_file_doc(self):
+        return ActionDoc("render-file", "<org_name> <env_name> <res_name> <app_name> <file_name>", """
+        Render an application's kickstart.""")
+
     def _render_ks(self, argv):
         host = self._get_resource(argv)
         print host.render_kickstart().read()
+
+    def _render_ks_doc(self):
+        return ActionDoc("render-ks", "<org_name> <env_name> <res_name>", """
+        Render a host's kickstart.""")
 
     def _print_tree_completions(self, param_num, argv):
         if param_num < 3:
@@ -141,12 +156,20 @@ class HostsController(ResourceController):
         options = globals.options
         renderer.render(root_dir, options.skip_chmod, options.skip_chown)
 
+    def _render_tree_doc(self):
+        return ActionDoc("render-tree", "<org_name> <env_name> <res_name> <output_folder>", """
+        Render configuration files of given host.""")
+
     def _clone(self, argv):
         if len(argv) != 3:
             raise MissingException("This action takes 3 arguments")
 
         host = self._get_resource(argv)
         host.clone()
+
+    def _clone_doc(self):
+        return ActionDoc("clone", "<org_name> <env_name> <res_name>", """
+        Clone a given host.""")
 
     def _changes(self, argv):
         if len(argv) != 3:
@@ -158,6 +181,10 @@ class HostsController(ResourceController):
         for c in changes:
             c.show()
 
+    def _changes_doc(self):
+        return ActionDoc("changes", "<org_name> <env_name> <res_name>", """
+        Display pending changes of a given host.""")
+
     def _clear_changes(self, argv):
         if len(argv) != 3:
             raise MissingException("This action takes 3 arguments")
@@ -165,42 +192,14 @@ class HostsController(ResourceController):
         host = self._get_resource(argv)
         host.clear_changes()
 
+    def _clear_changes_doc(self):
+        return ActionDoc("clear-changes", "<org_name> <env_name> <res_name>", """
+        Clear pending changes of a given host.""")
+
+    def _provision_doc(self):
+        return ActionDoc("provision", "<org_name> <env_name> <res_name>", """
+        Provision a host.""")
+
     def _provision(self, argv):
         host = self._get_resource(argv)
         host.provision()
-
-    def _help(self, argv):
-        print '''You must provide an action to perform on this resource.
-
-Actions:
-    list <org_name> <env_name>
-                       List all hosts, optionally within an environment
-    show <org_name> <env_name> <host_name>
-                       Show the details of a host
-    applications <...>
-                       Application contexts handling
-    settings <...>
-                       Settings handling
-    instance <...>
-                       Instance handling
-    changes <org_name> <env_name> <host_name>
-                       Show pending changes
-    render-file <org_name> <env_name> <host_name> <app_name> <file_name>
-                       Renders a file of a given application
-    render-ks <org_name> <env_name> <host_name>
-                       Renders kickstart
-    render-tree <org_name> <env_name> <host_name> <output directory>
-    [--skip-chown] [--skip-chmod]
-                    Outputs all files associated to a particular host to a
-                    given directory. Note that if a file c has path /a/b/c and
-                    output directory's path is /d/e/, the file will be written
-                    to /d/e/a/b/c. File c will have proper permissions and
-                    ownership unless it is asked not to do so (--skip-chown
-                    and --skip-chmod flags).
-    add <org_name> <env_name>
-                       Add an host
-    update <org_name> <env_name> <host_name>
-                       Update a host
-    delete <org_name> <env_name> <host_name>
-                       Delete a host
-'''

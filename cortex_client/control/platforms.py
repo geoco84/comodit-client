@@ -24,18 +24,7 @@ class PlatformsController(OrganizationResourceController):
         self._register_subcontroller(["files"], PlatformFilesController())
         self._register_subcontroller(["parameters"], PlatformParametersController())
 
+        self._doc = "Platforms handling."
+
     def _get_collection(self, org):
         return org.platforms()
-
-    def _help(self, argv):
-        print '''You must provide an action to perform on this resource.
-
-Actions:
-    list <org_name>                 List all platforms of a given organization
-    show <org_name> <plat_name>     Show the details of a platform
-    add <org_name>                  Add a platform
-    update <org_name> <plat_name>   Update a platform
-    delete <org_name> <plat_name>   Delete a platform
-    settings <...>                  Settings handling
-    files <...>                     Files handling
-'''

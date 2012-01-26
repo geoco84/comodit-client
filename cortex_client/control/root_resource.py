@@ -15,6 +15,10 @@ class RootResourceController(ResourceController):
     def __init__(self):
         super(RootResourceController, self).__init__()
 
+        self._update_action_doc_params("delete", "<res_name>")
+        self._update_action_doc_params("update", "<res_name>")
+        self._update_action_doc_params("show", "<res_name>")
+
     def _get_name_argument(self, argv):
         if len(argv) == 0:
             raise ArgumentException("A resource name must be provided");

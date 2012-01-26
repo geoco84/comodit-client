@@ -23,6 +23,8 @@ class OrganizationsController(RootResourceController):
         self._register_subcontroller(["settings"], OrganizationSettingsController())
         self._register_subcontroller(["groups"], GroupsController())
 
+        self._doc = "Organizations handling."
+
     def get_collection(self, argv):
         return self._api.organizations()
 
@@ -61,18 +63,3 @@ class OrganizationsController(RootResourceController):
         group = org.groups().get_resource(argv[1])
         group.remove_user(argv[2])
         group.commit()
-
-    def _help(self, argv):
-        print '''You must provide an action to perform on this resource.
-
-Actions:
-    list                   List all organizations visible to the user
-    show <org_name>        Show the details of an organization
-    show-group <org_name> <group_name>
-                           Show a group of an organization
-    add                    Add an organization
-    add-user <org_name> <group_name> <user_name>
-                           Add a user to a group
-    update <org_name>      Update an organization
-    delete <org_name>      Delete an organization
-'''

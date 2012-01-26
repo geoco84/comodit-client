@@ -15,6 +15,12 @@ class OrganizationResourceController(ResourceController):
     def __init__(self):
         super(OrganizationResourceController, self).__init__()
 
+        self._update_action_doc_params("list", "<org_name>")
+        self._update_action_doc_params("add", "<org_name>")
+        self._update_action_doc_params("delete", "<org_name> <res_name>")
+        self._update_action_doc_params("update", "<org_name> <res_name>")
+        self._update_action_doc_params("show", "<org_name> <res_name>")
+
     def _get_name_argument(self, argv):
         if len(argv) < 2:
             raise ArgumentException("An organization name must be provided, in addition to resource name");

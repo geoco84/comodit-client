@@ -10,6 +10,13 @@ class HostAbstractSettingsController(ResourceController):
     def __init__(self):
         super(HostAbstractSettingsController, self).__init__()
 
+        self._doc = "Settings handling."
+        self._update_action_doc_params("list", "<org_name> <env_name> <host_name>")
+        self._update_action_doc_params("add", "<org_name> <env_name> <host_name>")
+        self._update_action_doc_params("delete", "<org_name> <env_name> <host_name> <setting_name>")
+        self._update_action_doc_params("update", "<org_name> <env_name> <host_name> <setting_name>")
+        self._update_action_doc_params("show", "<org_name> <env_name> <host_name> <setting_name>")
+
     def _get_name_argument(self, argv):
         if len(argv) < 4:
             raise ArgumentException("An organization, an environment, a host and a setting name must be provided");
@@ -46,22 +53,6 @@ class HostAbstractSettingsController(ResourceController):
             host = env.hosts().get_resource(argv[2])
             self._print_identifiers(self._get_settings(host, argv))
 
-    def _help(self, argv):
-        print '''You must provide an action to perform on this resource.
-
-Actions:
-    list <org_name> <env_name> <host_name>
-                            List all settings of a given platform
-    show <org_name> <env_name> <host_name> <setting_name>
-                            Show the details of a setting
-    add <org_name> <env_name> <host_name>
-                            Add a setting
-    update <org_name> <env_name> <host_name> <setting_name>
-                            Update a setting
-    delete <org_name> <env_name> <host_name> <setting_name>
-                            Delete a setting
-'''
-
 
 class PlatformContextSettingsController(HostAbstractSettingsController):
 
@@ -87,6 +78,14 @@ class ApplicationContextSettingsController(ResourceController):
 
     def __init__(self):
         super(ApplicationContextSettingsController, self).__init__()
+
+        self._doc = "Settings handling."
+
+        self._update_action_doc_params("list", "<org_name> <env_name> <host_name> <app_name>")
+        self._update_action_doc_params("add", "<org_name> <env_name> <host_name> <app_name>")
+        self._update_action_doc_params("delete", "<org_name> <env_name> <host_name> <app_name> <setting_name>")
+        self._update_action_doc_params("update", "<org_name> <env_name> <host_name> <app_name> <setting_name>")
+        self._update_action_doc_params("show", "<org_name> <env_name> <host_name> <app_name> <setting_name>")
 
     def _get_name_argument(self, argv):
         if len(argv) < 5:
@@ -129,22 +128,6 @@ class ApplicationContextSettingsController(ResourceController):
             host = env.hosts().get_resource(argv[2])
             self._print_identifiers(host.applications().get_resource(argv[3]).settings())
 
-    def _help(self, argv):
-        print '''You must provide an action to perform on this resource.
-
-Actions:
-    list <org_name> <env_name> <host_name> <app_name>
-                            List all settings of a given application
-    show <org_name> <env_name> <host_name> <app_name> <setting_name>
-                            Show the details of a setting
-    add <org_name> <env_name> <host_name> <app_name>
-                            Add a setting
-    update <org_name> <env_name> <host_name> <app_name> <setting_name>
-                            Update a setting
-    delete <org_name> <env_name> <host_name> <app_name> <setting_name>
-                            Delete a setting
-'''
-
 
 class HostSettingsController(ResourceController):
 
@@ -152,6 +135,13 @@ class HostSettingsController(ResourceController):
 
     def __init__(self):
         super(HostSettingsController, self).__init__()
+
+        self._doc = "Settings handling."
+        self._update_action_doc_params("list", "<org_name> <env_name> <host_name>")
+        self._update_action_doc_params("add", "<org_name> <env_name> <host_name>")
+        self._update_action_doc_params("delete", "<org_name> <env_name> <host_name> <setting_name>")
+        self._update_action_doc_params("update", "<org_name> <env_name> <host_name> <setting_name>")
+        self._update_action_doc_params("show", "<org_name> <env_name> <host_name> <setting_name>")
 
     def _get_name_argument(self, argv):
         if len(argv) < 4:
@@ -189,22 +179,6 @@ class HostSettingsController(ResourceController):
             host = env.hosts().get_resource(argv[2])
             self._print_identifiers(host.settings())
 
-    def _help(self, argv):
-        print '''You must provide an action to perform on this resource.
-
-Actions:
-    list <org_name> <env_name> <host_name>
-                            List all settings of a given host
-    show <org_name> <env_name> <host_name> <setting_name>
-                            Show the details of a setting
-    add <org_name> <env_name> <host_name>
-                            Add a setting
-    update <org_name> <env_name> <host_name> <setting_name>
-                            Update a setting
-    delete <org_name> <env_name> <host_name> <setting_name>
-                            Delete a setting
-'''
-
 
 class EnvironmentSettingsController(ResourceController):
 
@@ -212,6 +186,13 @@ class EnvironmentSettingsController(ResourceController):
 
     def __init__(self):
         super(EnvironmentSettingsController, self).__init__()
+
+        self._doc = "Settings handling."
+        self._update_action_doc_params("list", "<org_name> <env_name>")
+        self._update_action_doc_params("add", "<org_name> <env_name>")
+        self._update_action_doc_params("delete", "<org_name> <env_name> <setting_name>")
+        self._update_action_doc_params("update", "<org_name> <env_name> <setting_name>")
+        self._update_action_doc_params("show", "<org_name> <env_name> <setting_name>")
 
     def _get_name_argument(self, argv):
         if len(argv) < 3:
@@ -243,22 +224,6 @@ class EnvironmentSettingsController(ResourceController):
             env = org.environments().get_resource(argv[1])
             self._print_identifiers(env.settings())
 
-    def _help(self, argv):
-        print '''You must provide an action to perform on this resource.
-
-Actions:
-    list <org_name> <env_name>
-                            List all settings of a given environment
-    show <org_name> <env_name> <setting_name>
-                            Show the details of a setting
-    add <org_name> <env_name>
-                            Add a setting
-    update <org_name> <env_name> <setting_name>
-                            Update a setting
-    delete <org_name> <env_name> <setting_name>
-                            Delete a setting
-'''
-
 
 class DistributionSettingsController(ResourceController):
 
@@ -266,6 +231,13 @@ class DistributionSettingsController(ResourceController):
 
     def __init__(self):
         super(DistributionSettingsController, self).__init__()
+
+        self._doc = "Settings handling."
+        self._update_action_doc_params("list", "<org_name> <dist_name>")
+        self._update_action_doc_params("add", "<org_name> <dist_name>")
+        self._update_action_doc_params("delete", "<org_name> <dist_name> <setting_name>")
+        self._update_action_doc_params("update", "<org_name> <dist_name> <setting_name>")
+        self._update_action_doc_params("show", "<org_name> <dist_name> <setting_name>")
 
     def _get_name_argument(self, argv):
         if len(argv) < 3:
@@ -297,22 +269,6 @@ class DistributionSettingsController(ResourceController):
             dist = org.distributions().get_resource(argv[1])
             self._print_identifiers(dist.settings())
 
-    def _help(self, argv):
-        print '''You must provide an action to perform on this resource.
-
-Actions:
-    list <org_name> <dist_name>
-                            List all settings of a given distribution
-    show <org_name> <dist_name> <setting_name>
-                            Show the details of a setting
-    add <org_name> <dist_name>
-                            Add a setting
-    update <org_name> <dist_name> <setting_name>
-                            Update a setting
-    delete <org_name> <dist_name> <setting_name>
-                            Delete a setting
-'''
-
 
 class PlatformSettingsController(ResourceController):
 
@@ -320,6 +276,13 @@ class PlatformSettingsController(ResourceController):
 
     def __init__(self):
         super(PlatformSettingsController, self).__init__()
+
+        self._doc = "Settings handling."
+        self._update_action_doc_params("list", "<org_name> <plat_name>")
+        self._update_action_doc_params("add", "<org_name> <plat_name>")
+        self._update_action_doc_params("delete", "<org_name> <plat_name> <setting_name>")
+        self._update_action_doc_params("update", "<org_name> <plat_name> <setting_name>")
+        self._update_action_doc_params("show", "<org_name> <plat_name> <setting_name>")
 
     def _get_name_argument(self, argv):
         if len(argv) < 3:
@@ -351,22 +314,6 @@ class PlatformSettingsController(ResourceController):
             plat = org.platforms().get_resource(argv[1])
             self._print_identifiers(plat.settings())
 
-    def _help(self, argv):
-        print '''You must provide an action to perform on this resource.
-
-Actions:
-    list <org_name> <dist_name>
-                            List all settings of a given platform
-    show <org_name> <dist_name> <setting_name>
-                            Show the details of a setting
-    add <org_name> <dist_name>
-                            Add a setting
-    update <org_name> <dist_name> <setting_name>
-                            Update a setting
-    delete <org_name> <dist_name> <setting_name>
-                            Delete a setting
-'''
-
 
 class OrganizationSettingsController(ResourceController):
 
@@ -374,6 +321,13 @@ class OrganizationSettingsController(ResourceController):
 
     def __init__(self):
         super(OrganizationSettingsController, self).__init__()
+
+        self._doc = "Settings handling."
+        self._update_action_doc_params("list", "<org_name>")
+        self._update_action_doc_params("add", "<org_name>")
+        self._update_action_doc_params("delete", "<org_name> <setting_name>")
+        self._update_action_doc_params("update", "<org_name> <setting_name>")
+        self._update_action_doc_params("show", "<org_name> <setting_name>")
 
     def _get_name_argument(self, argv):
         if len(argv) < 2:
@@ -399,19 +353,3 @@ class OrganizationSettingsController(ResourceController):
         elif len(argv) > 0 and param_num == 1:
             org = self._api.organizations().get_resource(argv[0])
             self._print_identifiers(org.settings())
-
-    def _help(self, argv):
-        print '''You must provide an action to perform on this resource.
-
-Actions:
-    list <org_name>
-                            List all settings of a given environment
-    show <org_name> <setting_name>
-                            Show the details of a setting
-    add <org_name>
-                            Add a setting
-    update <org_name> <setting_name>
-                            Update a setting
-    delete <org_name> <setting_name>
-                            Delete a setting
-'''

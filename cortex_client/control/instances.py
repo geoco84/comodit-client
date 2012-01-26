@@ -3,6 +3,7 @@
 from cortex_client.util import prompt, globals
 from cortex_client.control.resource import ResourceController
 from cortex_client.control.exceptions import ArgumentException
+from cortex_client.control.doc import ActionDoc
 
 class InstancesController(ResourceController):
 
@@ -19,6 +20,16 @@ class InstancesController(ResourceController):
 
         # Unregister unsupported actions
         self._unregister(["update", "list", "add"])
+
+        self._doc = "Host instances handling."
+        self._update_action_doc_params("delete", "<org_name>  <env_name> <host_name>")
+        self._update_action_doc_params("show", "<org_name>  <env_name> <host_name>")
+        self._register_action_doc(self._start_doc())
+        self._register_action_doc(self._pause_doc())
+        self._register_action_doc(self._resume_doc())
+        self._register_action_doc(self._shutdown_doc())
+        self._register_action_doc(self._poweroff_doc())
+        self._register_action_doc(self._properties_doc())
 
     def get_collection(self, argv):
         if len(argv) < 3:
@@ -60,49 +71,55 @@ class InstancesController(ResourceController):
             else:
                 p.show()
 
+    def _properties_doc(self):
+        return ActionDoc("properties", "<org_name>  <env_name> <host_name>", """
+        Show properties of a given host instance.""")
+
     def _delete(self, argv):
         instance = self._get_resource(argv)
         if prompt.confirm(prompt = "Delete VM ?", resp = False):
             instance.delete()
 
+    def _delete_doc(self):
+        return ActionDoc("delete", "<org_name>  <env_name> <host_name>", """
+        Delete a host instance.""")
+
     def _start(self, argv):
         instance = self._get_resource(argv)
         instance.start()
+
+    def _start_doc(self):
+        return ActionDoc("start", "<org_name>  <env_name> <host_name>", """
+        Start a host instance.""")
 
     def _pause(self, argv):
         instance = self._get_resource(argv)
         instance.pause()
 
+    def _pause_doc(self):
+        return ActionDoc("pause", "<org_name>  <env_name> <host_name>", """
+        Pause a host instance.""")
+
     def _resume(self, argv):
         instance = self._get_resource(argv)
         instance.resume()
+
+    def _resume_doc(self):
+        return ActionDoc("resume", "<org_name>  <env_name> <host_name>", """
+        Resume a host instance.""")
 
     def _shutdown(self, argv):
         instance = self._get_resource(argv)
         instance.shutdown()
 
+    def _shutdown_doc(self):
+        return ActionDoc("shutdown", "<org_name>  <env_name> <host_name>", """
+        Shutdown a host instance.""")
+
     def _poweroff(self, argv):
         instance = self._get_resource(argv)
         instance.poweroff()
 
-    def _help(self, argv):
-        print '''You must provide an action to perform on this resource.
-
-Actions:
-    show <org_name> <env_name> <host_name>
-                       Show the details of a host
-    add <org_name> <env_name> <host_name>
-                       Add an host
-    delete <org_name> <env_name> <host_name>
-                       Delete a host
-    start <org_name> <env_name> <host_name>
-                       Start a host
-    pause <org_name> <env_name> <host_name>
-                       Pause a host
-    resume <org_name> <env_name> <host_name>
-                       Resume a host's execution
-    shutdown <org_name> <env_name> <host_name>
-                       Shutdown a host
-    poweroff <org_name> <env_name> <host_name>
-                       Power-off a host
-'''
+    def _poweroff_doc(self):
+        return ActionDoc("poweroff", "<org_name>  <env_name> <host_name>", """
+        Power-off a host instance.""")
