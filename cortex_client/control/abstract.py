@@ -83,13 +83,19 @@ class AbstractController(object):
     def _unregister(self, action):
         if isinstance(action, (list, tuple)):
             for a in action:
-                del self._actions[a]
-                del self._completions[a]
-                del self._docs[a]
+                if self._actions.has_key(a):
+                    del self._actions[a]
+                if self._completions.has_key(a):
+                    del self._completions[a]
+                if self._docs.has_key(a):
+                    del self._docs[a]
         else:
-            del self._actions[action]
-            del self._completions[action]
-            del self._docs[action]
+            if self._actions.has_key(action):
+                del self._actions[action]
+            if self._completions.has_key(action):
+                del self._completions[action]
+            if self._docs.has_key(action):
+                del self._docs[action]
 
     def _register_subcontroller(self, action, controller):
         if isinstance(action, (list, tuple)):

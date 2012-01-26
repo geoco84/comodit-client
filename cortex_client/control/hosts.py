@@ -34,8 +34,6 @@ class HostsController(ResourceController):
 
         # actions
         self._register(["provision"], self._provision, self._print_resource_completions)
-        self._register(["render-file"], self._render_file, self._print_file_completions)
-        self._register(["render-ks"], self._render_ks, self._print_resource_completions)
         self._register(["render-tree"], self._render_tree, self._print_tree_completions)
         self._register(["clone"], self._clone, self._print_resource_completions)
         self._register(["changes"], self._changes, self._print_resource_completions)
@@ -48,7 +46,6 @@ class HostsController(ResourceController):
         self._update_action_doc_params("update", "<org_name>  <env_name> <res_name>")
         self._update_action_doc_params("show", "<org_name>  <env_name> <res_name>")
         self._register_action_doc(self._provision_doc())
-        self._register_action_doc(self._render_file_doc())
         self._register_action_doc(self._render_ks_doc())
         self._register_action_doc(self._render_tree_doc())
         self._register_action_doc(self._clone_doc())
@@ -113,20 +110,6 @@ class HostsController(ResourceController):
                 app_files = app.get_files()
                 for f in app_files:
                     self._print_escaped_name(f.get_name())
-
-    def _render_file(self, argv):
-        if len(argv) != 5:
-            raise ArgumentException("Wrong number of arguments");
-
-        host = self._get_resource(argv)
-        app_name = argv[3]
-        file_name = argv[4]
-
-        print host.render_file(app_name, file_name).read()
-
-    def _render_file_doc(self):
-        return ActionDoc("render-file", "<org_name> <env_name> <res_name> <app_name> <file_name>", """
-        Render an application's kickstart.""")
 
     def _render_ks(self, argv):
         host = self._get_resource(argv)

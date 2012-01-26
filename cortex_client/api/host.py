@@ -497,12 +497,21 @@ class Host(Configurable):
         instance = self.instance()._new_resource({})
         instance.create()
 
-    def render_file(self, app_name, file_name):
+    def __render_file(self, collection, file_name):
         try:
-            result = self._get_client().read(self._get_path() + "applications/" + app_name + "/files/" + file_name, decode = False)
+            result = self._get_client().read(collection + "/files/" + file_name, decode = False)
             return result
         except ApiException, e:
             raise PythonApiException("Unable to render file: " + e.message)
+
+    def render_app_file(self, app_name, file_name):
+        return self.__render_file(self._get_path() + "applications/" + app_name, file_name)
+
+    def render_dist_file(self, file_name):
+        return self.__render_file(self._get_path() + "distribution", file_name)
+
+    def render_plat_file(self, file_name):
+        return self.__render_file(self._get_path() + "platform", file_name)
 
     def render_kickstart(self):
         try:

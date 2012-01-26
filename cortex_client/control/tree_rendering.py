@@ -37,7 +37,7 @@ class TreeRenderer(object):
                 path.ensure(output_dir)
                 output_file = os.path.join(output_dir, file_name)
 
-                content = host.render_file(app_name, f.get_name())
+                content = host.render_app_file(app_name, f.get_name())
                 with open(output_file, "w") as fd:
                     fd.write(content.read())
 
