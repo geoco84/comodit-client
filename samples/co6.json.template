@@ -1,0 +1,55 @@
+{
+    "name":"co6",
+    "description":"CentOS 6",
+    "settings":[
+        {
+            "key":"kernel_params",
+            "value":"text ks=${_api}/organizations/${_org_name?url}/environments/${_env_name?url}/hosts/${_host_name?url}/distribution/files/co6.ks"
+        },
+        {
+            "key":"initrd_path",
+            "value":"##init_rd##"
+        },
+        {
+            "key":"vmlinuz_path",
+            "value":"##vmlinuz##"
+        }
+    ],
+    "files":[
+        {
+            "name":"co6.ks"
+        }
+    ],
+    "parameters":[
+        {
+            "key":"zone",
+            "value":"##zone##",
+            "name":"Zone"
+        },
+        {
+            "key":"vm_arch",
+            "value":"##arch##",
+            "name":"Architecture"
+        },
+        {
+            "key":"vm_base_arch",
+            "value":"##base_arch##",
+            "name":"Base architecture"
+        },
+        {
+            "key":"enable_trunk",
+            "value":"true",
+            "name":"Enable trunk"
+        },
+        {
+            "key":"ks_rootpw_one",
+            "value":"secret",
+            "name":"Root password"
+        },
+        {
+            "key":"amqp_server",
+            "value":"##amqp_server##",
+            "name":"AMQP server"
+        }
+    ]
+}

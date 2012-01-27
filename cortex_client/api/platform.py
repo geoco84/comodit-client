@@ -95,26 +95,20 @@ class Platform(Configurable):
         return PlatformFileCollection(self._get_api(), self._get_path() + "files/")
 
     def get_files(self):
-        return self._get_list_field("files", FileFactory(None))
+        return self._get_list_field("files", FileFactory(self.files()))
 
     def get_file(self, name):
         files = self._get_field("files")
         if files is None:
             return None
         for json_f in files:
-            f = File(None, json_f)
+            f = File(self.files(), json_f)
             if f.get_name() == name:
                 return f
         return None
 
     def add_file(self, f):
         self._add_to_list_field("files", f)
-
-    def set_file_content(self, name, path):
-        self._get_client().upload_to_exising_file_with_path(path, self._get_file_path(name))
-
-    def get_file_content(self, name):
-        return self._get_client().read(self._get_file_path(name), decode = False)
 
     def get_version(self):
         """

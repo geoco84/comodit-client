@@ -113,50 +113,59 @@ def create_domain_file():
         with open("libvirt.domain.fmt", "w") as output:
             output.write(model.read())
 
-def create_guardis_repositories_json():
-    name = "apps/GuardisRepos.json.template"
-    json_name = name[:-9]
-    with open(name, "r") as f:
+def _render_file(template_name, data):
+    name = template_name[:-9]
+    with open(template_name, "r") as f:
         content = f.read()
-        content = content.replace("##zone##", global_vars.zone)
-        content = content.replace("##base_arch##", global_vars.vm_base_arch)
-        content = content.replace("##arch##", global_vars.vm_arch)
 
-        with open(json_name, "w") as g:
+        for (key, value) in data.items():
+            content = content.replace(key, value)
+
+        with open(name, "w") as g:
             g.write(content)
 
-def delete_kickstart():
-    try:
-        os.remove("co6.ks")
-    except:
-        pass
+def create_guardis_repositories_json():
+    replacements = {"##zone##": global_vars.zone,
+                    "##base_arch##": global_vars.vm_base_arch,
+                    "##arch##": global_vars.vm_arch}
+    _render_file("apps/GuardisRepos.json.template", replacements)
 
-def delete_domain_file():
-    try:
-        os.remove("libvirt.domain.fmt")
-    except:
-        pass
+def create_platform_json():
+    replacements = {"##libvirt_connect_url##": global_vars.libvirt_connect_url,
+                    "##arch##": global_vars.vm_arch}
+    _render_file("Local2.json.template", replacements)
 
-def delete_guardis_repositories_json():
-    try:
-        os.remove("apps/GuardisRepos.json")
-    except:
-        pass
+def create_dist_json():
+    replacements = {"##arch##": global_vars.vm_arch,
+                    "##base_arch##": global_vars.vm_base_arch,
+                    "##amqp_server##": global_vars.amqp_server,
+                    "##init_rd##": global_vars.initrd,
+                    "##vmlinuz##": global_vars.vmlinuz,
+                    "##zone##": global_vars.zone}
+    _render_file("co6.json.template", replacements)
 
 def create_files():
     create_kickstart()
     create_domain_file()
     create_guardis_repositories_json()
+    create_platform_json()
+    create_dist_json()
 
 def delete_files():
-    delete_kickstart()
-    delete_domain_file()
-    delete_guardis_repositories_json()
+    files = ["co6.ks",
+             "libvirt.domain.fmt",
+             "apps/GuardisRepos.json",
+             "Local2.json",
+             "co6.json"
+             ]
+
+    for f in files:
+        try:
+            os.remove(f)
+        except:
+            pass
 
 if __name__ == "__main__":
     setup()
-    create_kickstart()
-    create_repo_files()
-    create_domain_file()
-    create_guardis_repositories_json()
+    create_files()
 

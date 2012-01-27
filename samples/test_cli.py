@@ -39,6 +39,8 @@ def test_client(expected_code = 0):
         sys.stdout = sys.__stdout__
 
 def run():
+    api = CortexApi(test_setup.global_vars.comodit_url, test_setup.global_vars.comodit_user, test_setup.global_vars.comodit_pass)
+    org = api.organizations().get_resource(gvs.org_name)
 
     # Applications (read)
     print "Testing applications list"
@@ -46,49 +48,45 @@ def run():
     test_client()
 
     print "Testing applications show"
-    for app in gvs.apps.values():
-        app_name = app.name
+    for app_name in gvs.app_names:
         print "  " + app_name
         sys.argv = ["cortex", "applications", "show", gvs.org_name, app_name]
         test_client()
 
     print "Testing application files list"
-    for app in gvs.apps.values():
-        app_name = app.name
+    for app_name in gvs.app_names:
         print "  " + app_name
         sys.argv = ["cortex", "applications", "files", "list", gvs.org_name, app_name]
         test_client()
 
     print "Testing application files show"
-    for app in gvs.apps.values():
-        app_name = app.name
+    for app_name in gvs.app_names:
         print "  " + app_name
-        for f in app.files:
-            f_name = f.meta["name"]
+        app = org.applications().get_resource(app_name)
+        for f in app.get_files():
+            f_name = f.get_name()
             print "    " + f_name
             sys.argv = ["cortex", "applications", "files", "show", gvs.org_name, app_name, f_name]
             test_client()
 
     print "Testing application files show-content"
-    for app in gvs.apps.values():
-        app_name = app.name
+    for app_name in gvs.app_names:
         print "  " + app_name
-        for f in app.files:
-            f_name = f.meta["name"]
+        app = org.applications().get_resource(app_name)
+        for f in app.get_files():
+            f_name = f.get_name()
             print "    " + f_name
             sys.argv = ["cortex", "applications", "files", "show-content", gvs.org_name, gvs.web_server_name, "httpd.conf"]
             test_client()
 
     print "Testing application parameters list"
-    for app in gvs.apps.values():
-        app_name = app.name
+    for app_name in gvs.app_names:
         print "  " + app_name
         sys.argv = ["cortex", "applications", "parameters", "list", gvs.org_name, app_name]
         test_client()
 
     print "Testing application parameters show"
-    for app in gvs.apps.values():
-        app_name = app.name
+    for app_name in gvs.app_names:
         print "  " + app_name
         sys.argv = ["cortex", "applications", "parameters", "show", gvs.org_name, gvs.web_server_name, "Httpd Port"]
         test_client()
@@ -146,12 +144,22 @@ def run():
     test_client()
 
     print "Testing distributions files show"
-    sys.argv = ["cortex", "distributions", "files", "show", gvs.org_name, gvs.dist_name, "kickstart"]
-    test_client()
+    dist = org.distributions().get_resource(gvs.dist_name)
+    dist_files = dist.get_files()
+    for f in dist_files:
+        name = f.get_name()
+        print "  " + name
+        sys.argv = ["cortex", "distributions", "files", "show", gvs.org_name, gvs.dist_name, name]
+        test_client()
 
     print "Testing distributions files show-content"
-    sys.argv = ["cortex", "distributions", "files", "show-content", gvs.org_name, gvs.dist_name, "kickstart"]
-    test_client()
+    dist = org.distributions().get_resource(gvs.dist_name)
+    dist_files = dist.get_files()
+    for f in dist_files:
+        name = f.get_name()
+        print "  " + name
+        sys.argv = ["cortex", "distributions", "files", "show-content", gvs.org_name, gvs.dist_name, name]
+        test_client()
 
     print "Testing distributions parameters list"
     sys.argv = ["cortex", "distributions", "parameters", "list", gvs.org_name, gvs.dist_name]

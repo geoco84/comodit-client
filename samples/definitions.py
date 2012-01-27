@@ -25,70 +25,9 @@ def define():
 
     # Define platform
     global_vars.plat_name = "Local2"
-    global_vars.plat_description = "Local QEMU"
-    global_vars.plat_driver = "com.guardis.cortex.server.driver.LibvirtDriver"
-    global_vars.plat_settings = \
-        [
-            {"key": "libvirt.connectUrl", "value": setup.global_vars.libvirt_connect_url}
-        ]
-    global_vars.plat_files = \
-        [
-            {
-                "name":"libvirt.domain.fmt"
-            },
-            {
-                "name":"libvirt.disk.fmt"
-            }
-        ]
-    global_vars.plat_files_content = \
-        {
-            "libvirt.domain.fmt": setup.global_vars.libvirt_domain_file,
-            "libvirt.disk.fmt": "libvirt.disk.fmt"
-        }
-    global_vars.plat_parameters = \
-        [
-            {"key": "vm_memory", "value":"", "name":"Memory"},
-            {"key": "vm_nvirtcpus", "value":"", "name":"VirtCpus"},
-            {"key": "vm_arch", "value":"", "name":"Architecture"},
-            {"key": "vm_mac", "value":"", "name":"MacAddress"},
-            {"key": "vm_capacity", "value":"", "name":"Capacity"}
-        ]
 
     # Define distribution (kickstart template is in same folder)
-    global_vars.dist_name = "co6i686"
-    global_vars.dist_description = "CentOS 6 i686"
-    global_vars.dist_kickstart = "kickstart"
-    global_vars.dist_settings = \
-        [
-            {
-                "key": "kernel_params",
-                "value": "text ks=${_api}/organizations/${_org_name?url}/environments/${_env_name?url}/hosts/${_host_name?url}/distribution/files/" + global_vars.dist_kickstart
-            },
-            {
-                "key":"initrd_path",
-                "value":setup.global_vars.initrd
-            },
-            {
-                "key":"vmlinuz_path",
-                "value":setup.global_vars.vmlinuz
-            }
-        ]
-    global_vars.dist_files = \
-        [
-            {
-                "name": global_vars.dist_kickstart
-            }
-        ]
-    global_vars.dist_kickstart_content = "co6.ks"
-    global_vars.dist_parameters = \
-        [
-            {"key": "zone", "value": setup.global_vars.zone, "name": "Zone"},
-            {"key": "vm_arch", "value": setup.global_vars.vm_arch, "name": "Architecture"},
-            {"key": "vm_base_arch", "value": setup.global_vars.vm_base_arch, "name": "Base architecture"},
-            {"key": "enable_trunk", "value": "true", "name": "Enable trunk"},
-            {"key": "ks_rootpw_one", "value": "secret", "name": "Root password"},
-            {"key": "amqp_server", "value": setup.global_vars.amqp_server, "name": "AMQP server"}
-        ]
+    global_vars.dist_name = "co6"
 
     # Define environments
     global_vars.env_name = "Test2"

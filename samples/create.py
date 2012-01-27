@@ -42,7 +42,7 @@ def create_resources():
     app_coll = org.applications()
     for name in defs.global_vars.app_names:
         print "="*80
-        print "Application"
+        print "Application " + name
         try:
             app = app_coll.get_resource(name)
             print "Application already exists"
@@ -116,22 +116,12 @@ def create_plat(org):
     Creates a platform linked to given API api
     """
     plat = org.new_platform(defs.global_vars.plat_name)
-    plat.set_description(defs.global_vars.plat_description)
-    plat.set_driver(defs.global_vars.plat_driver)
-
-    for s in defs.global_vars.plat_settings:
-        plat.add_setting(Setting(None, s))
-
-    for p in defs.global_vars.plat_parameters:
-        plat.add_parameter(Parameter(None, p))
-
-    for f in defs.global_vars.plat_files:
-        plat.add_file(File(None, f))
-
+    plat.load_json("Local2.json")
     plat.create()
 
+    # Upload file contents
     for f in plat.get_files():
-        plat.set_file_content(f.get_name(), defs.global_vars.plat_files_content.get(f.get_name()))
+        f.set_content(f.get_name())
 
     return plat
 
@@ -140,20 +130,12 @@ def create_dist(org):
     Creates a distribution linked to given API api
     """
     dist = org.new_distribution(defs.global_vars.dist_name)
-    dist.set_description(defs.global_vars.dist_description)
-
-    for s in defs.global_vars.dist_settings:
-        dist.add_setting(Setting(None, s))
-
-    for p in defs.global_vars.dist_parameters:
-        dist.add_parameter(Parameter(None, p))
-
-    for f in defs.global_vars.dist_files:
-        dist.add_file(File(None, f))
+    dist.load_json("co6.json")
 
     dist.create()
 
-    dist.set_file_content(defs.global_vars.dist_kickstart, defs.global_vars.dist_kickstart_content)
+    for f in dist.get_files():
+        f.set_content(f.get_name())
 
     return dist
 

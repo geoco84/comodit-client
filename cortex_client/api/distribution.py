@@ -55,7 +55,7 @@ class Distribution(Configurable):
         return DistributionFileCollection(self._get_api(), self._get_path() + "files/")
 
     def get_files(self):
-        return self._get_list_field("files", FileFactory(None))
+        return self._get_list_field("files", FileFactory(self.files()))
 
     def get_file(self, name):
         files = self._get_field("files")
