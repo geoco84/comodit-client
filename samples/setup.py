@@ -19,7 +19,7 @@ def setup():
     global_vars.vm_base_arch = "x86_64"
     global_vars.zone = "angleur"
     global_vars.vm_bridge = "br0"
-    global_vars.libvirt_domain_file = "libvirt.domain.fmt.br"
+    global_vars.libvirt_domain_file = "files/libvirt.domain.fmt.br"
     global_vars.initrd = "/var/lib/libvirt/boot/initrd.img"
     global_vars.vmlinuz = "/var/lib/libvirt/boot/vmlinuz"
     global_vars.libvirt_connect_url = "qemu+ssh://baobab6.bruxelles/system"
@@ -75,7 +75,7 @@ def create_kickstart():
     global repos
 
     # Generate kickstart
-    with open("co6.ks.template", "r") as f:
+    with open("files/co6.ks.template", "r") as f:
         content = f.read()
         content = content.replace("##repos_base_url##", repos["base_url"])
         content = content.replace("##repos_updates##", repos["updates"])
@@ -83,16 +83,16 @@ def create_kickstart():
         content = content.replace("##repos_comodit##", repos["comodit"])
         content = content.replace("##repos_comodit-dev##", repos["comodit-dev"])
 
-        with open("co6.ks", "w") as g:
+        with open("files/co6.ks", "w") as g:
             g.write(content)
 
 def create_repo_files():
     global repos
 
-    files = ["CentOS-Base.repo.template",
-             "comodit.repo.template",
-             "comodit-dev.repo.template",
-             "epel.repo.template"]
+    files = ["files/CentOS-Base.repo.template",
+             "files/comodit.repo.template",
+             "files/comodit-dev.repo.template",
+             "files/epel.repo.template"]
 
     for name in files:
         repo_name = name[:-9]
@@ -110,7 +110,7 @@ def create_repo_files():
 def create_domain_file():
     domain = global_vars.libvirt_domain_file
     with open(domain, "r") as model:
-        with open("libvirt.domain.fmt", "w") as output:
+        with open("files/libvirt.domain.fmt", "w") as output:
             output.write(model.read())
 
 def _render_file(template_name, data):
@@ -146,14 +146,15 @@ def create_dist_json():
 
 def create_files():
     create_kickstart()
+    create_repo_files()
     create_domain_file()
     create_guardis_repositories_json()
     create_platform_json()
     create_dist_json()
 
 def delete_files():
-    files = ["co6.ks",
-             "libvirt.domain.fmt",
+    files = ["files/co6.ks",
+             "files/libvirt.domain.fmt",
              "apps/GuardisRepos.json",
              "Local2.json",
              "co6.json"

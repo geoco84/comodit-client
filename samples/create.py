@@ -12,8 +12,6 @@ import definitions as defs
 from cortex_client.api.api import CortexApi
 from cortex_client.api.collection import ResourceNotFoundException
 from cortex_client.api.settings import Setting
-from cortex_client.api.file import File
-from cortex_client.api.parameters import Parameter
 
 #==============================================================================
 # Script
@@ -107,7 +105,7 @@ def create_app(org, name):
     # Upload file contents
     for f in app.get_files():
         file_res = app.files().get_resource(f.get_name())
-        file_res.set_content(f.get_name())
+        file_res.set_content("files/" + f.get_name())
 
     return app
 
@@ -121,7 +119,7 @@ def create_plat(org):
 
     # Upload file contents
     for f in plat.get_files():
-        f.set_content(f.get_name())
+        f.set_content("files/" + f.get_name())
 
     return plat
 
@@ -135,7 +133,7 @@ def create_dist(org):
     dist.create()
 
     for f in dist.get_files():
-        f.set_content(f.get_name())
+        f.set_content("files/" + f.get_name())
 
     return dist
 
