@@ -8,6 +8,7 @@ sys.path.append("..")
 # Imports section
 
 from cortex_client.api.api import CortexApi
+from cortex_client.api.collection import ResourceNotFoundException
 
 
 #==============================================================================
@@ -24,22 +25,22 @@ def delete_resources():
 
         app_coll = org.applications()
         apps = []
-        for name in defs.global_vars.apps.keys():
+        for name in defs.global_vars.app_names:
             try:
                 apps.append(app_coll.get_resource(name))
-            except:
+            except ResourceNotFoundException:
                 print "Application", name, "does not exist"
 
         plat_coll = org.platforms()
         try:
             plat = plat_coll.get_resource(defs.global_vars.plat_name)
-        except:
+        except ResourceNotFoundException:
             print "Platform does not exist"
 
         dist_coll = org.distributions()
         try:
             dist = dist_coll.get_resource(defs.global_vars.dist_name)
-        except:
+        except ResourceNotFoundException:
             print "Distribution does not exist"
 
         env_coll = org.environments()
@@ -49,29 +50,17 @@ def delete_resources():
             host_coll = env.hosts()
             try:
                 host = host_coll.get_resource(defs.global_vars.host_name)
-            except:
+            except ResourceNotFoundException:
                 print "Host does not exist"
-        except:
+        except ResourceNotFoundException:
             print "Environment does not exist"
-    except:
+    except ResourceNotFoundException:
         print "Organization does not exist"
 
 
     ###################
     # Delete entities #
     ###################
-
-    try:
-        host.instance().get_single_resource().poweroff()
-    except:
-        pass
-
-    print "="*80
-    print "Delete host instance"
-    try:
-        host.instance().get_single_resource().delete()
-    except Exception, e:
-        print e.message
 
     print "="*80
     print "Delete host"
@@ -120,9 +109,45 @@ def delete_resources():
         print e.message
 
 
+def delete_host_instance():
+    # API from server cortex listening on port 8000 of localhost is used
+    # Username "admin" and password "secret" are used for authentification
+    api = CortexApi(setup.global_vars.comodit_url, setup.global_vars.comodit_user, setup.global_vars.comodit_pass)
+
+    org_coll = api.organizations()
+    try:
+        org = org_coll.get_resource(defs.global_vars.org_name)
+        env_coll = org.environments()
+        try:
+            env = env_coll.get_resource(defs.global_vars.env_name)
+
+            host_coll = env.hosts()
+            try:
+                host = host_coll.get_resource(defs.global_vars.host_name)
+            except ResourceNotFoundException:
+                print "Host does not exist"
+
+            try:
+                host.instance().get_single_resource().poweroff()
+            except:
+                pass
+
+            print "="*80
+            print "Delete host instance"
+            try:
+                host.instance().get_single_resource().delete()
+            except Exception, e:
+                print e.message
+        except ResourceNotFoundException:
+            print "Environment does not exist"
+    except ResourceNotFoundException:
+        print "Organization does not exist"
+
+
 #==============================================================================
 # Entry point
 if __name__ == "__main__":
     setup.setup()
     defs.define()
+    delete_host_instance()
     delete_resources()

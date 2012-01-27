@@ -107,14 +107,56 @@ def create_repo_files():
             with open(repo_name, "w") as g:
                 g.write(content)
 
+def create_domain_file():
+    domain = global_vars.libvirt_domain_file
+    with open(domain, "r") as model:
+        with open("libvirt.domain.fmt", "w") as output:
+            output.write(model.read())
+
+def create_guardis_repositories_json():
+    name = "apps/GuardisRepos.json.template"
+    json_name = name[:-9]
+    with open(name, "r") as f:
+        content = f.read()
+        content = content.replace("##zone##", global_vars.zone)
+        content = content.replace("##base_arch##", global_vars.vm_base_arch)
+        content = content.replace("##arch##", global_vars.vm_arch)
+
+        with open(json_name, "w") as g:
+            g.write(content)
+
 def delete_kickstart():
     try:
         os.remove("co6.ks")
     except:
         pass
 
+def delete_domain_file():
+    try:
+        os.remove("libvirt.domain.fmt")
+    except:
+        pass
+
+def delete_guardis_repositories_json():
+    try:
+        os.remove("apps/GuardisRepos.json")
+    except:
+        pass
+
+def create_files():
+    create_kickstart()
+    create_domain_file()
+    create_guardis_repositories_json()
+
+def delete_files():
+    delete_kickstart()
+    delete_domain_file()
+    delete_guardis_repositories_json()
+
 if __name__ == "__main__":
     setup()
     create_kickstart()
     create_repo_files()
+    create_domain_file()
+    create_guardis_repositories_json()
 

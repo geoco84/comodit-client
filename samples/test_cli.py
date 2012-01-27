@@ -46,28 +46,52 @@ def run():
     test_client()
 
     print "Testing applications show"
-    sys.argv = ["cortex", "applications", "show", gvs.org_name, gvs.web_server_name]
-    test_client()
+    for app in gvs.apps.values():
+        app_name = app.name
+        print "  " + app_name
+        sys.argv = ["cortex", "applications", "show", gvs.org_name, app_name]
+        test_client()
 
     print "Testing application files list"
-    sys.argv = ["cortex", "applications", "files", "list", gvs.org_name, gvs.web_server_name]
-    test_client()
+    for app in gvs.apps.values():
+        app_name = app.name
+        print "  " + app_name
+        sys.argv = ["cortex", "applications", "files", "list", gvs.org_name, app_name]
+        test_client()
 
     print "Testing application files show"
-    sys.argv = ["cortex", "applications", "files", "show", gvs.org_name, gvs.web_server_name, "httpd.conf"]
-    test_client()
+    for app in gvs.apps.values():
+        app_name = app.name
+        print "  " + app_name
+        for f in app.files:
+            f_name = f.meta["name"]
+            print "    " + f_name
+            sys.argv = ["cortex", "applications", "files", "show", gvs.org_name, app_name, f_name]
+            test_client()
 
     print "Testing application files show-content"
-    sys.argv = ["cortex", "applications", "files", "show-content", gvs.org_name, gvs.web_server_name, "httpd.conf"]
-    test_client()
+    for app in gvs.apps.values():
+        app_name = app.name
+        print "  " + app_name
+        for f in app.files:
+            f_name = f.meta["name"]
+            print "    " + f_name
+            sys.argv = ["cortex", "applications", "files", "show-content", gvs.org_name, gvs.web_server_name, "httpd.conf"]
+            test_client()
 
     print "Testing application parameters list"
-    sys.argv = ["cortex", "applications", "parameters", "list", gvs.org_name, gvs.web_server_name]
-    test_client()
+    for app in gvs.apps.values():
+        app_name = app.name
+        print "  " + app_name
+        sys.argv = ["cortex", "applications", "parameters", "list", gvs.org_name, app_name]
+        test_client()
 
     print "Testing application parameters show"
-    sys.argv = ["cortex", "applications", "parameters", "show", gvs.org_name, gvs.web_server_name, "Httpd Port"]
-    test_client()
+    for app in gvs.apps.values():
+        app_name = app.name
+        print "  " + app_name
+        sys.argv = ["cortex", "applications", "parameters", "show", gvs.org_name, gvs.web_server_name, "Httpd Port"]
+        test_client()
 
 
     # Platforms (read)

@@ -11,8 +11,6 @@ import definitions as defs
 
 from cortex_client.api.api import CortexApi
 from cortex_client.api.collection import ResourceNotFoundException
-from cortex_client.api.application import Package, ApplicationFile, Service, \
-    Handler
 from cortex_client.api.settings import Setting
 from cortex_client.api.file import File
 from cortex_client.api.parameters import Parameter
@@ -42,14 +40,14 @@ def create_resources():
     org.show()
 
     app_coll = org.applications()
-    for (name, desc) in defs.global_vars.apps.iteritems():
+    for name in defs.global_vars.app_names:
         print "="*80
         print "Application"
         try:
             app = app_coll.get_resource(name)
             print "Application already exists"
         except ResourceNotFoundException:
-            app = create_app(org, desc)
+            app = create_app(org, name)
             print "Application is created"
         app.show()
 
@@ -98,34 +96,18 @@ def create_resources():
         print "Host is created"
     host.show()
 
-def create_app(org, desc):
+def create_app(org, name):
     """
     Creates an application linked to given API api
     """
-    app = org.new_application(desc.name)
-    app.set_description(desc.description)
-
-    for p in desc.packages:
-        app.add_package(Package(p))
-
-    for p in desc.parameters:
-        app.add_parameter(Parameter(None, p))
-
-    for f in desc.files:
-        app.add_file(ApplicationFile(None, f.meta))
-
-    for s in desc.services:
-        app.add_service(Service(s))
-
-    for h in desc.handlers:
-        app.add_handler(Handler(h))
-
+    app = org.new_application(name)
+    app.load_json("apps/" + name + ".json")
     app.create()
 
     # Upload file contents
-    for f in desc.files:
-        file_res = app.files().get_resource(f.meta["name"])
-        file_res.set_content(f.content)
+    for f in app.get_files():
+        file_res = app.files().get_resource(f.get_name())
+        file_res.set_content(f.get_name())
 
     return app
 

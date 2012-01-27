@@ -21,7 +21,7 @@ test_modules = \
 if __name__ == "__main__":
     # Setup
     setup.setup()
-    setup.create_kickstart()
+    setup.create_files()
     definitions.define()
 
     # Clear previous data
@@ -36,4 +36,4 @@ if __name__ == "__main__":
 
     # Tear down test environment
     delete.delete_resources()
-    setup.delete_kickstart()
+    setup.delete_files()
