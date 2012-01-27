@@ -181,6 +181,6 @@ def create_host(env):
 # Entry point
 if __name__ == "__main__":
     setup.setup()
-    setup.create_kickstart()
+    setup.create_files()
     defs.define()
     create_resources()
