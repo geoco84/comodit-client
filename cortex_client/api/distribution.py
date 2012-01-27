@@ -11,6 +11,8 @@ from cortex_client.api.settings import SettingFactory, Configurable
 from cortex_client.api.parameters import ParameterFactory, Parameter
 from cortex_client.api.file import FileFactory
 from cortex_client.api.collection import Collection
+from cortex_client.rest.exceptions import ApiException
+from cortex_client.api.exceptions import PythonApiException
 
 
 class DistributionFileCollection(Collection):
@@ -126,6 +128,13 @@ class Distribution(Configurable):
 
     def parameters(self):
         return DistributionParameterCollection(self._get_api(), self._get_path() + "parameters/")
+
+    def clone(self, clone_name):
+        try:
+            result = self._get_client().update(self._get_path() + "_clone", parameters = {"name": clone_name})
+            return Distribution(self._collection, result)
+        except ApiException, e:
+            raise PythonApiException("Unable to clone distribution: " + e.message)
 
     def _show(self, indent = 0):
         super(Distribution, self)._show(indent)

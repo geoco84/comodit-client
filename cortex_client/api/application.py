@@ -12,6 +12,8 @@ from file import File
 from cortex_client.api.parameters import Parameter, ParameterFactory
 from cortex_client.api.collection import Collection
 from cortex_client.api.file import FileResource
+from cortex_client.rest.exceptions import ApiException
+from cortex_client.api.exceptions import PythonApiException
 
 class ApplicationResource(JsonWrapper):
     """
@@ -630,6 +632,13 @@ class Application(Resource):
 
     def parameters(self):
         return ApplicationParameterCollection(self._get_api(), self._get_path() + "parameters/")
+
+    def clone(self, clone_name):
+        try:
+            result = self._get_client().update(self._get_path() + "_clone", parameters = {"name": clone_name})
+            return Application(self._collection, result)
+        except ApiException, e:
+            raise PythonApiException("Unable to clone application: " + e.message)
 
     def _show(self, indent = 0):
         """

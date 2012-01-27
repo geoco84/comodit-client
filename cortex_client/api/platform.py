@@ -11,6 +11,8 @@ from cortex_client.api.file import File, FileFactory
 from cortex_client.api.settings import Configurable
 from cortex_client.api.parameters import ParameterFactory, Parameter
 from cortex_client.api.collection import Collection
+from cortex_client.rest.exceptions import ApiException
+from cortex_client.api.exceptions import PythonApiException
 
 
 class PlatformFileCollection(Collection):
@@ -136,6 +138,13 @@ class Platform(Configurable):
 
     def parameters(self):
         return PlatformParameterCollection(self._get_api(), self._get_path() + "parameters/")
+
+    def clone(self, clone_name):
+        try:
+            result = self._get_client().update(self._get_path() + "_clone", parameters = {"name": clone_name})
+            return Platform(self._collection, result)
+        except ApiException, e:
+            raise PythonApiException("Unable to clone platform: " + e.message)
 
     def _show(self, indent = 0):
         super(Platform, self)._show(indent)

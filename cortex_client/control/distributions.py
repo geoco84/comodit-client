@@ -11,6 +11,7 @@ from cortex_client.control.organization_resource import OrganizationResourceCont
 from cortex_client.control.settings import DistributionSettingsController
 from cortex_client.control.files import DistributionFilesController
 from cortex_client.control.parameters import DistributionParametersController
+from cortex_client.control.doc import ActionDoc
 
 class DistributionsController(OrganizationResourceController):
 
@@ -28,3 +29,4 @@ class DistributionsController(OrganizationResourceController):
 
     def _get_collection(self, org):
         return org.distributions()
+

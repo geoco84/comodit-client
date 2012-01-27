@@ -523,7 +523,7 @@ class Host(Configurable):
     def clone(self):
         try:
             result = self._get_client().update(self._get_path() + "_clone")
-            return Host(result)
+            return Host(self._collection, result)
         except ApiException, e:
             raise PythonApiException("Unable to clone host: " + e.message)
 

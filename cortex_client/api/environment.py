@@ -10,6 +10,8 @@ from cortex_client.util.json_wrapper import StringFactory
 from host import Host
 from host_collection import HostCollection
 from cortex_client.api.settings import Configurable
+from cortex_client.rest.exceptions import ApiException
+from cortex_client.api.exceptions import PythonApiException
 
 class Environment(Configurable):
     """
@@ -113,3 +115,9 @@ class Environment(Configurable):
         host.set_environment(self.get_name())
         return host
 
+    def clone(self, clone_name):
+        try:
+            result = self._get_client().update(self._get_path() + "_clone", parameters = {"name": clone_name})
+            return Environment(self._collection, result)
+        except ApiException, e:
+            raise PythonApiException("Unable to clone environment: " + e.message)

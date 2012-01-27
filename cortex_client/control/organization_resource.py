@@ -9,17 +9,22 @@
 
 from cortex_client.control.resource import ResourceController
 from cortex_client.control.exceptions import ArgumentException
+from cortex_client.control.doc import ActionDoc
 
 class OrganizationResourceController(ResourceController):
 
     def __init__(self):
         super(OrganizationResourceController, self).__init__()
 
+        # action
+        self._register(["clone"], self._clone, self._print_resource_completions)
+
         self._update_action_doc_params("list", "<org_name>")
         self._update_action_doc_params("add", "<org_name>")
         self._update_action_doc_params("delete", "<org_name> <res_name>")
         self._update_action_doc_params("update", "<org_name> <res_name>")
         self._update_action_doc_params("show", "<org_name> <res_name>")
+        self._register_action_doc(self._clone_doc())
 
     def _get_name_argument(self, argv):
         if len(argv) < 2:
@@ -61,3 +66,15 @@ class OrganizationResourceController(ResourceController):
 
     def _print_delete_completions(self, param_num, argv):
         self._print_resource_completions(param_num, argv)
+
+    def _clone(self, argv):
+        if len(argv) < 3:
+            raise ArgumentException("Expected 3 arguments")
+
+        res = self._get_resource(argv)
+        res.clone(argv[2])
+
+    def _clone_doc(self):
+        return ActionDoc("clone", "<org_name> <res_name> <clone_name>", """
+        Clone a resource.""")
+
