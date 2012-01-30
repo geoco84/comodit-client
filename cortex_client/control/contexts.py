@@ -21,8 +21,10 @@ class AbstractContextController(ResourceController):
         self._register(["render-file"], self._render_file, self._print_render_file_completions)
         self._unregister(["update"])
 
-        self._update_action_doc_params("list", "<org_name>  <env_name> <host_name>")
-        self._update_action_doc_params("show", "<org_name>  <env_name> <host_name> <name>")
+        self._update_action_doc_params("list", "<org_name> <env_name> <host_name>")
+        self._update_action_doc_params("show", "<org_name> <env_name> <host_name> <name>")
+        self._update_action_doc_params("add", "<org_name> <env_name> <host_name>")
+        self._update_action_doc_params("delete", "<org_name> <env_name> <host_name> <name>")
 
         self._register_action_doc(self._render_file_doc())
 

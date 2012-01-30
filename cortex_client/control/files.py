@@ -70,7 +70,7 @@ class ApplicationFilesController(AbstractFilesController):
         self._update_action_doc_params("update", "<org_name>  <app_name> <file_name>")
         self._update_action_doc_params("show", "<org_name>  <app_name> <file_name>")
         self._update_action_doc_params("show-content", "<org_name>  <app_name> <file_name>")
-        self._update_action_doc_params("set-content", "<org_name>  <app_name> <file_name>")
+        self._update_action_doc_params("set-content", "<org_name>  <app_name> <file_name> <path>")
 
     def _get_file_position(self):
         return 2
@@ -109,7 +109,7 @@ class DistributionFilesController(AbstractFilesController):
         self._update_action_doc_params("update", "<org_name>  <dist_name> <file_name>")
         self._update_action_doc_params("show", "<org_name>  <dist_name> <file_name>")
         self._update_action_doc_params("show-content", "<org_name>  <dist_name> <file_name>")
-        self._update_action_doc_params("set-content", "<org_name>  <dist_name> <file_name>")
+        self._update_action_doc_params("set-content", "<org_name>  <dist_name> <file_name> <path>")
 
     def _get_file_position(self):
         return 2
@@ -148,7 +148,7 @@ class PlatformFilesController(AbstractFilesController):
         self._update_action_doc_params("update", "<org_name> <plat_name> <file_name>")
         self._update_action_doc_params("show", "<org_name> <plat_name> <file_name>")
         self._update_action_doc_params("show-content", "<org_name> <plat_name> <file_name>")
-        self._update_action_doc_params("set-content", "<org_name> <plat_name> <file_name>")
+        self._update_action_doc_params("set-content", "<org_name> <plat_name> <file_name> <path>")
 
     def _get_file_position(self):
         return 2
