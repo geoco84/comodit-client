@@ -30,7 +30,7 @@ class Client:
             try:
                 json_data = json.dumps(item)
             except Exception, e:
-                raise ApiException("Could not encode given data: " + item, 0)
+                raise ApiException("Could not encode given data: " + e.message, 0)
             req = urllibx.RequestWithMethod(url, method = "POST", headers = self._headers(), data = json_data)
         else:
             req = urllibx.RequestWithMethod(url, method = "POST", headers = self._headers())
@@ -38,7 +38,7 @@ class Client:
         if decode:
             try:
                 return json.load(raw)
-            except Exception, e:
+            except:
                 raise ApiException("Could not decode response: " + raw, 0)
         else:
             return raw
@@ -108,8 +108,8 @@ class Client:
                         message += ", "
                     message += msg_list[len(msg_list) - 1] if msg_list[len(msg_list) - 1] else "None"
                 message += "]"
-            except Exception, e:
-                message = e.message
+            except Exception:
+                message = err.msg
 
             raise ApiException(message, err.code)
 
