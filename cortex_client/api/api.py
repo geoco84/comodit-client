@@ -8,7 +8,6 @@ access to resources and services exhibited by a particular cortex-server.
 """
 
 from cortex_client.rest.client import Client
-from rendering_service import RenderingService
 from organization_collection import OrganizationCollection
 from user_collection import UserCollection
 
@@ -54,7 +53,6 @@ class CortexApi(object):
         """
 
         self._client = Client(endpoint, username, password)
-        self._rendering = RenderingService(self)
 
         self._orga_collection = OrganizationCollection(self)
         self._user_collection = UserCollection(self)
@@ -68,15 +66,6 @@ class CortexApi(object):
         @rtype: L{Client}
         """
         return self._client
-
-    def get_rendering_service(self):
-        """
-        Provides the rendering service associated to this instance.
-
-        @return: A rendering service instance.
-        @rtype: L{RenderingService}
-        """
-        return self._rendering
 
     def organizations(self):
         """

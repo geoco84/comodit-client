@@ -145,7 +145,7 @@ class JsonWrapper(object):
         @type json_data: dict
         """
         if not isinstance(json_data, dict):
-            raise Exception("Wrong type")
+            raise Exception("Wrong type '" + type(json_data).__name__ + "'")
         self.__json_data = json_data
 
     def get_json(self):

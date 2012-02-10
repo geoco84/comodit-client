@@ -1,4 +1,13 @@
 from cortex_client.api.resource import Resource
+from cortex_client.api.collection import Collection
+
+class ParameterCollection(Collection):
+    def __init__(self, api, collection_path):
+        super(ParameterCollection, self).__init__(collection_path, api)
+
+    def _new_resource(self, json_data):
+        res = Parameter(self, json_data)
+        return res
 
 class Parameter(Resource):
     """

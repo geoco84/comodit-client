@@ -9,7 +9,8 @@ Application module.
 from cortex_client.util.json_wrapper import JsonWrapper, StringFactory
 from resource import Resource
 from file import File
-from cortex_client.api.parameters import Parameter, ParameterFactory
+from cortex_client.api.parameters import Parameter, ParameterFactory, \
+    ParameterCollection
 from cortex_client.api.collection import Collection
 from cortex_client.api.file import FileResource
 from cortex_client.rest.exceptions import ApiException
@@ -284,15 +285,6 @@ class ApplicationFileCollection(Collection):
 
     def _new_resource(self, json_data):
         res = ApplicationFile(self, json_data)
-        return res
-
-
-class ApplicationParameterCollection(Collection):
-    def __init__(self, api, collection_path):
-        super(ApplicationParameterCollection, self).__init__(collection_path, api)
-
-    def _new_resource(self, json_data):
-        res = Parameter(self, json_data)
         return res
 
 
@@ -631,7 +623,7 @@ class Application(Resource):
         self._add_to_list_field("parameters", parameter)
 
     def parameters(self):
-        return ApplicationParameterCollection(self._get_api(), self._get_path() + "parameters/")
+        return ParameterCollection(self._get_api(), self._get_path() + "parameters/")
 
     def clone(self, clone_name):
         try:
