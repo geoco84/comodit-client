@@ -9,7 +9,7 @@ def run_tests(module_names):
             test_module.test()
             print "OK"
         except Exception, e:
-            print "Error:", e.message
+            print "Error:", type(e), e.message
 
 def run_setups(module_names):
     for name in module_names:
@@ -20,7 +20,7 @@ def run_setups(module_names):
             test_module.setup()
             print "OK"
         except Exception, e:
-            print "Error:", e.message
+            print "Error:", type(e), e.message
 
 def run_tear_downs(module_names):
     for name in module_names:
@@ -31,7 +31,7 @@ def run_tear_downs(module_names):
             test_module.tear_down()
             print "OK"
         except Exception, e:
-            print "Error:", e.message
+            print "Error:", type(e), e.message
 
 def run_tests_only(module_names):
     for name in module_names:
@@ -42,7 +42,7 @@ def run_tests_only(module_names):
             test_module.run()
             print "OK"
         except Exception, e:
-            print "Error:", e.message
+            print "Error:", type(e), e.message
 
 def test_wrapper(module_names):
     """

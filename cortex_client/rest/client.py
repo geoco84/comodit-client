@@ -7,7 +7,7 @@
 # This software cannot be used and/or distributed without prior
 # authorization from Guardis.
 
-import urllib, urllib2, json
+import urllib, urllib2, json, urlparse
 import cortex_client.util.fileupload as fileupload
 from urllib2 import HTTPError
 from cortex_client.util import urllibx
@@ -67,7 +67,7 @@ class Client:
         self._urlopen(req)
 
     def upload_to_exising_file_with_path(self, file_name, path):
-        url = self._encode_url(path, parameters = {})
+        url = urlparse.urlparse(self._encode_url(path, parameters = {}))
         response = fileupload.post_multipart(url.netloc, url.path, [],
                                              [("file", file_name)],
                                              {"Authorization": self._get_basic_authorization_field()})

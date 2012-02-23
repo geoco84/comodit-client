@@ -24,6 +24,8 @@ def test_web_server_page(host, port, page):
         return urllib2.urlopen("http://" + ip + ":" + str(port) + page)
     except urllib2.HTTPError, e:
         raise Exception("Unexpected HTTP error: " + str(e.code))
+    except urllib2.URLError, e:
+        raise Exception("Unexpected URL error: " + str(e.reason))
 
 def install_simple_web_page(host, settings):
     print "Installing simple web page..."
