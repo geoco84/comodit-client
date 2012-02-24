@@ -165,9 +165,9 @@ class SyncController(AbstractController):
 
     def _push_instance(self, host, instance):
         try:
-            host.get_instance()
+            host.instance().get_single_resource()
             return
-        except:
+        except ResourceNotFoundException:
             self._actions.addAction(CreateInstance(True, host, instance))
 
     def _dump_organization(self, org):
@@ -268,10 +268,12 @@ class SyncController(AbstractController):
                 h.dump(host_folder)
 
                 try:
-                    instance = h.get_instance()
+                    instance = h.instance().get_single_resource()
                     instance_file = self._get_instance_file(host_folder)
                     instance.dump_json(instance_file)
-                except:
+                except Exception, e:
+                    print e
+                    print e.message
                     pass
 
     def _push_organization(self):
@@ -326,14 +328,20 @@ class SyncController(AbstractController):
                 host = Host(env.hosts(), None)
                 host.load(host_dir)
 
-                self._push_resource(host)
-
-                # Push instance
+                # Read instance
                 instance_file = self._get_instance_file(host_dir)
+                instance = None
                 if os.path.exists(instance_file):
                     with open(instance_file, "r") as f:
-                        instance = Instance(json.load(f))
-                        self._push_instance(host, instance)
+                        instance = Instance(host.instance(), json.load(f))
+
+                if instance is None:
+                    host.clear_state()
+                self._push_resource(host)
+
+                if not instance is None:
+                    self._push_instance(host, instance)
+
 
     def _dump_platforms(self, org):
         plats = org.platforms().get_resources()

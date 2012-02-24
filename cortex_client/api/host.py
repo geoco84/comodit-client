@@ -444,6 +444,9 @@ class Host(Configurable):
         """
         return self._get_field("state")
 
+    def clear_state(self):
+        self._del_field("state")
+
     def instance(self):
         """
         Provides host's instance information.

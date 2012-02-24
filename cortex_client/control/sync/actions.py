@@ -1,3 +1,5 @@
+import json
+
 from cortex_client.api.host import Host
 
 class Action(object):
