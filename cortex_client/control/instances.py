@@ -1,5 +1,7 @@
 # coding: utf-8
 
+import json
+
 from cortex_client.util import prompt, globals
 from cortex_client.control.resource import ResourceController
 from cortex_client.control.exceptions import ArgumentException
@@ -63,12 +65,12 @@ class InstancesController(ResourceController):
 
     def _properties(self, argv):
         instance = self._get_resource(argv)
-        props = instance.get_properties()
         options = globals.options
-        for p in props:
-            if options.raw:
-                p.show(as_json = True)
-            else:
+        if options.raw:
+            print json.dumps(instance._get_field("properties"), indent = 4)
+        else:
+            props = instance.get_properties()
+            for p in props:
                 p.show()
 
     def _properties_doc(self):
