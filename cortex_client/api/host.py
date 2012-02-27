@@ -87,7 +87,7 @@ class PropertyFactory(object):
 
 class Vnc(JsonWrapper):
     def get_hostname(self):
-        return self._get_field("host")
+        return self._get_field("hostname")
 
     def get_port(self):
         return self._get_field("port")
@@ -157,7 +157,7 @@ class Instance(Resource):
         return self._get_field("hostname")
 
     def get_vnc(self):
-        return Vnc(self._get_field("vnc"))
+        return Vnc(self._get_field("vncView"))
 
     def get_synapse_state(self):
         """
