@@ -17,7 +17,6 @@ from control.environments import EnvironmentsController
 from control.exceptions import ControllerException, ArgumentException
 from control.hosts import HostsController
 from control.organizations import OrganizationsController
-from control.sync.sync import SyncController
 from control.users import UsersController
 
 from rest.exceptions import ApiException
@@ -41,9 +40,6 @@ def run(argv):
     control.router.register(["organizations"], OrganizationsController())
     control.router.register(["environments"], EnvironmentsController())
     control.router.register(["hosts"], HostsController())
-
-    # services
-    control.router.register(["sync"], SyncController())
 
     _parse(argv)
 
@@ -85,7 +81,6 @@ Available resources:
     organizations     Top-level organization
     environments      Environment defined within an organization
     hosts             Host defined within an environment
-    sync              Synchronization service
 """)
 
     parser.add_argument("resource", help = "A resource")
