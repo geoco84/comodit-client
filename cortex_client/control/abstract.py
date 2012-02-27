@@ -48,7 +48,7 @@ class AbstractController(object):
                 elif self._subcontrollers.has_key(action):
                     self._subcontrollers[action].run(api, argv[1:])
                 else:
-                    raise ControllerException("Pardon Monsieur ? I'm not sure I understand your request")
+                    raise ControllerException("Unknown action or subresource '" + action + "'")
 
         self._post(argv)
         self._api = None
