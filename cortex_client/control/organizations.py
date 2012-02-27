@@ -123,8 +123,9 @@ class OrganizationsController(RootResourceController):
         self._export_organization(org)
 
     def _export_doc(self):
-        return ActionDoc("export", "<org_name> [<output_folder>]", """
-        Export organization onto disk.""")
+        return ActionDoc("export", "<org_name> [<output_folder>] [--force]", """
+        Export organization onto disk. --force option causes existing files to
+        be overwritten.""")
 
     def _print_import_completions(self, param_num, argv):
         if param_num == 0:
@@ -156,8 +157,9 @@ class OrganizationsController(RootResourceController):
             self._actions.display()
 
     def _import_doc(self):
-        return ActionDoc("import", "<org_name> [<output_folder>]", """
-        Import organization from disk.""")
+        return ActionDoc("import", "<org_name> [<output_folder>] [--force]", """
+        Import organization from disk. --force option causes existing resources
+        on server to be updated.""")
 
     def _import_file_content(self, src_file, app, name):
         self._actions.addAction(UploadContent(src_file, app, name))
