@@ -8,4 +8,5 @@
 # authorization from Guardis.
 
 # Share the parsed command line options globably
-options = []
+options = None
+param_completions = -1

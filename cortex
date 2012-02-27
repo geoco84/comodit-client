@@ -2,7 +2,7 @@
 # coding: utf-8
 # cortex | A command line client for cortex-server
 
-import sys, os
+import sys
 
 from cortex_client import dispatch
 

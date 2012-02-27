@@ -29,12 +29,12 @@ class AbstractController(object):
         self._api = api
         self._pre(argv)
 
-        param_num = globals.options.param_completions
+        param_num = globals.param_completions
         if param_num >= 0:
             if len(argv) == 0 or param_num == 0:
                 self._available_actions()
             elif self._subcontrollers.has_key(argv[0]):
-                globals.options.param_completions -= 1
+                globals.param_completions -= 1
                 self._subcontrollers[argv[0]].run(api, argv[1:])
             elif self._completions.has_key(argv[0]):
                 self._completions[argv[0]](param_num - 1, argv[1:])
