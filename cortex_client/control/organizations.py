@@ -26,6 +26,7 @@ from cortex_client.api.group import Group
 from cortex_client.api.environment import Environment
 from cortex_client.api.host import Host, Instance
 from cortex_client.api.platform import Platform
+from cortex_client.api.exceptions import PythonApiException
 
 
 class SyncException(ControllerException):
@@ -316,9 +317,7 @@ class OrganizationsController(RootResourceController):
                     instance = h.instance().get_single_resource()
                     instance_file = self._get_instance_file(host_folder)
                     instance.dump_json(instance_file)
-                except Exception, e:
-                    print e
-                    print e.message
+                except PythonApiException:
                     pass
 
     def _import_organization(self):
