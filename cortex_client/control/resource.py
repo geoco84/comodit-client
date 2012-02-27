@@ -88,9 +88,16 @@ class ResourceController(AbstractController):
         res.create()
         res.show(as_json = options.raw)
 
+    def _prune_json_update(self, json_wrapper):
+        json_wrapper._del_field("uuid")
+        json_wrapper._del_field("version")
+
     def _update(self, argv):
         # First, get resource
         res = self._get_resource(argv)
+
+        # Prune resource fields (all may not be updatable)
+        self._prune_json_update(res)
 
         options = globals.options
         if options.filename:

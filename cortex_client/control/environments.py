@@ -24,3 +24,9 @@ class EnvironmentsController(OrganizationResourceController):
 
     def _get_collection(self, org):
         return org.environments()
+
+    def _prune_json_update(self, json_wrapper):
+        super(EnvironmentsController, self)._prune_json_update(json_wrapper)
+        json_wrapper._del_field("settings")
+        json_wrapper._del_field("hosts")
+        json_wrapper._del_field("organization")

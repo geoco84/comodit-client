@@ -57,6 +57,12 @@ class OrganizationsController(RootResourceController):
     def get_collection(self, argv):
         return self._api.organizations()
 
+    def _prune_json_update(self, json_wrapper):
+        super(OrganizationsController, self)._prune_json_update(json_wrapper)
+        json_wrapper._del_field("settings")
+        json_wrapper._del_field("groups")
+        json_wrapper._del_field("environments")
+
     def _print_group_completions(self, param_num, argv):
         if param_num < 1:
             self._print_resource_completions(param_num, argv)
