@@ -4,6 +4,10 @@ VERSION=`git describe --long --match "release*" | awk -F"-" '{print $2}'`
 RELEASE=`git describe --long --match "release*" | awk -F"-" '{print $3}'`
 COMMIT=`git describe --long --match "release*" | awk -F"-" '{print $4}'`
 
+# Generate version file
+echo "VERSION=\""$VERSION"\"" > cortex_client/version.py
+echo "RELEASE=\""$RELEASE"\"" >> cortex_client/version.py
+
 NAME=cortex-client
 MAN_PAGE_FILE="cortex-doc/tmp/en-US/man/cortex.1"
 FALLBACK_MAN=`readlink -f scripts/cortex.1`

@@ -7,9 +7,6 @@
 # This software cannot be used and/or distributed without prior 
 # authorization from Guardis.
 
-VERSION = "#VERSION#"
-RELEASE = "#RELEASE#"
-
 from control.applications import ApplicationsController
 from control.platforms import PlatformsController
 from control.distributions import DistributionsController
@@ -22,6 +19,7 @@ from control.users import UsersController
 from rest.exceptions import ApiException
 from util import globals
 from util.editor import NotModifiedException
+import os
 import argparse
 import traceback
 import sys
@@ -151,7 +149,17 @@ def _parse(argv):
         globals.param_completions = -1
 
     if "--version" in argv:
-        print "ComodIT command line client, version " + VERSION + ", released on " + RELEASE + "."
+        version = "NO_VERSION"
+        release = "NO_RELEASE"
+        try:
+            import version as version_mod
+            if version_mod.VERSION:
+                version = version_mod.VERSION
+            if version_mod.RELEASE:
+                release = version_mod.RELEASE
+        except ImportError:
+            pass
+        print "ComodIT command line client " + version + "-" + release + "."
         exit(0)
 
     # Parse arguments
