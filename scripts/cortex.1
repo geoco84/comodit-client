@@ -1,0 +1,803 @@
+'\" t
+.\"     Title: cortex
+.\"    Author: Daniel Bartz <daniel.bartz@guardis.com>
+.\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
+.\"      Date: 02/27/2012
+.\"    Manual: Command Line User Interface Guide
+.\"    Source: Guardis
+.\"  Language: English
+.\"
+.TH "CORTEX" "1" "02/27/2012" "Guardis" "Command Line User Interface Gu"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+cortex \- ComodIT CLI
+.SH "SYNOPSIS"
+.HP \w'/usr/bin/cortex\ 'u
+/usr/bin/cortex [\-f\ FILE\ |\-\-file\ FILE] [\-j\ FILE\ |\-\-json\ FILE] [\-\-raw] [\-\-skip\-chown] [\-\-skip\-chmod] [\-\-api\ URL] [\-\-user\ USERNAME] [\-\-pass\ PASSWORD] [\-\-templates\ PATH] [\-\-profile\ NAME] [\-\-debug] [\-\-version] {resource|service} {action} [\&...]
+.SH "DESCRIPTION"
+.PP
+ComodIT is a global, integrated and centralized platform that eases the management of Linux systems and cloud provisioning (i\&.e\&. the instantiation of ready\-to\-use VMs)\&.
+.PP
+ComodIT actually manages different types of resources representing high\-level concepts:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+users: a ComodIT\-level user that is able to access the system\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+organizations: an organization typically encompasses the resources that may be managed/used by a group of users\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+environments: an environment is defined in the context of an organization\&. It represents a group of servers having common properties, access rights, etc\&. For example, it may be interesting to define a test environment containing servers used by developers to test their software and a production environment containing servers hosting the software accessed by customers\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+hosts: a host is defined in the context of an environment\&. It represents the description of a server: operating system, applications, etc\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+applications: an application is defined in the context of an organization and represents a software solution that may be installed on a host\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+platforms: a platform is defined in the context of an organization\&. It represents a way to \*(Aqinstantiate\*(Aq (e\&.g\&. create a virtual machine) a server\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+distributions: a distribution is defined in the context of an organization\&. It represents an operating system to install on a host after it was instantiated\&.
+.RE
+.PP
+ComodIT client allows to handle ComodIT resources by interacting with ComodIT server through its REST API\&. Basically, a target resource type, an action and a resource identifier \-\-sometimes additional parameters\-\- have to be provided\&. The action is then applied on given resource\&.
+.PP
+Instead of a resource type, a service name can be given\&. Again, an action and some parameters may be provided, leading to one or several interactions with the server\&.
+.PP
+Some resources, so called subresources, are \*(Aqincorporated\*(Aq into others i\&.e\&. they must be accessed through a containing resource:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+parameters: a value expected by an application, a distribution or a platform\&. This value is identified by a key\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+settings: a key\-value pair that may be associated to an organization, an environment, a host, as well as an application, a distribution or a platform associated to a given host\&. The key should match a parameter key and, therefore, provide an expected value\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+files: a file that may be associated to a distribution, a platform or an application\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+instance: the instance (i\&.e\&. a VM or real computer) associated to a particular host\&.
+.RE
+.PP
+When a subresource must be targeted, its type is composed of the containing resource type and the subresource\*(Aqs type\&. There may be several levels of resources\&.
+.PP
+Available (sub)resources and services are described in more details below\&.
+.PP
+Examples are given at the end of this page\&.
+.SH "COMODIT RESOURCES"
+.SS "Introduction"
+.PP
+Most resources feature exactly the same actions which share the same semantic:
+.PP
+list ID
+.RS 4
+Lists resources of given type associated to given resource (identified by ID)\&.
+.RE
+.PP
+show ID [\-\-raw]
+.RS 4
+Prints informations about a resource on standard output\&. ID is a resource\*(Aqs identifier and depends on resource\*(Aqs type\&. \-\-raw option causes the client to print the JSON representation of the resource\&.
+.RE
+.PP
+add [\-f FILE|\-\-file FILE|\-j JSON|\-\-json JSON] [ID]
+.RS 4
+Creates a new resource, potentially in the context of a containing resource whose ID must then be given\&. Without any option, a JSON template is opened with editor defined by environment variables VISUAL or EDITOR\&. If these variables are not defined, \*(Aqnotepad\&.exe\*(Aq is used on Windows and \*(Aqvi\*(Aq on other systems\&. If opened template is saved, a new resource is created using provided data\&.
+.sp
+If \*(Aq\-f\*(Aq or \*(Aq\-\-file\*(Aq options is defined, the resource is created using JSON description from given file\&.
+.sp
+If \*(Aq\-j\*(Aq or \*(Aq\-\-json\*(Aq options is defined, the resource is created using JSON description read from standard input\&.
+.RE
+.PP
+update ID [\-f FILE|\-\-file FILE|\-j JSON|\-\-json JSON] [\-\-raw]
+.RS 4
+Updates a resource\&. ID is a resource\*(Aqs identifier and depends on resource\*(Aqs type\&. By default, resource\*(Aqs JSON representation is opened with editor defined by environment variables VISUAL or EDITOR\&. If these variables are not defined, \*(Aqnotepad\&.exe\*(Aq is used on Windows and \*(Aqvi\*(Aq on other systems\&. If opened template is saved, resource is updated using provided data\&. Updated data are then shown\&. \-\-raw option causes the client to print JSON representation of given resource\&.
+.sp
+If \*(Aq\-f\*(Aq or \*(Aq\-\-file\*(Aq options is defined, user is updated using JSON description from given file\&.
+.sp
+If \*(Aq\-j\*(Aq or \*(Aq\-\-json\*(Aq options is defined, user is updated using JSON description read from standard input\&.
+.RE
+.PP
+delete ID
+.RS 4
+Deletes a resource\&. ID is a resource\*(Aqs identifier and depends on resource\*(Aqs type\&.
+.RE
+.PP
+Below, actions for each (sub)resource type are detailed\&.
+.SS "files"
+.PP
+A file is a subresource\&. It is uniquely identified by its name and the identifier of the resource it is part of\&. Therefore, \*(Aqlist\*(Aq and \*(Aqadd\*(Aq take the containing resource identifier as argument where \*(Aqshow\*(Aq, \*(Aqupdate\*(Aq and \*(Aqdelete\*(Aq the file identifier\&.
+.PP
+Files feature 2 additional actions:
+.PP
+show\-content ID
+.RS 4
+Prints the content of the file on standard output\&.
+.RE
+.PP
+set\-content ID PATH
+.RS 4
+Uploads the content of local file PATH to file identified by ID\&.
+.RE
+.SS "parameters"
+.PP
+A parameter is a subresource of platform, distribution and application\&. It is uniquely identified by its name and the identifier of the resource it is part of\&. Therefore, \*(Aqlist\*(Aq and \*(Aqadd\*(Aq take the containing resource identifier as argument where \*(Aqshow\*(Aq, \*(Aqupdate\*(Aq and \*(Aqdelete\*(Aq the file identifier\&.
+.SS "settings"
+.PP
+A setting is a subresource of organization, environment, host, distribution, platform, application context, platform context and distribution context\&. It is uniquely identified by its name and the identifier of the resource it is part of\&. Therefore, \*(Aqlist\*(Aq and \*(Aqadd\*(Aq take the containing resource identifier as argument where \*(Aqshow\*(Aq, \*(Aqupdate\*(Aq and \*(Aqdelete\*(Aq the file identifier\&.
+.SS "platforms"
+.PP
+A platform is uniquely identified by its name and the name of the organization it is part of\&. Therefore, \*(Aqlist\*(Aq and \*(Aqadd\*(Aq take an organization name as argument where \*(Aqshow\*(Aq, \*(Aqupdate\*(Aq and \*(Aqdelete\*(Aq an organization name and a platform name\&.
+.PP
+A platform has 3 subresources:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+files
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+parameters
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+settings
+.RE
+.PP
+Platforms feature an additional action:
+.PP
+clone ORG_NAME PLAT_NAME CLONE_NAME
+.RS 4
+Creates a copy of given platform\&.
+.RE
+.SS "applications"
+.PP
+An application is uniquely identified by its name and the name of the organization it is part of\&. Therefore, \*(Aqlist\*(Aq and \*(Aqadd\*(Aq take an organization name as argument where \*(Aqshow\*(Aq, \*(Aqupdate\*(Aq and \*(Aqdelete\*(Aq an organization name and an application name\&.
+.PP
+An application has 2 subresources:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+files
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+parameters
+.RE
+.PP
+Applications feature an additional action:
+.PP
+clone ORG_NAME APP_NAME CLONE_NAME
+.RS 4
+Creates a copy of given application\&.
+.RE
+.SS "distributions"
+.PP
+A distribution is uniquely identified by its name and the name of the organization it is part of\&. Therefore, \*(Aqlist\*(Aq and \*(Aqadd\*(Aq take an organization name as argument where \*(Aqshow\*(Aq, \*(Aqupdate\*(Aq and \*(Aqdelete\*(Aq an organization name and a distribution name\&.
+.PP
+A distribution has 3 subresources:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+files
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+parameters
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+settings
+.RE
+.PP
+Distributions feature an additional action:
+.PP
+clone ORG_NAME DIST_NAME CLONE_NAME
+.RS 4
+Creates a copy of given distribution\&.
+.RE
+.SS "users"
+.PP
+A user is uniquely identified by its name\&. Therefore, \*(Aqlist\*(Aq and \*(Aqadd\*(Aq take no argument where \*(Aqshow\*(Aq, \*(Aqupdate\*(Aq and \*(Aqdelete\*(Aq take a user name\&.
+.SS "organizations"
+.PP
+An organization is uniquely identified by its name\&. Therefore, \*(Aqlist\*(Aq and \*(Aqadd\*(Aq take no argument where \*(Aqshow\*(Aq, \*(Aqupdate\*(Aq and \*(Aqdelete\*(Aq take a user name\&.
+.PP
+An organization has 2 subresources:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+groups
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+settings
+.RE
+.PP
+An organization has user groups that allow to implement a simple access control: members of \*(Aqadmin\*(Aq group have full access on the organization; members of \*(Aqusers\*(Aq group have full access on the resources of the organization\&. In particular, members of \*(Aqusers\*(Aq group cannot add or remove users from the organization but \*(Aqadmin\*(Aq users do\&.
+.PP
+Group subresource allows to \*(Aqlist\*(Aq, \*(Aqshow\*(Aq and \*(Aqupdate\*(Aq an organization\*(Aqs users groups\&. \*(Aqadd\*(Aq and \*(Aqdelete\*(Aq actions are not yet available\&.
+.SS "environments"
+.PP
+An environment is uniquely identified by its name and the name of the organization it is part of\&. Therefore, \*(Aqlist\*(Aq and \*(Aqadd\*(Aq take an organization name as argument where \*(Aqshow\*(Aq, \*(Aqupdate\*(Aq and \*(Aqdelete\*(Aq an organization name and an environment name\&.
+.PP
+An environment has \*(Aqsettings\*(Aq subresource\&.
+.PP
+Environments feature an additional action:
+.PP
+clone ORG_NAME ENV_NAME CLONE_NAME
+.RS 4
+Creates a copy of given environment\&.
+.RE
+.SS "hosts"
+.PP
+A host is uniquely identified by its name, the name of the environment it is part of and the name of the environment\*(Aqs organization\&. Therefore, \*(Aqlist\*(Aq and \*(Aqadd\*(Aq take an organization name and an environment name as arguments where \*(Aqshow\*(Aq, \*(Aqupdate\*(Aq and \*(Aqdelete\*(Aq take an organization name, an environment name and a host name\&.
+.PP
+A host has 5 subresources:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+instance
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+applications
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+platform
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+distribution
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+settings
+.RE
+.PP
+\*(Aqinstance\*(Aq subresource allows to handle the instance of a given host\&. It defines following actions:
+.PP
+start ORG_NAME ENV_NAME HOST_NAME
+.RS 4
+Starts the instance\&.
+.RE
+.PP
+poweroff ORG_NAME ENV_NAME HOST_NAME
+.RS 4
+Powers the instance off\&.
+.RE
+.PP
+pause ORG_NAME ENV_NAME HOST_NAME
+.RS 4
+Pauses the instance\&.
+.RE
+.PP
+shutdown ORG_NAME ENV_NAME HOST_NAME
+.RS 4
+Shuts the instance down\&.
+.RE
+.PP
+show ORG_NAME ENV_NAME HOST_NAME
+.RS 4
+Shows an instance\*(Aqs details\&.
+.RE
+.PP
+resume ORG_NAME ENV_NAME HOST_NAME
+.RS 4
+Resumes the execution of an instance\&.
+.RE
+.PP
+properties ORG_NAME ENV_NAME HOST_NAME
+.RS 4
+Displayes the properties of an instance\&.
+.RE
+.PP
+delete ORG_NAME ENV_NAME HOST_NAME
+.RS 4
+Deletes an instance\&.
+.RE
+.PP
+\*(Aqapplications\*(Aq subresource allows to handle the applications of a given host\&. It defines following actions:
+.PP
+show ORG_NAME ENV_NAME HOST_NAME APP_NAME
+.RS 4
+Shows the details of an application context\&.
+.RE
+.PP
+list ORG_NAME ENV_NAME HOST_NAME
+.RS 4
+Lists the applications installed on a given host\&.
+.RE
+.PP
+install ORG_NAME ENV_NAME HOST_NAME APP_NAME [\-f FILE|\-\-file FILE|\-j JSON|\-\-json JSON]
+.RS 4
+Installs an application on a host\&.
+.RE
+.PP
+uninstall ORG_NAME ENV_NAME HOST_NAME APP_NAME
+.RS 4
+Uninstalls an application from a host\&.
+.RE
+.PP
+render\-file ORG_NAME ENV_NAME HOST_NAME APP_NAME FILE_NAME
+.RS 4
+Displays the rendering of a file of an installed application\&.
+.RE
+It also has the \*(Aqsettings\*(Aq subresources\&.
+.PP
+\*(Aqdistribution\*(Aq subresource allows to handle the distribution of a given host\&. It defines following actions:
+.PP
+show ORG_NAME ENV_NAME HOST_NAME
+.RS 4
+Shows the details of a distribution context\&.
+.RE
+.PP
+add ORG_NAME ENV_NAME HOST_NAME [\-f FILE|\-\-file FILE|\-j JSON|\-\-json JSON]
+.RS 4
+Sets the distribution associated to given host\&.
+.RE
+.PP
+delete ORG_NAME ENV_NAME HOST_NAME APP_NAME
+.RS 4
+Unsets the distribution associated to given host\&.
+.RE
+.PP
+render\-file ORG_NAME ENV_NAME HOST_NAME APP_NAME FILE_NAME
+.RS 4
+Displays the rendering of a file of the distribution\&.
+.RE
+It also has the \*(Aqsettings\*(Aq subresources\&.
+.PP
+\*(Aqplatform\*(Aq subresource allows to handle the platform of a given host\&. It defines following actions:
+.PP
+show ORG_NAME ENV_NAME HOST_NAME
+.RS 4
+Shows the details of a platform context\&.
+.RE
+.PP
+add ORG_NAME ENV_NAME HOST_NAME [\-f FILE|\-\-file FILE|\-j JSON|\-\-json JSON]
+.RS 4
+Sets the platform associated to given host\&.
+.RE
+.PP
+delete ORG_NAME ENV_NAME HOST_NAME APP_NAME
+.RS 4
+Unsets the platform associated to given host\&.
+.RE
+.PP
+render\-file ORG_NAME ENV_NAME HOST_NAME APP_NAME FILE_NAME
+.RS 4
+Displays the rendering of a file of the platform\&.
+.RE
+It also has the \*(Aqsettings\*(Aq subresources\&.
+.PP
+Hosts feature additional actions:
+.PP
+render\-tree ORG_NAME ENV_NAME HOST_NAME PATH
+.RS 4
+Renders all application files associated to given host\&. Rendered files are output in given folder\&.
+.RE
+.PP
+changes ORG_NAME ENV_NAME HOST_NAME
+.RS 4
+Displays pending changes for given host\&.
+.RE
+.PP
+clear\-changes ORG_NAME ENV_NAME HOST_NAME
+.RS 4
+Clears pending changes for given host\&.
+.RE
+.PP
+provision ORG_NAME ENV_NAME HOST_NAME
+.RS 4
+Provisions (i\&.e\&. instantiates and configures) given host\&. This action creates the instance of the host\&.
+.RE
+.SH "SERVICES"
+.SS "sync"
+.PP
+Sync service is used to store the state of a ComodIT server onto disk and then reload this state, possibly after making some modifications\&. Following actions are handled:
+.PP
+pull ORG_NAME [PATH]
+.RS 4
+Dumps the state of the ComodIT server onto disk into given directory\&. If no directory is provided, a directory having organization\*(Aqs name is used\&.
+.RE
+.PP
+push PATH
+.RS 4
+Loads the state from given directory into the ComodIT server\&.
+.RE
+.SH "OPTIONS"
+.PP
+\-f FILE |\-\-file FILE
+.RS 4
+Provides a JSON description in a file (see \*(Aqadd\*(Aq and \*(Aqupdate\*(Aq actions)\&.
+.RE
+.PP
+\-j FILE |\-\-json FILE
+.RS 4
+Provides a JSON description via standard input (see \*(Aqadd\*(Aq and \*(Aqupdate\*(Aq actions)\&.
+.RE
+.PP
+\-\-raw
+.RS 4
+JSON representation is dumped to standard output instead of a more \*(Aquser friendly\*(Aq presentation\&. (see \*(Aqshow\*(Aq and \*(Aqupdate\*(Aq actions)\&.
+.RE
+.PP
+\-\-skip\-chown
+.RS 4
+Skips ownership setting on files (see \*(Aqtree\*(Aq on rendering)\&.
+.RE
+.PP
+\-\-skip\-chmod
+.RS 4
+Skips mode setting on files (see \*(Aqtree\*(Aq on rendering)\&.
+.RE
+.PP
+\-\-api URL
+.RS 4
+Sets the URL of ComodIT server\*(Aqs API\&.
+.RE
+.PP
+\-\-user USERNAME
+.RS 4
+Sets the user name to use for authentication\&.
+.RE
+.PP
+\-\-pass PASSWORD
+.RS 4
+Sets the password to use for authentication\&.
+.RE
+.PP
+\-\-templates PATH
+.RS 4
+Sets templates directory\&. Templates are used when creating a resource in interactive mode (see \*(Aqadd\*(Aq)\&.
+.RE
+.PP
+\-\-profile NAME
+.RS 4
+Sets connection profile\&. A connection profile encompasses an URL to a ComodIT server API, a user name and a password\&. Profiles are defined in configuration file\&. NAME is the name of a profile of the configuration file\&.
+.RE
+.PP
+\-\-debug
+.RS 4
+Prints complete stack trace in case of error\&. Only error message is displayed by default\&.
+.RE
+.PP
+\-\-version
+.RS 4
+Prints version information\&.
+.RE
+.SH "CONFIGURATION FILES"
+.PP
+Client reads connection informations from a configuration file\&. Following files are parsed (files are listed in increasing order of priority):
+.RS 4
+\&./conf/cortex\-client\&.conf
+.RE
+.RS 4
+~/cortexrc
+.RE
+.RS 4
+/etc/cortex/cortex\-client\&.conf
+.RE
+.PP
+A configuration file should contain one or serveral profiles\&. A profile is the URL of a ComodIT server\*(Aqs API, a user name and a password\&. Option \-\-profile can be used to select a particular profile\&. The configuration file also contains the profile to use by default, when no profile is selected\&.
+.PP
+Here is an example of configuration file:
+.RS 4
+ 
+.RE
+.RS 4
+[client]
+.RE
+.RS 4
+default_profile = default
+.RE
+.RS 4
+ 
+.RE
+.RS 4
+[default]
+.RE
+.RS 4
+api = http://localhost:8000/api
+.RE
+.RS 4
+username = admin
+.RE
+.RS 4
+password = secret
+.RE
+.PP
+By default, profile with name \*(Aqdefault\*(Aq is used\&. This profile defines \*(Aqhttp://localhost:8000/api\*(Aq as the API URL (see \-\-api option), \*(Aqadmin\*(Aq as user name (see \-\-user option) and \*(Aqsecret\*(Aq as password (see \-\-pass option)\&.
+.SH "EXAMPLES"
+.SS "List available resources"
+.PP
+Following command shows the list of organizations the user has access to (i\&.e\&. is member of):
+.RS 4
+ 
+.RE
+.RS 4
+cortex organizations list
+.RE
+.SS "Show a resource\*(Aqs details"
+.PP
+Following command shows the details of a distribution DIST from organization ORG the user has access to (i\&.e\&. is member of):
+.RS 4
+ 
+.RE
+.RS 4
+cortex distributions show ORG DIST
+.RE
+.SS "Provision a host"
+.PP
+Following command provisions host HOST part of environment ENV from organization ORG:
+.RS 4
+ 
+.RE
+.RS 4
+cortex hosts provision ORG ENV HOST
+.RE
+.SS "Handle a host\*(Aqs instance"
+.PP
+Following command starts the instance (i\&.e\&. VM) associated to host HOST part of environment ENV from organization ORG:
+.RS 4
+ 
+.RE
+.RS 4
+cortex hosts instance start ORG ENV HOST
+.RE
+.SH "AUTHORS"
+.PP
+\fB
+		\fR\fB[IMAGE]
+\fR\fB
+
+	\fR
+.PP
+\fBDaniel Bartz\fR <\&daniel.bartz@guardis.com\&>
+.br
+Guardis
+.RS 4
+Author.
+.RE
+.PP
+\fBSebastien Caps\fR <\&sebastien.caps@guardis.com\&>
+.br
+Guardis
+.RS 4
+Author.
+.RE
+.PP
+\fBGérard Dethier\fR <\&gerard.dethier@guardis.com\&>
+.br
+Guardis
+.RS 4
+Author.
+.RE
+.PP
+\fBLaurent Eschenauer\fR <\&laurent.eschenauer@guardis.com\&>
+.br
+Guardis
+.RS 4
+Author.
+.RE
+.PP
+\fBChristian Mack\fR <\&christian.mack@guardis.com\&>
+.br
+Guardis
+.RS 4
+Author.
+.RE
+.PP
+\fBSandro Munda\fR <\&sandro.munda@guardis.com\&>
+.br
+Guardis
+.RS 4
+Author.
+.RE
