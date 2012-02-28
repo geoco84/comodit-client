@@ -95,7 +95,10 @@ class ActionsQueue:
         for a in self._actions:
             print "-"*80
             print "Executing '" + a.get_summary() + "'"
-            a.executeAction()
+            try:
+                a.executeAction()
+            except Exception, e:
+                print "Error:", e.message
         print "-"*80
 
     def display(self):

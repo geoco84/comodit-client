@@ -27,6 +27,8 @@ from cortex_client.api.environment import Environment
 from cortex_client.api.host import Host, Instance
 from cortex_client.api.platform import Platform
 from cortex_client.api.exceptions import PythonApiException
+from cortex_client.api.contexts import ApplicationContext, PlatformContext, \
+    DistributionContext
 
 
 class SyncException(ControllerException):
@@ -190,7 +192,7 @@ class OrganizationsController(RootResourceController):
                 content_file = os.path.join(app_folder, "files", file_name)
                 self._import_file_content(content_file, app, file_name)
 
-    def _import_resource(self, local_res):
+    def _import_resource(self, local_res, force_update = False):
         res_name = local_res.get_name()
         local_uuid = local_res.get_uuid()
 
@@ -214,6 +216,8 @@ class OrganizationsController(RootResourceController):
 #                new_name = self._getUniqueName(res_name, collection)
 #                local_res.set_name(new_name)
 #                self._actions.addAction(CreateResource(False, local_res))
+        elif force_update:
+            self._actions.addAction(UpdateResource(True, local_res))
         else:
             self._actions.addAction(CreateResource(True, local_res))
 
@@ -308,6 +312,9 @@ class OrganizationsController(RootResourceController):
             path.ensure(files_folder)
             self.__export_files_content(d, files_folder)
 
+    def _get_app_context_file(self, host_folder, name):
+        return os.path.join(host_folder, "applications", name)
+
     def _export_environments(self, org):
         envs = org.environments().get_resources()
         envs_folder = self._get_environment_folder()
@@ -321,11 +328,33 @@ class OrganizationsController(RootResourceController):
                 host_folder = os.path.join(env_folder, h.get_name())
                 h.dump(host_folder)
 
+                # Export instance
                 try:
                     instance = h.instance().get_single_resource()
                     instance_file = self._get_instance_file(host_folder)
                     instance.dump_json(instance_file)
                 except PythonApiException:
+                    pass
+
+                # Export application contexts
+                app_contexts = h.applications().get_resources()
+                app_folder = os.path.join(host_folder, "applications")
+                path.ensure(app_folder)
+                for context in app_contexts:
+                    context.dump_json(os.path.join(app_folder, context.get_application() + ".json"))
+
+                # Export platform context
+                try:
+                    context = h.platform().get_single_resource()
+                    context.dump_json(os.path.join(host_folder, "platform.json"))
+                except ResourceNotFoundException:
+                    pass
+
+                # Export distribution context
+                try:
+                    context = h.distribution().get_single_resource()
+                    context.dump_json(os.path.join(host_folder, "distribution.json"))
+                except ResourceNotFoundException:
                     pass
 
     def _import_organization(self):
@@ -353,7 +382,8 @@ class OrganizationsController(RootResourceController):
             group_folder = os.path.join(groups_folder, group_name)
             group.load(group_folder)
 
-            self._actions.addAction(UpdateResource(True, group))
+            # For now, groups can only be udpated
+            self._import_resource(group, force_update = True)
 
     def _import_environments(self, org):
         envs_folder = self._get_environment_folder()
@@ -380,20 +410,41 @@ class OrganizationsController(RootResourceController):
                 host = Host(env.hosts(), None)
                 host.load(host_dir)
 
-                # Read instance
+                apps = host.get_applications()
+
+                # Contexts are created below
+                host._del_field("applications")
+                host._del_field("platform")
+                host._del_field("distribution")
+
+                self._import_resource(host)
+
+                # Import application contexts
+                for app in apps:
+                    context = ApplicationContext(host.applications(), None)
+                    context.load_json(os.path.join(host_dir, "applications", app + ".json"))
+                    self._import_resource(context)
+
+                # Import platform context
+                platform_file = os.path.join(host_dir, "platform.json")
+                if os.path.exists(platform_file):
+                    context = PlatformContext(host.platform(), None)
+                    context.load_json(platform_file)
+                    self._import_resource(context)
+
+                # Import distribution context
+                dist_file = os.path.join(host_dir, "distribution.json")
+                if os.path.exists(dist_file):
+                    context = DistributionContext(host.distribution(), None)
+                    context.load_json(dist_file)
+                    self._import_resource(context)
+
+                # Import instance (must come at last)
                 instance_file = self._get_instance_file(host_dir)
-                instance = None
                 if os.path.exists(instance_file):
                     with open(instance_file, "r") as f:
                         instance = Instance(host.instance(), json.load(f))
-
-                if instance is None:
-                    host.clear_state()
-                self._import_resource(host)
-
-                if not instance is None:
-                    self._import_instance(host, instance)
-
+                        self._import_instance(host, instance)
 
     def _export_platforms(self, org):
         plats = org.platforms().get_resources()

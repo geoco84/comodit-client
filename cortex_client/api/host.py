@@ -306,9 +306,6 @@ class Host(Configurable):
         """
         super(Host, self).__init__(collection, json_data)
 
-    def get_uuid(self):
-        return self._get_field("uuid")
-
     def get_organization(self):
         """
         Provides the organization this host is part of. It is this host's

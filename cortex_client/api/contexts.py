@@ -90,6 +90,9 @@ class DistributionContext(AbstractContext):
     def set_distribution(self, distribution):
         return self._set_field("distribution", distribution)
 
+    def get_name(self):
+        return ""
+
     def _show(self, indent = 0):
         print " "*indent, "Distribution:", self.get_distribution()
         self._show_settings(indent)
@@ -115,6 +118,9 @@ class PlatformContext(AbstractContext):
 
     def set_platform(self, platform):
         return self._set_field("platform", platform)
+
+    def get_name(self):
+        return ""
 
     def _show(self, indent = 0):
         print " "*indent, "Platform:", self.get_platform()

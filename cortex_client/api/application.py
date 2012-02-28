@@ -603,9 +603,6 @@ class Application(Resource):
         """
         return int(self._get_field("version"))
 
-    def get_uuid(self):
-        return self._get_field("uuid")
-
     def get_parameters(self):
         """
         Provides the list of parameters associated to this template.

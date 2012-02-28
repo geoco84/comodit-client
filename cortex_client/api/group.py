@@ -19,9 +19,6 @@ class Group(Resource):
     def get_organization(self):
         return self._get_field("organization")
 
-    def get_uuid(self):
-        return self._get_field("uuid")
-
     def get_users(self):
         return self._get_list_field("users", UserFactory())
 

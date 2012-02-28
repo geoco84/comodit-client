@@ -29,9 +29,6 @@ class Environment(Configurable):
         """
         super(Environment, self).__init__(collection, json_data)
 
-    def get_uuid(self):
-        return self._get_field("uuid")
-
     def _show(self, indent = 0):
         print " "*indent, "Name:", self.get_name()
         print " "*indent, "Description:", self.get_description()
