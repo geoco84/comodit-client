@@ -169,7 +169,8 @@ _cortex_client()
         else
             ((cur_arg=__no_opts_cur-1))
         fi
-        params=`${COMP_WORDS[@]} --completions ${cur_arg}`
+
+        params=`eval ${COMP_WORDS[*]} --completions ${cur_arg} | cat`
         case "$?" in
             "0")
                 # Ignore spaces when parsing possible values
