@@ -111,7 +111,7 @@ ${_pack}
 %post
 
 # Configure Synapse
-cat << EOF > /etc/synapse/synapse.conf
+cat << EOF > /etc/synapse/synapsed.conf
 
 [rabbitmq]
 type = amqp
