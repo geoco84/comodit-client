@@ -143,14 +143,11 @@ class Instance(Resource):
         """
         return self._get_field("state")
 
-    def get_ips(self):
-        return self._get_list_field("ips", PropertyFactory())
-
     def get_ip(self, interface):
-        ips_list = self._get_field("ips")
-        for p in ips_list:
-            if p["key"] == interface:
-                return p["value"]
+        props = self.get_properties()
+        for p in props:
+            if p.get_key() == "ip." + interface:
+                return p.get_value()
         return None
 
     def get_hostname(self):
@@ -239,18 +236,11 @@ class Instance(Resource):
         self.get_vnc().show(indent + 2)
         self.show_ips(indent)
 
-    def show_ips(self, indent = 0):
-        print " "*indent, "IPs:"
-        ips = self.get_ips()
-        for p in ips:
-            print " "*(indent + 2), p.get_key(), ":", p.get_value()
-
     def show_properties(self, indent = 0):
         print " "*indent, "Properties:"
         props = self.get_properties()
         for p in props:
-            if not p.get_key() in ("ip", "hostname", "synapseState"):
-                print " "*(indent + 2), p.get_key(), ":", p.get_value()
+            print " "*(indent + 2), p.get_key(), ":", p.get_value()
 
 
 class Task(JsonWrapper):
