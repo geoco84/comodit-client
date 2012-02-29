@@ -149,7 +149,9 @@ class OrganizationsController(RootResourceController):
         """
         self._options = globals.options
 
-        self.__set_root_folder(argv)
+        if len(argv) < 1:
+            raise ArgumentException("Wrong number of arguments")
+        self._root = argv[0]
 
         self._actions = ActionsQueue()
         self._import_organization()
@@ -165,7 +167,7 @@ class OrganizationsController(RootResourceController):
             self._actions.display()
 
     def _import_doc(self):
-        return ActionDoc("import", "<org_name> [<output_folder>] [--force]", """
+        return ActionDoc("import", "<src_folder>] [--force]", """
         Import organization from disk. --force option causes existing resources
         on server to be updated.""")
 
