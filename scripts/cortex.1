@@ -2,12 +2,12 @@
 .\"     Title: cortex
 .\"    Author: Daniel Bartz <daniel.bartz@guardis.com>
 .\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
-.\"      Date: 02/27/2012
+.\"      Date: 02/29/2012
 .\"    Manual: Command Line User Interface Guide
 .\"    Source: Guardis
 .\"  Language: English
 .\"
-.TH "CORTEX" "1" "02/27/2012" "Guardis" "Command Line User Interface Gu"
+.TH "CORTEX" "1" "02/29/2012" "Guardis" "Command Line User Interface Gu"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -28,10 +28,10 @@
 .\" * MAIN CONTENT STARTS HERE *
 .\" -----------------------------------------------------------------
 .SH "NAME"
-cortex \- ComodIT CLI
+cortex \- ComodIT command\-line interface
 .SH "SYNOPSIS"
 .HP \w'/usr/bin/cortex\ 'u
-/usr/bin/cortex [\-f\ FILE\ |\-\-file\ FILE] [\-j\ FILE\ |\-\-json\ FILE] [\-\-raw] [\-\-skip\-chown] [\-\-skip\-chmod] [\-\-api\ URL] [\-\-user\ USERNAME] [\-\-pass\ PASSWORD] [\-\-templates\ PATH] [\-\-profile\ NAME] [\-\-debug] [\-\-version] {resource|service} {action} [\&...]
+/usr/bin/cortex [\-f\ FILE\ |\-\-file\ FILE] [\-j\ FILE\ |\-\-json\ FILE] [\-\-raw] [\-\-skip\-chown] [\-\-skip\-chmod] [\-\-api\ URL] [\-\-user\ USERNAME] [\-\-pass\ PASSWORD] [\-\-templates\ PATH] [\-\-profile\ NAME] [\-\-debug] [\-\-version] {resource} [subresources\ \&...] {action} [\&...]
 .SH "DESCRIPTION"
 .PP
 ComodIT is a global, integrated and centralized platform that eases the management of Linux systems and cloud provisioning (i\&.e\&. the instantiation of ready\-to\-use VMs)\&.
@@ -359,7 +359,7 @@ Creates a copy of given distribution\&.
 A user is uniquely identified by its name\&. Therefore, \*(Aqlist\*(Aq and \*(Aqadd\*(Aq take no argument where \*(Aqshow\*(Aq, \*(Aqupdate\*(Aq and \*(Aqdelete\*(Aq take a user name\&.
 .SS "organizations"
 .PP
-An organization is uniquely identified by its name\&. Therefore, \*(Aqlist\*(Aq and \*(Aqadd\*(Aq take no argument where \*(Aqshow\*(Aq, \*(Aqupdate\*(Aq and \*(Aqdelete\*(Aq take a user name\&.
+An organization is uniquely identified by its name\&. Therefore, \*(Aqlist\*(Aq and \*(Aqadd\*(Aq take no argument where \*(Aqshow\*(Aq, \*(Aqupdate\*(Aq and \*(Aqdelete\*(Aq take an organization name\&.
 .PP
 An organization has 2 subresources:
 .sp
@@ -385,9 +385,21 @@ groups
 settings
 .RE
 .PP
-An organization has user groups that allow to implement a simple access control: members of \*(Aqadmin\*(Aq group have full access on the organization; members of \*(Aqusers\*(Aq group have full access on the resources of the organization\&. In particular, members of \*(Aqusers\*(Aq group cannot add or remove users from the organization but \*(Aqadmin\*(Aq users do\&.
+An organization has user groups that allow to implement a simple access control: members of \*(Aqadmin\*(Aq group have full access on the organization; members of \*(Aqusers\*(Aq group have full access on the resources of the organization\&. In particular, members of \*(Aqusers\*(Aq group cannot add or remove users from the organization but \*(Aqadmin\*(Aq users can\&.
 .PP
 Group subresource allows to \*(Aqlist\*(Aq, \*(Aqshow\*(Aq and \*(Aqupdate\*(Aq an organization\*(Aqs users groups\&. \*(Aqadd\*(Aq and \*(Aqdelete\*(Aq actions are not yet available\&.
+.PP
+Organizations feature 2 additional actions:
+.PP
+export ORG_NAME [PATH] [\-\-force]
+.RS 4
+Organization is exported onto disk in given folder\&. If no folder is given, a folder with organization\*(Aqs name is created and data written into it\&. If \-\-force option is set, data already present in output folder are overwritten\&.
+.RE
+.PP
+import [PATH] [\-\-force]
+.RS 4
+Organization is imported from given folder\&. If \-\-force option is set, data already present on server are updated\&.
+.RE
 .SS "environments"
 .PP
 An environment is uniquely identified by its name and the name of the organization it is part of\&. Therefore, \*(Aqlist\*(Aq and \*(Aqadd\*(Aq take an organization name as argument where \*(Aqshow\*(Aq, \*(Aqupdate\*(Aq and \*(Aqdelete\*(Aq an organization name and an environment name\&.
@@ -597,20 +609,6 @@ Clears pending changes for given host\&.
 provision ORG_NAME ENV_NAME HOST_NAME
 .RS 4
 Provisions (i\&.e\&. instantiates and configures) given host\&. This action creates the instance of the host\&.
-.RE
-.SH "SERVICES"
-.SS "sync"
-.PP
-Sync service is used to store the state of a ComodIT server onto disk and then reload this state, possibly after making some modifications\&. Following actions are handled:
-.PP
-pull ORG_NAME [PATH]
-.RS 4
-Dumps the state of the ComodIT server onto disk into given directory\&. If no directory is provided, a directory having organization\*(Aqs name is used\&.
-.RE
-.PP
-push PATH
-.RS 4
-Loads the state from given directory into the ComodIT server\&.
 .RE
 .SH "OPTIONS"
 .PP
