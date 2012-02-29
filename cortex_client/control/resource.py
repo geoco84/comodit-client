@@ -125,7 +125,7 @@ class ResourceController(AbstractController):
 
     def _delete(self, argv):
         res = self._get_resource(argv)
-        if (prompt.confirm(prompt = "Delete " + res.get_name() + " ?", resp = False)) :
+        if globals.options.force or (prompt.confirm(prompt = "Delete " + res.get_name() + " ?", resp = False)) :
             res.delete()
 
     def _help(self, argv):

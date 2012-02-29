@@ -89,7 +89,7 @@ class HostsController(ResourceController):
     def _delete(self, argv):
         host = self._get_resource(argv)
 
-        if (prompt.confirm(prompt = "Delete " + host.get_name() + " ?", resp = False)) :
+        if globals.options.force or (prompt.confirm(prompt = "Delete " + host.get_name() + " ?", resp = False)) :
             host.delete()
 
     def _print_file_completions(self, param_num, argv):
