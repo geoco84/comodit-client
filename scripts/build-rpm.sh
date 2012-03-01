@@ -29,7 +29,7 @@ echo "RELEASE=\""$RELEASE"\"" >> cortex_client/version.py
 cd `dirname $0`
 cd ..
 
-scripts/build-man.sh
+# scripts/build-man.sh
 
 # Workaround for lack of proper publican version on devel.bruxelles
 if [[ ! -f ${MAN_PAGE_FILE} ]]
