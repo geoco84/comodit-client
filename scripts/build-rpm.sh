@@ -6,14 +6,14 @@ FALLBACK_MAN=`readlink -f scripts/cortex.1`
 TAR_CONTENT="cortex_client templates conf setup.py cortex scripts/completions.sh "${MAN_PAGE_FILE}
 PLATFORMS=(epel-6-i386 fedora-15-i386 fedora-16-i386)
 
-if [ -z $1]
+if [ -z $1 ]
 then
   VERSION=`git describe --long --match "release*" | awk -F"-" '{print $2}'`
 else
   VERSION=$1
 fi
 
-if [ -z $2]
+if [ -z $2 ]
 then
   RELEASE=`git describe --long --match "release*" | awk -F"-" '{print $3}'`
 else
