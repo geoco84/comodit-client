@@ -1,5 +1,4 @@
 {
     "name":"prod",
-    "description":"The production environment",
-    "organization":"Organization name"
+    "description":"The production environment"
 }

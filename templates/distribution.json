@@ -30,5 +30,13 @@
                 }
             ]
         }
+    ],
+    "parameters": [
+       {
+           "key": "<a key>",
+           "value": "<a value>",
+           "name": "<a name>",
+           "description": "<a description>"
+        }
     ]
 }
