@@ -10,6 +10,7 @@
 from cortex_client.control.resource import ResourceController
 from cortex_client.control.exceptions import ArgumentException
 from cortex_client.control.doc import ActionDoc
+from cortex_client.api.organization import Organization
 
 class OrganizationResourceController(ResourceController):
 
@@ -49,7 +50,7 @@ class OrganizationResourceController(ResourceController):
         if param_num < 1:
             self._print_collection_completions(param_num, argv)
         elif len(argv) > 0 and param_num == 1:
-            org = self._api.organizations().get_resource(argv[0])
+            org = Organization(self._api.organizations(), {"name":argv[0]})
             self._print_identifiers(self._get_collection(org))
 
     def _print_list_completions(self, param_num, argv):
