@@ -5,15 +5,15 @@
     [
         {
             "key":"kickstartName",
-            "value":"<kickstart file name>",
+            "value":"<kickstart file name>"
         },
         {
             "key":"vmlinuzPath",
-            "value":"<an absolute path>",
+            "value":"<an absolute path>"
         },
         {
             "key":"initrdPath",
-            "value":"<an absolute path>",
+            "value":"<an absolute path>"
         }
     ],
     "files":

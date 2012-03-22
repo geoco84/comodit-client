@@ -77,7 +77,7 @@ class ResourceController(AbstractController):
         elif options.json:
             item = json.loads(options.json)
         else :
-            template_json = json.load(open(os.path.join(Config().templates_path, self._template)))
+            template_json = json.load(open(os.path.join(Config()._get_templates_path(), self._template)))
             #template = "# To abort the request; just exit your editor without saving this file.\n\n" + template
             self._complete_template(argv, template_json)
             updated = edit_text(json.dumps(template_json, indent = 4))
