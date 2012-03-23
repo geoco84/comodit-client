@@ -16,6 +16,8 @@ from cortex_client.control.contexts import PlatformContextController, \
     DistributionContextController, ApplicationContextController
 from cortex_client.control.tree_rendering import TreeRenderer
 from cortex_client.control.doc import ActionDoc
+from cortex_client.api.organization import Organization
+from cortex_client.api.environment import Environment
 
 
 class HostsController(ResourceController):
@@ -55,24 +57,22 @@ class HostsController(ResourceController):
         if len(argv) < 2:
             raise ArgumentException("Wrong number of arguments");
 
-        org = self._api.organizations().get_resource(argv[0])
-        env = org.environments().get_resource(argv[1])
+        org = Organization(self._api.organizations(), {"name": argv[0]})
+        env = Environment(org.environments(), {"name": argv[1]})
         return env.hosts()
 
     def _print_collection_completions(self, param_num, argv):
         if param_num == 0:
             self._print_identifiers(self._api.organizations())
         elif len(argv) > 0 and param_num == 1:
-            org = self._api.organizations().get_resource(argv[0])
+            org = Organization(self._api.organizations(), {"name": argv[0]})
             self._print_identifiers(org.environments())
 
     def _print_resource_completions(self, param_num, argv):
         if param_num < 2:
             self._print_collection_completions(param_num, argv)
         elif len(argv) > 1 and param_num == 2:
-            org = self._api.organizations().get_resource(argv[0])
-            env = org.environments().get_resource(argv[1])
-            self._print_identifiers(env.hosts())
+            self._print_identifiers(self.get_collection(argv))
 
     def _complete_template(self, argv, template_json):
         if len(argv) < 2:
