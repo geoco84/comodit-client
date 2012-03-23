@@ -13,15 +13,10 @@
     [
         {
             "name": "<a file name>",
-            "parameters":
-            [
-                {
-                    "key": "<a key>",
-                    "value": "<a value>",
-                    "name": "<a name>",
-                    "description": "<a description>"
-                }
-            ]
+            "delimiter": {
+               "start": "${",
+               "end": "}"
+            }
         }
     ],
     "parameters": [
