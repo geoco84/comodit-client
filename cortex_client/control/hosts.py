@@ -16,8 +16,7 @@ from cortex_client.control.contexts import PlatformContextController, \
     DistributionContextController, ApplicationContextController
 from cortex_client.control.tree_rendering import TreeRenderer
 from cortex_client.control.doc import ActionDoc
-from cortex_client.api.organization import Organization
-from cortex_client.api.environment import Environment
+from cortex_client.api import collections
 
 
 class HostsController(ResourceController):
@@ -57,16 +56,13 @@ class HostsController(ResourceController):
         if len(argv) < 2:
             raise ArgumentException("Wrong number of arguments");
 
-        org = Organization(self._api.organizations(), {"name": argv[0]})
-        env = Environment(org.environments(), {"name": argv[1]})
-        return env.hosts()
+        return collections.hosts(argv[0], argv[1])
 
     def _print_collection_completions(self, param_num, argv):
         if param_num == 0:
             self._print_identifiers(self._api.organizations())
         elif len(argv) > 0 and param_num == 1:
-            org = Organization(self._api.organizations(), {"name": argv[0]})
-            self._print_identifiers(org.environments())
+            self._print_identifiers(collections.environments(self._api, argv[0]))
 
     def _print_resource_completions(self, param_num, argv):
         if param_num < 2:
@@ -95,20 +91,10 @@ class HostsController(ResourceController):
     def _print_file_completions(self, param_num, argv):
         if param_num < 3:
             self._print_resource_completions(param_num, argv)
-        elif len(argv) > 2:
-            org = self._api.organizations().get_resource(argv[0])
-            env = org.environments().get_resource(argv[1])
-            host = env.hosts().get_resource(argv[2])
-
-            if param_num == 3:
-                apps = host.get_applications()
-                self._print_escaped_names(apps)
-            elif len(argv) > 3 and param_num == 4:
-                apps = host.get_applications()
-                app = org.applications().get_resource(argv[3])
-                app_files = app.get_files()
-                for f in app_files:
-                    self._print_escaped_name(f.get_name())
+        elif len(argv) > 2 and param_num == 3:
+            self._print_escaped_names(collections.application_contexts(self._api, argv[0], argv[1], argv[2]))
+        elif len(argv) > 3 and param_num == 4:
+            self._print_escaped_name(collections.application_files(self._api, argv[0], argv[3]))
 
     def _print_tree_completions(self, param_num, argv):
         if param_num < 3:
