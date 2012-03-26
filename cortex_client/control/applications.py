@@ -7,6 +7,8 @@
 # This software cannot be used and/or distributed without prior
 # authorization from Guardis.
 
+from cortex_client.api import collections
+
 from cortex_client.control.organization_resource import OrganizationResourceController
 from cortex_client.control.files import ApplicationFilesController
 from cortex_client.control.parameters import ApplicationParametersController
@@ -24,8 +26,8 @@ class ApplicationsController(OrganizationResourceController):
 
         self._doc = "Applications handling."
 
-    def _get_collection(self, org):
-        return org.applications()
+    def _get_collection(self, org_name):
+        return collections.applications(self._api, org_name)
 
     def _prune_json_update(self, json_wrapper):
         super(ApplicationsController, self)._prune_json_update(json_wrapper)

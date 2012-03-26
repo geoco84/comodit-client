@@ -32,15 +32,14 @@ class OrganizationResourceController(ResourceController):
             raise ArgumentException("An organization name must be provided, in addition to resource name");
         return argv[1]
 
-    def _get_collection(self, organization):
+    def _get_collection(self, org_name):
         raise NotImplementedError
 
     def get_collection(self, argv):
         if len(argv) == 0:
             raise ArgumentException("An organization name must be provided");
 
-        org = self._api.organizations().get_resource(argv[0])
-        return self._get_collection(org)
+        return self._get_collection(argv[0])
 
     def _print_collection_completions(self, param_num, argv):
         if param_num == 0:
@@ -50,8 +49,7 @@ class OrganizationResourceController(ResourceController):
         if param_num < 1:
             self._print_collection_completions(param_num, argv)
         elif len(argv) > 0 and param_num == 1:
-            org = Organization(self._api.organizations(), {"name":argv[0]})
-            self._print_identifiers(self._get_collection(org))
+            self._print_identifiers(self._get_collection(argv[0]))
 
     def _print_list_completions(self, param_num, argv):
         self._print_collection_completions(param_num, argv)
