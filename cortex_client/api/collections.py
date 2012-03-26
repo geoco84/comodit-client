@@ -1,7 +1,7 @@
 # coding: utf-8
 from cortex_client.api.organization import Organization
 from cortex_client.api.environment import Environment
-from cortex_client.api.host import Host
+from cortex_client.api.host import Host, Instance
 from cortex_client.api.application import Application
 
 def organizations(api):
@@ -38,3 +38,7 @@ def application_files(api, org_name, app_name):
 def application_contexts(api, org_name, env_name, host_name):
     host = Host(hosts(api, org_name, env_name), {"name": host_name})
     return host.applications()
+
+def instance(api, org_name, env_name, host_name):
+    host = Host(hosts(api, org_name, env_name), {"name": host_name})
+    return host.instance()

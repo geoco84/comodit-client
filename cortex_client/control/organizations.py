@@ -29,6 +29,7 @@ from cortex_client.api.platform import Platform
 from cortex_client.api.exceptions import PythonApiException
 from cortex_client.api.contexts import ApplicationContext, PlatformContext, \
     DistributionContext
+from cortex_client.api import collections
 
 
 class SyncException(ControllerException):
@@ -69,25 +70,20 @@ class OrganizationsController(RootResourceController):
         if param_num < 1:
             self._print_resource_completions(param_num, argv)
         elif param_num == 1:
-            org = self._get_resource(argv)
-            self._print_identifiers(org.groups())
+            self._print_identifiers(collections.groups(self._api, argv[0]))
 
     def _show_group(self, argv):
         if len(argv) != 2:
             raise ArgumentException("This action takes 2 arguments")
 
-        org = self._get_resource(argv)
-
-        group = org.groups().get_resource(argv[1])
+        group = collections.groups(self._api, argv[0]).get_resource(argv[1])
         group.show()
 
     def _add_user(self, argv):
         if len(argv) != 3:
             raise ArgumentException("This action takes 3 arguments")
 
-        org = self._get_resource(argv)
-
-        group = org.groups().get_resource(argv[1])
+        group = collections.groups(self._api, argv[0]).get_resource(argv[1])
         group.add_user(argv[2])
         group.commit()
 
@@ -95,9 +91,7 @@ class OrganizationsController(RootResourceController):
         if len(argv) != 3:
             raise ArgumentException("This action takes 3 arguments")
 
-        org = self._get_resource(argv)
-
-        group = org.groups().get_resource(argv[1])
+        group = collections.groups(self._api, argv[0]).get_resource(argv[1])
         group.remove_user(argv[2])
         group.commit()
 

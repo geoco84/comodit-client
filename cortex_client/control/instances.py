@@ -6,6 +6,7 @@ from cortex_client.util import prompt, globals
 from cortex_client.control.resource import ResourceController
 from cortex_client.control.exceptions import ArgumentException
 from cortex_client.control.doc import ActionDoc
+from cortex_client.api import collections
 
 class InstancesController(ResourceController):
 
@@ -36,23 +37,15 @@ class InstancesController(ResourceController):
     def get_collection(self, argv):
         if len(argv) < 3:
             raise ArgumentException("Wrong number of arguments");
-
-        org = self._api.organizations().get_resource(argv[0])
-        env = org.environments().get_resource(argv[1])
-        host = env.hosts().get_resource(argv[2])
-
-        return host.instance()
+        return collections.instance(self._api, argv[0], argv[1], argv[2])
 
     def _print_collection_completions(self, param_num, argv):
         if param_num == 0:
             self._print_identifiers(self._api.organizations())
         elif len(argv) > 0 and param_num == 1:
-            org = self._api.organizations().get_resource(argv[0])
-            self._print_identifiers(org.environments())
+            self._print_identifiers(collections.environments(self._api, argv[0]))
         elif len(argv) > 1 and param_num == 2:
-            org = self._api.organizations().get_resource(argv[0])
-            env = org.environments().get_resource(argv[1])
-            self._print_identifiers(env.hosts())
+            self._print_identifiers(collections.hosts(self._api, argv[0], argv[1]))
 
     def _print_resource_completions(self, param_num, argv):
         if param_num < 3:
