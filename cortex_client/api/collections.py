@@ -1,11 +1,13 @@
 # coding: utf-8
 from cortex_client.api.organization import Organization
 from cortex_client.api.environment import Environment
-from cortex_client.api.host import Host, Instance
+from cortex_client.api.host import Host
 from cortex_client.api.application import Application
 from cortex_client.api.contexts import ApplicationContext
 from cortex_client.api.distribution import Distribution
 from cortex_client.api.platform import Platform
+
+# Resources
 
 def organizations(api):
     return api.organizations()
@@ -34,9 +36,12 @@ def hosts(api, org_name, env_name):
     env = Environment(environments(api, org_name), {"name": env_name})
     return env.hosts()
 
-def application_files(api, org_name, app_name):
-    app = Application(applications(api, org_name), {"name": app_name})
-    return app.files()
+def instance(api, org_name, env_name, host_name):
+    host = Host(hosts(api, org_name, env_name), {"name": host_name})
+    return host.instance()
+
+
+# Contexts
 
 def application_contexts(api, org_name, env_name, host_name):
     host = Host(hosts(api, org_name, env_name), {"name": host_name})
@@ -50,9 +55,12 @@ def platform_context(api, org_name, env_name, host_name):
     host = Host(hosts(api, org_name, env_name), {"name": host_name})
     return host.platform()
 
-def instance(api, org_name, env_name, host_name):
-    host = Host(hosts(api, org_name, env_name), {"name": host_name})
-    return host.instance()
+
+# Files
+
+def application_files(api, org_name, app_name):
+    app = Application(applications(api, org_name), {"name": app_name})
+    return app.files()
 
 
 # Settings
