@@ -1,5 +1,7 @@
 # coding: utf-8
 
+from cortex_client.api import collections
+
 from cortex_client.control.resource import ResourceController
 from cortex_client.control.exceptions import ArgumentException
 
@@ -48,15 +50,13 @@ class ApplicationParametersController(AbstractParametersController):
         if len(argv) < 2:
             raise ArgumentException("An organization and an application name must be provided");
 
-        org = self._api.organizations().get_resource(argv[0])
-        return org.applications().get_resource(argv[1])
+        return collections.applications(self._api, argv[0]).get_resource(argv[1])
 
     def _print_collection_completions(self, param_num, argv):
         if param_num == 0:
             self._print_identifiers(self._api.organizations())
         elif len(argv) > 0 and param_num == 1:
-            org = self._api.organizations().get_resource(argv[0])
-            self._print_identifiers(org.applications())
+            self._print_identifiers(collections.applications(self._api, argv[0]))
 
 
 class DistributionParametersController(AbstractParametersController):
@@ -82,15 +82,13 @@ class DistributionParametersController(AbstractParametersController):
         if len(argv) < 2:
             raise ArgumentException("An organization and a distribution name must be provided");
 
-        org = self._api.organizations().get_resource(argv[0])
-        return org.distributions().get_resource(argv[1])
+        return collections.distributions(self._api, argv[0]).get_resource(argv[1])
 
     def _print_collection_completions(self, param_num, argv):
         if param_num == 0:
             self._print_identifiers(self._api.organizations())
         elif len(argv) > 0 and param_num == 1:
-            org = self._api.organizations().get_resource(argv[0])
-            self._print_identifiers(org.distributions())
+            self._print_identifiers(collections.distributions(self._api, argv[0]))
 
 
 class PlatformParametersController(AbstractParametersController):
@@ -116,12 +114,10 @@ class PlatformParametersController(AbstractParametersController):
         if len(argv) < 2:
             raise ArgumentException("An organization and a platform name must be provided");
 
-        org = self._api.organizations().get_resource(argv[0])
-        return org.platforms().get_resource(argv[1])
+        return collections.platforms(self._api, argv[0]).get_resource(argv[1])
 
     def _print_collection_completions(self, param_num, argv):
         if param_num == 0:
             self._print_identifiers(self._api.organizations())
         elif len(argv) > 0 and param_num == 1:
-            org = self._api.organizations().get_resource(argv[0])
-            self._print_identifiers(org.platforms())
+            self._print_identifiers(collections.platforms(self._api, argv[0]))
