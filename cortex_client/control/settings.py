@@ -2,6 +2,7 @@
 
 from cortex_client.control.resource import ResourceController
 from cortex_client.control.exceptions import ArgumentException
+from cortex_client.api import collections
 
 class HostAbstractSettingsController(ResourceController):
 
@@ -27,10 +28,7 @@ class HostAbstractSettingsController(ResourceController):
         if len(argv) < 3:
             raise ArgumentException("An organization, an environment and a host must be provided");
 
-        org = self._api.organizations().get_resource(argv[0])
-        env = org.environments().get_resource(argv[1])
-        host = env.hosts().get_resource(argv[2])
-
+        host = collections.hosts(self._api, argv[0], argv[1]).get_resource(argv[2])
         return self._get_settings(host, argv)
 
     def _print_collection_completions(self, param_num, argv):
@@ -40,17 +38,13 @@ class HostAbstractSettingsController(ResourceController):
             org = self._api.organizations().get_resource(argv[0])
             self._print_identifiers(org.environments())
         elif len(argv) > 1 and param_num == 2:
-            org = self._api.organizations().get_resource(argv[0])
-            env = org.environments().get_resource(argv[1])
-            self._print_identifiers(env.hosts())
+            self._print_identifiers(collections.hosts(self._api, argv[0], argv[1]))
 
     def _print_resource_completions(self, param_num, argv):
         if param_num < 3:
             self._print_collection_completions(param_num, argv)
         elif len(argv) > 2 and param_num == 3:
-            org = self._api.organizations().get_resource(argv[0])
-            env = org.environments().get_resource(argv[1])
-            host = env.hosts().get_resource(argv[2])
+            host = collections.hosts(self._api, argv[0], argv[1]).get_resource(argv[2])
             self._print_identifiers(self._get_settings(host, argv))
 
 
@@ -97,36 +91,24 @@ class ApplicationContextSettingsController(ResourceController):
         if len(argv) < 4:
             raise ArgumentException("An organization, an environment, a host and an application name must be provided");
 
-        org = self._api.organizations().get_resource(argv[0])
-        env = org.environments().get_resource(argv[1])
-        host = env.hosts().get_resource(argv[2])
-
-        return host.applications().get_resource(argv[3]).settings()
+        return collections.application_contexts(self._api, argv[0], argv[1], argv[2]).get_resource(argv[3]).settings()
 
     def _print_collection_completions(self, param_num, argv):
         if param_num == 0:
             self._print_identifiers(self._api.organizations())
         elif len(argv) > 0 and param_num == 1:
-            org = self._api.organizations().get_resource(argv[0])
-            self._print_identifiers(org.environments())
+            self._print_identifiers(collections.environments(self._api, argv[0]))
         elif len(argv) > 1 and param_num == 2:
-            org = self._api.organizations().get_resource(argv[0])
-            env = org.environments().get_resource(argv[1])
-            self._print_identifiers(env.hosts())
+            self._print_identifiers(collections.hosts(self._api, argv[0], argv[1]))
         elif len(argv) > 2 and param_num == 3:
-            org = self._api.organizations().get_resource(argv[0])
-            env = org.environments().get_resource(argv[1])
-            host = env.hosts().get_resource(argv[2])
+            host = collections.hosts(self._api, argv[0], argv[1]).get_resource(argv[2])
             self._print_escaped_names(host.get_applications())
 
     def _print_resource_completions(self, param_num, argv):
         if param_num < 4:
             self._print_collection_completions(param_num, argv)
         elif len(argv) > 3 and param_num == 4:
-            org = self._api.organizations().get_resource(argv[0])
-            env = org.environments().get_resource(argv[1])
-            host = env.hosts().get_resource(argv[2])
-            self._print_identifiers(host.applications().get_resource(argv[3]).settings())
+            self._print_identifiers(collections.app_context_settings(self._api, argv[0], argv[1], argv[2], argv[3]))
 
 
 class HostSettingsController(ResourceController):
@@ -153,31 +135,21 @@ class HostSettingsController(ResourceController):
         if len(argv) < 3:
             raise ArgumentException("An organization, an environment and a host name must be provided");
 
-        org = self._api.organizations().get_resource(argv[0])
-        env = org.environments().get_resource(argv[1])
-        host = env.hosts().get_resource(argv[2])
-
-        return host.settings()
+        return collections.host_settings(self._api, argv[0], argv[1], argv[2])
 
     def _print_collection_completions(self, param_num, argv):
         if param_num == 0:
             self._print_identifiers(self._api.organizations())
         elif len(argv) > 0 and param_num == 1:
-            org = self._api.organizations().get_resource(argv[0])
-            self._print_identifiers(org.environments())
+            self._print_identifiers(collections.environments(self._api, argv[0]))
         elif len(argv) > 1 and param_num == 2:
-            org = self._api.organizations().get_resource(argv[0])
-            env = org.environments().get_resource(argv[1])
-            self._print_identifiers(env.hosts())
+            self._print_identifiers(collections.hosts(self._api, argv[0], argv[1]))
 
     def _print_resource_completions(self, param_num, argv):
         if param_num < 3:
             self._print_collection_completions(param_num, argv)
         elif len(argv) > 2 and param_num == 3:
-            org = self._api.organizations().get_resource(argv[0])
-            env = org.environments().get_resource(argv[1])
-            host = env.hosts().get_resource(argv[2])
-            self._print_identifiers(host.settings())
+            self._print_identifiers(collections.host_settings(self._api, argv[0], argv[1], argv[2]))
 
 
 class EnvironmentSettingsController(ResourceController):
@@ -204,25 +176,19 @@ class EnvironmentSettingsController(ResourceController):
         if len(argv) < 2:
             raise ArgumentException("An organization and an environment must be provided");
 
-        org = self._api.organizations().get_resource(argv[0])
-        env = org.environments().get_resource(argv[1])
-
-        return env.settings()
+        return collections.env_settings(self._api, argv[0], argv[1])
 
     def _print_collection_completions(self, param_num, argv):
         if param_num == 0:
             self._print_identifiers(self._api.organizations())
         elif len(argv) > 0 and param_num == 1:
-            org = self._api.organizations().get_resource(argv[0])
-            self._print_identifiers(org.environments())
+            self._print_identifiers(collections.environments(self._api, argv[0]))
 
     def _print_resource_completions(self, param_num, argv):
         if param_num < 2:
             self._print_collection_completions(param_num, argv)
         elif len(argv) > 1 and param_num == 2:
-            org = self._api.organizations().get_resource(argv[0])
-            env = org.environments().get_resource(argv[1])
-            self._print_identifiers(env.settings())
+            self._print_identifiers(collections.env_settings(self._api, argv[0], argv[1]))
 
 
 class DistributionSettingsController(ResourceController):
@@ -249,25 +215,19 @@ class DistributionSettingsController(ResourceController):
         if len(argv) < 2:
             raise ArgumentException("An organization and a distribution must be provided");
 
-        org = self._api.organizations().get_resource(argv[0])
-        dist = org.distributions().get_resource(argv[1])
-
-        return dist.settings()
+        return collections.dist_settings(self._api, argv[0], argv[1])
 
     def _print_collection_completions(self, param_num, argv):
         if param_num == 0:
             self._print_identifiers(self._api.organizations())
         elif len(argv) > 0 and param_num == 1:
-            org = self._api.organizations().get_resource(argv[0])
-            self._print_identifiers(org.distributions())
+            self._print_identifiers(collections.distributions(self._api, argv[0]))
 
     def _print_resource_completions(self, param_num, argv):
         if param_num < 2:
             self._print_collection_completions(param_num, argv)
         elif len(argv) > 1 and param_num == 2:
-            org = self._api.organizations().get_resource(argv[0])
-            dist = org.distributions().get_resource(argv[1])
-            self._print_identifiers(dist.settings())
+            self._print_identifiers(collections.dist_settings(self._api, argv[0], argv[1]))
 
 
 class PlatformSettingsController(ResourceController):
@@ -294,25 +254,19 @@ class PlatformSettingsController(ResourceController):
         if len(argv) < 2:
             raise ArgumentException("An organization and a platform must be provided");
 
-        org = self._api.organizations().get_resource(argv[0])
-        plat = org.platforms().get_resource(argv[1])
-
-        return plat.settings()
+        return collections.plat_settings(self._api, argv[0], argv[1])
 
     def _print_collection_completions(self, param_num, argv):
         if param_num == 0:
             self._print_identifiers(self._api.organizations())
         elif len(argv) > 0 and param_num == 1:
-            org = self._api.organizations().get_resource(argv[0])
-            self._print_identifiers(org.platforms())
+            self._print_identifiers(collections.platforms(self._api, argv[0]))
 
     def _print_resource_completions(self, param_num, argv):
         if param_num < 2:
             self._print_collection_completions(param_num, argv)
         elif len(argv) > 1 and param_num == 2:
-            org = self._api.organizations().get_resource(argv[0])
-            plat = org.platforms().get_resource(argv[1])
-            self._print_identifiers(plat.settings())
+            self._print_identifiers(collections.plat_settings(self._api, argv[0], argv[1]))
 
 
 class OrganizationSettingsController(ResourceController):
@@ -339,9 +293,7 @@ class OrganizationSettingsController(ResourceController):
         if len(argv) < 1:
             raise ArgumentException("An organization must be provided");
 
-        org = self._api.organizations().get_resource(argv[0])
-
-        return org.settings()
+        return collections.org_settings(self._api, argv[0])
 
     def _print_collection_completions(self, param_num, argv):
         if param_num == 0:
@@ -351,5 +303,4 @@ class OrganizationSettingsController(ResourceController):
         if param_num < 1:
             self._print_collection_completions(param_num, argv)
         elif len(argv) > 0 and param_num == 1:
-            org = self._api.organizations().get_resource(argv[0])
-            self._print_identifiers(org.settings())
+            self._print_identifiers(collections.org_settings(self._api, argv[0]))
