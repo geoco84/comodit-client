@@ -12,6 +12,7 @@ from cortex_client.control.resource import ResourceController
 from cortex_client.control.settings import ApplicationContextSettingsController, \
     PlatformContextSettingsController, DistributionContextSettingsController
 from cortex_client.control.doc import ActionDoc
+from cortex_client.api import collections
 
 class AbstractContextController(ResourceController):
     def __init__(self):
@@ -65,10 +66,7 @@ class ApplicationContextController(AbstractContextController):
         if len(argv) < 3:
             raise ArgumentException("Wrong number of arguments");
 
-        org = self._api.organizations().get_resource(argv[0])
-        env = org.environments().get_resource(argv[1])
-        host = env.hosts().get_resource(argv[2])
-        return host.applications()
+        return collections.application_contexts(self._api, argv[0], argv[1], argv[2])
 
     def _complete_template(self, argv, template_json):
         if len(argv) < 4:
@@ -179,10 +177,7 @@ class PlatformContextController(AbstractContextController):
         if len(argv) < 3:
             raise ArgumentException("Wrong number of arguments");
 
-        org = self._api.organizations().get_resource(argv[0])
-        env = org.environments().get_resource(argv[1])
-        host = env.hosts().get_resource(argv[2])
-        return host.platform()
+        return collections.platform_context(self._api, argv[0], argv[1], argv[2])
 
     def _get_name_argument(self, argv):
         return ""
@@ -240,10 +235,7 @@ class DistributionContextController(AbstractContextController):
         if len(argv) < 3:
             raise ArgumentException("Wrong number of arguments");
 
-        org = self._api.organizations().get_resource(argv[0])
-        env = org.environments().get_resource(argv[1])
-        host = env.hosts().get_resource(argv[2])
-        return host.distribution()
+        return collections.distribution_context(self._api, argv[0], argv[1], argv[2])
 
     def _get_name_argument(self, argv):
         return ""

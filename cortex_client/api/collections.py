@@ -39,6 +39,14 @@ def application_contexts(api, org_name, env_name, host_name):
     host = Host(hosts(api, org_name, env_name), {"name": host_name})
     return host.applications()
 
+def distribution_context(api, org_name, env_name, host_name):
+    host = Host(hosts(api, org_name, env_name), {"name": host_name})
+    return host.distribution()
+
+def platform_context(api, org_name, env_name, host_name):
+    host = Host(hosts(api, org_name, env_name), {"name": host_name})
+    return host.platform()
+
 def instance(api, org_name, env_name, host_name):
     host = Host(hosts(api, org_name, env_name), {"name": host_name})
     return host.instance()
