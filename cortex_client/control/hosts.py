@@ -56,7 +56,7 @@ class HostsController(ResourceController):
         if len(argv) < 2:
             raise ArgumentException("Wrong number of arguments");
 
-        return collections.hosts(argv[0], argv[1])
+        return collections.hosts(self._api, argv[0], argv[1])
 
     def _print_collection_completions(self, param_num, argv):
         if param_num == 0:
