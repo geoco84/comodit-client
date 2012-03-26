@@ -5,6 +5,10 @@ from cortex_client.api.environment import Environment
 def organizations(api):
     return api.organizations()
 
+def groups(api, org_name):
+    org = Organization(organizations(api), {"name": org_name})
+    return org.groups()
+
 def applications(api, org_name):
     org = Organization(organizations(api), {"name": org_name})
     return org.applications()
