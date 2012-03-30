@@ -113,12 +113,19 @@ ${_pack}
 # Configure Synapse
 cat << EOF > /etc/synapse/synapsed.conf
 
-[rabbitmq]
-type = amqp
+[register]
+username = org.${_org_access_key}
+password = ${_org_secret_key}
 host = ${amqp_server}
-queue = vm.${_hostid}
-username = guest
-password = guest
+vhost = /
+queue = register
+port = 5672
+
+[rabbitmq]
+register = True
+host = ${amqp_server}
+uuid=host.${_host_uuid}
+status_queue=inbox
 
 EOF
 
