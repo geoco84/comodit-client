@@ -17,6 +17,8 @@ from application import Application
 from application_collection import ApplicationCollection
 from cortex_client.api.group_collection import GroupCollection
 from cortex_client.api.settings import Configurable
+from cortex_client.rest.exceptions import ApiException
+from cortex_client.api.exceptions import PythonApiException
 
 class Organization(Configurable):
     """
@@ -56,6 +58,8 @@ class Organization(Configurable):
     def _show(self, indent = 0):
         print " "*indent, "Name:", self.get_name()
         print " "*indent, "Description:", self.get_description()
+        print " "*indent, "Access Key:", self.get_access_key()
+        print " "*indent, "Secret Key:", self.get_secret_key()
         print " "*indent, "Environments:"
         environments = self.get_environments()
         for e in environments:
@@ -151,3 +155,23 @@ class Organization(Configurable):
 
     def groups(self):
         return GroupCollection(self._get_api(), self._get_path() + "groups/")
+
+    def get_access_key(self):
+        access = self._get_field("access")
+        if not access is None:
+            return access["accessKey"]
+        else:
+            return None
+
+    def get_secret_key(self):
+        access = self._get_field("access")
+        if not access is None:
+            return access["secretKey"]
+        else:
+            return None
+
+    def reset_secret(self):
+        try:
+            self._get_client().create(self._get_path() + "access")
+        except ApiException, e:
+            raise PythonApiException("Could not reset secret key: " + e.message)

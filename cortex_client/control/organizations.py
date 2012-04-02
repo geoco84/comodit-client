@@ -47,9 +47,11 @@ class OrganizationsController(RootResourceController):
         # actions
         self._register(["import"], self._import, self._print_import_completions)
         self._register(["export"], self._export, self._print_export_completions)
+        self._register(["reset-secret"], self._reset_secret, self._print_resource_completions)
 
         self._register_action_doc(self._export_doc())
         self._register_action_doc(self._import_doc())
+        self._register_action_doc(self._reset_secret_doc())
 
         # subcontrollers
         self._register_subcontroller(["settings"], OrganizationSettingsController())
@@ -95,6 +97,13 @@ class OrganizationsController(RootResourceController):
         group.remove_user(argv[2])
         group.commit()
 
+    def _reset_secret(self, argv):
+        org = self._get_resource(argv)
+        org.reset_secret()
+
+    def _reset_secret_doc(self):
+        return ActionDoc("reset-secret", self._list_params(), """
+        Resets the secret key associated to the organization.""")
 
     # Import/export
 
