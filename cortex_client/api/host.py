@@ -234,7 +234,6 @@ class Instance(Resource):
         print " "*indent, "Hostname:", self.get_hostname()
         print " "*indent, "Vnc:"
         self.get_vnc().show(indent + 2)
-        self.show_ips(indent)
 
     def show_properties(self, indent = 0):
         print " "*indent, "Properties:"
