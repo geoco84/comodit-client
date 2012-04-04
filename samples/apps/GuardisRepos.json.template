@@ -32,6 +32,16 @@
             "owner":"root",
             "group":"root",
             "mode":"644",
+            "name":"synapse.repo",
+            "path":"/etc/yum.repos.d/synapse.repo",
+            "template":{
+                "name":"synapse.repo"
+            }
+        },
+        {
+            "owner":"root",
+            "group":"root",
+            "mode":"644",
             "name":"comodit-dev.repo",
             "path":"/etc/yum.repos.d/comodit-dev.repo",
             "template":{
@@ -69,6 +79,10 @@
                 {
                     "action":"update",
                     "resource":"file://comodit.repo"
+                },
+                {
+                    "action":"update",
+                    "resource":"file://synapse.repo"
                 },
                 {
                     "action":"update",

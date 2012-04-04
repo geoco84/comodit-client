@@ -16,6 +16,7 @@ url --url=##repos_base_url##
 repo --name=updates --baseurl=##repos_updates##
 repo --name=epel --baseurl=##repos_epel##
 
+repo --name=synapse --baseurl=##repos_synapse##
 repo --name=comodit --baseurl=##repos_comodit##
 <#if enable_trunk="true">
 repo --name=comodit-dev --baseurl=##repos_comodit-dev##
@@ -84,9 +85,10 @@ vim-enhanced
 epel-release
 
 # ComodIT repositories
-comodit-release
 <#if enable_trunk="true">
 comodit-release-dev
+<#else>
+comodit-release
 </#if>
 
 # Openssh
@@ -130,4 +132,4 @@ status_queue=inbox
 EOF
 
 # Synapse for one time install
-/usr/bin/synapse --uri "${_api}/organizations/${_orgName?url}/environments/${_envName?url}/hosts/${_hostName?url}/setup.json"
+/usr/bin/synapse --uri ${_setup_url}

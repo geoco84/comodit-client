@@ -4,7 +4,7 @@
     "settings":[
         {
             "key":"kernel_params",
-            "value":"text ks=${_api}/organizations/${_org_name?url}/environments/${_env_name?url}/hosts/${_host_name?url}/distribution/files/co6.ks"
+            "value":"text ks=${_ks_url}"
         },
         {
             "key":"initrd_path",
@@ -50,6 +50,11 @@
             "key":"amqp_server",
             "value":"##amqp_server##",
             "name":"AMQP server"
+        },
+        {
+            "key":"ks_file",
+            "value":"co6.ks",
+            "name":"Kickstart file"
         }
     ]
 }
