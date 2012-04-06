@@ -19,6 +19,7 @@ from cortex_client.api.group_collection import GroupCollection
 from cortex_client.api.settings import Configurable
 from cortex_client.rest.exceptions import ApiException
 from cortex_client.api.exceptions import PythonApiException
+from cortex_client.api.audit import AuditCollection
 
 class Organization(Configurable):
     """
@@ -175,3 +176,6 @@ class Organization(Configurable):
             self._get_client().create(self._get_path() + "access")
         except ApiException, e:
             raise PythonApiException("Could not reset secret key: " + e.message)
+
+    def audit_logs(self):
+        return AuditCollection(self._get_path() + "audit/", self._get_api())

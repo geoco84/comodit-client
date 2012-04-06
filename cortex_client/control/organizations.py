@@ -48,10 +48,12 @@ class OrganizationsController(RootResourceController):
         self._register(["import"], self._import, self._print_import_completions)
         self._register(["export"], self._export, self._print_export_completions)
         self._register(["reset-secret"], self._reset_secret, self._print_resource_completions)
+        self._register(["audit"], self._audit, self._print_resource_completions)
 
         self._register_action_doc(self._export_doc())
         self._register_action_doc(self._import_doc())
         self._register_action_doc(self._reset_secret_doc())
+        self._register_action_doc(self._audit_doc())
 
         # subcontrollers
         self._register_subcontroller(["settings"], OrganizationSettingsController())
@@ -104,6 +106,22 @@ class OrganizationsController(RootResourceController):
     def _reset_secret_doc(self):
         return ActionDoc("reset-secret", self._list_params(), """
         Resets the secret key associated to the organization.""")
+
+    def _audit(self, argv):
+        org = self._get_resource(argv)
+        logs = org.audit_logs().get_resources()
+
+        # Display the result
+        options = globals.options
+        if options.raw:
+            json.dumps(logs, sort_keys = True, indent = 4)
+        else:
+            for log in logs:
+                print log.get_timestamp(), log.get_message()
+
+    def _audit_doc(self):
+        return ActionDoc("audit", self._list_params(), """
+        Displays audit log.""")
 
     # Import/export
 
