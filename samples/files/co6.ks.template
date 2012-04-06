@@ -59,7 +59,7 @@ logging --level=info
 services --disabled="MailScanner,anacron,apmd,atd,autofs,avahi-daemon,avahi-dnsconfd,barnyard,bluetooth,conman,cpuspeed,crond,cups,dansguardian,dhcdbd,dnsmasq,dund,firstboot,gpm,haldaemon,hidd,ibmasm,ip6tables,ipmi,iptables,ip6tables,irqbalance,kudzu,libvirtd,lm_sensors,lvm2-monitor,mcstrans,mdmonitor,mdmpd,messagebus,microcode_ctl,multipathd,netconsole,netfs,netplugd,nfs,nfslock,nrpe,nscd,ntpd,oddjobd,p3scan,pand,pcscd,pmacctd,portmap,psacct,qemu,rdisc,readahead_early,readahead_later,restorecond,rpcgssd,rpcidmapd,rpcsvcgssd,snortd,saslauthd,sendmail,setroubleshoot,smartd,sshd,syslog-ng,sysstat,xend,xendomains,xfs,ypbind,yum-updatesd"
 
 # Enable necessary services
-services --enabled="acpid,auditd,network,rsyslog,synapsed,sshd<#list _services as _service>,${_service}</#list>"
+services --enabled="acpid,auditd,network,rsyslog,synapsed,sshd<#list _applications.services as _service>,${_service}</#list>"
 
 # Clear the Master Boot Record
 zerombr
@@ -106,7 +106,7 @@ sudo
 synapse
 
 # User specific packages
-<#list _packages as _pack>
+<#list _applications.packages as _pack>
 ${_pack}
 </#list>
 
@@ -114,10 +114,9 @@ ${_pack}
 
 # Configure Synapse
 cat << EOF > /etc/synapse/synapsed.conf
-
 [register]
-username = org.${_org_access_key}
-password = ${_org_secret_key}
+username = org.${_org.access_key}
+password = ${_org.secret_key}
 host = ${amqp_server}
 vhost = /
 queue = register
@@ -126,9 +125,8 @@ port = 5672
 [rabbitmq]
 register = True
 host = ${amqp_server}
-uuid=host.${_host_uuid}
+uuid=host.${_host.uuid}
 status_queue=inbox
-
 EOF
 
 # Synapse for one time install

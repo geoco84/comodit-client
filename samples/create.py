@@ -172,6 +172,13 @@ def create_host(env):
         host.add_setting(Setting(None, setting))
 
     host.create()
+
+    context = host.platform().get_single_resource()
+    for setting in defs.global_vars.plat_settings:
+        s = context.new_setting(setting["key"])
+        s.set_value(setting["value"])
+        s.create()
+
     return host
 
 

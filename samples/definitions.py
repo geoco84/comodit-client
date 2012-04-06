@@ -39,7 +39,8 @@ def define():
     global_vars.host_dist = global_vars.dist_name
     global_vars.host_plat = global_vars.plat_name
     global_vars.host_apps = [global_vars.guardis_repos_name]
-    global_vars.host_settings = \
+    global_vars.host_settings = []
+    global_vars.plat_settings = \
         [
             {"key":"vm_arch", "value": setup.global_vars.vm_arch},
             {"key":"vm_bridge", "value": setup.global_vars.vm_bridge},
@@ -47,4 +48,3 @@ def define():
             {"key":"vm_capacity", "value":"2048"},
             {"key":"vm_nvirtcpus", "value":"1"}
         ]
-

@@ -2,15 +2,15 @@
   <#if _mode = "define">
   <uuid>${_libvirt_uuid}</uuid>
   </#if>
-  <name>${_host_name}</name>
+  <name>${_host.name}</name>
   <memory>${vm_memory}000</memory>
   <vcpu>${vm_nvirtcpus}</vcpu>
   <os>
     <type arch='${vm_arch}'>hvm</type>
     <#if _mode = "create">
-    <kernel>${_kernel}</kernel>
-    <initrd>${_initrd}</initrd>
-    <cmdline>${_cmdline}</cmdline>
+    <kernel>${_distribution.vmlinuz_path}</kernel>
+    <initrd>${_distribution.initrd_path}</initrd>
+    <cmdline>${_distribution.kernel_params}</cmdline>
     </#if>
     <boot dev='hd'/>
   </os>
