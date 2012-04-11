@@ -115,6 +115,9 @@ def create_plat(org):
     """
     plat = org.new_platform(defs.global_vars.plat_name)
     plat.load_json("Local2.json")
+
+    plat._show(4)
+
     plat.create()
 
     # Upload file contents

@@ -13,6 +13,7 @@ from cortex_client.api.parameters import ParameterFactory, Parameter
 from cortex_client.api.collection import Collection
 from cortex_client.rest.exceptions import ApiException
 from cortex_client.api.exceptions import PythonApiException
+from cortex_client.util.json_wrapper import JsonWrapper
 
 
 class PlatformFileCollection(Collection):
@@ -32,6 +33,27 @@ class PlatformParameterCollection(Collection):
         res = Parameter(self, json_data)
         return res
 
+
+class Driver(JsonWrapper):
+    def get_name(self):
+        return self._get_field("name")
+
+    def get_description(self):
+        return self._get_field("description")
+
+    def get_classname(self):
+        return self._get_field("className")
+
+    def get_parameters(self):
+        return self._get_list_field("parameters", ParameterFactory(None))
+
+    def show(self, indent = 0):
+        print " "*indent, "Name:", self.get_name()
+        print " "*indent, "Description:", self.get_description()
+        print " "*indent, "Driver class:", self.get_classname()
+        print " "*indent, "Parameters:"
+        for p in self.get_parameters():
+            p._show(indent + 2)
 
 class Platform(Configurable):
     """
@@ -53,7 +75,7 @@ class Platform(Configurable):
         @return: Driver's class name
         @rtype: String
         """
-        return self._get_field("driver")
+        return Driver(self._get_field("driver"))
 
     def set_driver(self, driver):
         """
@@ -145,7 +167,8 @@ class Platform(Configurable):
 
     def _show(self, indent = 0):
         super(Platform, self)._show(indent)
-        print " "*indent, "Driver:", self.get_driver()
+        print " "*indent, "Driver:"
+        self.get_driver().show(indent + 2)
         print " "*indent, "Settings:"
         settings = self.get_settings()
         for s in settings:

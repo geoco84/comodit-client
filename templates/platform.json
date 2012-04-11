@@ -1,7 +1,9 @@
 {
     "name":"my-platform",
     "description":"My application example",
-    "driver": "com.guardis.*",
+    "driver": {
+        "className" : "com.guardis.cortex.server.driver.LibvirtDriver"
+    },
     "settings":
     [
         {

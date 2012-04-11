@@ -1,7 +1,9 @@
 {
     "name":"Local2",
     "description":"Local QEMU",
-    "driver":"com.guardis.cortex.server.driver.LibvirtDriver",
+    "driver": {
+        "className": "com.guardis.cortex.server.driver.LibvirtDriver"
+    },
     "settings":[
         {
             "key":"libvirt.connectUrl",
