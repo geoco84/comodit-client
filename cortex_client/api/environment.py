@@ -12,6 +12,7 @@ from host_collection import HostCollection
 from cortex_client.api.settings import Configurable
 from cortex_client.rest.exceptions import ApiException
 from cortex_client.api.exceptions import PythonApiException
+from cortex_client.api.audit import AuditCollection
 
 class Environment(Configurable):
     """
@@ -118,3 +119,7 @@ class Environment(Configurable):
             return Environment(self._collection, result)
         except ApiException, e:
             raise PythonApiException("Unable to clone environment: " + e.message)
+
+    def audit_logs(self):
+        return AuditCollection(self._get_path() + "audit/", self._get_api())
+

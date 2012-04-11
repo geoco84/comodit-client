@@ -11,6 +11,7 @@ from cortex_client.api import collections
 
 from cortex_client.control.organization_resource import OrganizationResourceController
 from cortex_client.control.settings import EnvironmentSettingsController
+from cortex_client.control.audit import AuditHelper
 
 class EnvironmentsController(OrganizationResourceController):
 
@@ -18,9 +19,14 @@ class EnvironmentsController(OrganizationResourceController):
 
     def __init__(self):
         super(EnvironmentsController, self).__init__()
+        self._audit = AuditHelper(self, "<org_name> <res_name>")
 
         # subcontrollers
         self._register_subcontroller(["settings"], EnvironmentSettingsController())
+
+        # actions
+        self._register(["audit"], self._audit.audit, self._print_resource_completions)
+        self._register_action_doc(self._audit.audit_doc())
 
         self._doc = "Environments handling."
 

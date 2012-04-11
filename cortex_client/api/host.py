@@ -15,6 +15,7 @@ from cortex_client.api.contexts import ApplicationContextCollection, \
     PlatformContextCollection, DistributionContextCollection
 from cortex_client.api.resource import Resource
 from cortex_client.api.collection import Collection
+from cortex_client.api.audit import AuditCollection
 
 class Property(JsonWrapper):
     """
@@ -545,3 +546,7 @@ class Host(Configurable):
         if self.get_state() != "PROVISIONED":
             raise PythonApiException("Host must be provisioned")
         self._get_client().delete(self._get_path() + "changes/")
+
+    def audit_logs(self):
+        return AuditCollection(self._get_path() + "audit/", self._get_api())
+

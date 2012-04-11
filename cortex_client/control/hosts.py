@@ -17,6 +17,7 @@ from cortex_client.control.contexts import PlatformContextController, \
 from cortex_client.control.tree_rendering import TreeRenderer
 from cortex_client.control.doc import ActionDoc
 from cortex_client.api import collections
+from cortex_client.control.audit import AuditHelper
 
 
 class HostsController(ResourceController):
@@ -25,6 +26,7 @@ class HostsController(ResourceController):
 
     def __init__(self):
         super(HostsController, self).__init__()
+        self._audit = AuditHelper(self, "<org_name> <env_name> <res_name>")
 
         # subcontrollers
         self._register_subcontroller(["settings"], HostSettingsController())
@@ -39,6 +41,7 @@ class HostsController(ResourceController):
         self._register(["clone"], self._clone, self._print_resource_completions)
         self._register(["changes"], self._changes, self._print_resource_completions)
         self._register(["clear-changes"], self._clear_changes, self._print_resource_completions)
+        self._register(["audit"], self._audit.audit, self._print_resource_completions)
 
         self._doc = "Hosts handling."
         self._update_action_doc_params("list", "<org_name> <env_name>")
@@ -51,6 +54,7 @@ class HostsController(ResourceController):
         self._register_action_doc(self._clone_doc())
         self._register_action_doc(self._changes_doc())
         self._register_action_doc(self._clear_changes_doc())
+        self._register_action_doc(self._audit.audit_doc())
 
     def get_collection(self, argv):
         if len(argv) < 2:

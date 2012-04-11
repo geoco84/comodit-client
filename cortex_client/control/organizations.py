@@ -30,6 +30,7 @@ from cortex_client.api.exceptions import PythonApiException
 from cortex_client.api.contexts import ApplicationContext, PlatformContext, \
     DistributionContext
 from cortex_client.api import collections
+from cortex_client.control.audit import AuditHelper
 
 
 class SyncException(ControllerException):
@@ -43,17 +44,18 @@ class OrganizationsController(RootResourceController):
 
     def __init__(self):
         super(OrganizationsController, self).__init__()
+        self._audit = AuditHelper(self, "<res_name>")
 
         # actions
         self._register(["import"], self._import, self._print_import_completions)
         self._register(["export"], self._export, self._print_export_completions)
         self._register(["reset-secret"], self._reset_secret, self._print_resource_completions)
-        self._register(["audit"], self._audit, self._print_resource_completions)
+        self._register(["audit"], self._audit.audit, self._print_resource_completions)
 
         self._register_action_doc(self._export_doc())
         self._register_action_doc(self._import_doc())
         self._register_action_doc(self._reset_secret_doc())
-        self._register_action_doc(self._audit_doc())
+        self._register_action_doc(self._audit.audit_doc())
 
         # subcontrollers
         self._register_subcontroller(["settings"], OrganizationSettingsController())
