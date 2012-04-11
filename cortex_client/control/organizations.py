@@ -117,7 +117,7 @@ class OrganizationsController(RootResourceController):
             json.dumps(logs, sort_keys = True, indent = 4)
         else:
             for log in logs:
-                print log.get_timestamp(), log.get_message()
+                print log.get_timestamp(), log.get_message(), "by", log.get_initiator()
 
     def _audit_doc(self):
         return ActionDoc("audit", self._list_params(), """

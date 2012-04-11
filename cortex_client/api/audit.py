@@ -9,6 +9,9 @@ class Log(JsonWrapper):
     def get_message(self):
         return self._get_field("message")
 
+    def get_initiator(self):
+        return self._get_field("initiator")
+
 class AuditCollection(Collection):
     def _new_resource(self, json_data):
         return Log(json_data)
