@@ -2,12 +2,12 @@
 .\"     Title: cortex
 .\"    Author: Daniel Bartz <daniel.bartz@guardis.com>
 .\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
-.\"      Date: 02/29/2012
+.\"      Date: 04/12/2012
 .\"    Manual: Command Line User Interface Guide
 .\"    Source: Guardis
 .\"  Language: English
 .\"
-.TH "CORTEX" "1" "02/29/2012" "Guardis" "Command Line User Interface Gu"
+.TH "CORTEX" "1" "04/12/2012" "Guardis" "Command Line User Interface Gu"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -389,7 +389,7 @@ An organization has user groups that allow to implement a simple access control:
 .PP
 Group subresource allows to \*(Aqlist\*(Aq, \*(Aqshow\*(Aq and \*(Aqupdate\*(Aq an organization\*(Aqs users groups\&. \*(Aqadd\*(Aq and \*(Aqdelete\*(Aq actions are not yet available\&.
 .PP
-Organizations feature 2 additional actions:
+Organizations feature 3 additional actions:
 .PP
 export ORG_NAME [PATH] [\-\-force]
 .RS 4
@@ -400,17 +400,27 @@ import [PATH] [\-\-force]
 .RS 4
 Organization is imported from given folder\&. If \-\-force option is set, data already present on server are updated\&.
 .RE
+.PP
+audit ORG_NAME
+.RS 4
+Prints audit logs for this organization\&.
+.RE
 .SS "environments"
 .PP
 An environment is uniquely identified by its name and the name of the organization it is part of\&. Therefore, \*(Aqlist\*(Aq and \*(Aqadd\*(Aq take an organization name as argument where \*(Aqshow\*(Aq, \*(Aqupdate\*(Aq and \*(Aqdelete\*(Aq an organization name and an environment name\&.
 .PP
 An environment has \*(Aqsettings\*(Aq subresource\&.
 .PP
-Environments feature an additional action:
+Environments feature 2 additional actions:
 .PP
 clone ORG_NAME ENV_NAME CLONE_NAME
 .RS 4
 Creates a copy of given environment\&.
+.RE
+.PP
+audit ORG_NAME ENV_NAME
+.RS 4
+Prints audit logs for this environment\&.
 .RE
 .SS "hosts"
 .PP
@@ -609,6 +619,11 @@ Clears pending changes for given host\&.
 provision ORG_NAME ENV_NAME HOST_NAME
 .RS 4
 Provisions (i\&.e\&. instantiates and configures) given host\&. This action creates the instance of the host\&.
+.RE
+.PP
+audit ORG_NAME ENV_NAME HOST_NAME
+.RS 4
+Prints audit logs for this host\&.
 .RE
 .SH "OPTIONS"
 .PP
