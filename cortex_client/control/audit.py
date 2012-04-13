@@ -1,9 +1,6 @@
 # coding: utf-8
 
-import json
-
 from cortex_client.control.doc import ActionDoc
-from cortex_client.util import globals
 
 class AuditHelper(object):
     def __init__(self, ctrl, audit_params):
@@ -15,12 +12,11 @@ class AuditHelper(object):
         logs = res.audit_logs().get_resources()
 
         # Display the result
-        options = globals.options
-        if options.raw:
-            json.dumps(logs, sort_keys = True, indent = 4)
-        else:
-            for log in logs:
-                print log.get_timestamp(), log.get_message(), "by", log.get_initiator()
+        for log in logs:
+            user = log.get_initiator_full_name()
+            if user is None or user == "":
+                user = log.get_initiator_username()
+            print log.get_timestamp(), log.get_message(), "by", user
 
     def audit_doc(self):
         return ActionDoc("audit", self._params, """

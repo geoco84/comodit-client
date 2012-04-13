@@ -9,8 +9,11 @@ class Log(JsonWrapper):
     def get_message(self):
         return self._get_field("message")
 
-    def get_initiator(self):
-        return self._get_field("initiator")
+    def get_initiator_username(self):
+        return self._get_field("initiatorUsername")
+
+    def get_initiator_full_name(self):
+        return self._get_field("initiatorFullName")
 
 class AuditCollection(Collection):
     def _new_resource(self, json_data):
