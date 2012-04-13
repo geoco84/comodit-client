@@ -28,22 +28,27 @@ def run():
     print "Clone application"
     app = org.applications().get_resource(gvs.web_server_name)
     app.clone("newName")
+    org.applications().get_resource("newName")
 
     print "Clone distribution"
     dist = org.distributions().get_resource(gvs.dist_name)
     dist.clone("newName")
+    org.distributions().get_resource("newName")
 
     print "Clone platform"
     plat = org.platforms().get_resource(gvs.plat_name)
     plat.clone("newName")
+    org.platforms().get_resource("newName")
 
     print "Clone environment"
     env = org.environments().get_resource(gvs.env_name)
     env.clone("newName")
+    org.environments().get_resource("newName")
 
     print "Clone host"
     host = env.hosts().get_resource(gvs.host_name)
     host.clone()
+    env.hosts().get_resource(gvs.host_name + " (1)")
 
 def tear_down():
     api = CortexApi(test_setup.global_vars.comodit_url, test_setup.global_vars.comodit_user, test_setup.global_vars.comodit_pass)
