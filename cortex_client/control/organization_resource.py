@@ -10,7 +10,6 @@
 from cortex_client.control.resource import ResourceController
 from cortex_client.control.exceptions import ArgumentException
 from cortex_client.control.doc import ActionDoc
-from cortex_client.api.organization import Organization
 
 class OrganizationResourceController(ResourceController):
 

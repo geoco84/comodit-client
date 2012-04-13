@@ -87,6 +87,7 @@ Available resources:
 
     parser.add_argument("-f", "--file", dest = "filename", help = "input file with a JSON object")
     parser.add_argument("-j", "--json", dest = "json", help = "input JSON object via command line")
+    parser.add_argument("-d", "--default", dest = "default", help = "let driver setup platform at creation", action = "store_true", default = False)
     parser.add_argument("--raw", dest = "raw", help = "output the raw JSON results", action = "store_true", default = False,)
 
     parser.add_argument("--skip-chown", dest = "skip_chown", help = "Path to the parent environment", action = "store_true", default = False)

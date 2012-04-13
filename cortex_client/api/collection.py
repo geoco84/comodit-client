@@ -65,7 +65,7 @@ class Collection(object):
         """
         return self._resource_path
 
-    def add_resource(self, resource):
+    def add_resource(self, resource, parameters = {}):
         """
         Adds a resource to this collection. A call to this method actually
         creates a new resource on the server. State of the object may be
@@ -80,7 +80,8 @@ class Collection(object):
         """
         try:
             result = self._api.get_client().create(self._resource_path,
-                                                   resource.get_json())
+                                                   resource.get_json(),
+                                                   parameters = parameters)
         except ApiException, e:
             raise PythonApiException("Could not create resource: " + e.message)
         resource.set_json(result)

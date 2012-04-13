@@ -37,3 +37,4 @@ class PlatformCollection(Collection):
         """
 
         return Platform(self, json_data)
+

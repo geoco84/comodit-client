@@ -85,7 +85,10 @@ class ResourceController(AbstractController):
             item = json.loads(updated)
 
         res = self.get_collection(argv)._new_resource(item)
-        res.create()
+        if options.default:
+            res.create(parameters = {"default" : "true"})
+        else:
+            res.create()
         res.show(as_json = options.raw)
 
     def _prune_json_update(self, json_wrapper):

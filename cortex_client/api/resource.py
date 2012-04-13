@@ -147,7 +147,7 @@ class Resource(JsonWrapper):
                                         self.get_json(),
                                         parameters))
 
-    def create(self):
+    def create(self, parameters = {}):
         """
         Creates a new resource on the server using this object's state for
         initialization.
@@ -155,7 +155,7 @@ class Resource(JsonWrapper):
         @raise PythonApiException: If server access point is not set.
         """
         self.__enforce_connected()
-        self._collection.add_resource(self)
+        self._collection.add_resource(self, parameters = parameters)
 
     def delete(self):
         """
