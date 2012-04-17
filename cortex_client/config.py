@@ -46,7 +46,8 @@ class Config(object):
         "default": {
             "api": "http://localhost:8000/api",
             "username": "admin",
-            "password": "secret"
+            "password": "secret",
+            "vnc_viewer_call": "vinagre %h:%p"
             }
         }
     """

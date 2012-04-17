@@ -7,6 +7,8 @@
 # This software cannot be used and/or distributed without prior
 # authorization from Guardis.
 
+import subprocess
+
 from cortex_client.util import prompt, globals
 from cortex_client.control.resource import ResourceController
 from cortex_client.control.exceptions import ArgumentException, MissingException
@@ -18,6 +20,7 @@ from cortex_client.control.tree_rendering import TreeRenderer
 from cortex_client.control.doc import ActionDoc
 from cortex_client.api import collections
 from cortex_client.control.audit import AuditHelper
+from cortex_client.config import Config
 
 
 class HostsController(ResourceController):
@@ -42,6 +45,7 @@ class HostsController(ResourceController):
         self._register(["changes"], self._changes, self._print_resource_completions)
         self._register(["clear-changes"], self._clear_changes, self._print_resource_completions)
         self._register(["audit"], self._audit.audit, self._print_resource_completions)
+        self._register(["vnc"], self._vnc, self._print_resource_completions)
 
         self._doc = "Hosts handling."
         self._update_action_doc_params("list", "<org_name> <env_name>")
@@ -55,6 +59,7 @@ class HostsController(ResourceController):
         self._register_action_doc(self._changes_doc())
         self._register_action_doc(self._clear_changes_doc())
         self._register_action_doc(self._audit.audit_doc())
+        self._register_action_doc(self._vnc_doc())
 
     def get_collection(self, argv):
         if len(argv) < 2:
@@ -177,3 +182,25 @@ class HostsController(ResourceController):
         json_wrapper._del_field("distribution")
         json_wrapper._del_field("platform")
         json_wrapper._del_field("state")
+
+    def _vnc(self, argv):
+        if len(argv) != 3:
+            raise MissingException("This action takes 3 arguments")
+
+        host = self._get_resource(argv)
+        vnc_params = host.instance().get_single_resource().get_vnc()
+
+        # Get VNC viewer call string
+        profile = Config().get_profile(globals.options.profile_name)
+        viewer_call_template = profile.get("vnc_viewer_call")
+        if viewer_call_template is None or viewer_call_template == "":
+            print "VNC viewer is not configured"
+            return
+
+        # Call viewer
+        call = viewer_call_template.replace("%h", vnc_params.get_hostname()).replace("%p", vnc_params.get_port())
+        subprocess.call(call, shell = True)
+
+    def _vnc_doc(self):
+        return ActionDoc("vnc", "<org_name> <env_name> <res_name>", """
+        Executes configured VNC viewer for host's instance.""")
