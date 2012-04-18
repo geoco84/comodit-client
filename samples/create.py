@@ -87,13 +87,14 @@ def create_resources():
     print "="*80
     print "Host"
     host_coll = env.hosts()
-    try:
-        host = host_coll.get_resource(defs.global_vars.host_name)
-        print "Host already exists"
-    except ResourceNotFoundException:
-        host = create_host(env)
-        print "Host is created"
-    host.show()
+    for plat_name in defs.global_vars.plat_names:
+        try:
+            host = host_coll.get_resource(defs.get_host_name(plat_name))
+            print "Host already exists"
+        except ResourceNotFoundException:
+            host = create_host(env, plat_name)
+            print "Host is created"
+        host.show()
 
 def create_app(org, name):
     """
@@ -153,26 +154,22 @@ def create_env(org):
     env.create()
     return env
 
-def create_host(env):
+def create_host(env, plat_name):
     """
     Creates a host linked to given API api
     """
-    host = env.new_host(defs.global_vars.host_name)
-    host.set_description(defs.global_vars.host_description)
+    dist_name = defs.get_dist_name(plat_name)
+    host = env.new_host(defs.get_host_name(plat_name))
+    host.set_description("Test host using distribution " + dist_name + " on platform " + plat_name)
 
-    host.set_platform(defs.global_vars.host_plat)
-    host.set_distribution(defs.global_vars.host_dist)
-
-    for app_name in defs.global_vars.host_apps:
-        host.add_application(app_name)
-
-    for setting in defs.global_vars.host_settings:
-        host.add_setting(Setting(None, setting))
+    host.set_platform(plat_name)
+    host.set_distribution(dist_name)
+    host.add_application(defs.global_vars.guardis_repos_name)
 
     host.create()
 
     context = host.platform().get_single_resource()
-    for setting in defs.global_vars.plat_settings:
+    for setting in defs.global_vars.plat_settings[plat_name]:
         s = context.new_setting(setting["key"])
         s.set_value(setting["value"])
         s.create()

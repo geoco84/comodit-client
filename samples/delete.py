@@ -1,6 +1,7 @@
 # Setup Python path
 import sys, setup
 import definitions as defs
+import create
 sys.path.append("..")
 
 
@@ -20,6 +21,7 @@ def delete_resources():
     api = CortexApi(setup.global_vars.comodit_url, setup.global_vars.comodit_user, setup.global_vars.comodit_pass)
 
     org_coll = api.organizations()
+    hosts = []
     try:
         org = org_coll.get_resource(defs.global_vars.org_name)
 
@@ -52,10 +54,11 @@ def delete_resources():
             env = env_coll.get_resource(defs.global_vars.env_name)
 
             host_coll = env.hosts()
-            try:
-                host = host_coll.get_resource(defs.global_vars.host_name)
-            except ResourceNotFoundException:
-                print "Host does not exist"
+            for plat_name in defs.global_vars.plat_names:
+                try:
+                    hosts.append(host_coll.get_resource(create.get_host_name(plat_name)))
+                except ResourceNotFoundException:
+                    print "Host does not exist"
         except ResourceNotFoundException:
             print "Environment does not exist"
     except ResourceNotFoundException:
@@ -68,10 +71,11 @@ def delete_resources():
 
     print "="*80
     print "Delete host"
-    try:
-        host.delete()
-    except Exception, e:
-        print e.message
+    for host in hosts:
+        try:
+            host.delete()
+        except Exception, e:
+            print e.message
 
     print "="*80
     print "Delete applications"
