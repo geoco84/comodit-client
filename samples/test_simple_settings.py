@@ -48,22 +48,22 @@ def __unset_httpd_port_setting_and_test(conf, host, port):
     delete_setting(conf, "httpd_port")
     test_web_server_default(host, port)
 
-def setup():
+def setup(argv):
     api = CortexApi(test_setup.global_vars.comodit_url, test_setup.global_vars.comodit_user, test_setup.global_vars.comodit_pass)
 
-    org = api.organizations().get_resource(defs.global_vars.org_name)
-    env = org.environments().get_resource(defs.global_vars.env_name)
-    host = env.hosts().get_resource(defs.global_vars.host_name)
+    org = api.organizations().get_resource(test_setup.global_vars.org_name)
+    env = org.environments().get_resource(test_setup.global_vars.env_name)
+    host = env.hosts().get_resource(argv[0])
 
     install_web_server(host)
 
-def run():
+def run(argv):
     api = CortexApi(test_setup.global_vars.comodit_url, test_setup.global_vars.comodit_user, test_setup.global_vars.comodit_pass)
 
-    org = api.organizations().get_resource(defs.global_vars.org_name)
-    env = org.environments().get_resource(defs.global_vars.env_name)
-    host = env.hosts().get_resource(defs.global_vars.host_name)
-    app = host.applications().get_resource(defs.global_vars.web_server_name)
+    org = api.organizations().get_resource(test_setup.global_vars.org_name)
+    env = org.environments().get_resource(test_setup.global_vars.env_name)
+    host = env.hosts().get_resource(argv[0])
+    app = host.applications().get_resource(test_setup.global_vars.web_server_name)
 
     print "Setting httpd_port at organization level..."
     __set_httpd_port_setting(org, host, 80)
@@ -95,12 +95,12 @@ def run():
     print "Changing httpd_port at host level..."
     __update_httpd_port_setting(host, host, 80)
 
-def tear_down():
+def tear_down(argv):
     api = CortexApi(test_setup.global_vars.comodit_url, test_setup.global_vars.comodit_user, test_setup.global_vars.comodit_pass)
 
-    org = api.organizations().get_resource(defs.global_vars.org_name)
-    env = org.environments().get_resource(defs.global_vars.env_name)
-    host = env.hosts().get_resource(defs.global_vars.host_name)
+    org = api.organizations().get_resource(test_setup.global_vars.org_name)
+    env = org.environments().get_resource(test_setup.global_vars.env_name)
+    host = env.hosts().get_resource(argv[0])
 
     uninstall_web_server(host)
 
@@ -112,11 +112,6 @@ def tear_down():
 
     print "Removing httpd_port from host..."
     __unset_httpd_port_setting(host, host)
-
-def test():
-    setup()
-    run()
-    tear_down()
 
 #==============================================================================
 # Entry point

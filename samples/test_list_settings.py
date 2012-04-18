@@ -16,41 +16,36 @@ from cortex_client.api.api import CortexApi
 #==============================================================================
 # Script
 
-def setup():
+def setup(argv):
     api = CortexApi(test_setup.global_vars.comodit_url, test_setup.global_vars.comodit_user, test_setup.global_vars.comodit_pass)
 
-    org = api.organizations().get_resource(defs.global_vars.org_name)
-    env = org.environments().get_resource(defs.global_vars.env_name)
-    host = env.hosts().get_resource(defs.global_vars.host_name)
+    org = api.organizations().get_resource(test_setup.global_vars.org_name)
+    env = org.environments().get_resource(test_setup.global_vars.env_name)
+    host = env.hosts().get_resource(argv[0])
 
     install_web_server(host)
     install_simple_web_page(host, [get_simple_setting_json("list_setting", ["one", "two", "three"])])
 
-def run():
+def run(argv):
     api = CortexApi(test_setup.global_vars.comodit_url, test_setup.global_vars.comodit_user, test_setup.global_vars.comodit_pass)
 
-    org = api.organizations().get_resource(defs.global_vars.org_name)
-    env = org.environments().get_resource(defs.global_vars.env_name)
-    host = env.hosts().get_resource(defs.global_vars.host_name)
+    org = api.organizations().get_resource(test_setup.global_vars.org_name)
+    env = org.environments().get_resource(test_setup.global_vars.env_name)
+    host = env.hosts().get_resource(argv[0])
 
     check_page_content(host, 80, "/index.html", "<li>one</li>")
     check_page_content(host, 80, "/index.html", "<li>two</li>")
     check_page_content(host, 80, "/index.html", "<li>three</li>")
 
-def tear_down():
+def tear_down(argv):
     api = CortexApi(test_setup.global_vars.comodit_url, test_setup.global_vars.comodit_user, test_setup.global_vars.comodit_pass)
 
-    org = api.organizations().get_resource(defs.global_vars.org_name)
-    env = org.environments().get_resource(defs.global_vars.env_name)
-    host = env.hosts().get_resource(defs.global_vars.host_name)
+    org = api.organizations().get_resource(test_setup.global_vars.org_name)
+    env = org.environments().get_resource(test_setup.global_vars.env_name)
+    host = env.hosts().get_resource(argv[0])
 
     uninstall_simple_web_page(host)
     uninstall_web_server(host)
-
-def test():
-    setup()
-    run()
-    tear_down()
 
 #==============================================================================
 # Entry point

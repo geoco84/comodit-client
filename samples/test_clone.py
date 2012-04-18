@@ -1,9 +1,6 @@
 # Setup Python path
 import sys, test_utils
-import definitions as defs
-import setup as test_setup
-
-from definitions import global_vars as gvs
+from setup import global_vars as gvs
 
 sys.path.append("..")
 
@@ -17,13 +14,13 @@ from cortex_client.api.api import CortexApi
 #==============================================================================
 # Script
 
-def setup():
+def setup(argv):
     pass
 
-def run():
-    api = CortexApi(test_setup.global_vars.comodit_url, test_setup.global_vars.comodit_user, test_setup.global_vars.comodit_pass)
+def run(argv):
+    api = CortexApi(gvs.comodit_url, gvs.comodit_user, gvs.comodit_pass)
 
-    org = api.organizations().get_resource(defs.global_vars.org_name)
+    org = api.organizations().get_resource(gvs.org_name)
 
     print "Clone application"
     app = org.applications().get_resource(gvs.web_server_name)
@@ -31,12 +28,12 @@ def run():
     org.applications().get_resource("newName")
 
     print "Clone distribution"
-    dist = org.distributions().get_resource(gvs.dist_name)
+    dist = org.distributions().get_resource(gvs.dist_names[0])
     dist.clone("newName")
     org.distributions().get_resource("newName")
 
     print "Clone platform"
-    plat = org.platforms().get_resource(gvs.plat_name)
+    plat = org.platforms().get_resource(gvs.plat_names[0])
     plat.clone("newName")
     org.platforms().get_resource("newName")
 
@@ -46,14 +43,14 @@ def run():
     org.environments().get_resource("newName")
 
     print "Clone host"
-    host = env.hosts().get_resource(gvs.host_name)
+    host = env.hosts().get_resource(argv[0])
     host.clone()
-    env.hosts().get_resource(gvs.host_name + " (1)")
+    env.hosts().get_resource(argv[0] + " (1)")
 
-def tear_down():
-    api = CortexApi(test_setup.global_vars.comodit_url, test_setup.global_vars.comodit_user, test_setup.global_vars.comodit_pass)
+def tear_down(argv):
+    api = CortexApi(gvs.comodit_url, gvs.comodit_user, gvs.comodit_pass)
 
-    org = api.organizations().get_resource(defs.global_vars.org_name)
+    org = api.organizations().get_resource(gvs.org_name)
 
     print "Removing application clone"
     try:
@@ -88,15 +85,10 @@ def tear_down():
     print "Removing host clone"
     env = org.environments().get_resource(gvs.env_name)
     try:
-        host = env.hosts().get_resource(gvs.host_name + " (1)")
+        host = env.hosts().get_resource(argv[0] + " (1)")
         host.delete()
     except:
         pass
-
-def test():
-    setup()
-    run()
-    tear_down()
 
 #==============================================================================
 # Entry point

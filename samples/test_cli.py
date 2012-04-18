@@ -12,14 +12,14 @@ sys.path.append("..")
 from cortex_client import dispatch
 from cortex_client.api.api import CortexApi
 
-def setup():
+def setup(argv):
     api = CortexApi(test_setup.global_vars.comodit_url, test_setup.global_vars.comodit_user, test_setup.global_vars.comodit_pass)
 
     org = api.organizations().get_resource(gvs.org_name)
     env = org.environments().get_resource(gvs.env_name)
     add_simple_setting(env, "test_key", "value")
 
-def tear_down():
+def tear_down(argv):
     api = CortexApi(test_setup.global_vars.comodit_url, test_setup.global_vars.comodit_user, test_setup.global_vars.comodit_pass)
 
     org = api.organizations().get_resource(gvs.org_name)
@@ -38,7 +38,7 @@ def test_client(expected_code = 0):
     finally:
         sys.stdout = sys.__stdout__
 
-def run():
+def run(argv):
     api = CortexApi(test_setup.global_vars.comodit_url, test_setup.global_vars.comodit_user, test_setup.global_vars.comodit_pass)
     org = api.organizations().get_resource(gvs.org_name)
 
@@ -202,29 +202,24 @@ def run():
     test_client()
 
     print "Testing hosts show"
-    sys.argv = ["cortex", "hosts", "show", gvs.org_name, gvs.env_name, gvs.host_name]
+    sys.argv = ["cortex", "hosts", "show", gvs.org_name, gvs.env_name, argv[0]]
     test_client()
 
     print "Testing hosts changes"
-    sys.argv = ["cortex", "hosts", "changes", gvs.org_name, gvs.env_name, gvs.host_name]
+    sys.argv = ["cortex", "hosts", "changes", gvs.org_name, gvs.env_name, argv[0]]
     test_client()
 
     print "Testing hosts clear-changes"
-    sys.argv = ["cortex", "hosts", "clear-changes", gvs.org_name, gvs.env_name, gvs.host_name]
+    sys.argv = ["cortex", "hosts", "clear-changes", gvs.org_name, gvs.env_name, argv[0]]
     test_client()
 
     print "Testing hosts settings list"
-    sys.argv = ["cortex", "hosts", "settings", "list", gvs.org_name, gvs.env_name, gvs.host_name]
+    sys.argv = ["cortex", "hosts", "settings", "list", gvs.org_name, gvs.env_name, argv[0]]
     test_client()
 
     print "Testing hosts settings show"
-    sys.argv = ["cortex", "hosts", "settings", "show", gvs.org_name, gvs.env_name, gvs.host_name, "vm_arch"]
+    sys.argv = ["cortex", "hosts", "settings", "show", gvs.org_name, gvs.env_name, argv[0], "vm_arch"]
     test_client()
-
-def test():
-    setup()
-    run()
-    tear_down()
 
 if __name__ == "__main__":
     test_utils.test_wrapper([__name__])

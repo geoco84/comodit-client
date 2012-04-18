@@ -33,7 +33,7 @@ def test_web_server_default(host, port):
 def install_web_server(host, settings = []):
     print "Installing web server..."
     context = host.applications()._new_resource()
-    context.set_application(defs.global_vars.web_server_name)
+    context.set_application(test_setup.global_vars.web_server_name)
 
     for s in settings:
         if s.has_key("property"):
@@ -50,43 +50,38 @@ def install_web_server(host, settings = []):
 def uninstall_web_server(host):
     print "Uninstalling web server..."
     try:
-        host.applications().get_resource(defs.global_vars.web_server_name).delete()
+        host.applications().get_resource(test_setup.global_vars.web_server_name).delete()
         wait_changes(host)
     except PythonApiException, e:
         print e.message
     print "Web server successfully uninstalled."
 
-def setup():
+def setup(argv):
     api = CortexApi(test_setup.global_vars.comodit_url, test_setup.global_vars.comodit_user, test_setup.global_vars.comodit_pass)
 
-    org = api.organizations().get_resource(defs.global_vars.org_name)
-    env = org.environments().get_resource(defs.global_vars.env_name)
-    host = env.hosts().get_resource(defs.global_vars.host_name)
+    org = api.organizations().get_resource(test_setup.global_vars.org_name)
+    env = org.environments().get_resource(test_setup.global_vars.env_name)
+    host = env.hosts().get_resource(argv[0])
 
     install_web_server(host)
 
-def run():
+def run(argv):
     api = CortexApi(test_setup.global_vars.comodit_url, test_setup.global_vars.comodit_user, test_setup.global_vars.comodit_pass)
 
-    org = api.organizations().get_resource(defs.global_vars.org_name)
-    env = org.environments().get_resource(defs.global_vars.env_name)
-    host = env.hosts().get_resource(defs.global_vars.host_name)
+    org = api.organizations().get_resource(test_setup.global_vars.org_name)
+    env = org.environments().get_resource(test_setup.global_vars.env_name)
+    host = env.hosts().get_resource(argv[0])
 
     test_web_server_default(host, 80)
 
-def tear_down():
+def tear_down(argv):
     api = CortexApi(test_setup.global_vars.comodit_url, test_setup.global_vars.comodit_user, test_setup.global_vars.comodit_pass)
 
-    org = api.organizations().get_resource(defs.global_vars.org_name)
-    env = org.environments().get_resource(defs.global_vars.env_name)
-    host = env.hosts().get_resource(defs.global_vars.host_name)
+    org = api.organizations().get_resource(test_setup.global_vars.org_name)
+    env = org.environments().get_resource(test_setup.global_vars.env_name)
+    host = env.hosts().get_resource(argv[0])
 
     uninstall_web_server(host)
-
-def test():
-    setup()
-    run()
-    tear_down()
 
 #==============================================================================
 # Entry point
