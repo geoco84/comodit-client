@@ -24,10 +24,10 @@ def define():
                              ]
 
     # Define platform
-    global_vars.plat_name = "Local2"
+    global_vars.plat_names = ["Local", "Hyp3", "VMWare"]
 
     # Define distribution (kickstart template is in same folder)
-    global_vars.dist_name = "co6"
+    global_vars.dist_names = ["co6-Local", "co6-Hyp3", "co6-VMWare"]
 
     # Define environments
     global_vars.env_name = "Test2"
@@ -36,14 +36,12 @@ def define():
     # Define host
     global_vars.host_name = "test2"
     global_vars.host_description = "Single host of Test2 environment"
-    global_vars.host_dist = global_vars.dist_name
-    global_vars.host_plat = global_vars.plat_name
+    global_vars.host_dist = global_vars.dist_names[0]
+    global_vars.host_plat = global_vars.plat_names[0]
     global_vars.host_apps = [global_vars.guardis_repos_name]
     global_vars.host_settings = []
     global_vars.plat_settings = \
         [
-            {"key":"vm_arch", "value": setup.global_vars.vm_arch},
-            {"key":"vm_bridge", "value": setup.global_vars.vm_bridge},
             {"key":"vm_memory", "value":"512"},
             {"key":"vm_capacity", "value":"2048"},
             {"key":"vm_nvirtcpus", "value":"1"}

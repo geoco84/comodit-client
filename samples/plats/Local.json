@@ -1,0 +1,13 @@
+{
+    "name":"Local",
+    "description":"Local QEMU",
+    "driver": {
+        "className": "com.guardis.cortex.server.driver.LibvirtDriver"
+    },
+    "settings":[
+        {
+            "key":"libvirt.connectUrl",
+            "value":"qemu:///system"
+        }
+    ]
+}

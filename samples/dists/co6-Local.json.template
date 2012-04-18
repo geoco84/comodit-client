@@ -1,17 +1,17 @@
 {
-    "name":"co6",
+    "name":"co6-Local",
     "description":"CentOS 6",
     "settings":[
         {
-            "key":"kernel_params",
+            "key":"cmdline",
             "value":"text ks=${_urls[\"co6.ks\"]}"
         },
         {
-            "key":"initrd_path",
+            "key":"initrd",
             "value":"##init_rd##"
         },
         {
-            "key":"vmlinuz_path",
+            "key":"kernel",
             "value":"##vmlinuz##"
         }
     ],

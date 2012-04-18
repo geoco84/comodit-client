@@ -40,7 +40,7 @@ def create_resources():
     app_coll = org.applications()
     for name in defs.global_vars.app_names:
         print "="*80
-        print "Application " + name
+        print "Application", name
         try:
             app = app_coll.get_resource(name)
             print "Application already exists"
@@ -49,28 +49,29 @@ def create_resources():
             print "Application is created"
         app.show()
 
-    print "="*80
-    print "Platform"
     plat_coll = org.platforms()
-    try:
-        plat = plat_coll.get_resource(defs.global_vars.plat_name)
-        print "Platform already exists"
-    except ResourceNotFoundException:
-        plat = create_plat(org)
-        print "Platform is created"
+    for name in defs.global_vars.plat_names:
+        print "="*80
+        print "Platform", name
+        try:
+            plat = plat_coll.get_resource(name)
+            print "Platform already exists"
+        except ResourceNotFoundException:
+            plat = create_plat(org, name)
+            print "Platform is created"
+        plat.show()
 
-    plat.show()
-
-    print "="*80
-    print "Distribution"
     dist_coll = org.distributions()
-    try:
-        dist = dist_coll.get_resource(defs.global_vars.dist_name)
-        print "Distribution already exists"
-    except ResourceNotFoundException:
-        dist = create_dist(org)
-        print "Distribution is created"
-    dist.show()
+    for name in defs.global_vars.dist_names:
+        print "="*80
+        print "Distribution", name
+        try:
+            dist = dist_coll.get_resource(name)
+            print "Distribution already exists"
+        except ResourceNotFoundException:
+            dist = create_dist(org, name)
+            print "Distribution is created"
+        dist.show()
 
     print "="*80
     print "Environments"
@@ -109,29 +110,23 @@ def create_app(org, name):
 
     return app
 
-def create_plat(org):
+def create_plat(org, name):
     """
     Creates a platform linked to given API api
     """
-    plat = org.new_platform(defs.global_vars.plat_name)
-    plat.load_json("Local2.json")
+    plat = org.new_platform(name)
+    plat.load_json("plats/" + name + ".json")
 
-    plat._show(4)
-
-    plat.create()
-
-    # Upload file contents
-    for f in plat.get_files():
-        f.set_content("files/" + f.get_name())
+    plat.create(parameters = {"default": "true"})
 
     return plat
 
-def create_dist(org):
+def create_dist(org, name):
     """
     Creates a distribution linked to given API api
     """
-    dist = org.new_distribution(defs.global_vars.dist_name)
-    dist.load_json("co6.json")
+    dist = org.new_distribution(name)
+    dist.load_json("dists/" + name + ".json")
 
     dist.create()
 
@@ -165,8 +160,8 @@ def create_host(env):
     host = env.new_host(defs.global_vars.host_name)
     host.set_description(defs.global_vars.host_description)
 
-    host.set_platform(defs.global_vars.plat_name)
-    host.set_distribution(defs.global_vars.dist_name)
+    host.set_platform(defs.global_vars.host_plat)
+    host.set_distribution(defs.global_vars.host_dist)
 
     for app_name in defs.global_vars.host_apps:
         host.add_application(app_name)

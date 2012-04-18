@@ -136,11 +136,6 @@ def create_guardis_repositories_json():
                     "##arch##": global_vars.vm_arch}
     _render_file("apps/GuardisRepos.json.template", replacements)
 
-def create_platform_json():
-    replacements = {"##libvirt_connect_url##": global_vars.libvirt_connect_url,
-                    "##arch##": global_vars.vm_arch}
-    _render_file("Local2.json.template", replacements)
-
 def create_dist_json():
     replacements = {"##arch##": global_vars.vm_arch,
                     "##base_arch##": global_vars.vm_base_arch,
@@ -148,22 +143,22 @@ def create_dist_json():
                     "##init_rd##": global_vars.initrd,
                     "##vmlinuz##": global_vars.vmlinuz,
                     "##zone##": global_vars.zone}
-    _render_file("co6.json.template", replacements)
+    _render_file("dists/co6-Local.json.template", replacements)
+    _render_file("dists/co6-Hyp3.json.template", replacements)
+    _render_file("dists/co6-VMWare.json.template", replacements)
 
 def create_files():
     create_kickstart()
     create_repo_files()
     create_domain_file()
     create_guardis_repositories_json()
-    create_platform_json()
     create_dist_json()
 
 def delete_files():
     files = ["files/co6.ks",
              "files/libvirt.domain.fmt",
              "apps/GuardisRepos.json",
-             "Local2.json",
-             "co6.json"
+             "dists/co6.json"
              ]
 
     for f in files:

@@ -32,16 +32,20 @@ def delete_resources():
                 print "Application", name, "does not exist"
 
         plat_coll = org.platforms()
-        try:
-            plat = plat_coll.get_resource(defs.global_vars.plat_name)
-        except ResourceNotFoundException:
-            print "Platform does not exist"
+        plats = []
+        for name in defs.global_vars.plat_names:
+            try:
+                plats.append(plat_coll.get_resource(name))
+            except ResourceNotFoundException:
+                print "Platform does not exist"
 
         dist_coll = org.distributions()
-        try:
-            dist = dist_coll.get_resource(defs.global_vars.dist_name)
-        except ResourceNotFoundException:
-            print "Distribution does not exist"
+        dists = []
+        for name in defs.global_vars.dist_names:
+            try:
+                dists.append(dist_coll.get_resource(name))
+            except ResourceNotFoundException:
+                print "Distribution does not exist"
 
         env_coll = org.environments()
         try:
@@ -83,14 +87,22 @@ def delete_resources():
     print "="*80
     print "Delete platform"
     try:
-        plat.delete()
+        for plat in plats:
+            try:
+                plat.delete()
+            except Exception, e:
+                print e.message
     except Exception, e:
         print e.message
 
     print "="*80
     print "Delete distribution"
     try:
-        dist.delete()
+        for dist in dists:
+            try:
+                dist.delete()
+            except Exception, e:
+                print e.message
     except Exception, e:
         print e.message
 
