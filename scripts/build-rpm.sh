@@ -1,23 +1,35 @@
 #!/bin/bash
 
-VERSION=`git describe --long --match "release*" | awk -F"-" '{print $2}'`
-RELEASE=`git describe --long --match "release*" | awk -F"-" '{print $3}'`
+NAME="cortex-client"
+MAN_PAGE_FILE="cortex-doc/tmp/en-US/man/cortex.1"
+FALLBACK_MAN=`readlink -f scripts/cortex.1`
+TAR_CONTENT="cortex_client templates conf setup.py cortex scripts/completions.sh "${MAN_PAGE_FILE}
+PLATFORMS=(epel-6-i386 fedora-15-i386 fedora-16-i386)
+
+if [ -z $1 ]
+then
+  VERSION=`git describe --long --match "release*" | awk -F"-" '{print $2}'`
+else
+  VERSION=$1
+fi
+
+if [ -z $2 ]
+then
+  RELEASE=`git describe --long --match "release*" | awk -F"-" '{print $3}'`
+else
+  RELEASE=$2
+fi
+
 COMMIT=`git describe --long --match "release*" | awk -F"-" '{print $4}'`
 
 # Generate version file
 echo "VERSION=\""$VERSION"\"" > cortex_client/version.py
 echo "RELEASE=\""$RELEASE"\"" >> cortex_client/version.py
 
-NAME=cortex-client
-MAN_PAGE_FILE="cortex-doc/tmp/en-US/man/cortex.1"
-FALLBACK_MAN=`readlink -f scripts/cortex.1`
-TAR_CONTENT="cortex_client templates conf setup.py cortex scripts/completions.sh "${MAN_PAGE_FILE}
-PLATFORMS=(epel-6-i386 fedora-15-i386 fedora-16-i386)
-
 cd `dirname $0`
 cd ..
 
-scripts/build-man.sh
+# scripts/build-man.sh
 
 # Workaround for lack of proper publican version on devel.bruxelles
 if [[ ! -f ${MAN_PAGE_FILE} ]]
