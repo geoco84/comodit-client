@@ -1,7 +1,6 @@
 # Setup Python path
 import sys, setup
 import definitions as defs
-import create
 sys.path.append("..")
 
 
@@ -22,28 +21,28 @@ def delete_resources():
 
     org_coll = api.organizations()
     hosts = []
+    plats = []
+    apps = []
+    dists = []
     try:
-        org = org_coll.get_resource(defs.global_vars.org_name)
+        org = org_coll.get_resource(setup.global_vars.org_name)
 
         app_coll = org.applications()
-        apps = []
-        for name in defs.global_vars.app_names:
+        for name in setup.global_vars.app_names:
             try:
                 apps.append(app_coll.get_resource(name))
             except ResourceNotFoundException:
                 print "Application", name, "does not exist"
 
         plat_coll = org.platforms()
-        plats = []
-        for name in defs.global_vars.plat_names:
+        for name in setup.global_vars.plat_names:
             try:
                 plats.append(plat_coll.get_resource(name))
             except ResourceNotFoundException:
                 print "Platform does not exist"
 
         dist_coll = org.distributions()
-        dists = []
-        for name in defs.global_vars.dist_names:
+        for name in setup.global_vars.dist_names:
             try:
                 dists.append(dist_coll.get_resource(name))
             except ResourceNotFoundException:
@@ -51,12 +50,12 @@ def delete_resources():
 
         env_coll = org.environments()
         try:
-            env = env_coll.get_resource(defs.global_vars.env_name)
+            env = env_coll.get_resource(setup.global_vars.env_name)
 
             host_coll = env.hosts()
-            for plat_name in defs.global_vars.plat_names:
+            for plat_name in setup.global_vars.plat_names:
                 try:
-                    hosts.append(host_coll.get_resource(create.get_host_name(plat_name)))
+                    hosts.append(host_coll.get_resource(defs.get_host_name(plat_name)))
                 except ResourceNotFoundException:
                     print "Host does not exist"
         except ResourceNotFoundException:
@@ -70,8 +69,18 @@ def delete_resources():
     ###################
 
     print "="*80
-    print "Delete host"
+    print "Delete hosts"
     for host in hosts:
+        try:
+            host.instance().get_single_resource().poweroff()
+        except:
+            pass
+
+        try:
+            host.instance().get_single_resource().delete()
+        except Exception, e:
+            print e.message
+
         try:
             host.delete()
         except Exception, e:
@@ -125,45 +134,9 @@ def delete_resources():
         print e.message
 
 
-def delete_host_instance():
-    # API from server cortex listening on port 8000 of localhost is used
-    # Username "admin" and password "secret" are used for authentification
-    api = CortexApi(setup.global_vars.comodit_url, setup.global_vars.comodit_user, setup.global_vars.comodit_pass)
-
-    org_coll = api.organizations()
-    try:
-        org = org_coll.get_resource(defs.global_vars.org_name)
-        env_coll = org.environments()
-        try:
-            env = env_coll.get_resource(defs.global_vars.env_name)
-
-            host_coll = env.hosts()
-            try:
-                host = host_coll.get_resource(defs.global_vars.host_name)
-            except ResourceNotFoundException:
-                print "Host does not exist"
-
-            try:
-                host.instance().get_single_resource().poweroff()
-            except:
-                pass
-
-            print "="*80
-            print "Delete host instance"
-            try:
-                host.instance().get_single_resource().delete()
-            except Exception, e:
-                print e.message
-        except ResourceNotFoundException:
-            print "Environment does not exist"
-    except ResourceNotFoundException:
-        print "Organization does not exist"
-
-
 #==============================================================================
 # Entry point
 if __name__ == "__main__":
     setup.setup()
     defs.define()
-    delete_host_instance()
     delete_resources()

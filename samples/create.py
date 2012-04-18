@@ -119,17 +119,16 @@ def create_plat(org, name):
     data = {}
     with open("plats/" + name + ".json", 'r') as f:
         data = json.load(f)
-    files = data.pop("files")
+    files = data.pop("files", [])
 
     plat.set_json(data)
 
     plat.create(parameters = {"default": "true"})
 
     # Update files
-    if not files is None:
-        for f in files:
-            print "Updating file", f
-            plat.files().get_resource(f).set_content("files/" + f)
+    for f in files:
+        print "Updating file", f
+        plat.files().get_resource(f).set_content("files/" + f)
 
     return plat
 
@@ -151,8 +150,8 @@ def create_org(api):
     """
     Creates an organization linked to given API api
     """
-    org = api.new_organization(defs.global_vars.org_name)
-    org.set_description(defs.global_vars.org_description)
+    org = api.new_organization(setup.global_vars.org_name)
+    org.set_description(setup.global_vars.org_description)
     org.create()
     return org
 
