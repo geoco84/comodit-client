@@ -1,0 +1,55 @@
+{
+    "name":"co6-CloudStack",
+    "description":"CentOS 6",
+    "settings":[
+        {
+            "key":"cmdline",
+            "value":"text ks=${_urls[\"co6.ks\"]}"
+        },
+        {
+            "key":"initrd",
+            "value":"http://oak.angleur.guardis.be/public/centos/6/os/${vm_arch}/images/pxeboot/initrd.img"
+        },
+        {
+            "key":"kernel",
+            "value":"http://oak.angleur.guardis.be/public/centos/6/os/${vm_arch}/images/pxeboot/vmlinuz"
+        }
+    ],
+    "files":[
+        {
+            "name":"co6.ks"
+        }
+    ],
+    "parameters":[
+        {
+            "key":"zone",
+            "value":"angleur",
+            "name":"Zone"
+        },
+        {
+            "key":"vm_arch",
+            "value":"x86_64",
+            "name":"Architecture"
+        },
+        {
+            "key":"vm_base_arch",
+            "value":"x86_64",
+            "name":"Base architecture"
+        },
+        {
+            "key":"enable_trunk",
+            "value":"true",
+            "name":"Enable trunk"
+        },
+        {
+            "key":"ks_rootpw_one",
+            "value":"secret",
+            "name":"Root password"
+        },
+        {
+            "key":"amqp_server",
+            "value":"##amqp_server##",
+            "name":"AMQP server"
+        }
+    ]
+}

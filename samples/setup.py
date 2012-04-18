@@ -146,6 +146,7 @@ def create_dist_json():
     _render_file("dists/co6-Local.json.template", replacements)
     _render_file("dists/co6-Hyp3.json.template", replacements)
     _render_file("dists/co6-VMWare.json.template", replacements)
+    _render_file("dists/co6-CloudStack.json.template", replacements)
 
 def create_files():
     create_kickstart()
