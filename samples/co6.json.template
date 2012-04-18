@@ -4,7 +4,7 @@
     "settings":[
         {
             "key":"kernel_params",
-            "value":"text ks=${_distribution.urls[\"co6.ks\"]}"
+            "value":"text ks=${_urls[\"co6.ks\"]}"
         },
         {
             "key":"initrd_path",
