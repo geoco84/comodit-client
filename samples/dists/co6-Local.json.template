@@ -3,15 +3,15 @@
     "description":"CentOS 6",
     "settings":[
         {
-            "key":"cmdline",
+            "key":"kernel_params",
             "value":"text ks=${_urls[\"co6.ks\"]}"
         },
         {
-            "key":"initrd",
+            "key":"initrd_path",
             "value":"##init_rd##"
         },
         {
-            "key":"kernel",
+            "key":"vmlinuz_path",
             "value":"##vmlinuz##"
         }
     ],

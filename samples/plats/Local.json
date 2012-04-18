@@ -9,5 +9,8 @@
             "key":"libvirt.connectUrl",
             "value":"qemu:///system"
         }
+    ],
+    "files":[
+        "libvirt.domain.fmt"
     ]
 }

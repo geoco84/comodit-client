@@ -1,9 +1,8 @@
 # Setup Python path
-import sys
+import sys, json
 sys.path.append("..")
 import setup
 import definitions as defs
-
 
 
 #==============================================================================
@@ -30,7 +29,7 @@ def create_resources():
     print "Organization"
     org_coll = api.organizations()
     try:
-        org = org_coll.get_resource(defs.global_vars.org_name)
+        org = org_coll.get_resource(setup.global_vars.org_name)
         print "Organization already exists"
     except ResourceNotFoundException:
         org = create_org(api)
@@ -38,7 +37,7 @@ def create_resources():
     org.show()
 
     app_coll = org.applications()
-    for name in defs.global_vars.app_names:
+    for name in setup.global_vars.app_names:
         print "="*80
         print "Application", name
         try:
@@ -50,7 +49,7 @@ def create_resources():
         app.show()
 
     plat_coll = org.platforms()
-    for name in defs.global_vars.plat_names:
+    for name in setup.global_vars.plat_names:
         print "="*80
         print "Platform", name
         try:
@@ -62,7 +61,7 @@ def create_resources():
         plat.show()
 
     dist_coll = org.distributions()
-    for name in defs.global_vars.dist_names:
+    for name in setup.global_vars.dist_names:
         print "="*80
         print "Distribution", name
         try:
@@ -77,17 +76,17 @@ def create_resources():
     print "Environments"
     env_coll = org.environments()
     try:
-        env = env_coll.get_resource(defs.global_vars.env_name)
-        print "Environment " + defs.global_vars.env_name + " already exists"
+        env = env_coll.get_resource(setup.global_vars.env_name)
+        print "Environment " + setup.global_vars.env_name + " already exists"
     except ResourceNotFoundException:
         env = create_env(org)
-        print "Environment " + defs.global_vars.env_name + " is created"
+        print "Environment " + setup.global_vars.env_name + " is created"
     env.show()
 
     print "="*80
     print "Host"
     host_coll = env.hosts()
-    for plat_name in defs.global_vars.plat_names:
+    for plat_name in setup.global_vars.plat_names:
         try:
             host = host_coll.get_resource(defs.get_host_name(plat_name))
             print "Host already exists"
@@ -116,9 +115,21 @@ def create_plat(org, name):
     Creates a platform linked to given API api
     """
     plat = org.new_platform(name)
-    plat.load_json("plats/" + name + ".json")
+
+    data = {}
+    with open("plats/" + name + ".json", 'r') as f:
+        data = json.load(f)
+    files = data.pop("files")
+
+    plat.set_json(data)
 
     plat.create(parameters = {"default": "true"})
+
+    # Update files
+    if not files is None:
+        for f in files:
+            print "Updating file", f
+            plat.files().get_resource(f).set_content("files/" + f)
 
     return plat
 
@@ -149,8 +160,8 @@ def create_env(org):
     """
     Creates an environment linked to given API api
     """
-    env = org.new_environment(defs.global_vars.env_name)
-    env.set_description(defs.global_vars.env_description)
+    env = org.new_environment(setup.global_vars.env_name)
+    env.set_description(setup.global_vars.env_description)
     env.create()
     return env
 
@@ -164,12 +175,12 @@ def create_host(env, plat_name):
 
     host.set_platform(plat_name)
     host.set_distribution(dist_name)
-    host.add_application(defs.global_vars.guardis_repos_name)
+    host.add_application(setup.global_vars.guardis_repos_name)
 
     host.create()
 
     context = host.platform().get_single_resource()
-    for setting in defs.global_vars.plat_settings[plat_name]:
+    for setting in setup.global_vars.plat_settings[plat_name]:
         s = context.new_setting(setting["key"])
         s.set_value(setting["value"])
         s.create()
