@@ -10,8 +10,8 @@ global_vars = Expendable()
 
 def define():
     # Define organization
-    global_vars.org_name = "Guardis2"
-    global_vars.org_description = "Guardis2's organization"
+    global_vars.org_name = "Guardis Test"
+    global_vars.org_description = "Test Guardis Organization"
 
     # Define applications
     global_vars.guardis_repos_name = "GuardisRepos"
@@ -30,8 +30,8 @@ def define():
     global_vars.dist_names = ["co6-Local", "co6-Hyp3", "co6-VMWare"]
 
     # Define environments
-    global_vars.env_name = "Test2"
-    global_vars.env_description = "Test environment 1 of Guardis2"
+    global_vars.env_name = "Test Environment"
+    global_vars.env_description = "Test environment of test organization"
 
     # Define host
     global_vars.host_name = "test2"
