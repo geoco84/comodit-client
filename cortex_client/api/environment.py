@@ -9,7 +9,7 @@ Environment module.
 from cortex_client.util.json_wrapper import StringFactory
 from host import Host
 from host_collection import HostCollection
-from cortex_client.api.settings import Configurable
+from cortex_client.api.settings import Configurable, SettingFactory
 from cortex_client.rest.exceptions import ApiException
 from cortex_client.api.exceptions import PythonApiException
 from cortex_client.api.audit import AuditCollection
@@ -123,3 +123,5 @@ class Environment(Configurable):
     def audit_logs(self):
         return AuditCollection(self._get_path() + "audit/", self._get_api())
 
+    def get_settings(self):
+        return self._get_list_field("settings", SettingFactory(None))

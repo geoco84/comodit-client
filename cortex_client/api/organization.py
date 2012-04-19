@@ -16,7 +16,7 @@ from platform_collection import PlatformCollection
 from application import Application
 from application_collection import ApplicationCollection
 from cortex_client.api.group_collection import GroupCollection
-from cortex_client.api.settings import Configurable
+from cortex_client.api.settings import Configurable, SettingFactory
 from cortex_client.rest.exceptions import ApiException
 from cortex_client.api.exceptions import PythonApiException
 from cortex_client.api.audit import AuditCollection
@@ -44,6 +44,9 @@ class Organization(Configurable):
         @rtype: list of String
         """
         return self._get_list_field("environments", StringFactory())
+
+    def get_settings(self):
+        return self._get_list_field("settings", SettingFactory(None))
 
     def get_groups(self):
         return self._get_list_field("groups", StringFactory())
