@@ -18,9 +18,8 @@ repo --name=epel --baseurl=##repos_epel##
 
 repo --name=synapse --baseurl=##repos_synapse##
 repo --name=comodit --baseurl=##repos_comodit##
-<#if enable_trunk="true">
 repo --name=comodit-dev --baseurl=##repos_comodit-dev##
-</#if>
+repo --name=synapse-dev --baseurl=##repos_synapse-dev##
 
 # Do not configure the X Window System
 skipx
@@ -83,13 +82,6 @@ vim-enhanced
 
 # The additional distributions
 epel-release
-
-# ComodIT repositories
-<#if enable_trunk="true">
-comodit-release-dev
-<#else>
-comodit-release
-</#if>
 
 # Openssh
 openssh
