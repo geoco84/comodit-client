@@ -3,44 +3,62 @@ from StringIO import StringIO
 
 import test_utils
 import setup as test_setup
+import definitions as defs
 
-from definitions import global_vars as gvs
-from test_simple_settings import add_simple_setting, delete_setting
+from setup import global_vars as gvs
 
 sys.path.append("..")
+
+import cortex_client.api.collections as collections
 
 from cortex_client import dispatch
 from cortex_client.api.api import CortexApi
 
 def setup(argv):
-    api = CortexApi(test_setup.global_vars.comodit_url, test_setup.global_vars.comodit_user, test_setup.global_vars.comodit_pass)
-
-    org = api.organizations().get_resource(gvs.org_name)
-    env = org.environments().get_resource(gvs.env_name)
-    add_simple_setting(env, "test_key", "value")
+    pass
 
 def tear_down(argv):
-    api = CortexApi(test_setup.global_vars.comodit_url, test_setup.global_vars.comodit_user, test_setup.global_vars.comodit_pass)
-
-    org = api.organizations().get_resource(gvs.org_name)
-    env = org.environments().get_resource(gvs.env_name)
-    delete_setting(env, "test_key")
+    pass
 
 def test_client(expected_code = 0):
     mystdout = StringIO()
     sys.stdout = mystdout
     argv = sys.argv[1:]
+    error = False
     try:
         dispatch.run(argv)
     except SystemExit, e:
         if e.code != expected_code:
-            raise Exception("Unexpected exit code")
+            error = True
+            raise Exception("Unexpected exit code " + str(e.code))
     finally:
         sys.stdout = sys.__stdout__
+        if error:
+            print "--- BEGIN OUTPUT"
+            print mystdout.getvalue()
+            print "--- END OUTPUT"
 
 def run(argv):
     api = CortexApi(test_setup.global_vars.comodit_url, test_setup.global_vars.comodit_user, test_setup.global_vars.comodit_pass)
     org = api.organizations().get_resource(gvs.org_name)
+
+    # Organizations (read)
+    print "Testing organizations list"
+    sys.argv = ["cortex", "organizations", "list"]
+    test_client()
+
+    print "Testing organizations show"
+    sys.argv = ["cortex", "organizations", "show", gvs.org_name]
+    test_client()
+
+    print "Testing organizations settings list"
+    sys.argv = ["cortex", "organizations", "settings", "list", gvs.org_name]
+    test_client()
+
+    print "Testing organizations settings show"
+    for s in org.get_settings():
+        sys.argv = ["cortex", "organizations", "settings", "show", gvs.org_name, s.get_name()]
+        test_client()
 
     # Applications (read)
     print "Testing applications list"
@@ -98,36 +116,62 @@ def run(argv):
     test_client()
 
     print "Testing platforms show"
-    sys.argv = ["cortex", "platforms", "show", gvs.org_name, gvs.plat_name]
-    test_client()
+    for plat_name in gvs.plat_names:
+        print "  " + plat_name
+        sys.argv = ["cortex", "platforms", "show", gvs.org_name, plat_name]
+        test_client()
 
     print "Testing platforms files list"
-    sys.argv = ["cortex", "platforms", "files", "list", gvs.org_name, gvs.plat_name]
-    test_client()
+    for plat_name in gvs.plat_names:
+        print "  " + plat_name
+        sys.argv = ["cortex", "platforms", "files", "list", gvs.org_name, plat_name]
+        test_client()
 
     print "Testing platforms files show"
-    sys.argv = ["cortex", "platforms", "files", "show", gvs.org_name, gvs.plat_name, "libvirt.domain.fmt"]
-    test_client()
+    for plat_name in gvs.plat_names:
+        print "  " + plat_name
+        plat = collections.platforms(api, gvs.org_name).get_resource(plat_name)
+        for f in plat.get_files():
+            sys.argv = ["cortex", "platforms", "files", "show", gvs.org_name, plat_name, f.get_name()]
+            test_client()
 
     print "Testing platforms files show-content"
-    sys.argv = ["cortex", "platforms", "files", "show-content", gvs.org_name, gvs.plat_name, "libvirt.domain.fmt"]
-    test_client()
+    for plat_name in gvs.plat_names:
+        print "  " + plat_name
+        plat = collections.platforms(api, gvs.org_name).get_resource(plat_name)
+        for f in plat.get_files():
+            sys.argv = ["cortex", "platforms", "files", "show-content", gvs.org_name, plat_name, f.get_name()]
+            test_client()
 
     print "Testing platforms parameters list"
-    sys.argv = ["cortex", "platforms", "parameters", "list", gvs.org_name, gvs.plat_name]
-    test_client()
+    for plat_name in gvs.plat_names:
+        print "  " + plat_name
+        plat = collections.platforms(api, gvs.org_name).get_resource(plat_name)
+        sys.argv = ["cortex", "platforms", "parameters", "list", gvs.org_name, plat_name]
+        test_client()
 
     print "Testing platforms parameters show"
-    sys.argv = ["cortex", "platforms", "parameters", "show", gvs.org_name, gvs.plat_name, "Memory"]
-    test_client()
+    for plat_name in gvs.plat_names:
+        print "  " + plat_name
+        plat = collections.platforms(api, gvs.org_name).get_resource(plat_name)
+        for p in plat.get_parameters():
+            sys.argv = ["cortex", "platforms", "parameters", "show", gvs.org_name, plat_name, p.get_name()]
+            test_client()
 
     print "Testing platforms settings list"
-    sys.argv = ["cortex", "platforms", "settings", "list", gvs.org_name, gvs.plat_name]
-    test_client()
+    for plat_name in gvs.plat_names:
+        print "  " + plat_name
+        plat = collections.platforms(api, gvs.org_name).get_resource(plat_name)
+        sys.argv = ["cortex", "platforms", "settings", "list", gvs.org_name, plat_name]
+        test_client()
 
     print "Testing platforms settings show"
-    sys.argv = ["cortex", "platforms", "settings", "show", gvs.org_name, gvs.plat_name, "libvirt.connectUrl"]
-    test_client()
+    for plat_name in gvs.plat_names:
+        print "  " + plat_name
+        plat = collections.platforms(api, gvs.org_name).get_resource(plat_name)
+        for s in plat.get_settings():
+            sys.argv = ["cortex", "platforms", "settings", "show", gvs.org_name, plat_name, s.get_name()]
+            test_client()
 
 
     # Distributions (read)
@@ -136,46 +180,60 @@ def run(argv):
     test_client()
 
     print "Testing distributions show"
-    sys.argv = ["cortex", "distributions", "show", gvs.org_name, gvs.dist_name]
-    test_client()
+    for dist_name in gvs.dist_names:
+        print "  " + dist_name
+        sys.argv = ["cortex", "distributions", "show", gvs.org_name, dist_name]
+        test_client()
 
     print "Testing distributions files list"
-    sys.argv = ["cortex", "distributions", "files", "list", gvs.org_name, gvs.dist_name]
-    test_client()
+    for dist_name in gvs.dist_names:
+        print "  " + dist_name
+        sys.argv = ["cortex", "distributions", "files", "list", gvs.org_name, dist_name]
+        test_client()
 
     print "Testing distributions files show"
-    dist = org.distributions().get_resource(gvs.dist_name)
-    dist_files = dist.get_files()
-    for f in dist_files:
-        name = f.get_name()
-        print "  " + name
-        sys.argv = ["cortex", "distributions", "files", "show", gvs.org_name, gvs.dist_name, name]
-        test_client()
+    for dist_name in gvs.dist_names:
+        print "  " + dist_name
+        dist = collections.distributions(api, gvs.org_name).get_resource(dist_name)
+        for f in dist.get_files():
+            sys.argv = ["cortex", "distributions", "files", "show", gvs.org_name, dist_name, f.get_name()]
+            test_client()
 
     print "Testing distributions files show-content"
-    dist = org.distributions().get_resource(gvs.dist_name)
-    dist_files = dist.get_files()
-    for f in dist_files:
-        name = f.get_name()
-        print "  " + name
-        sys.argv = ["cortex", "distributions", "files", "show-content", gvs.org_name, gvs.dist_name, name]
-        test_client()
+    for dist_name in gvs.dist_names:
+        print "  " + dist_name
+        dist = collections.distributions(api, gvs.org_name).get_resource(dist_name)
+        for f in dist.get_files():
+            sys.argv = ["cortex", "distributions", "files", "show-content", gvs.org_name, dist_name, f.get_name()]
+            test_client()
 
     print "Testing distributions parameters list"
-    sys.argv = ["cortex", "distributions", "parameters", "list", gvs.org_name, gvs.dist_name]
-    test_client()
+    for dist_name in gvs.dist_names:
+        print "  " + dist_name
+        sys.argv = ["cortex", "distributions", "parameters", "list", gvs.org_name, dist_name]
+        test_client()
 
     print "Testing distributions parameters show"
-    sys.argv = ["cortex", "distributions", "parameters", "show", gvs.org_name, gvs.dist_name, "Zone"]
-    test_client()
+    for dist_name in gvs.dist_names:
+        print "  " + dist_name
+        dist = collections.distributions(api, gvs.org_name).get_resource(dist_name)
+        for p in dist.get_parameters():
+            sys.argv = ["cortex", "distributions", "parameters", "show", gvs.org_name, dist_name, p.get_name()]
+            test_client()
 
     print "Testing distributions settings list"
-    sys.argv = ["cortex", "distributions", "settings", "list", gvs.org_name, gvs.dist_name]
-    test_client()
+    for dist_name in gvs.dist_names:
+        print "  " + dist_name
+        sys.argv = ["cortex", "distributions", "settings", "list", gvs.org_name, dist_name]
+        test_client()
 
     print "Testing distributions settings show"
-    sys.argv = ["cortex", "distributions", "settings", "show", gvs.org_name, gvs.dist_name, "initrd_path"]
-    test_client()
+    for dist_name in gvs.dist_names:
+        print "  " + dist_name
+        dist = collections.distributions(api, gvs.org_name).get_resource(dist_name)
+        for s in dist.get_settings():
+            sys.argv = ["cortex", "distributions", "settings", "show", gvs.org_name, dist_name, s.get_name()]
+            test_client()
 
 
     # Environments (read)
@@ -192,8 +250,10 @@ def run(argv):
     test_client()
 
     print "Testing environments settings show"
-    sys.argv = ["cortex", "environments", "settings", "show", gvs.org_name, gvs.env_name, "test_key"]
-    test_client()
+    env = org.environments().get_resource(gvs.env_name)
+    for s in env.get_settings():
+        sys.argv = ["cortex", "environments", "settings", "show", gvs.org_name, gvs.env_name, s.get_key()]
+        test_client()
 
 
     # Hosts (read)
@@ -202,24 +262,21 @@ def run(argv):
     test_client()
 
     print "Testing hosts show"
-    sys.argv = ["cortex", "hosts", "show", gvs.org_name, gvs.env_name, argv[0]]
-    test_client()
-
-    print "Testing hosts changes"
-    sys.argv = ["cortex", "hosts", "changes", gvs.org_name, gvs.env_name, argv[0]]
-    test_client()
-
-    print "Testing hosts clear-changes"
-    sys.argv = ["cortex", "hosts", "clear-changes", gvs.org_name, gvs.env_name, argv[0]]
-    test_client()
+    for host_name in defs.get_host_names():
+        sys.argv = ["cortex", "hosts", "show", gvs.org_name, gvs.env_name, host_name]
+        test_client()
 
     print "Testing hosts settings list"
-    sys.argv = ["cortex", "hosts", "settings", "list", gvs.org_name, gvs.env_name, argv[0]]
-    test_client()
+    for host_name in defs.get_host_names():
+        sys.argv = ["cortex", "hosts", "settings", "list", gvs.org_name, gvs.env_name, host_name]
+        test_client()
 
     print "Testing hosts settings show"
-    sys.argv = ["cortex", "hosts", "settings", "show", gvs.org_name, gvs.env_name, argv[0], "vm_arch"]
-    test_client()
+    for host_name in defs.get_host_names():
+        host = collections.hosts(api, gvs.org_name, gvs.env_name).get_resource(host_name)
+        for s in host.get_settings():
+            sys.argv = ["cortex", "hosts", "settings", "show", gvs.org_name, gvs.env_name, host_name, s.get_key()]
+            test_client()
 
 if __name__ == "__main__":
     test_utils.test_wrapper([__name__])

@@ -9,6 +9,12 @@ def get_host_name(plat_name):
 def get_dist_name(plat_name):
     return "co6-" + plat_name
 
+def get_host_names():
+    hosts = []
+    for plat_name in setup.global_vars.plat_names:
+        hosts.append(get_host_name(plat_name))
+    return hosts
+
 def define():
     global_vars = setup.global_vars
 
