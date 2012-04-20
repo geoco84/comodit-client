@@ -30,6 +30,9 @@ def setup():
     global_vars.smtp_user = None
     global_vars.smtp_pass = None
 
+    global_vars.prov_time_out = 1800 # 1/2 hour time-out on provisioning
+    global_vars.change_time_out = 120 # 2 minutes time-out on changes
+
     # Default repos, see co6.ks.template
     repos = {"base_url" : "http://oak.${zone}.guardis.be/public/centos/6/os/${vm_base_arch}/",
              "updates" : "http://oak.${zone}.guardis.be/public/centos/6/updates/${vm_base_arch}/",

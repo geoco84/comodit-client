@@ -13,13 +13,13 @@ from email.mime.text import MIMEText
 
 test_modules = \
     [
+        test_clone.__name__,
         test_webserver.__name__,
         test_simple_web_page.__name__,
         test_simple_settings.__name__,
         test_list_settings.__name__,
         test_struct_settings.__name__,
-        test_link_settings.__name__,
-        test_clone.__name__
+        test_link_settings.__name__
      ]
 
 class ProvisionThread(Thread):
@@ -112,7 +112,7 @@ if __name__ == "__main__":
         # Provision hosts in parallel
         threads = []
         for host_name in host_names:
-            t = ProvisionThread(host_name, 1800) # time-out of half an hour
+            t = ProvisionThread(host_name, setup.global_vars.prov_time_out) # time-out of half an hour
             threads.append(t)
             t.start()
 
@@ -128,7 +128,7 @@ if __name__ == "__main__":
             if t.is_successfull():
                 print " " * 80
                 print "Running tests on", host_name
-                errors = test_utils.run_tests(test_modules, [host_name], True)
+                errors = test_utils.run_tests(test_modules, [host_name, str(setup.global_vars.change_time_out)], True)
                 test_errors += errors
             else:
                 print " " * 80
