@@ -1,6 +1,19 @@
 import setup, definitions, sys
 
-def run_tests(module_names, argv):
+class TestError(object):
+    def __init__(self, module_name, exception, argv = []):
+        self._module = module_name
+        self._exception = exception
+        self._argv = argv
+
+    def get_module_name(self):
+        return self._module
+
+    def get_arguments(self):
+        return self._argv
+
+def run_tests(module_names, argv, tear_down_on_error = False):
+    errors = []
     for name in module_names:
         test_module = sys.modules[name]
         try:
@@ -12,8 +25,16 @@ def run_tests(module_names, argv):
             print "OK"
         except Exception, e:
             print "Error:", type(e), e.message
+            errors.append(TestError(name, e, argv))
+            if tear_down_on_error:
+                try:
+                    test_module.tear_down(argv)
+                except:
+                    pass
+    return errors
 
 def run_setups(module_names, argv):
+    errors = []
     for name in module_names:
         test_module = sys.modules[name]
         try:
@@ -23,8 +44,11 @@ def run_setups(module_names, argv):
             print "OK"
         except Exception, e:
             print "Error:", type(e), e.message
+            errors.append(TestError(name, e, argv))
+    return errors
 
 def run_tear_downs(module_names, argv):
+    errors = []
     for name in module_names:
         test_module = sys.modules[name]
         try:
@@ -34,8 +58,12 @@ def run_tear_downs(module_names, argv):
             print "OK"
         except Exception, e:
             print "Error:", type(e), e.message
+            errors.append(TestError(name, e, argv))
+    return errors
+
 
 def run_tests_only(module_names, argv):
+    errors = []
     for name in module_names:
         test_module = sys.modules[name]
         try:
@@ -45,6 +73,8 @@ def run_tests_only(module_names, argv):
             print "OK"
         except Exception, e:
             print "Error:", type(e), e.message
+            errors.append(TestError(name, e, argv))
+    return errors
 
 def test_wrapper(module_names):
     """
@@ -56,13 +86,15 @@ def test_wrapper(module_names):
         print "No action given"
     else:
         if sys.argv[1] == "setup":
-            run_setups(module_names, sys.argv[2:])
+            return run_setups(module_names, sys.argv[2:])
         elif sys.argv[1] == "tear_down":
-            run_tear_downs(module_names, sys.argv[2:])
+            return run_tear_downs(module_names, sys.argv[2:])
         elif sys.argv[1] == "run":
-            run_tests_only(module_names, sys.argv[2:])
+            return run_tests_only(module_names, sys.argv[2:])
         elif sys.argv[1] == "all":
-            run_tests(module_names, sys.argv[2:])
+            return run_tests(module_names, sys.argv[2:])
         else:
             print "Unrecognized action."
             print "Accepted actions: setup, run, tear_down, all"
+
+    return None

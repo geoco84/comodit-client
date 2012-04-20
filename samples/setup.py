@@ -11,10 +11,10 @@ def setup():
     global repos
 
     # Default values
-    global_vars.comodit_url = "http://comodit-dev.angleur.guardis.be:8000/api"
+    global_vars.comodit_url = "http://comodit-0-10.angleur.guardis.be:8000/api"
     global_vars.comodit_user = "admin"
     global_vars.comodit_pass = "secret"
-    global_vars.amqp_server = "comodit-dev.angleur.guardis.be"
+    global_vars.amqp_server = "comodit-0-10.angleur.guardis.be"
     global_vars.vm_arch = "x86_64"
     global_vars.vm_base_arch = "x86_64"
     global_vars.zone = "angleur"
@@ -24,14 +24,20 @@ def setup():
     global_vars.vmlinuz = "/var/lib/libvirt/boot/vmlinuz"
     global_vars.libvirt_connect_url = "qemu+ssh://baobab6.bruxelles/system"
 
+    global_vars.email_dests = ["me@organization.com"]
+    global_vars.smtp_ssl = False
+    global_vars.smtp_server = "localhost"
+    global_vars.smtp_user = None
+    global_vars.smtp_pass = None
+
     # Default repos, see co6.ks.template
     repos = {"base_url" : "http://oak.${zone}.guardis.be/public/centos/6/os/${vm_base_arch}/",
              "updates" : "http://oak.${zone}.guardis.be/public/centos/6/updates/${vm_base_arch}/",
              "epel": "http://oak.${zone}.guardis.be/public/epel/6/${vm_base_arch}/",
              "comodit": "http://oak.${zone}.guardis.be/public/comodit/centos/6/${vm_arch}/",
              "synapse": "http://oak.${zone}.guardis.be/public/synapse/centos/6/${vm_arch}/",
-             "comodit-dev": "http://oak.${zone}.guardis.be/private/comodit-dev/centos/6/${vm_arch}/",
-             "synapse-dev": "http://oak.${zone}.guardis.be/private/synapse-dev/centos/6/${vm_arch}/"}
+             "comodit-dev": "http://oak.${zone}.guardis.be/private/comodit-testing/centos/6/${vm_arch}/",
+             "synapse-dev": "http://oak.${zone}.guardis.be/private/synapse-testing/centos/6/${vm_arch}/"}
 
     # Override default values with values from file 'var.py'
     if os.path.exists("var.py"):
@@ -60,6 +66,16 @@ def setup():
             global_vars.vmlinuz = var.__dict__["vmlinuz"]
         if var.__dict__.has_key("libvirt_connect_url"):
             global_vars.libvirt_connect_url = var.__dict__["libvirt_connect_url"]
+        if var.__dict__.has_key("email_dests"):
+            global_vars.email_dests = var.__dict__["email_dests"]
+        if var.__dict__.has_key("smtp_ssl"):
+            global_vars.smtp_ssl = var.__dict__["smtp_ssl"]
+        if var.__dict__.has_key("smtp_server"):
+            global_vars.smtp_server = var.__dict__["smtp_server"]
+        if var.__dict__.has_key("smtp_user"):
+            global_vars.smtp_user = var.__dict__["smtp_user"]
+        if var.__dict__.has_key("smtp_pass"):
+            global_vars.smtp_pass = var.__dict__["smtp_pass"]
 
         if var.__dict__.has_key("repos"):
             if var.repos.has_key("base_url"):

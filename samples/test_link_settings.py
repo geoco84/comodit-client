@@ -3,6 +3,7 @@ import sys, test_utils
 import definitions as defs
 import setup as test_setup
 from test_webserver import install_web_server
+from test_webserver import wait_changes
 from test_simple_web_page import install_simple_web_page, \
     check_page_content, uninstall_simple_web_page
 from test_simple_settings import delete_setting, add_simple_setting, update_to_simple_setting, get_simple_setting_json
@@ -56,8 +57,7 @@ def run(argv):
     print "Removing httpd_port setting from WebServer..."
     delete_setting(host.applications().get_resource(test_setup.global_vars.web_server_name), "httpd_port")
 
-    while len(host.get_changes()) > 0:
-        time.sleep(3)
+    wait_changes(host)
 
     check_page_content(host, 80, "/index.html", "Setting value: hello")
     print "Link setting was successfully updated."
@@ -65,8 +65,7 @@ def run(argv):
     print "Updating link setting of simple web page to simple setting..."
     update_to_simple_setting(host.applications().get_resource(test_setup.global_vars.simple_web_page_name), "simple_web_page", "hello world")
 
-    while len(host.get_changes()) > 0:
-        time.sleep(3)
+    wait_changes(host)
 
     check_page_content(host, 80, "/index.html", "Setting value: hello world")
 
@@ -78,10 +77,6 @@ def run(argv):
 
     print "Updating simple setting of simple web page to link setting..."
     update_to_link_setting(host.applications().get_resource(test_setup.global_vars.simple_web_page_name), "simple_web_page", "organizations/" + test_setup.global_vars.org_name + "/environments/" + test_setup.global_vars.env_name + "/settings/key", "")
-
-    while len(host.get_changes()) > 0:
-        time.sleep(3)
-
     check_page_content(host, 80, "/index.html", "Setting value: value")
 
     print "Creating a loop..."
@@ -90,10 +85,6 @@ def run(argv):
 
     print "Updating loop..."
     update_to_link_setting(org, "key", "organizations/" + test_setup.global_vars.org_name + "/environments/" + test_setup.global_vars.env_name + "/settings/key", "default2")
-
-    while len(host.get_changes()) > 0:
-        time.sleep(3)
-
     check_page_content(host, 80, "/index.html", "Setting value: default2")
 
 def tear_down(argv):
