@@ -30,13 +30,13 @@ def delete_setting(conf, key):
     setting = conf.settings().get_resource(key)
     setting.delete()
 
-def __set_httpd_port_setting(conf, host, port):
+def __set_httpd_port_setting(conf, host, port, time_out = 0):
     add_simple_setting(conf, "httpd_port", str(port))
-    test_web_server_default(host, port)
+    test_web_server_default(host, port, time_out)
 
-def __update_httpd_port_setting(conf, host, port):
+def __update_httpd_port_setting(conf, host, port, time_out = 0):
     update_to_simple_setting(conf, "httpd_port", str(port))
-    test_web_server_default(host, port)
+    test_web_server_default(host, port, time_out)
 
 def __unset_httpd_port_setting(host, conf):
     try:
@@ -44,9 +44,15 @@ def __unset_httpd_port_setting(host, conf):
     except PythonApiException, e:
         print e.message
 
-def __unset_httpd_port_setting_and_test(conf, host, port):
+def __unset_httpd_port_setting_and_test(conf, host, port, time_out = 0):
     delete_setting(conf, "httpd_port")
-    test_web_server_default(host, port)
+    test_web_server_default(host, port, time_out)
+
+def get_time_out(argv):
+    if len(argv) > 1:
+        return int(argv[1])
+    else:
+        return 0
 
 def setup(argv):
     api = CortexApi(test_setup.global_vars.comodit_url, test_setup.global_vars.comodit_user, test_setup.global_vars.comodit_pass)
@@ -55,7 +61,9 @@ def setup(argv):
     env = org.environments().get_resource(test_setup.global_vars.env_name)
     host = env.hosts().get_resource(argv[0])
 
-    install_web_server(host)
+    time_out = get_time_out(argv)
+
+    install_web_server(host, time_out = time_out)
 
 def run(argv):
     api = CortexApi(test_setup.global_vars.comodit_url, test_setup.global_vars.comodit_user, test_setup.global_vars.comodit_pass)
@@ -65,35 +73,37 @@ def run(argv):
     host = env.hosts().get_resource(argv[0])
     app = host.applications().get_resource(test_setup.global_vars.web_server_name)
 
+    time_out = get_time_out(argv)
+
     print "Setting httpd_port at organization level..."
-    __set_httpd_port_setting(org, host, 80)
+    __set_httpd_port_setting(org, host, 80, time_out)
 
     print "Setting httpd_port at environment level..."
-    __set_httpd_port_setting(env, host, 88)
+    __set_httpd_port_setting(env, host, 88, time_out)
 
     print "Setting httpd_port at host level..."
-    __set_httpd_port_setting(host, host, 8000)
+    __set_httpd_port_setting(host, host, 8000, time_out)
 
     print "Setting httpd_port at application level..."
-    __set_httpd_port_setting(app, host, 8888)
+    __set_httpd_port_setting(app, host, 8888, time_out)
 
     print "Unsetting httpd_port at application level..."
-    __unset_httpd_port_setting_and_test(app, host, 8000)
+    __unset_httpd_port_setting_and_test(app, host, 8000, time_out)
 
     print "Unsetting httpd_port at host level..."
-    __unset_httpd_port_setting_and_test(host, host, 88)
+    __unset_httpd_port_setting_and_test(host, host, 88, time_out)
 
     print "Unsetting httpd_port at environment level..."
-    __unset_httpd_port_setting_and_test(env, host, 80)
+    __unset_httpd_port_setting_and_test(env, host, 80, time_out)
 
     print "Unsetting httpd_port at organization level..."
-    __unset_httpd_port_setting_and_test(org, host, 80)
+    __unset_httpd_port_setting_and_test(org, host, 80, time_out)
 
     print "Setting httpd_port at host level..."
-    __set_httpd_port_setting(host, host, 8000)
+    __set_httpd_port_setting(host, host, 8000, time_out)
 
     print "Changing httpd_port at host level..."
-    __update_httpd_port_setting(host, host, 80)
+    __update_httpd_port_setting(host, host, 80, time_out)
 
 def tear_down(argv):
     api = CortexApi(test_setup.global_vars.comodit_url, test_setup.global_vars.comodit_user, test_setup.global_vars.comodit_pass)
@@ -102,7 +112,9 @@ def tear_down(argv):
     env = org.environments().get_resource(test_setup.global_vars.env_name)
     host = env.hosts().get_resource(argv[0])
 
-    uninstall_web_server(host)
+    time_out = get_time_out(argv)
+
+    uninstall_web_server(host, time_out)
 
     print "Removing httpd_port from organization..."
     __unset_httpd_port_setting(host, org)
