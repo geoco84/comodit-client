@@ -11,10 +11,10 @@ def setup():
     global repos
 
     # Default values
-    global_vars.comodit_url = "http://comodit-0-10.angleur.guardis.be:8000/api"
+    global_vars.comodit_url = "http://comodit-dev.angleur.guardis.be:8000/api"
     global_vars.comodit_user = "admin"
     global_vars.comodit_pass = "secret"
-    global_vars.amqp_server = "comodit-0-10.angleur.guardis.be"
+    global_vars.amqp_server = "comodit-dev.angleur.guardis.be"
     global_vars.vm_arch = "x86_64"
     global_vars.vm_base_arch = "x86_64"
     global_vars.zone = "angleur"
