@@ -79,6 +79,7 @@ Test modules:
 """ + test_errors_str)
 
     msg['Subject'] = 'Integration tests result (' + str(len(setup_errors) + len(host_errors) + len(test_errors)) + ')'
+    msg['From'] = setup.global_vars.email_from
 
     s.sendmail("", setup.global_vars.email_dests, msg.as_string())
     s.quit()

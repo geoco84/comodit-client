@@ -25,6 +25,8 @@ def setup():
     global_vars.libvirt_connect_url = "qemu+ssh://baobab6.bruxelles/system"
 
     global_vars.email_dests = ["me@organization.com"]
+    global_vars.email_from = "me@organization.com"
+
     global_vars.smtp_ssl = False
     global_vars.smtp_server = "localhost"
     global_vars.smtp_user = None
@@ -71,6 +73,8 @@ def setup():
             global_vars.libvirt_connect_url = var.__dict__["libvirt_connect_url"]
         if var.__dict__.has_key("email_dests"):
             global_vars.email_dests = var.__dict__["email_dests"]
+        if var.__dict__.has_key("email_from"):
+            global_vars.email_from = var.__dict__["email_from"]
         if var.__dict__.has_key("smtp_ssl"):
             global_vars.smtp_ssl = var.__dict__["smtp_ssl"]
         if var.__dict__.has_key("smtp_server"):
