@@ -25,7 +25,7 @@ def setup():
     global_vars.libvirt_connect_url = "qemu+ssh://baobab6.bruxelles/system"
 
     global_vars.email_dests = ["me@organization.com"]
-    global_vars.email_from = "me@organization.com"
+    global_vars.email_from = "info@guardis.com"
 
     global_vars.smtp_ssl = False
     global_vars.smtp_server = "localhost"
@@ -34,6 +34,10 @@ def setup():
 
     global_vars.prov_time_out = 1800 # 1/2 hour time-out on provisioning
     global_vars.change_time_out = 120 # 2 minutes time-out on changes
+
+    # Select platforms
+    # 'Local' platform may be added to the following list
+    global_vars.plat_names = ["Hyp3", "VMWare", "CloudStack"]
 
     # Default repos, see co6.ks.template
     repos = {"base_url" : "http://oak.${zone}.guardis.be/public/centos/6/os/${vm_base_arch}/",
@@ -83,6 +87,12 @@ def setup():
             global_vars.smtp_user = var.__dict__["smtp_user"]
         if var.__dict__.has_key("smtp_pass"):
             global_vars.smtp_pass = var.__dict__["smtp_pass"]
+        if var.__dict__.has_key("prov_time_out"):
+            global_vars.prov_time_out = var.__dict__["prov_time_out"]
+        if var.__dict__.has_key("change_time_out"):
+            global_vars.change_time_out = var.__dict__["change_time_out"]
+        if var.__dict__.has_key("plat_names"):
+            global_vars.plat_names = var.__dict__["plat_names"]
 
         if var.__dict__.has_key("repos"):
             if var.repos.has_key("base_url"):
@@ -172,10 +182,9 @@ def create_dist_json():
                     "##init_rd##": global_vars.initrd,
                     "##vmlinuz##": global_vars.vmlinuz,
                     "##zone##": global_vars.zone}
-    _render_file("dists/co6-Local.json.template", replacements)
-    _render_file("dists/co6-Hyp3.json.template", replacements)
-    _render_file("dists/co6-VMWare.json.template", replacements)
-    _render_file("dists/co6-CloudStack.json.template", replacements)
+
+    for plat in global_vars.plat_names:
+        _render_file("dists/co6-" + plat + ".json.template", replacements)
 
 def create_files():
     create_kickstart()

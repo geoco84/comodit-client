@@ -32,9 +32,6 @@ def define():
                              global_vars.web_server_name
                              ]
 
-    # Define platform
-    global_vars.plat_names = ["Local", "Hyp3", "VMWare", "CloudStack"]
-
     # Define distribution (kickstart template is in same folder)
     global_vars.dist_names = []
     for plat_name in global_vars.plat_names:

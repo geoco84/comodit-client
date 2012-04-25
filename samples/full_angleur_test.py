@@ -58,8 +58,8 @@ def send_mail(setup_errors, host_errors, test_errors):
     for e in test_errors:
         argv_str = ""
         for a in e.get_arguments():
-            argv_str = a + " "
-        test_errors_str += "- " + e.get_module_name() + " with arguments " + argv_str + "\n"
+            argv_str += " " + a
+        test_errors_str += "- " + e.get_module_name() + " with arguments" + argv_str + "\n"
     setup_errors_str = ""
     for e in setup_errors:
         setup_errors_str += "- " + e + "\n"
@@ -86,7 +86,6 @@ Test modules:
 
 if __name__ == "__main__":
     setup_errors = []
-
     try:
         # Setup
         setup.setup()
@@ -107,8 +106,7 @@ if __name__ == "__main__":
         # Hosts list
         host_names = []
         for plat_name in setup.global_vars.plat_names:
-            if plat_name != "Local":
-                host_names.append(definitions.get_host_name(plat_name))
+            host_names.append(definitions.get_host_name(plat_name))
 
         # Provision hosts in parallel
         threads = []
