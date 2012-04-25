@@ -20,8 +20,16 @@ Packager: Gerard Dethier <gerard.dethier@guardis.com>
 BuildRequires: python-devel
 BuildRequires: python-setuptools
 
+%if 0%{?fedora}
+Requires: python >= 2.7
+Requires: python(abi) >= 2.7
+%endif
+
+%if 0%{?rhel}
 Requires: python >= 2.6
 Requires: python(abi) >= 2.6
+Requires: python-argparse
+%endif
 
 %description
 

@@ -1,10 +1,12 @@
 #!/bin/bash
 
 NAME="cortex-client"
+SPEC_FILE_NAME="cortex-client"
+PLATFORMS="epel-6-i386 fedora-15-i386 fedora-16-i386"
+
 MAN_PAGE_FILE="cortex-doc/tmp/en-US/man/cortex.1"
 FALLBACK_MAN=`readlink -f scripts/cortex.1`
 TAR_CONTENT="cortex_client templates conf setup.py cortex scripts/completions.sh "${MAN_PAGE_FILE}
-PLATFORMS=(epel-6-i386 fedora-15-i386 fedora-16-i386)
 
 if [ -z $1 ]
 then
@@ -29,7 +31,7 @@ echo "RELEASE=\""$RELEASE"\"" >> cortex_client/version.py
 cd `dirname $0`
 cd ..
 
-# scripts/build-man.sh
+scripts/build-man.sh
 
 # Workaround for lack of proper publican version on devel.bruxelles
 if [[ ! -f ${MAN_PAGE_FILE} ]]
@@ -39,14 +41,15 @@ then
     cp ${FALLBACK_MAN} ${MAN_PAGE_FILE}
 fi
 
-sed "s/#VERSION#/${VERSION}/g" rpmbuild/SPECS/${NAME}.spec.template > rpmbuild/SPECS/${NAME}.spec
-sed -i "s/#RELEASE#/${RELEASE}/g" rpmbuild/SPECS/${NAME}.spec
-sed -i "s/#COMMIT#/${COMMIT}/g" rpmbuild/SPECS/${NAME}.spec
+sed "s/#VERSION#/${VERSION}/g" rpmbuild/SPECS/${SPEC_FILE_NAME}.spec.template > rpmbuild/SPECS/${SPEC_FILE_NAME}.spec
+sed -i "s/#RELEASE#/${RELEASE}/g" rpmbuild/SPECS/${SPEC_FILE_NAME}.spec
+sed -i "s/#COMMIT#/${COMMIT}/g" rpmbuild/SPECS/${SPEC_FILE_NAME}.spec
 
 tar -cvzf $HOME/rpmbuild/SOURCES/${NAME}-${VERSION}-${RELEASE}.tar.gz ${TAR_CONTENT}
-rpmbuild -ba rpmbuild/SPECS/${NAME}.spec
+rpmbuild -ba rpmbuild/SPECS/${SPEC_FILE_NAME}.spec
 
-for platform in "${PLATFORMS[@]}"
+for platform in $PLATFORMS
 do
     /usr/bin/mock -r ${platform} --rebuild $HOME/rpmbuild/SRPMS/${NAME}-${VERSION}-${RELEASE}*.src.rpm
 done
+
