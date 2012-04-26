@@ -67,7 +67,7 @@ class DistributionsController(OrganizationResourceController):
         if len(argv) > 2:
             root_folder = argv[2]
 
-        export = Export(globals.options)
+        export = Export(globals.options.force)
         export.export_application(app, root_folder)
 
     def _export_doc(self):
@@ -88,10 +88,10 @@ class DistributionsController(OrganizationResourceController):
             raise ArgumentException("Wrong number of arguments")
 
         org = collections.organizations(self._api).get_resource(argv[0])
-        imp = Import(globals.options)
+        imp = Import(globals.options.skip_existing)
         imp.import_distribution(org, argv[1])
 
     def _import_doc(self):
-        return ActionDoc("import", "<org_name> <src_folder> [--force]", """
-        Import distribution from disk. --force option causes existing resources
+        return ActionDoc("import", "<org_name> <src_folder> [--skip-existing]", """
+        Import distribution from disk. --skip-existing option causes existing resources
         on server to be updated.""")
