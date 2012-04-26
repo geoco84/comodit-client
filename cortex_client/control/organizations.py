@@ -9,7 +9,7 @@
 
 import os, json
 
-from cortex_client.util import path, globals
+from cortex_client.util import globals
 from cortex_client.control.root_resource import RootResourceController
 from cortex_client.control.exceptions import ArgumentException, \
     ControllerException
@@ -26,11 +26,11 @@ from cortex_client.api.group import Group
 from cortex_client.api.environment import Environment
 from cortex_client.api.host import Host, Instance
 from cortex_client.api.platform import Platform
-from cortex_client.api.exceptions import PythonApiException
 from cortex_client.api.contexts import ApplicationContext, PlatformContext, \
     DistributionContext
 from cortex_client.api import collections
 from cortex_client.control.audit import AuditHelper
+from cortex_client.api.exporter import Export
 
 
 class SyncException(ControllerException):
@@ -146,12 +146,9 @@ class OrganizationsController(RootResourceController):
 
         self.__set_root_folder(argv)
 
-        # Ensures local repository does not contain stale data
-        if(os.path.exists(self._root) and len(os.listdir(self._root)) > 0) and not self._options.force:
-            raise SyncException(self._root + " already exists and is not empty.")
-
         org = self._api.organizations().get_resource(argv[0])
-        self._export_organization(org)
+        export = Export(globals.options.force)
+        export.export_organization(org, self._root)
 
     def _export_doc(self):
         return ActionDoc("export", "<org_name> [<output_folder>] [--force]", """
@@ -253,22 +250,6 @@ class OrganizationsController(RootResourceController):
         except ResourceNotFoundException:
             self._actions.addAction(CreateInstance(True, host, instance))
 
-    def _export_organization(self, org):
-        org.dump(self._root)
-
-        self._export_groups(org)
-        self._export_applications(org)
-        self._export_distributions(org)
-        self._export_platforms(org)
-        self._export_environments(org)
-
-    def _export_groups(self, org):
-        groups = org.groups().get_resources()
-        groups_folder = self._get_group_folder()
-        for g in groups:
-            group_folder = os.path.join(groups_folder, g.get_name())
-            g.dump(group_folder)
-
     def _get_group_folder(self):
         return os.path.join(self._root, "groups")
 
@@ -286,18 +267,6 @@ class OrganizationsController(RootResourceController):
 
     def _get_instance_file(self, host_folder):
         return os.path.join(host_folder, "instance.json")
-
-    def _export_applications(self, org):
-        apps = org.applications().get_resources()
-        apps_folder = self._get_application_folder()
-        for a in apps:
-            app_folder = os.path.join(apps_folder, a.get_name())
-            a.dump(app_folder)
-
-            # Dump files' content to disk
-            files_folder = os.path.join(app_folder, "files")
-            path.ensure(files_folder)
-            self.__export_files_content(a, files_folder)
 
     def _import_distributions(self, org):
         dists_folder = self._get_distribution_folder()
@@ -319,68 +288,8 @@ class OrganizationsController(RootResourceController):
                 content_file = os.path.join(dist_folder, "files", file_name)
                 self._import_file_content(content_file, dist, file_name)
 
-    def __export_files_content(self, resource, output_folder):
-        for template in resource.files().get_resources():
-            file_name = template.get_name()
-            with open(os.path.join(output_folder, file_name), "w") as f:
-                f.write(template.get_content().read())
-
-    def _export_distributions(self, org):
-        dists = org.distributions().get_resources()
-        dists_folder = self._get_distribution_folder()
-        for d in dists:
-            dist_folder = os.path.join(dists_folder, d.get_name())
-            d.dump(dist_folder)
-
-            # Dump files' content to disk
-            files_folder = os.path.join(dist_folder, "files")
-            path.ensure(files_folder)
-            self.__export_files_content(d, files_folder)
-
     def _get_app_context_file(self, host_folder, name):
         return os.path.join(host_folder, "applications", name)
-
-    def _export_environments(self, org):
-        envs = org.environments().get_resources()
-        envs_folder = self._get_environment_folder()
-        for e in envs:
-            env_folder = os.path.join(envs_folder, e.get_name())
-            e.dump(env_folder)
-
-            # Dump hosts
-            hosts = e.hosts().get_resources()
-            for h in hosts:
-                host_folder = os.path.join(env_folder, h.get_name())
-                h.dump(host_folder)
-
-                # Export instance
-                try:
-                    instance = h.instance().get_single_resource()
-                    instance_file = self._get_instance_file(host_folder)
-                    instance.dump_json(instance_file)
-                except PythonApiException:
-                    pass
-
-                # Export application contexts
-                app_contexts = h.applications().get_resources()
-                app_folder = os.path.join(host_folder, "applications")
-                path.ensure(app_folder)
-                for context in app_contexts:
-                    context.dump_json(os.path.join(app_folder, context.get_application() + ".json"))
-
-                # Export platform context
-                try:
-                    context = h.platform().get_single_resource()
-                    context.dump_json(os.path.join(host_folder, "platform.json"))
-                except ResourceNotFoundException:
-                    pass
-
-                # Export distribution context
-                try:
-                    context = h.distribution().get_single_resource()
-                    context.dump_json(os.path.join(host_folder, "distribution.json"))
-                except ResourceNotFoundException:
-                    pass
 
     def _import_organization(self):
         # Create unconnected organization
@@ -470,18 +379,6 @@ class OrganizationsController(RootResourceController):
                     with open(instance_file, "r") as f:
                         instance = Instance(host.instance(), json.load(f))
                         self._import_instance(host, instance)
-
-    def _export_platforms(self, org):
-        plats = org.platforms().get_resources()
-        plats_folder = self._get_platform_folder()
-        for p in plats:
-            plat_folder = os.path.join(plats_folder, p.get_name())
-            p.dump(plat_folder)
-
-            # Dump files' content to disk
-            files_folder = os.path.join(plat_folder, "files")
-            path.ensure(files_folder)
-            self.__export_files_content(p, files_folder)
 
     def _import_platforms(self, org):
         plats_folder = self._get_platform_folder()
