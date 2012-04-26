@@ -11,7 +11,8 @@ import subprocess
 
 from cortex_client.util import prompt, globals
 from cortex_client.control.resource import ResourceController
-from cortex_client.control.exceptions import ArgumentException, MissingException
+from cortex_client.control.exceptions import ArgumentException, MissingException, \
+    ControllerException
 from cortex_client.control.settings import HostSettingsController
 from cortex_client.control.instances import InstancesController
 from cortex_client.control.contexts import PlatformContextController, \
@@ -233,12 +234,16 @@ class HostsController(ResourceController):
         profile = Config().get_profile(globals.options.profile_name)
         viewer_call_template = profile.get("vnc_viewer_call")
         if viewer_call_template is None or viewer_call_template == "":
-            print "VNC viewer is not configured"
-            return
+            raise ControllerException("VNC viewer is not configured")
 
         # Call viewer
-        call = viewer_call_template.replace("%h", vnc_params.get_hostname()).replace("%p", vnc_params.get_port())
-        subprocess.call(call, shell = True)
+        hostname = vnc_params.get_hostname()
+        port = vnc_params.get_port()
+        if hostname != None and port != None:
+            call = viewer_call_template.replace("%h", hostname).replace("%p", port)
+            subprocess.call(call, shell = True)
+        else:
+            raise ControllerException("Could not retrieve VNC server host and/or port")
 
     def _vnc_doc(self):
         return ActionDoc("vnc", "<org_name> <env_name> <res_name>", """
