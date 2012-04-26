@@ -117,6 +117,9 @@ class Instance(Resource):
     def _get_path(self):
         return self._collection.get_path()
 
+    def get_name(self):
+        return ""
+
     def rename(self, new_name):
         raise PythonApiException("Renaming is unsupported for instance")
 
@@ -130,7 +133,7 @@ class Instance(Resource):
 
         @raise PythonApiException: If server access point is not set.
         """
-        props = self.get_properties()
+        props = self._get_field("properties")
         if len(props) == 0:
             self._collection.add_resource(self)
         else:
