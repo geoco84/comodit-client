@@ -90,8 +90,9 @@ Available resources:
     parser.add_argument("-d", "--default", dest = "default", help = "let driver setup platform at creation", action = "store_true", default = False)
     parser.add_argument("--raw", dest = "raw", help = "output the raw JSON results", action = "store_true", default = False,)
 
-    parser.add_argument("--skip-chown", dest = "skip_chown", help = "Path to the parent environment", action = "store_true", default = False)
-    parser.add_argument("--skip-chmod", dest = "skip_chmod", help = "UUID of the parent environment", action = "store_true", default = False)
+    parser.add_argument("--skip-chown", dest = "skip_chown", help = "Do not chown files on render tree", action = "store_true", default = False)
+    parser.add_argument("--skip-chmod", dest = "skip_chmod", help = "Do not chmod files on render tree", action = "store_true", default = False)
+    parser.add_argument("--skip-existing", dest = "skip_existing", help = "Skip existing resources on import", action = "store_true", default = False)
 
     parser.add_argument("--api", dest = "api", help = "endpoint for the API", default = None)
     parser.add_argument("--user", dest = "username", help = "username on cortex server", default = None)
