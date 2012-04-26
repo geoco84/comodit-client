@@ -139,6 +139,9 @@ class Instance(Resource):
         else:
             self.set_json(self._get_client().create(self._get_path() + "properties", props))
 
+    def get_host(self):
+        return self._get_field("host")
+
     def get_state(self):
         """
         Provides the state of the instance.

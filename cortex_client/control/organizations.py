@@ -162,8 +162,12 @@ class OrganizationsController(RootResourceController):
             raise ArgumentException("Wrong number of arguments")
         self._root = argv[0]
 
-        importer = Import(globals.options.skip_existing)
+        importer = Import(globals.options.skip_existing, True)
         importer.import_organization(self._api, self._root)
+        if importer.no_conflict() or globals.options.skip_existing:
+            importer.execute_queue()
+        else:
+            importer.display_queue()
 
     def _import_doc(self):
         return ActionDoc("import", "<src_folder>] [--force]", """
