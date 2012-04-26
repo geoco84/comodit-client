@@ -46,6 +46,8 @@ class ApplicationsController(OrganizationResourceController):
         json_wrapper._del_field("files")
         json_wrapper._del_field("parameters")
 
+    # Export
+
     def _print_export_completions(self, param_num, argv):
         if param_num < 2:
             self._print_resource_completions(param_num, argv)
@@ -68,6 +70,8 @@ class ApplicationsController(OrganizationResourceController):
         return ActionDoc("export", "<org_name> <app_name> [<output_folder>] [--force]", """
         Export application onto disk. --force option causes existing files to
         be overwritten.""")
+
+    # Import
 
     def _print_import_completions(self, param_num, argv):
         if param_num < 1:
