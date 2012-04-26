@@ -28,6 +28,8 @@ import control.router
 from config import Config, ConfigException
 from api.api import CortexApi
 from api.exceptions import PythonApiException
+from cortex_client.api.importer import ImportException
+from cortex_client.api.exporter import ExportException
 
 def run(argv):
     # resources
@@ -210,6 +212,10 @@ def _dispatch(resource, args, api):
     except ApiException as e:
         print "Error (%s): %s" % (e.code, e)
     except PythonApiException as e:
+        print e
+    except ImportException as e:
+        print e
+    except ExportException as e:
         print e
     except NotModifiedException:
         print "Command was canceled since you did not save the file"
