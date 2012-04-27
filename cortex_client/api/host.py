@@ -547,7 +547,7 @@ class Host(Configurable):
         return DistributionContextCollection(self._get_api(), self._get_path() + "distribution/")
 
     def get_changes(self, show_processed = False):
-        if self.get_state() != "PROVISIONED":
+        if self.get_state() == "DEFINED":
             raise PythonApiException("Host must be provisioned")
 
         try:
@@ -564,12 +564,12 @@ class Host(Configurable):
             raise PythonApiException("Unable to get changes: " + e.message)
 
     def clear_changes(self):
-        if self.get_state() != "PROVISIONED":
+        if self.get_state() == "DEFINED":
             raise PythonApiException("Host must be provisioned")
         self._get_client().delete(self._get_path() + "changes/")
 
     def clear_change(self, order_num):
-        if self.get_state() != "PROVISIONED":
+        if self.get_state() == "DEFINED":
             raise PythonApiException("Host must be provisioned")
         self._get_client().delete(self._get_path() + "changes/" + str(order_num))
 

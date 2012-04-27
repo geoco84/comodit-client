@@ -66,7 +66,7 @@ def provision_host(host_name, time_out = 0):
         host.update()
 
     start_time = time.time()
-    while host.get_state() != "PROVISIONED":
+    while host.get_state() != "READY":
         time.sleep(3)
 
         now = time.time()
