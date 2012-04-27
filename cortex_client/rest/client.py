@@ -95,7 +95,7 @@ class Client:
         except HTTPError as err:
             err_content = err.read()
             try:
-                data = json.load(err_content)
+                data = json.loads(err_content)
                 msg_list = data["error"]
                 message = "["
                 if len(msg_list) > 0:
@@ -103,9 +103,11 @@ class Client:
                     while i < len(msg_list) - 1:
                         message += msg_list[i] if msg_list[i] else "None"
                         message += ", "
+                        i += 1
                     message += msg_list[len(msg_list) - 1] if msg_list[len(msg_list) - 1] else "None"
                 message += "]"
-            except Exception:
+            except Exception as e:
+                print e
                 message = err_content
 
             raise ApiException(message, err.code)

@@ -212,7 +212,7 @@ def _dispatch(resource, args, api):
     except ArgumentException as e:
         print e.msg
     except ApiException as e:
-        print "Error (%s): %s" % (e.code, e)
+        print "Error (%s): %s" % (e.code, e.message)
     except PythonApiException as e:
         print e
     except ImportException as e:
