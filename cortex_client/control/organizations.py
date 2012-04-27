@@ -162,14 +162,15 @@ class OrganizationsController(RootResourceController):
             raise ArgumentException("Wrong number of arguments")
         self._root = argv[0]
 
-        importer = Import(globals.options.skip_existing, True)
+        importer = Import(globals.options.skip_conflict, True)
         importer.import_organization(self._api, self._root)
-        if importer.no_conflict() or globals.options.skip_existing:
+
+        if (importer.no_conflict() or globals.options.skip_conflict) and not globals.options.dry_run:
             importer.execute_queue()
         else:
             importer.display_queue()
 
     def _import_doc(self):
-        return ActionDoc("import", "<src_folder>] [--force]", """
-        Import organization from disk. --force option causes existing resources
-        on server to be updated.""")
+        return ActionDoc("import", "<src_folder>] [--skip-conflict] [--dry-run]", """
+        Import organization from disk. With --skip-conflict, conflicting actions
+        are skipped. With --dry-run, actions are displayed but not applied.""")

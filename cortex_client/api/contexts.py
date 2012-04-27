@@ -9,6 +9,9 @@ class AbstractContext(Configurable):
     def get_settings(self):
         return self._get_list_field("settings", SettingFactory(self.settings()))
 
+    def get_host(self):
+        return self._get_field("host")
+
     def add_simple_setting(self, key, value):
         setting = Setting(self.settings())
         setting.set_key(key)

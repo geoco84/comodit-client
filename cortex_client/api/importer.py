@@ -17,25 +17,25 @@ class ImportException(Exception):
     pass
 
 class Import(object):
-    def __init__(self, skip_existing = False, queue_actions = False):
-        self._skip_existing = skip_existing
+    def __init__(self, skip_conflict = False, queue_actions = False):
+        self._skip_conflict = skip_conflict
         self._queue_actions = queue_actions
         self._actions_queue = ActionsQueue()
 
-    def _import_resource(self, local_res):
+    def _import_resource(self, local_res, resource_type = "resource"):
         res_name = local_res.get_name()
 
         # Retrieve remote resource (if it exists)
         collection = local_res.get_collection()
         try:
             collection.get_resource(res_name)
-            if not self._skip_existing and not self._queue_actions:
-                raise ImportException("There is a conflict for resource " + res_name)
+            if not self._skip_conflict and not self._queue_actions:
+                raise ImportException("There is a conflict for " + resource_type + " '" + res_name + "'")
             elif self._queue_actions:
-                self._actions_queue.add_action(CreateResource(True, local_res))
+                self._actions_queue.add_action(CreateResource(True, local_res, resource_type))
         except ResourceNotFoundException:
             if self._queue_actions:
-                self._actions_queue.add_action(CreateResource(False, local_res))
+                self._actions_queue.add_action(CreateResource(False, local_res, resource_type))
             else:
                 local_res.create()
 
@@ -44,44 +44,44 @@ class Import(object):
             instance.get_collection().get_single_resource()
         except PythonApiException:
             if self._queue_actions:
-                self._actions_queue.add_action(CreateInstance(instance))
+                self._actions_queue.add_action(CreateResource(False, instance, "host instance"))
             else:
                 instance.create()
 
-    def _import_file_content(self, src_file, app, name):
+    def _import_file_content(self, src_file, app, name, resource_type = "resource"):
         if self._queue_actions:
-            self._actions_queue.add_action(UploadContent(src_file, app, name))
+            self._actions_queue.add_action(UploadContent(src_file, app, name, resource_type))
         else:
             app.files().get_resource(name).set_content(src_file)
 
-    def _import_resource_with_files(self, res, root_folder):
+    def _import_resource_with_files(self, res, root_folder, resource_type = "resource"):
         res.load(root_folder)
 
-        self._import_resource(res)
+        self._import_resource(res, resource_type)
 
         # Push files' content
         file_list = res.get_files()
         for f in file_list:
             file_name = f.get_name()
             content_file = os.path.join(root_folder, "files", file_name)
-            self._import_file_content(content_file, res, file_name)
+            self._import_file_content(content_file, res, file_name, resource_type)
 
     def import_application(self, org, root_folder):
         app = Application(org.applications(), None)
-        self._import_resource_with_files(app, root_folder)
+        self._import_resource_with_files(app, root_folder, "application")
 
     def import_distribution(self, org, root_folder):
         dist = Distribution(org.distributions(), None)
-        self._import_resource_with_files(dist, root_folder)
+        self._import_resource_with_files(dist, root_folder, "distribution")
 
     def import_platform(self, org, root_folder):
         plat = Platform(org.platforms(), None)
-        self._import_resource_with_files(plat, root_folder)
+        self._import_resource_with_files(plat, root_folder, "platform")
 
     def import_environment(self, org, env_folder):
         env = Environment(org.environments(), None)
         env.load(env_folder)
-        self._import_resource(env)
+        self._import_resource(env, "environment")
 
         # Push hosts
         hosts_folder = os.path.join(env_folder, "hosts")
@@ -102,27 +102,27 @@ class Import(object):
         host._del_field("platform")
         host._del_field("distribution")
 
-        self._import_resource(host)
+        self._import_resource(host, "host")
 
         # Import application contexts
         for app in apps:
             context = ApplicationContext(host.applications(), None)
             context.load_json(os.path.join(host_folder, "applications", app + ".json"))
-            self._import_resource(context)
+            self._import_resource(context, "application context")
 
         # Import platform context
         platform_file = os.path.join(host_folder, "platform.json")
         if os.path.exists(platform_file):
             context = PlatformContext(host.platform(), None)
             context.load_json(platform_file)
-            self._import_resource(context)
+            self._import_resource(context, "platform context")
 
         # Import distribution context
         dist_file = os.path.join(host_folder, "distribution.json")
         if os.path.exists(dist_file):
             context = DistributionContext(host.distribution(), None)
             context.load_json(dist_file)
-            self._import_resource(context)
+            self._import_resource(context, "distribution context")
 
         # Import instance (must come at last)
         instance_file = os.path.join(host_folder, "instance.json")
@@ -135,7 +135,7 @@ class Import(object):
         org = Organization(api.organizations(), None)
         org.load(org_folder)
 
-        self._import_resource(org)
+        self._import_resource(org, "organization")
 
         for app in os.listdir(os.path.join(org_folder, "applications")):
             self.import_application(org, os.path.join(org_folder, "applications", app))
@@ -159,7 +159,7 @@ class Import(object):
         if not self._queue_actions:
             raise ImportException("Queueing is not enabled")
 
-        self._actions_queue.apply_actions(self._skip_existing)
+        self._actions_queue.apply_actions(self._skip_conflict)
 
     def no_conflict(self):
         if not self._queue_actions:
@@ -185,44 +185,31 @@ class Action(object):
         print "Summary: " + self.get_summary()
 
 class UploadContent(Action):
-    def __init__(self, src_file, res, file_name):
+    def __init__(self, src_file, res, file_name, resource_type = "resource"):
         super(UploadContent, self).__init__(False)
         self._src_file = src_file
         self._res = res
+        self._resource_type = resource_type
         self._file_name = file_name
 
     def get_summary(self):
-        return "Upload file " + self._src_file
+        return "Upload file " + self._src_file + " to " + self._resource_type + " '" + self._res.get_name() + "'"
 
     def execute(self):
         file_res = self._res.files().get_resource(self._file_name)
         file_res.set_content(self._src_file)
 
-class ResourceAction(Action):
-    def __init__(self, is_fast_forward, res_object):
-        super(ResourceAction, self).__init__(is_fast_forward)
+class CreateResource(Action):
+    def __init__(self, conflict, res_object, resource_type):
+        super(CreateResource, self).__init__(conflict)
         self._res_object = res_object
-
-    def display(self):
-        super(ResourceAction, self).display()
-        print "Resource:", self._res_object.__class__.__name__
-
-class CreateResource(ResourceAction):
-    def __init__(self, is_fast_forward, res_object):
-        super(CreateResource, self).__init__(is_fast_forward, res_object)
+        self._resource_type = resource_type
 
     def execute(self):
         self._res_object.create()
 
     def get_summary(self):
-        return "Create resource " + self._res_object.get_name()
-
-class CreateInstance(CreateResource):
-    def __init__(self, instance):
-        super(CreateInstance, self).__init__(False, instance)
-
-    def get_summary(self):
-        return "Create instance for host " + self._res_object.get_host()
+        return "Create " + self._resource_type + " '" + self._res_object.get_name() + "'"
 
 class ActionsQueue:
     def __init__(self):
@@ -237,15 +224,20 @@ class ActionsQueue:
     def no_conflict(self):
         return self._no_conflict
 
-    def apply_actions(self, skip_existing):
+    def apply_actions(self, skip_conflicts):
+        if not self._no_conflict and not skip_conflicts:
+            raise ImportException("Cannot apply actions, conflicts detected")
+
         for a in self._actions:
+            print "-"*80
             if not a.conflict():
-                print "-"*80
                 print "Executing '" + a.get_summary() + "'"
                 try:
                     a.execute()
                 except Exception, e:
                     print "Error:", e.message
+            else:
+                print "Skipping '" + a.get_summary() + "'"
         print "-"*80
 
     def display_actions(self):
