@@ -149,11 +149,11 @@ class Import(object):
         for env in os.listdir(os.path.join(org_folder, "environments")):
             self.import_environment(org, os.path.join(org_folder, "environments", env))
 
-    def display_queue(self):
+    def display_queue(self, show_only_conflicts = True):
         if not self._queue_actions:
             raise ImportException("Queueing is not enabled")
 
-        self._actions_queue.display_actions()
+        self._actions_queue.display_actions(show_only_conflicts)
 
     def execute_queue(self):
         if not self._queue_actions:
@@ -240,8 +240,9 @@ class ActionsQueue:
                 print "Skipping '" + a.get_summary() + "'"
         print "-"*80
 
-    def display_actions(self):
+    def display_actions(self, show_only_conflicts):
         for a in self._actions:
-            print "-"*80
-            a.display()
+            if not show_only_conflicts or a.conflict():
+                print "-"*80
+                a.display()
         print "-"*80

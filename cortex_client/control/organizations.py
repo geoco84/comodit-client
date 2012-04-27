@@ -168,7 +168,7 @@ class OrganizationsController(RootResourceController):
         if (importer.no_conflict() or globals.options.skip_conflict) and not globals.options.dry_run:
             importer.execute_queue()
         else:
-            importer.display_queue()
+            importer.display_queue(show_only_conflicts = True)
 
     def _import_doc(self):
         return ActionDoc("import", "<src_folder>] [--skip-conflict] [--dry-run]", """
