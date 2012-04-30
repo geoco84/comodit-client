@@ -149,3 +149,10 @@ class Collection(object):
 
     def get_single_resource(self):
         return self.get_resource("")
+
+    def clear_collection(self, parameters = {}):
+#        try:
+            self._api.get_client().delete(self._resource_path,
+                                          parameters = parameters)
+#        except ApiException, e:
+#            raise PythonApiException("Could not delete resource: " + e.message)

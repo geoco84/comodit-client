@@ -49,6 +49,8 @@ class HostsController(ResourceController):
         self._register(["clear-changes"], self._clear_changes, self._print_resource_completions)
         self._register(["audit"], self._audit.audit, self._print_resource_completions)
         self._register(["vnc"], self._vnc, self._print_resource_completions)
+        self._register(["show-compliance"], self._show_compliance, self._print_resource_completions)
+        self._register(["delete-compliance"], self._delete_compliance_error, self._print_resource_completions)
 
         self._doc = "Hosts handling."
         self._update_action_doc_params("list", "<org_name> <env_name>")
@@ -248,3 +250,24 @@ class HostsController(ResourceController):
     def _vnc_doc(self):
         return ActionDoc("vnc", "<org_name> <env_name> <res_name>", """
         Executes configured VNC viewer for host's instance.""")
+
+    def _show_compliance(self, argv):
+        if len(argv) != 3:
+            raise MissingException("This action takes 3 arguments")
+
+        host = self._get_resource(argv)
+        errors = host.compliance().get_resources()
+
+        if len(errors) == 0:
+            print "No compliance errors"
+        else:
+            for e in errors:
+                e.show(as_json = globals.options.raw)
+
+    def _delete_compliance_error(self, argv):
+        if len(argv) != 5:
+            raise MissingException("This action takes 5 arguments")
+
+        host = self._get_resource(argv)
+        error = host.compliance().get_resource(argv[3] + "/" + argv[4])
+        error.delete()

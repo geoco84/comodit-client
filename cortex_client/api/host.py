@@ -16,6 +16,7 @@ from cortex_client.api.contexts import ApplicationContextCollection, \
 from cortex_client.api.resource import Resource
 from cortex_client.api.collection import Collection
 from cortex_client.api.audit import AuditCollection
+from cortex_client.api.compliance import ComplianceCollection
 
 class Property(JsonWrapper):
     """
@@ -576,3 +577,5 @@ class Host(Configurable):
     def audit_logs(self):
         return AuditCollection(self._get_path() + "audit/", self._get_api())
 
+    def compliance(self):
+        return ComplianceCollection(self._get_path() + "compliance/", self._get_api())

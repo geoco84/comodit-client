@@ -106,8 +106,7 @@ class Client:
                         i += 1
                     message += msg_list[len(msg_list) - 1] if msg_list[len(msg_list) - 1] else "None"
                 message += "]"
-            except Exception as e:
-                print e
+            except Exception:
                 message = err_content
 
             raise ApiException(message, err.code)
