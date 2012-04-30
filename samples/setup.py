@@ -45,8 +45,8 @@ def setup():
              "epel": "http://oak.${zone}.guardis.be/public/epel/6/${vm_base_arch}/",
              "comodit": "http://oak.${zone}.guardis.be/public/comodit/centos/6/${vm_arch}/",
              "synapse": "http://oak.${zone}.guardis.be/public/synapse/centos/6/${vm_arch}/",
-             "comodit-dev": "http://oak.${zone}.guardis.be/private/comodit-testing/centos/6/${vm_arch}/",
-             "synapse-dev": "http://oak.${zone}.guardis.be/private/synapse-testing/centos/6/${vm_arch}/"}
+             "comodit-dev": "http://oak.${zone}.guardis.be/private/comodit-dev/centos/6/${vm_arch}/",
+             "synapse-dev": "http://oak.${zone}.guardis.be/private/synapse-dev/centos/6/${vm_arch}/"}
 
     # Override default values with values from file 'var.py'
     if os.path.exists("var.py"):
