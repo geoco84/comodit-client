@@ -72,19 +72,14 @@ def delete_resources():
     print "Delete hosts"
     for host in hosts:
         try:
-            host.instance().get_single_resource().poweroff()
-        except:
-            pass
-
-        try:
             host.instance().get_single_resource().delete()
-        except Exception, e:
-            print e.message
+        except Exception as e:
+            print e
 
         try:
             host.delete()
-        except Exception, e:
-            print e.message
+        except Exception as e:
+            print e
 
     print "="*80
     print "Delete applications"
@@ -92,10 +87,10 @@ def delete_resources():
         for app in apps:
             try:
                 app.delete()
-            except Exception, e:
-                print e.message
-    except Exception, e:
-        print e.message
+            except Exception as e:
+                print e
+    except Exception as e:
+        print e
 
     print "="*80
     print "Delete platform"

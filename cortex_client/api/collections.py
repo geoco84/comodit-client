@@ -40,6 +40,9 @@ def instance(api, org_name, env_name, host_name):
     host = Host(hosts(api, org_name, env_name), {"name": host_name})
     return host.instance()
 
+def compliance(api, org_name, env_name, host_name):
+    host = Host(hosts(api, org_name, env_name), {"name": host_name})
+    return host.compliance()
 
 # Contexts
 
