@@ -22,6 +22,7 @@ from cortex_client.control.doc import ActionDoc
 from cortex_client.api import collections
 from cortex_client.control.audit import AuditHelper
 from cortex_client.config import Config
+from cortex_client.api.compliance import ComplianceError
 
 
 class HostsController(ResourceController):
@@ -269,5 +270,7 @@ class HostsController(ResourceController):
             raise MissingException("This action takes 5 arguments")
 
         host = self._get_resource(argv)
-        error = host.compliance().get_resource(argv[3] + "/" + argv[4])
+        error = ComplianceError(host.compliance(), None)
+        error.set_error_collection(argv[3])
+        error.set_id(argv[4])
         error.delete()
