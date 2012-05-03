@@ -579,3 +579,9 @@ class Host(Configurable):
 
     def compliance(self):
         return ComplianceCollection(self._get_path() + "compliance/", self._get_api())
+
+    def do_live(self, col, id):
+        if col == "packages":
+            self._get_client().create(self._get_path() + "live/" + col + "/" + id, decode = False)
+        else:
+            self._get_client().update(self._get_path() + "live/" + col + "/" + id, decode = False)

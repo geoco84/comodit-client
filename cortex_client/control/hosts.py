@@ -22,8 +22,8 @@ from cortex_client.control.doc import ActionDoc
 from cortex_client.api import collections
 from cortex_client.control.audit import AuditHelper
 from cortex_client.config import Config
-from cortex_client.api.compliance import ComplianceError
 from cortex_client.control.compliance import ComplianceController
+from cortex_client.control.live import LiveController
 
 
 class HostsController(ResourceController):
@@ -41,6 +41,7 @@ class HostsController(ResourceController):
         self._register_subcontroller(["distribution"], DistributionContextController())
         self._register_subcontroller(["platform"], PlatformContextController())
         self._register_subcontroller(["compliance"], ComplianceController())
+        self._register_subcontroller(["live"], LiveController())
 
         # actions
         self._register(["provision"], self._provision, self._print_resource_completions)
