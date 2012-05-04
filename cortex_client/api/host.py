@@ -134,7 +134,7 @@ class Instance(Resource):
         @raise PythonApiException: If server access point is not set.
         """
         props = self._get_field("properties")
-        if len(props) == 0:
+        if props == None or len(props) == 0:
             self._collection.add_resource(self)
         else:
             self.set_json(self._get_client().create(self._get_path() + "properties", props))
