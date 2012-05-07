@@ -97,8 +97,8 @@ if __name__ == "__main__":
 
         # Setup new test environment
         create.create_resources()
-    except Exception, e:
-        setup_errors.append(type(e) + e.message)
+    except Exception as e:
+        setup_errors.append(str(e))
 
     host_errors = []
     test_errors = []
