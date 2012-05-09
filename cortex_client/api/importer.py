@@ -85,11 +85,12 @@ class Import(object):
 
         # Push hosts
         hosts_folder = os.path.join(env_folder, "hosts")
-        hosts_list = os.listdir(hosts_folder)
-        for host_name in hosts_list:
-            host_folder = os.path.join(hosts_folder, host_name)
+        if os.path.exists(hosts_folder):
+            hosts_list = os.listdir(hosts_folder)
+            for host_name in hosts_list:
+                host_folder = os.path.join(hosts_folder, host_name)
 
-            self.import_host(env, host_folder)
+                self.import_host(env, host_folder)
 
     def import_host(self, env, host_folder):
         host = Host(env.hosts(), None)
@@ -137,17 +138,25 @@ class Import(object):
 
         self._import_resource(org, "organization")
 
-        for app in os.listdir(os.path.join(org_folder, "applications")):
-            self.import_application(org, os.path.join(org_folder, "applications", app))
+        apps_folder = os.path.join(org_folder, "applications")
+        if os.path.exists(apps_folder):
+            for app in os.listdir(apps_folder):
+                self.import_application(org, os.path.join(apps_folder, app))
 
-        for dist in os.listdir(os.path.join(org_folder, "distributions")):
-            self.import_distribution(org, os.path.join(org_folder, "distributions", dist))
+        dists_folder = os.path.join(org_folder, "distributions")
+        if os.path.exists(dists_folder):
+            for dist in os.listdir(dists_folder):
+                self.import_distribution(org, os.path.join(dists_folder, dist))
 
-        for plat in os.listdir(os.path.join(org_folder, "platforms")):
-            self.import_platform(org, os.path.join(org_folder, "platforms", plat))
+        plats_folder = os.path.join(org_folder, "platforms")
+        if os.path.exists(plats_folder):
+            for plat in os.listdir(plats_folder):
+                self.import_platform(org, os.path.join(plats_folder, plat))
 
-        for env in os.listdir(os.path.join(org_folder, "environments")):
-            self.import_environment(org, os.path.join(org_folder, "environments", env))
+        envs_folder = os.path.join(org_folder, "environments")
+        if os.path.exists(envs_folder):
+            for env in os.listdir(envs_folder):
+                self.import_environment(org, os.path.join(envs_folder, env))
 
     def display_queue(self, show_only_conflicts = True):
         if not self._queue_actions:
