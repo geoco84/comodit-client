@@ -38,60 +38,32 @@ class LiveController(AbstractController):
             self._print_resource_identifiers(collections.environments(self._api, argv[0]).get_resources())
         elif len(argv) > 1 and param_num == 2:
             self._print_resource_identifiers(collections.hosts(self._api, argv[0], argv[1]).get_resources())
+        elif len(argv) > 2 and param_num == 3:
+            self._print_resource_identifiers(collections.application_contexts(self._api, argv[0], argv[1], argv[2]).get_resources())
 
     def _print_file_completions(self, param_num, argv):
-        if param_num < 3:
+        if param_num < 4:
             self._print_host_completions(param_num, argv)
-        elif len(argv) > 2 and param_num == 3:
-            host = collections.hosts(self._api, argv[0], argv[1]).get_resource(argv[2])
-            self._print_escaped_names(self._get_file_resources(host))
+        elif len(argv) > 3 and param_num == 4:
+            app = collections.applications(self._api, argv[0]).get_resource(argv[3])
+            for res in app.get_files():
+                self._print_escaped_name(res.get_name())
 
     def _print_service_completions(self, param_num, argv):
-        if param_num < 3:
+        if param_num < 4:
             self._print_host_completions(param_num, argv)
-        elif len(argv) > 2 and param_num == 3:
-            host = collections.hosts(self._api, argv[0], argv[1]).get_resource(argv[2])
-            self._print_escaped_names(self._get_service_resources(host))
+        elif len(argv) > 3 and param_num == 4:
+            app = collections.applications(self._api, argv[0]).get_resource(argv[3])
+            for res in app.get_services():
+                self._print_escaped_name(res.get_name())
 
     def _print_package_completions(self, param_num, argv):
-        if param_num < 3:
+        if param_num < 4:
             self._print_host_completions(param_num, argv)
-        elif len(argv) > 2 and param_num == 3:
-            host = collections.hosts(self._api, argv[0], argv[1]).get_resource(argv[2])
-            self._print_escaped_names(self._get_package_resources(host))
-
-    def _get_file_resources(self, host):
-        res_list = []
-        apps = host.get_applications()
-        for app_name in apps:
-            app = collections.applications(self._api, host.get_organization()).get_resource(app_name)
-            files = app.get_files()
-            for f in files:
-                res_list.append(f.get_path())
-
-        return res_list
-
-    def _get_package_resources(self, host):
-        res_list = []
-        apps = host.get_applications()
-        for app_name in apps:
-            app = collections.applications(self._api, host.get_organization()).get_resource(app_name)
-            packages = app.get_packages()
-            for p in packages:
-                res_list.append(p.get_name())
-
-        return res_list
-
-    def _get_service_resources(self, host):
-        res_list = []
-        apps = host.get_applications()
-        for app_name in apps:
-            app = collections.applications(self._api, host.get_organization()).get_resource(app_name)
-            services = app.get_services()
-            for s in services:
-                res_list.append(s.get_name())
-
-        return res_list
+        elif len(argv) > 3 and param_num == 4:
+            app = collections.applications(self._api, argv[0]).get_resource(argv[3])
+            for res in app.get_packages():
+                self._print_escaped_name(res.get_name())
 
     def _get_host(self, argv):
         return collections.hosts(self._api, argv[0], argv[1]).get_resource(argv[2])
@@ -101,11 +73,12 @@ class LiveController(AbstractController):
             raise ArgumentException("Wrong number of arguments")
 
         host = self._get_host(argv)
-        id = argv[3].replace("/", "%2f")
-        host.do_live("files", id)
+        app_name = argv[3]
+        file_name = argv[4]
+        host.live_update_file(app_name, file_name)
 
     def _update_file_doc(self):
-        return ActionDoc("udpate-file", "<org_name> <env_name> <host_name> <file_path>", """
+        return ActionDoc("udpate-file", "<org_name> <env_name> <host_name> <app_name> <file_name>", """
         Updates file on given host.""")
 
     def _restart_service(self, argv):
@@ -113,11 +86,12 @@ class LiveController(AbstractController):
             raise ArgumentException("Wrong number of arguments")
 
         host = self._get_host(argv)
-        id = argv[3]
-        host.do_live("services", id)
+        app_name = argv[3]
+        svc_name = argv[4]
+        host.live_restart_service(app_name, svc_name)
 
     def _restart_service_doc(self):
-        return ActionDoc("restart-service", "<org_name> <env_name> <host_name> <service_name>", """
+        return ActionDoc("restart-service", "<org_name> <env_name> <host_name> <app_name> <svc_name>", """
         Restarts service on given host.""")
 
     def _install_package(self, argv):
@@ -125,9 +99,10 @@ class LiveController(AbstractController):
             raise ArgumentException("Wrong number of arguments")
 
         host = self._get_host(argv)
-        id = argv[3]
-        host.do_live("packages", id)
+        app_name = argv[3]
+        pkg_name = argv[4]
+        host.live_install_package(app_name, pkg_name)
 
     def _install_package_doc(self):
-        return ActionDoc("install-package", "<org_name> <env_name> <host_name> <package_name>", """
+        return ActionDoc("install-package", "<org_name> <env_name> <host_name> <app_name> <pkg_name>", """
         Install package on given host.""")

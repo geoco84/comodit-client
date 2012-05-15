@@ -580,8 +580,11 @@ class Host(Configurable):
     def compliance(self):
         return ComplianceCollection(self._get_path() + "compliance/", self._get_api())
 
-    def do_live(self, col, id):
-        if col == "packages":
-            self._get_client().create(self._get_path() + "live/" + col + "/" + id, decode = False)
-        else:
-            self._get_client().update(self._get_path() + "live/" + col + "/" + id, decode = False)
+    def live_update_file(self, app_name, file_name):
+        self._get_client().update(self._get_path() + "applications/" + app_name + "/files/" + file_name + "/_update", decode = False)
+
+    def live_restart_service(self, app_name, svc_name):
+        self._get_client().update(self._get_path() + "applications/" + app_name + "/services/" + svc_name + "/_restart", decode = False)
+
+    def live_install_package(self, app_name, pkg_name):
+        self._get_client().update(self._get_path() + "applications/" + app_name + "/packages/" + pkg_name + "/_install", decode = False)

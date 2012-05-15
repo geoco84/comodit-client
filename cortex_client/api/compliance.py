@@ -55,22 +55,45 @@ class PackageState(JsonWrapper):
 
 class ComplianceError(Resource):
     def _get_path(self):
-        return self._collection.get_path() + self.get_error_collection() + "/" + self.get_id().replace("/", "%2f")
+        return self._collection.get_path() + self.get_name()
 
-    def get_error_collection(self):
-        return self._get_field("collection")
+    def get_application(self):
+        return self._get_field("application")
 
-    def set_error_collection(self, collection):
-        return self._set_field("collection", collection)
+    def set_application(self, app):
+        return self._set_field("application", app)
 
-    def get_id(self):
-        return self._get_field("id")
+    def get_resource_type(self):
+        return self._get_field("type")
 
-    def set_id(self, new_id):
-        return self._set_field("id", new_id)
+    def set_resource_type(self, type):
+        return self._set_field("type", type)
+
+    def get_type_collection(self):
+        res_type = self.get_resource_type()
+        if res_type == "serviceResource":
+            return "services"
+        elif res_type == "fileResource":
+            return "files"
+        elif res_type == "packageResource":
+            return "packages"
+
+    def set_type_collection(self, col):
+        if col == "services":
+            self.set_resource_type("serviceResource")
+        elif col == "files":
+            self.set_resource_type("fileResource")
+        elif col == "packages":
+            self.set_resource_type("packageResource")
+
+    def get_res_name(self):
+        return self._get_field("name")
+
+    def set_res_name(self, name):
+        return self._set_field("name", name)
 
     def get_name(self):
-        return self.get_error_collection() + "/" + self.get_id()
+        return "applications/" + self.get_application() + "/" + self.get_type_collection() + "/" + self.get_res_name()
 
     def get_current_state(self):
         return self._get_state("current")
@@ -79,19 +102,20 @@ class ComplianceError(Resource):
         return self._get_state("expected")
 
     def _get_state(self, state):
-        if self.get_error_collection() == "services":
+        if self.get_resource_type() == "serviceResource":
             return ServiceState(self._get_field(state + "State"))
-        elif self.get_error_collection() == "files":
+        elif self.get_resource_type() == "fileResource":
             return FileState(self._get_field(state + "State"))
-        elif self.get_error_collection() == "packages":
+        elif self.get_resource_type() == "packageResource":
             return PackageState(self._get_field(state + "State"))
         else:
             return self._get_field("currentState")
 
     def _show(self, indent = 0):
-        col = self.get_error_collection()
-        print " " * indent, "Collection:", col
-        print " " * indent, "Id:", self.get_id()
+        col = self.get_resource_type()
+        print " " * indent, "Type:", col
+        print " " * indent, "Application:", self.get_application()
+        print " " * indent, "Name:", self.get_res_name()
 
         print " " * indent, "Current state:"
         self.get_current_state().show(indent + 2)
@@ -104,15 +128,20 @@ class ComplianceCollection(Collection):
         return ComplianceError(self, json_data)
 
     def __split_name(self, name):
-        slash_index = name.find("/")
-        if slash_index == -1:
-            raise ArgumentException("Wrong compliance error name, should be of the form <collection>/<id>")
-        return (name[0:slash_index], name[slash_index + 1:])
+        slash_index0 = name.find("/")
+        slash_index1 = name.find("/", slash_index0 + 1)
+        if slash_index1 == -1:
+            raise ArgumentException("Wrong compliance error name, should be of the form applications/<app_name>/<type>/<id>")
+        slash_index2 = name.find("/", slash_index1 + 1)
+        if slash_index2 == -1:
+            raise ArgumentException("Wrong compliance error name, should be of the form applications/<app_name>/<type>/<id>")
+        return (name[slash_index0 + 1:slash_index1], name[slash_index1 + 1:slash_index2], name[slash_index2 + 1:])
 
     def get_resource(self, name):
-        (col, e_id) = self.__split_name(name)
+        (app_name, res_type, res_name) = self.__split_name(name)
         error = ComplianceError(self, None)
-        error.set_error_collection(col)
-        error.set_id(e_id)
+        error.set_application(app_name)
+        error.set_type_collection(res_type)
+        error.set_name(res_name)
         error.update()
         return error

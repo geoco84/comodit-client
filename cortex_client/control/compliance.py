@@ -44,7 +44,7 @@ class ComplianceController(ResourceController):
         elif len(argv) > 2 and param_num == 3:
             errors = collections.compliance(self._api, argv[0], argv[1], argv[2]).get_resources()
             for e in errors:
-                self._print_escaped_name(e.get_error_collection() + "/" + e.get_id())
+                self._print_escaped_name(e.get_name())
 
     def _get_name_argument(self, argv):
         if len(argv) < 4:
