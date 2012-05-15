@@ -67,6 +67,6 @@ def define():
             {"key":"cloudstack.serviceOffering", "value": "abe66184-61e5-425b-b71d-3693bffe780b"},
             {"key":"cloudstack.hypervisor", "value": "KVM"},
             {"key":"cloudstack.diskOffering", "value": "d27ca7d7-bc82-4ddf-b9cd-5897e37aaa67"},
-            {"key":"cloudstack.template", "value": "17b2c63a-fb46-42a3-813b-49ce0c2820b2"},
+            {"key":"cloudstack.template", "value": "76d94a1f-0a70-4422-b2c5-005c96d36933"},
             {"key":"cloudstack.zone", "value": "6765b768-6df4-4f45-9a2e-8a5070d63638"}
         ]
