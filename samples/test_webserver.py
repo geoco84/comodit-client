@@ -16,15 +16,16 @@ from cortex_client.api.exceptions import PythonApiException
 
 def wait_changes(host, time_out = 0):
     start_time = time.time()
-    host.update()
-    while host.get_state() != "READY":
+    while len(host.get_changes()) > 0:
         time.sleep(3)
         now = time.time()
 
         if time_out > 0 and (now - start_time) > time_out:
             raise Exception("Time-out while waiting for changes")
 
-        host.update()
+    if host.get_state() == "ERROR":
+        # Clear compliance errors
+        host.compliance().clear_collection()
 
 def test_web_server_default(host, port, time_out = 0):
     wait_changes(host, time_out)
