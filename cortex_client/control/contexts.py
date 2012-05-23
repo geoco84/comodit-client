@@ -20,6 +20,7 @@ class AbstractContextController(ResourceController):
 
         # actions
         self._register(["render-file"], self._render_file, self._print_render_file_completions)
+        self._register(["link"], self._get_link, self._print_render_file_completions)
         self._unregister(["update"])
 
         self._update_action_doc_params("list", "<org_name> <env_name> <host_name>")
@@ -28,6 +29,7 @@ class AbstractContextController(ResourceController):
         self._update_action_doc_params("delete", "<org_name> <env_name> <host_name> <name>")
 
         self._register_action_doc(self._render_file_doc())
+        self._register_action_doc(self._get_link_doc())
 
     def _get_environments(self, argv):
         org = self._api.organizations().get_resource(argv[0])
@@ -158,6 +160,20 @@ class ApplicationContextController(AbstractContextController):
         return ActionDoc("render-file", "<org_name> <env_name> <host_name> <app_name> <file_name>", """
         Render an application's file.""")
 
+    def _get_link(self, argv):
+        if len(argv) < 5:
+            raise ArgumentException("Wrong number of arguments");
+
+        host = self._get_host(argv)
+        app_name = argv[3]
+        file_name = argv[4]
+        short = True if len(argv) == 6 and argv[5] == "True" else False
+
+        print host.get_app_link(app_name, file_name, short)
+
+    def _get_link_doc(self):
+        return ActionDoc("link", "<org_name> <env_name> <host_name> <app_name> <file_name>", """
+        Prints the public URL to a rendered file.""")
 
 class PlatformContextController(AbstractContextController):
 
@@ -217,6 +233,20 @@ class PlatformContextController(AbstractContextController):
         return ActionDoc("render-file", "<org_name> <env_name> <host_name> <file_name>", """
         Render a platform's file.""")
 
+    def _get_link(self, argv):
+        if len(argv) < 4:
+            raise ArgumentException("Wrong number of arguments");
+
+        host = self._get_host(argv)
+        file_name = argv[3]
+        short = True if len(argv) == 5 and argv[4] == "True" else False
+
+        print host.get_plat_link(file_name, short)
+
+    def _get_link_doc(self):
+        return ActionDoc("link", "<org_name> <env_name> <host_name> <file_name>", """
+        Prints the public URL to a rendered file.""")
+
 class DistributionContextController(AbstractContextController):
 
     _template = "distribution_context.json"
@@ -274,3 +304,18 @@ class DistributionContextController(AbstractContextController):
     def _render_file_doc(self):
         return ActionDoc("render-file", "<org_name> <env_name> <host_name> <file_name>", """
         Render a distribution's file.""")
+
+    def _get_link(self, argv):
+        if len(argv) < 4:
+            raise ArgumentException("Wrong number of arguments");
+
+        host = self._get_host(argv)
+        file_name = argv[3]
+        short = True if len(argv) == 5 and argv[4] == "True" else False
+
+        print host.get_dist_link(file_name, short)
+
+    def _get_link_doc(self):
+        return ActionDoc("link", "<org_name> <env_name> <host_name> <file_name>", """
+        Prints the public URL to a rendered file.""")
+

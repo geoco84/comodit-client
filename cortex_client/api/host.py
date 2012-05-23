@@ -524,6 +524,26 @@ class Host(Configurable):
     def render_plat_file(self, file_name):
         return self.__render_file(self._get_path() + "platform", file_name)
 
+    def __get_link(self, collection, file_name, short = False):
+        try:
+            args = {"short" : str(short)}
+            result = self._get_client().read(collection + "/files/" + file_name + "/link", parameters = args)
+            if "url" in result:
+                return result["url"]
+            else:
+                raise PythonApiException("Could not recover link")
+        except ApiException, e:
+            raise PythonApiException("Unable to render file: " + e.message)
+
+    def get_app_link(self, app_name, file_name, short = False):
+        return self.__get_link(self._get_path() + "applications/" + app_name, file_name, short)
+
+    def get_dist_link(self, file_name, short = False):
+        return self.__get_link(self._get_path() + "distribution", file_name, short)
+
+    def get_plat_link(self, file_name, short = False):
+        return self.__get_link(self._get_path() + "platform", file_name, short)
+
     def render_kickstart(self):
         try:
             result = self._get_client().read(self._get_path() + "kickstart", decode = False)
