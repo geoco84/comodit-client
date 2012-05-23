@@ -162,7 +162,7 @@ class Instance(Resource):
         return self._get_field("hostname")
 
     def get_vnc(self):
-        return Vnc(self._get_field("vncView"))
+        return Vnc(self._get_client().read(self._get_path() + "vnc"))
 
     def get_synapse_state(self):
         """
