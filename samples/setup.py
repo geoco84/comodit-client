@@ -44,7 +44,6 @@ def setup():
              "updates" : "http://oak.${zone}.guardis.be/public/centos/6/updates/${vm_base_arch}/",
              "epel": "http://oak.${zone}.guardis.be/public/epel/6/${vm_base_arch}/",
              "comodit": "http://oak.${zone}.guardis.be/public/comodit/centos/6/${vm_arch}/",
-             "synapse": "http://oak.${zone}.guardis.be/public/synapse/centos/6/${vm_arch}/",
              "comodit-dev": "http://oak.${zone}.guardis.be/private/comodit-dev/centos/6/${vm_arch}/",
              "synapse-dev": "http://oak.${zone}.guardis.be/private/synapse-dev/centos/6/${vm_arch}/"}
 
@@ -103,8 +102,6 @@ def setup():
                 repos["epel"] = var.repos["epel"]
             if var.repos.has_key("comodit"):
                 repos["comodit"] = var.repos["comodit"]
-            if var.repos.has_key("synapse"):
-                repos["synapse"] = var.repos["synapse"]
             if var.repos.has_key("comodit-dev"):
                 repos["comodit-dev"] = var.repos["comodit-dev"]
             if var.repos.has_key("synapse-dev"):
@@ -120,7 +117,6 @@ def create_kickstart():
         content = content.replace("##repos_updates##", repos["updates"])
         content = content.replace("##repos_epel##", repos["epel"])
         content = content.replace("##repos_comodit##", repos["comodit"])
-        content = content.replace("##repos_synapse##", repos["synapse"])
         content = content.replace("##repos_comodit-dev##", repos["comodit-dev"])
         content = content.replace("##repos_synapse-dev##", repos["synapse-dev"])
 
@@ -132,7 +128,6 @@ def create_repo_files():
 
     files = ["files/CentOS-Base.repo.template",
              "files/comodit.repo.template",
-             "files/synapse.repo.template",
              "files/comodit-dev.repo.template",
              "files/synapse-dev.repo.template",
              "files/epel.repo.template"]
@@ -145,7 +140,6 @@ def create_repo_files():
             content = content.replace("##repos_updates##", repos["updates"])
             content = content.replace("##repos_epel##", repos["epel"])
             content = content.replace("##repos_comodit##", repos["comodit"])
-            content = content.replace("##repos_synapse##", repos["synapse"])
             content = content.replace("##repos_comodit-dev##", repos["comodit-dev"])
             content = content.replace("##repos_synapse-dev##", repos["synapse-dev"])
 

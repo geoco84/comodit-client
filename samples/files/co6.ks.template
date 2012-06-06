@@ -16,7 +16,6 @@ url --url=##repos_base_url##
 repo --name=updates --baseurl=##repos_updates##
 repo --name=epel --baseurl=##repos_epel##
 
-repo --name=synapse --baseurl=##repos_synapse##
 repo --name=comodit --baseurl=##repos_comodit##
 repo --name=comodit-dev --baseurl=##repos_comodit-dev##
 repo --name=synapse-dev --baseurl=##repos_synapse-dev##
