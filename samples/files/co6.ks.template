@@ -103,20 +103,4 @@ ${_pack}
 
 %post
 
-# Configure Synapse
-cat << EOF > /etc/synapse/rabbitmq.conf
-[rabbitmq]
-register = True
-register_username = org.${_org.access_key}
-register_password = ${_org.secret_key}
-register_queue = register
-
-host = ${amqp_server}
-uuid=host.${_host.uuid}
-status_queue=inbox
-vhost = /
-port = 5672
-EOF
-
-# Synapse for one time install
-/usr/bin/synapse --uri ${_setup_url}
+${_synapse_config}
