@@ -2,12 +2,12 @@
 .\"     Title: cortex
 .\"    Author: Daniel Bartz <daniel.bartz@guardis.com>
 .\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
-.\"      Date: 05/14/2012
+.\"      Date: 06/11/2012
 .\"    Manual: Command Line User Interface Guide
 .\"    Source: Guardis
 .\"  Language: English
 .\"
-.TH "CORTEX" "1" "05/14/2012" "Guardis" "Command Line User Interface Gu"
+.TH "CORTEX" "1" "06/11/2012" "Guardis" "Command Line User Interface Gu"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -31,7 +31,7 @@
 cortex \- ComodIT command\-line interface
 .SH "SYNOPSIS"
 .HP \w'/usr/bin/cortex\ 'u
-/usr/bin/cortex [\-f\ FILE\ |\-\-file\ FILE] [\-j\ FILE\ |\-\-json\ FILE] [\-\-raw] [\-\-skip\-chown] [\-\-skip\-chmod] [\-\-api\ URL] [\-\-user\ USERNAME] [\-\-pass\ PASSWORD] [\-\-templates\ PATH] [\-\-profile\ NAME] [\-\-debug] [\-\-version] {resource} [subresources\ \&...] {action} [\&...]
+/usr/bin/cortex [\-f\ FILE\ |\-\-file\ FILE] [\-j\ FILE\ |\-\-json\ FILE] [\-d\ |\ \-\-default] [\-\-raw] [\-\-skip\-chown] [\-\-skip\-chmod] [\-\-skip\-conflict] [\-\-dry\-run] [\-\-api\ URL] [\-\-user\ USERNAME] [\-\-pass\ PASSWORD] [\-\-templates\ PATH] [\-\-profile\ NAME] [\-\-debug] [\-\-version] [\-h\ |\ \-\-help] {resource} [sub\-resources\ \&...] {action} [\&...]
 .SH "DESCRIPTION"
 .PP
 ComodIT is a global, integrated and centralized platform that eases the management of Linux systems and cloud provisioning (i\&.e\&. the instantiation of ready\-to\-use VMs)\&.
@@ -119,7 +119,7 @@ ComodIT client allows to handle ComodIT resources by interacting with ComodIT se
 .PP
 Instead of a resource type, a service name can be given\&. Again, an action and some parameters may be provided, leading to one or several interactions with the server\&.
 .PP
-Some resources, so called subresources, are \*(Aqincorporated\*(Aq into others i\&.e\&. they must be accessed through a containing resource:
+Some resources, so called sub\-resources, are \*(Aqincorporated\*(Aq into others i\&.e\&. they must be accessed through a containing resource\&. For example, the following sub\-resources are common to several resources:
 .sp
 .RS 4
 .ie n \{\
@@ -153,19 +153,8 @@ settings: a key\-value pair that may be associated to an organization, an enviro
 .\}
 files: a file that may be associated to a distribution, a platform or an application\&.
 .RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-instance: the instance (i\&.e\&. a VM or real computer) associated to a particular host\&.
-.RE
 .PP
-When a subresource must be targeted, its type is composed of the containing resource type and the subresource\*(Aqs type\&. There may be several levels of resources\&.
+When a sub\-resource must be targeted, its type is composed of the containing resource type and the sub\-resource\*(Aqs type\&. There may be several levels of resources\&.
 .PP
 Available (sub)resources and services are described in more details below\&.
 .PP
@@ -211,7 +200,7 @@ Deletes a resource\&. ID is a resource\*(Aqs identifier and depends on resource\
 Below, actions for each (sub)resource type are detailed\&.
 .SS "files"
 .PP
-A file is a subresource\&. It is uniquely identified by its name and the identifier of the resource it is part of\&. Therefore, \*(Aqlist\*(Aq and \*(Aqadd\*(Aq take the containing resource identifier as argument where \*(Aqshow\*(Aq, \*(Aqupdate\*(Aq and \*(Aqdelete\*(Aq the file identifier\&.
+A file is a sub\-resource\&. It is uniquely identified by its name and the identifier of the resource it is part of\&. Therefore, \*(Aqlist\*(Aq and \*(Aqadd\*(Aq take the containing resource identifier as argument where \*(Aqshow\*(Aq, \*(Aqupdate\*(Aq and \*(Aqdelete\*(Aq the file identifier\&.
 .PP
 Files feature 2 additional actions:
 .PP
@@ -226,15 +215,17 @@ Uploads the content of local file PATH to file identified by ID\&.
 .RE
 .SS "parameters"
 .PP
-A parameter is a subresource of platform, distribution and application\&. It is uniquely identified by its name and the identifier of the resource it is part of\&. Therefore, \*(Aqlist\*(Aq and \*(Aqadd\*(Aq take the containing resource identifier as argument where \*(Aqshow\*(Aq, \*(Aqupdate\*(Aq and \*(Aqdelete\*(Aq the file identifier\&.
+A parameter is a sub\-resource of platform, distribution and application\&. It is uniquely identified by its name and the identifier of the resource it is part of\&. Therefore, \*(Aqlist\*(Aq and \*(Aqadd\*(Aq take the containing resource identifier as argument where \*(Aqshow\*(Aq, \*(Aqupdate\*(Aq and \*(Aqdelete\*(Aq the file identifier\&.
 .SS "settings"
 .PP
-A setting is a subresource of organization, environment, host, distribution, platform, application context, platform context and distribution context\&. It is uniquely identified by its name and the identifier of the resource it is part of\&. Therefore, \*(Aqlist\*(Aq and \*(Aqadd\*(Aq take the containing resource identifier as argument where \*(Aqshow\*(Aq, \*(Aqupdate\*(Aq and \*(Aqdelete\*(Aq the file identifier\&.
+A setting is a sub\-resource of organization, environment, host, distribution, platform, application context, platform context and distribution context\&. It is uniquely identified by its name and the identifier of the resource it is part of\&. Therefore, \*(Aqlist\*(Aq and \*(Aqadd\*(Aq take the containing resource identifier as argument where \*(Aqshow\*(Aq, \*(Aqupdate\*(Aq and \*(Aqdelete\*(Aq the file identifier\&.
 .SS "platforms"
 .PP
 A platform is uniquely identified by its name and the name of the organization it is part of\&. Therefore, \*(Aqlist\*(Aq and \*(Aqadd\*(Aq take an organization name as argument where \*(Aqshow\*(Aq, \*(Aqupdate\*(Aq and \*(Aqdelete\*(Aq an organization name and a platform name\&.
 .PP
-A platform has 3 subresources:
+A supplementary option is available when adding a platform: \*(Aq\-\-default\*(Aq or \*(Aq\-d\*(Aq: if the option is provided, platform\*(Aqs driver configures it i\&.e\&. adds required files and settings\&.
+.PP
+A platform has 3 sub\-resources:
 .sp
 .RS 4
 .ie n \{\
@@ -269,17 +260,22 @@ parameters
 settings
 .RE
 .PP
-Platforms feature an additional action:
+Platforms feature additional actions:
 .PP
 clone ORG_NAME PLAT_NAME CLONE_NAME
 .RS 4
 Creates a copy of given platform\&.
 .RE
+.PP
+import [PATH]
+.RS 4
+Platform is imported from given folder\&.
+.RE
 .SS "applications"
 .PP
 An application is uniquely identified by its name and the name of the organization it is part of\&. Therefore, \*(Aqlist\*(Aq and \*(Aqadd\*(Aq take an organization name as argument where \*(Aqshow\*(Aq, \*(Aqupdate\*(Aq and \*(Aqdelete\*(Aq an organization name and an application name\&.
 .PP
-An application has 2 subresources:
+An application has 2 sub\-resources:
 .sp
 .RS 4
 .ie n \{\
@@ -303,17 +299,22 @@ files
 parameters
 .RE
 .PP
-Applications feature an additional action:
+Applications feature additional actions:
 .PP
 clone ORG_NAME APP_NAME CLONE_NAME
 .RS 4
 Creates a copy of given application\&.
 .RE
+.PP
+import [PATH]
+.RS 4
+Application is imported from given folder\&.
+.RE
 .SS "distributions"
 .PP
 A distribution is uniquely identified by its name and the name of the organization it is part of\&. Therefore, \*(Aqlist\*(Aq and \*(Aqadd\*(Aq take an organization name as argument where \*(Aqshow\*(Aq, \*(Aqupdate\*(Aq and \*(Aqdelete\*(Aq an organization name and a distribution name\&.
 .PP
-A distribution has 3 subresources:
+A distribution has 3 sub\-resources:
 .sp
 .RS 4
 .ie n \{\
@@ -354,6 +355,11 @@ clone ORG_NAME DIST_NAME CLONE_NAME
 .RS 4
 Creates a copy of given distribution\&.
 .RE
+.PP
+import [PATH]
+.RS 4
+Distribution is imported from given folder\&.
+.RE
 .SS "users"
 .PP
 A user is uniquely identified by its name\&. Therefore, \*(Aqlist\*(Aq and \*(Aqadd\*(Aq take no argument where \*(Aqshow\*(Aq, \*(Aqupdate\*(Aq and \*(Aqdelete\*(Aq take a user name\&.
@@ -361,7 +367,7 @@ A user is uniquely identified by its name\&. Therefore, \*(Aqlist\*(Aq and \*(Aq
 .PP
 An organization is uniquely identified by its name\&. Therefore, \*(Aqlist\*(Aq and \*(Aqadd\*(Aq take no argument where \*(Aqshow\*(Aq, \*(Aqupdate\*(Aq and \*(Aqdelete\*(Aq take an organization name\&.
 .PP
-An organization has 2 subresources:
+An organization has 2 sub\-resources:
 .sp
 .RS 4
 .ie n \{\
@@ -387,7 +393,7 @@ settings
 .PP
 An organization has user groups that allow to implement a simple access control: members of \*(Aqadmin\*(Aq group have full access on the organization; members of \*(Aqusers\*(Aq group have full access on the resources of the organization\&. In particular, members of \*(Aqusers\*(Aq group cannot add or remove users from the organization but \*(Aqadmin\*(Aq users can\&.
 .PP
-Group subresource allows to \*(Aqlist\*(Aq, \*(Aqshow\*(Aq and \*(Aqupdate\*(Aq an organization\*(Aqs users groups\&. \*(Aqadd\*(Aq and \*(Aqdelete\*(Aq actions are not yet available\&.
+Group sub\-resource allows to \*(Aqlist\*(Aq, \*(Aqshow\*(Aq and \*(Aqupdate\*(Aq an organization\*(Aqs users groups\&. \*(Aqadd\*(Aq and \*(Aqdelete\*(Aq actions are not yet available\&.
 .PP
 Organizations feature 3 additional actions:
 .PP
@@ -396,9 +402,9 @@ export ORG_NAME [PATH] [\-\-force]
 Organization is exported onto disk in given folder\&. If no folder is given, a folder with organization\*(Aqs name is created and data written into it\&. If \-\-force option is set, data already present in output folder are overwritten\&.
 .RE
 .PP
-import [PATH] [\-\-force]
+import [PATH] [\-\-force] [\-\-skip\-conflicts] [\-\-dry\-run]
 .RS 4
-Organization is imported from given folder\&. If \-\-force option is set, data already present on server are updated\&.
+Organization is imported from given folder\&. If \-\-force option is set, data already present on server are updated\&. \-\-skip\-conflicts implies that data already present are ignored\&. With \-\-dry\-run, actions are not actually performed but displayed on standard output\&.
 .RE
 .PP
 audit ORG_NAME
@@ -409,7 +415,7 @@ Prints audit logs for this organization\&.
 .PP
 An environment is uniquely identified by its name and the name of the organization it is part of\&. Therefore, \*(Aqlist\*(Aq and \*(Aqadd\*(Aq take an organization name as argument where \*(Aqshow\*(Aq, \*(Aqupdate\*(Aq and \*(Aqdelete\*(Aq an organization name and an environment name\&.
 .PP
-An environment has \*(Aqsettings\*(Aq subresource\&.
+An environment has \*(Aqsettings\*(Aq sub\-resource\&.
 .PP
 Environments feature 2 additional actions:
 .PP
@@ -426,7 +432,7 @@ Prints audit logs for this environment\&.
 .PP
 A host is uniquely identified by its name, the name of the environment it is part of and the name of the environment\*(Aqs organization\&. Therefore, \*(Aqlist\*(Aq and \*(Aqadd\*(Aq take an organization name and an environment name as arguments where \*(Aqshow\*(Aq, \*(Aqupdate\*(Aq and \*(Aqdelete\*(Aq take an organization name, an environment name and a host name\&.
 .PP
-A host has 5 subresources:
+A host has 5 sub\-resources:
 .sp
 .RS 4
 .ie n \{\
@@ -480,10 +486,32 @@ distribution
 .sp -1
 .IP \(bu 2.3
 .\}
+live
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+compliance
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
 settings
 .RE
 .PP
-\*(Aqinstance\*(Aq subresource allows to handle the instance of a given host\&. It defines following actions:
+\*(Aqinstance\*(Aq sub\-resource allows to handle the instance of a given host\&. It defines following actions:
 .PP
 start ORG_NAME ENV_NAME HOST_NAME
 .RS 4
@@ -525,7 +553,7 @@ delete ORG_NAME ENV_NAME HOST_NAME
 Deletes an instance\&.
 .RE
 .PP
-\*(Aqapplications\*(Aq subresource allows to handle the applications of a given host\&. It defines following actions:
+\*(Aqapplications\*(Aq sub\-resource allows to handle the applications of a given host\&. It defines following actions:
 .PP
 show ORG_NAME ENV_NAME HOST_NAME APP_NAME
 .RS 4
@@ -551,9 +579,14 @@ render\-file ORG_NAME ENV_NAME HOST_NAME APP_NAME FILE_NAME
 .RS 4
 Displays the rendering of a file of an installed application\&.
 .RE
-It also has the \*(Aqsettings\*(Aq subresources\&.
 .PP
-\*(Aqdistribution\*(Aq subresource allows to handle the distribution of a given host\&. It defines following actions:
+link ORG_NAME ENV_NAME HOST_NAME APP_NAME FILE_NAME
+.RS 4
+Displays a one\-time URL for given file\&.
+.RE
+It also has the \*(Aqsettings\*(Aq sub\-resources\&.
+.PP
+\*(Aqdistribution\*(Aq sub\-resource allows to handle the distribution of a given host\&. It defines following actions:
 .PP
 show ORG_NAME ENV_NAME HOST_NAME
 .RS 4
@@ -565,18 +598,23 @@ add ORG_NAME ENV_NAME HOST_NAME [\-f FILE|\-\-file FILE|\-j JSON|\-\-json JSON]
 Sets the distribution associated to given host\&.
 .RE
 .PP
-delete ORG_NAME ENV_NAME HOST_NAME APP_NAME
+delete ORG_NAME ENV_NAME HOST_NAME
 .RS 4
 Unsets the distribution associated to given host\&.
 .RE
 .PP
-render\-file ORG_NAME ENV_NAME HOST_NAME APP_NAME FILE_NAME
+render\-file ORG_NAME ENV_NAME HOST_NAME FILE_NAME
 .RS 4
 Displays the rendering of a file of the distribution\&.
 .RE
-It also has the \*(Aqsettings\*(Aq subresources\&.
 .PP
-\*(Aqplatform\*(Aq subresource allows to handle the platform of a given host\&. It defines following actions:
+link ORG_NAME ENV_NAME HOST_NAME FILE_NAME
+.RS 4
+Displays a one\-time URL for given file\&.
+.RE
+It also has the \*(Aqsettings\*(Aq sub\-resources\&.
+.PP
+\*(Aqplatform\*(Aq sub\-resource allows to handle the platform of a given host\&. It defines following actions:
 .PP
 show ORG_NAME ENV_NAME HOST_NAME
 .RS 4
@@ -597,7 +635,51 @@ render\-file ORG_NAME ENV_NAME HOST_NAME APP_NAME FILE_NAME
 .RS 4
 Displays the rendering of a file of the platform\&.
 .RE
-It also has the \*(Aqsettings\*(Aq subresources\&.
+.PP
+link ORG_NAME ENV_NAME HOST_NAME FILE_NAME
+.RS 4
+Displays a one\-time URL for given file\&.
+.RE
+It also has the \*(Aqsettings\*(Aq sub\-resources\&.
+.PP
+\*(Aqlive\*(Aq sub\-resource allows to execute some operations related to an application\*(Aqs resource directly on the machine associated to this host:
+.PP
+install\-package ORG_NAME ENV_NAME HOST_NAME APP_NAME PACKAGE_RES_NAME
+.RS 4
+(Re)installs package on machine\&.
+.RE
+.PP
+restart\-service ORG_NAME ENV_NAME HOST_NAME APP_NAME SERVICE_RES_NAME
+.RS 4
+Re\-starts service on machine\&.
+.RE
+.PP
+update\-file ORG_NAME ENV_NAME HOST_NAME APP_NAME FILE_RES_NAME
+.RS 4
+Updates file on machine\&.
+.RE
+.PP
+\*(Aqcompliance\*(Aq sub\-resource allows to handle compliance errors\&. It defines following actions:
+.PP
+show ORG_NAME ENV_NAME HOST_NAME applications/APP_NAME/RES_TYPE/RES_NAME
+.RS 4
+Shows the details of a compliance error\&. RES_TYPE is one of \*(Aqfiles\*(Aq, \*(Aqservices\*(Aq or \*(Aqpackages\*(Aq\&.
+.RE
+.PP
+list ORG_NAME ENV_NAME HOST_NAME
+.RS 4
+Lists the compliance errors of this host\&.
+.RE
+.PP
+delete ORG_NAME ENV_NAME HOST_NAME applications/APP_NAME/RES_TYPE/RES_NAME
+.RS 4
+Deletes a compliance error\&. RES_TYPE is one of \*(Aqfiles\*(Aq, \*(Aqservices\*(Aq or \*(Aqpackages\*(Aq\&.
+.RE
+.PP
+delete\-all ORG_NAME ENV_NAME HOST_NAME FILE_NAME
+.RS 4
+Deletes all compliance errors\&.
+.RE
 .PP
 Hosts feature additional actions:
 .PP
@@ -635,6 +717,21 @@ Provides a JSON description in a file (see \*(Aqadd\*(Aq and \*(Aqupdate\*(Aq ac
 \-j FILE |\-\-json FILE
 .RS 4
 Provides a JSON description via standard input (see \*(Aqadd\*(Aq and \*(Aqupdate\*(Aq actions)\&.
+.RE
+.PP
+\-d | \-\-default
+.RS 4
+Let driver add required files and/or settings to newly created platform\&.
+.RE
+.PP
+\-\-skip\-conflict
+.RS 4
+If this option is set, conflicting resources are not imported during organization import\&.
+.RE
+.PP
+\-\-dry\-run
+.RS 4
+On organization import, do not actually import anything but display actions that would be executed\&.
 .RE
 .PP
 \-\-raw
