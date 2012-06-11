@@ -88,7 +88,7 @@ class PlatformsController(OrganizationResourceController):
             raise ArgumentException("Wrong number of arguments")
 
         org = collections.organizations(self._api).get_resource(argv[0])
-        imp = Import(globals.options.skip_existing)
+        imp = Import()
         imp.import_platform(org, argv[1])
 
     def _import_doc(self):
