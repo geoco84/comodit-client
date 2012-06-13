@@ -3,10 +3,7 @@
 NAME="cortex-client"
 SPEC_FILE_NAME="cortex-client"
 PLATFORMS="epel-6-i386 fedora-15-i386 fedora-16-i386"
-
-MAN_PAGE_FILE="cortex-doc/tmp/en-US/man/cortex.1"
-FALLBACK_MAN=`readlink -f scripts/cortex.1`
-TAR_CONTENT="cortex_client templates conf setup.py cortex scripts/completions.sh "${MAN_PAGE_FILE}
+TAR_CONTENT="cortex_client templates conf setup.py cortex scripts/completions.sh doc/cortex.1"
 
 if [ -z $1 ]
 then
@@ -30,16 +27,6 @@ echo "RELEASE=\""$RELEASE"\"" >> cortex_client/version.py
 
 cd `dirname $0`
 cd ..
-
-scripts/build-man.sh
-
-# Workaround for lack of proper publican version on devel.bruxelles
-if [[ ! -f ${MAN_PAGE_FILE} ]]
-then
-    echo "!!! Man page could not be generated, using fallback file !!!"
-    mkdir -p `dirname ${MAN_PAGE_FILE}`
-    cp ${FALLBACK_MAN} ${MAN_PAGE_FILE}
-fi
 
 sed "s/#VERSION#/${VERSION}/g" rpmbuild/SPECS/${SPEC_FILE_NAME}.spec.template > rpmbuild/SPECS/${SPEC_FILE_NAME}.spec
 sed -i "s/#RELEASE#/${RELEASE}/g" rpmbuild/SPECS/${SPEC_FILE_NAME}.spec
