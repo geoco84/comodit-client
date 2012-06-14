@@ -3,30 +3,15 @@
 NAME="cortex-client"
 SPEC_FILE_NAME="cortex-client"
 PLATFORMS="epel-6-i386 fedora-15-i386 fedora-16-i386"
-TAR_CONTENT="cortex_client templates conf setup.py cortex scripts/completions.sh doc/cortex.1"
-
-if [ -z $1 ]
-then
-  VERSION=`git describe --long --match "release*" | awk -F"-" '{print $2}'`
-else
-  VERSION=$1
-fi
-
-if [ -z $2 ]
-then
-  RELEASE=`git describe --long --match "release*" | awk -F"-" '{print $3}'`
-else
-  RELEASE=$2
-fi
-
-COMMIT=`git describe --long --match "release*" | awk -F"-" '{print $4}'`
-
-# Generate version file
-echo "VERSION=\""$VERSION"\"" > cortex_client/version.py
-echo "RELEASE=\""$RELEASE"\"" >> cortex_client/version.py
+TAR_CONTENT="cortex_client templates conf setup.py cortex auto_completion/cortex doc/cortex.1"
 
 cd `dirname $0`
 cd ..
+
+. scripts/build-pkg-functions
+
+set_version $1 $2
+generate_version_file $VERSION $RELEASE
 
 sed "s/#VERSION#/${VERSION}/g" rpmbuild/SPECS/${SPEC_FILE_NAME}.spec.template > rpmbuild/SPECS/${SPEC_FILE_NAME}.spec
 sed -i "s/#RELEASE#/${RELEASE}/g" rpmbuild/SPECS/${SPEC_FILE_NAME}.spec

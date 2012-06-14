@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os
 from platform import python_version
 from setuptools import setup, find_packages
+from cortex_client import version
 
 major, minor, micro = python_version().split('.')
 
@@ -13,13 +15,26 @@ requires = [
     'python >= 2.6',
 ]
 
+# Utility function to read the README file.
+# http://packages.python.org/an_example_pypi_project/setuptools.html
+def read(fname):
+    return open(os.path.join(os.path.dirname(__file__), fname)).read()
+
+def get_template_files():
+    files = []
+    for name in os.listdir('templates'):
+        files.append('templates/' + name)
+    return files
+
 setup(
     name = 'cortex-client',
-    description = 'cortex command line client',
-    author = 'Laurent Eschenauer',
-    author_email = 'laurent.eschenauer@gmail.com',
+    description = 'ComodIT command line client and python library.',
+    long_description = read('README'),
+    version = version.VERSION + "-" + version.RELEASE,
+    author = 'see AUTHOR file',
+    author_email = 'team@comodit.com',
     url = 'https://github.com/guardis/cortex-client',
-    license = '',
+    license = 'MIT',
     packages = find_packages(),
     scripts = [
         'cortex'
@@ -33,7 +48,12 @@ setup(
         'Topic :: Content Management',
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Intended Audience :: Developers',
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta'
     ],
     install_requires = requires,
+    data_files = [
+        ('/etc/bash_completion.d', ['auto_completion/cortex']),
+        ('/etc/cortex/client/templates', get_template_files()),
+        ('/etc/cortex/', ['conf/cortex-client.conf'])
+    ],
 )

@@ -1,3 +1,0 @@
-[submodule "cortex-doc"]
-	path = cortex-doc
-	url = git@github.com:guardis/cortex-doc.git
