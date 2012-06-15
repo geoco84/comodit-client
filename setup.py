@@ -4,7 +4,6 @@
 import os
 from platform import python_version
 from setuptools import setup, find_packages
-from cortex_client import version
 
 major, minor, micro = python_version().split('.')
 
@@ -26,11 +25,20 @@ def get_template_files():
         files.append('templates/' + name)
     return files
 
+VERSION = '0.0'
+RELEASE = '0'
+try:
+    from cortex_client import version
+    VERSION = version.VERSION
+    RELEASE = version.RELEASE
+except ImportError:
+    pass
+
 setup(
     name = 'cortex-client',
     description = 'ComodIT command line client and python library.',
     long_description = read('README'),
-    version = version.VERSION + "-" + version.RELEASE,
+    version = VERSION + "-" + RELEASE,
     author = 'see AUTHOR file',
     author_email = 'team@comodit.com',
     url = 'https://github.com/guardis/cortex-client',
