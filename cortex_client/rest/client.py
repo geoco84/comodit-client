@@ -67,8 +67,7 @@ class Client:
         self._urlopen(req)
 
     def upload_to_exising_file_with_path(self, file_name, path):
-        url = urlparse.urlparse(self._encode_url(path, parameters = {}))
-        response = fileupload.post_multipart(url.netloc, url.path, [],
+        response = fileupload.post_multipart(self._encode_url(path, []), [],
                                              [("file", file_name)],
                                              {"Authorization": self._get_basic_authorization_field()})
         return response
