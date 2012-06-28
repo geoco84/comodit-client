@@ -10,7 +10,7 @@ class PyCurlCallBack(object):
 def post_multipart(url, fields, files, headers = {}):
     c = pycurl.Curl()
     c.setopt(c.POST, 1)
-    c.setopt(c.URL, url)
+    c.setopt(c.URL, str(url))
 
     # Build header
     curl_headers = []
