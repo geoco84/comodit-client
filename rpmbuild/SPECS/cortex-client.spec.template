@@ -48,7 +48,7 @@ Requires: python-argparse
 %{__python} setup.py install -O1 --skip-build --root %{buildroot}
 
 %{__cp} cortex %{buildroot}/usr/bin/cortex
-%{__cp} conf/cortex-client.conf %{buildroot}/etc/cortex/
+%{__cp} rpmbuild/etc/cortex/cortex-client.conf %{buildroot}/etc/cortex/
 %{__cp} templates/*.json %{buildroot}/etc/cortex/client/templates/
 %{__cp} auto_completion/cortex %{buildroot}/etc/bash_completion.d/cortex
 %{__cp} doc/cortex.1 %{buildroot}/usr/share/man/man1/cortex.1

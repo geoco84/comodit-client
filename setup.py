@@ -62,6 +62,6 @@ setup(
     data_files = [
         ('/etc/bash_completion.d', ['auto_completion/cortex']),
         ('/etc/cortex/client/templates', get_template_files()),
-        ('/etc/cortex/', ['conf/cortex-client.conf'])
+        ('/etc/cortex/', ['rpmbuild/etc/cortex/cortex-client.conf'])
     ],
 )

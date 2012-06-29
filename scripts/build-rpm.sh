@@ -3,7 +3,7 @@
 NAME="cortex-client"
 SPEC_FILE_NAME="cortex-client"
 PLATFORMS="epel-6-i386 fedora-15-i386 fedora-16-i386"
-TAR_CONTENT="cortex_client templates conf setup.py cortex auto_completion/cortex doc/cortex.1 README"
+TAR_CONTENT="cortex_client templates setup.py cortex auto_completion/cortex doc/cortex.1 README rpmbuild/etc"
 
 cd `dirname $0`
 cd ..
