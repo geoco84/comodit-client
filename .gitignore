@@ -8,4 +8,4 @@ dist
 lib/
 rpmbuild/SPECS/cortex-client.spec
 epydoc-html/
-/conf
+conf/
