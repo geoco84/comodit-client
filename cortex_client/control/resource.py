@@ -87,6 +87,8 @@ class ResourceController(AbstractController):
         res = self.get_collection(argv)._new_resource(item)
         if options.default:
             res.create(parameters = {"default" : "true"})
+        elif options.flavor != None:
+            res.create(parameters = {"flavor" : options.flavor})
         else:
             res.create()
         res.show(as_json = options.raw)

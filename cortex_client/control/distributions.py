@@ -95,3 +95,11 @@ class DistributionsController(OrganizationResourceController):
         return ActionDoc("import", "<org_name> <src_folder> [--skip-existing]", """
         Import distribution from disk. --skip-existing option causes existing resources
         on server to be updated.""")
+
+    def _complete_template(self, argv, template_json):
+        flavor_name = globals.options.flavor
+        if flavor_name != None:
+            template_json["settings"] = []
+            flavor = self._api.flavors().get_resource(flavor_name)
+            for p in flavor.get_parameters():
+                template_json["settings"].append({"key": p.get_key(), "value":p.get_value()})

@@ -59,7 +59,8 @@ def _get_value_options(parser):
                 "--pass",
                 "--templates",
                 "--profile",
-                "--completions"
+                "--completions",
+                "--flavor"
                 ]
     return options
 
@@ -83,14 +84,16 @@ Available resources:
     hosts             Host defined within an environment
 """)
 
-    parser.add_argument("resource", help = "A resource")
+    parser.add_argument("resource", help = "A resource", nargs = "?")
     parser.add_argument("subresources", help = "Optional subresources", nargs = "*")
     parser.add_argument("action", help = "An action to perform on given (sub)resource", nargs = "?")
 
     parser.add_argument("-f", "--file", dest = "filename", help = "input file with a JSON object")
     parser.add_argument("-j", "--json", dest = "json", help = "input JSON object via command line")
     parser.add_argument("-d", "--default", dest = "default", help = "let driver setup platform at creation", action = "store_true", default = False)
-    parser.add_argument("--raw", dest = "raw", help = "output the raw JSON results", action = "store_true", default = False,)
+    parser.add_argument("--raw", dest = "raw", help = "output the raw JSON results", action = "store_true", default = False)
+    parser.add_argument("--list-flavors", dest = "list_flavors", help = "list available flavors", action = "store_true", default = False)
+    parser.add_argument("--flavor", dest = "flavor", help = "provide distribution's flavor at creation time", default = None)
 
     parser.add_argument("--skip-chown", dest = "skip_chown", help = "Do not chown files on render tree", action = "store_true", default = False)
     parser.add_argument("--skip-chmod", dest = "skip_chmod", help = "Do not chmod files on render tree", action = "store_true", default = False)
@@ -108,10 +111,6 @@ Available resources:
     parser.add_argument("--force", dest = "force", help = "bypass change management and update everything", action = "store_true", default = False)
     parser.add_argument("--debug", dest = "debug", help = "display debug information", action = "store_true", default = False)
     parser.add_argument("--version", dest = "version", help = "display version information", action = "store_true", default = False)
-
-    #parser.add_argument("--options", dest = "show_options", help = "display options", action = "store_true", default = False)
-    #parser.add_argument("--options-with-value", dest = "show_options_with_value", help = "display options", action = "store_true", default = False)
-    #parser.add_argument("--completions", dest = "param_completions", type = int, help = "parameter to complete", default = -1)
 
     return parser
 
@@ -193,6 +192,18 @@ def _parse(argv):
         globals.options.password = password
 
     api = CortexApi(api, username, password)
+
+    if globals.options.list_flavors:
+        flavors = api.flavors().get_resources()
+        if len(flavors) > 0:
+            for f in flavors:
+                if globals.options.raw:
+                    f.show(as_json = True)
+                else:
+                    f.show()
+        else:
+            print "No flavors to list"
+        exit(0)
 
     resource_args = [] + globals.options.subresources
 

@@ -10,6 +10,7 @@ access to resources and services exhibited by a particular cortex-server.
 from cortex_client.rest.client import Client
 from organization_collection import OrganizationCollection
 from user_collection import UserCollection
+from flavors import FlavorCollection
 
 from organization import Organization
 from user import User
@@ -56,6 +57,7 @@ class CortexApi(object):
 
         self._orga_collection = OrganizationCollection(self)
         self._user_collection = UserCollection(self)
+        self._flavor_collection = FlavorCollection(self)
 
     def get_client(self):
         """
@@ -106,3 +108,6 @@ class CortexApi(object):
         user = User(self._user_collection)
         user.set_name(username)
         return user
+
+    def flavors(self):
+        return self._flavor_collection
