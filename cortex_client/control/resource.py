@@ -85,12 +85,14 @@ class ResourceController(AbstractController):
             item = json.loads(updated)
 
         res = self.get_collection(argv)._new_resource(item)
+        parameters = {}
         if options.default:
-            res.create(parameters = {"default" : "true"})
-        elif options.flavor != None:
-            res.create(parameters = {"flavor" : options.flavor})
-        else:
-            res.create()
+            parameters["default"] = "true"
+        if options.test:
+            parameters["test"] = "true"
+        if options.flavor != None:
+            parameters["flavor"] = options.flavor
+        res.create(parameters = parameters)
         res.show(as_json = options.raw)
 
     def _prune_json_update(self, json_wrapper):

@@ -91,6 +91,7 @@ Available resources:
     parser.add_argument("-f", "--file", dest = "filename", help = "input file with a JSON object")
     parser.add_argument("-j", "--json", dest = "json", help = "input JSON object via command line")
     parser.add_argument("-d", "--default", dest = "default", help = "let driver setup platform at creation", action = "store_true", default = False)
+    parser.add_argument("-t", "--test", dest = "test", help = "let driver test platform at creation", action = "store_true", default = False)
     parser.add_argument("--raw", dest = "raw", help = "output the raw JSON results", action = "store_true", default = False)
     parser.add_argument("--list-flavors", dest = "list_flavors", help = "list available flavors", action = "store_true", default = False)
     parser.add_argument("--flavor", dest = "flavor", help = "provide distribution's flavor at creation time", default = None)
