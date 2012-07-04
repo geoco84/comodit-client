@@ -109,7 +109,6 @@ Available resources:
     parser.add_argument("--templates", dest = "templates_path", help = "directory containing JSON templates", default = config.templates_path)
     parser.add_argument("--profile", dest = "profile_name", help = "Name of profile to use", default = config.get_default_profile_name())
 
-    parser.add_argument("--quiet", dest = "verbose", help = "don't print status messages to stdout", action = "store_false", default = True)
     parser.add_argument("--force", dest = "force", help = "bypass change management and update everything", action = "store_true", default = False)
     parser.add_argument("--debug", dest = "debug", help = "display debug information", action = "store_true", default = False)
     parser.add_argument("--version", dest = "version", help = "display version information", action = "store_true", default = False)
