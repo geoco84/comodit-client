@@ -195,18 +195,6 @@ def _parse(argv):
 
     api = CortexApi(api, username, password)
 
-    if globals.options.list_flavors:
-        flavors = api.flavors().get_resources()
-        if len(flavors) > 0:
-            for f in flavors:
-                if globals.options.raw:
-                    f.show(as_json = True)
-                else:
-                    f.show()
-        else:
-            print "No flavors to list"
-        exit(0)
-
     resource_args = [] + globals.options.subresources
 
     if not globals.options.action is None:
