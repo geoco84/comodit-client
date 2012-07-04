@@ -84,6 +84,7 @@ Available resources:
     organizations     Top-level organization
     environments      Environment defined within an organization
     hosts             Host defined within an environment
+    flavors           Available flavors when creating a distribution
 """)
 
     parser.add_argument("resource", help = "A resource")
