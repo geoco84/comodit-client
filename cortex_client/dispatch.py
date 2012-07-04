@@ -15,6 +15,7 @@ from control.exceptions import ControllerException, ArgumentException
 from control.hosts import HostsController
 from control.organizations import OrganizationsController
 from control.users import UsersController
+from control.flavors import FlavorsController
 
 from rest.exceptions import ApiException
 from util import globals
@@ -34,6 +35,7 @@ from cortex_client.api.exporter import ExportException
 def run(argv):
     # resources
     control.router.register(["users"], UsersController())
+    control.router.register(["flavors"], FlavorsController())
     control.router.register(["platforms"], PlatformsController())
     control.router.register(["applications"], ApplicationsController())
     control.router.register(["distributions"], DistributionsController())
@@ -84,17 +86,16 @@ Available resources:
     hosts             Host defined within an environment
 """)
 
-    parser.add_argument("resource", help = "A resource", nargs = "?")
+    parser.add_argument("resource", help = "A resource")
     parser.add_argument("subresources", help = "Optional subresources", nargs = "*")
     parser.add_argument("action", help = "An action to perform on given (sub)resource", nargs = "?")
 
     parser.add_argument("-f", "--file", dest = "filename", help = "input file with a JSON object")
     parser.add_argument("-j", "--json", dest = "json", help = "input JSON object via command line")
-    parser.add_argument("-d", "--default", dest = "default", help = "let driver setup platform at creation", action = "store_true", default = False)
-    parser.add_argument("-t", "--test", dest = "test", help = "let driver test platform at creation", action = "store_true", default = False)
+    parser.add_argument("-d", "--default", dest = "default", help = "let driver setup platform upon creation", action = "store_true", default = False)
+    parser.add_argument("-t", "--test", dest = "test", help = "let driver test platform upon creation", action = "store_true", default = False)
     parser.add_argument("--raw", dest = "raw", help = "output the raw JSON results", action = "store_true", default = False)
-    parser.add_argument("--list-flavors", dest = "list_flavors", help = "list available flavors", action = "store_true", default = False)
-    parser.add_argument("--flavor", dest = "flavor", help = "provide distribution's flavor at creation time", default = None)
+    parser.add_argument("--flavor", dest = "flavor", help = "provide distribution's flavor upon creation", default = None)
 
     parser.add_argument("--skip-chown", dest = "skip_chown", help = "Do not chown files on render tree", action = "store_true", default = False)
     parser.add_argument("--skip-chmod", dest = "skip_chmod", help = "Do not chmod files on render tree", action = "store_true", default = False)
