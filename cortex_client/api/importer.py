@@ -20,7 +20,8 @@ class Import(object):
     def __init__(self, skip_conflict = False, queue_actions = False):
         self._skip_conflict = skip_conflict
         self._queue_actions = queue_actions
-        self._actions_queue = ActionsQueue()
+        if queue_actions:
+            self._actions_queue = ActionsQueue()
 
     def _import_resource(self, local_res, resource_type = "resource"):
         res_name = local_res.get_name()
@@ -33,11 +34,13 @@ class Import(object):
                 raise ImportException("There is a conflict for " + resource_type + " '" + res_name + "'")
             elif self._queue_actions:
                 self._actions_queue.add_action(CreateResource(True, local_res, resource_type))
+            return True
         except ResourceNotFoundException:
             if self._queue_actions:
                 self._actions_queue.add_action(CreateResource(False, local_res, resource_type))
             else:
                 local_res.create()
+            return False
 
     def _import_instance(self, instance):
         try:
@@ -48,23 +51,23 @@ class Import(object):
             else:
                 instance.create()
 
-    def _import_file_content(self, src_file, app, name, resource_type = "resource"):
+    def _import_file_content(self, conflict, src_file, app, name, resource_type = "resource"):
         if self._queue_actions:
-            self._actions_queue.add_action(UploadContent(src_file, app, name, resource_type))
+            self._actions_queue.add_action(UploadContent(conflict, src_file, app, name, resource_type))
         else:
             app.files().get_resource(name).set_content(src_file)
 
     def _import_resource_with_files(self, res, root_folder, resource_type = "resource"):
         res.load(root_folder)
 
-        self._import_resource(res, resource_type)
+        conflict = self._import_resource(res, resource_type)
 
         # Push files' content
         file_list = res.get_files()
         for f in file_list:
             file_name = f.get_name()
             content_file = os.path.join(root_folder, "files", file_name)
-            self._import_file_content(content_file, res, file_name, resource_type)
+            self._import_file_content(conflict, content_file, res, file_name, resource_type)
 
     def import_application(self, org, root_folder):
         app = Application(org.applications(), None)
@@ -194,8 +197,8 @@ class Action(object):
         print "Summary: " + self.get_summary()
 
 class UploadContent(Action):
-    def __init__(self, src_file, res, file_name, resource_type = "resource"):
-        super(UploadContent, self).__init__(False)
+    def __init__(self, conflict, src_file, res, file_name, resource_type = "resource"):
+        super(UploadContent, self).__init__(conflict)
         self._src_file = src_file
         self._res = res
         self._resource_type = resource_type
