@@ -1,5 +1,3 @@
-#!/bin/bash
-
 # Remove ":" from word breaks, otherwise URLs cause problems
 COMP_WORDBREAKS=${COMP_WORDBREAKS//:/}
 

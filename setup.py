@@ -41,7 +41,7 @@ setup(
     version = VERSION + "-" + RELEASE,
     author = 'see AUTHOR file',
     author_email = 'team@comodit.com',
-    url = 'https://github.com/guardis/cortex-client',
+    url = 'http://www.comodit.com',
     license = 'MIT',
     packages = find_packages(),
     scripts = [
@@ -60,8 +60,8 @@ setup(
     ],
     install_requires = requires,
     data_files = [
-        ('/etc/bash_completion.d', ['auto_completion/cortex']),
-        ('/etc/cortex/client/templates', get_template_files()),
+        ('/etc/bash_completion.d/', ['auto_completion/cortex']),
+        ('/usr/share/cortex-client/templates', get_template_files()),
         ('/etc/cortex/', ['rpmbuild/etc/cortex/cortex-client.conf'])
     ],
 )

@@ -169,7 +169,7 @@ class Config(object):
     def _get_templates_path(self):
         curdir_path = os.curdir + "/templates"
         user_path = os.path.expanduser("~") + "/.cortex/templates"
-        etc_path = "/etc/cortex/client/templates/"
+        etc_path = "/usr/share/cortex-client/templates/"
 
         for loc in curdir_path, user_path, etc_path:
             if os.path.isdir(loc):
