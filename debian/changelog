@@ -1,3 +1,9 @@
+cortex-client (1.1.dev-15) unstable; urgency=low
+
+  * Bumped version.
+
+ -- Gerard Dethier <gerard.dethier@comodit.com>  Fri, 20 Jul 2012 16:23:25 +0200
+
 cortex-client (1.1.dev) unstable; urgency=low
 
   * Bumped version. 
