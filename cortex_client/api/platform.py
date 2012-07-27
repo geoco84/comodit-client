@@ -44,6 +44,9 @@ class Driver(JsonWrapper):
     def get_classname(self):
         return self._get_field("className")
 
+    def set_classname(self, name):
+        self._set_field("className", name)
+
     def get_parameters(self):
         return self._get_list_field("parameters", ParameterFactory(None))
 
@@ -83,7 +86,7 @@ class Platform(Configurable):
         @param driver: Driver's class name
         @type driver: String
         """
-        return self._set_field("driver", driver)
+        return self._set_field("driver", driver.get_json())
 
     def get_settings(self):
         """
