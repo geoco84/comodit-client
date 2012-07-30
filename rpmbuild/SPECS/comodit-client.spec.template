@@ -62,7 +62,7 @@ auditing and monitoring.
 %{__cp} doc/comodit.1 %{buildroot}/usr/share/man/man1/comodit.1
 
 # Remove egg info
-%{__rm} -rf %{buildroot}/%{python_sitelib}/%{main_package}*.egg-info
+%{__rm} -rf %{buildroot}/%{python_sitelib}/comodit_client*.egg-info
 
 %clean
 %{__rm} -rf %{buildroot}

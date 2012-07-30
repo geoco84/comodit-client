@@ -35,7 +35,7 @@ except ImportError:
     pass
 
 setup(
-    name = 'cortex-client',
+    name = 'comodit-client',
     description = 'ComodIT command line client and python library.',
     long_description = read('README'),
     version = VERSION + "-" + RELEASE,
