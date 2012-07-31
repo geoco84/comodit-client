@@ -1,106 +1,114 @@
-###############################################################################
-# Kickstart template used by create_provision_delete.py script.
-###############################################################################
+# This file contains a sample kickstart provided by ComodIT. It may be altered
+# to better meet someone's needs, in particular location information should
+# probably be modified (language, keyboard, repositories, etc.).
+
+################################# Install mode #################################
 
 # Install Linux instead of upgrade
 install
 
-# Text mode install
+# Text install mode
 text
 
-# Network
+################################# Network setup ################################
+
+# By default, use DHCP
 network --bootproto=dhcp --device=eth0
 
-# Use the following installation channels
+################################# Repositories #################################
+
+# Base URL of CentOS 6 repository, should be adapted regarding geographical location
 url --url=##repos_base_url##
+
+# CentOS updates repository
 repo --name=updates --baseurl=##repos_updates##
+
+# Epel repository containing some ComodIT dependencies
 repo --name=epel --baseurl=##repos_epel##
 
-repo --name=comodit --baseurl=##repos_comodit##
-repo --name=comodit-dev --baseurl=##repos_comodit-dev##
-repo --name=synapse-dev --baseurl=##repos_synapse-dev##
+# ComodIT repository providing the agent
+repo --name=comodit --baseurl=##repos_comodit-dev##
+
+########################## System configuration ################################
 
 # Do not configure the X Window System
 skipx
 
-# System language
+# Set system language
 lang en_US
 
-# System keyboard
-keyboard be-latin1
+# Set keyboard layout
+keyboard us
 
-# System timezone
-timezone --utc Europe/Brussels
+# Set time zone
+timezone --utc Etc/UTC
 
-# Root password (here secret, should be changed ...)
-rootpw ${ks_rootpw_one}
+# Set root password
+rootpw secret
 
-# Reboot after installation
+# Request reboot after installation
 reboot
 
-# Run the Setup Agent on first boot
+# Do not run the Setup Agent on first boot
 firstboot --disabled
 
-# System authorization information
-auth  --useshadow  --enablemd5
-
 # Firewall configuration
-firewall --enabled --ssh
+firewall --disabled
 
-# This is needed to create the VMs (has to be checked in the future releases)
+# SELinux configuration
 selinux --permissive
 
-# Installation logging level
+# Configure the logging level
 logging --level=info
 
-# Disable unnecessary services
-services --disabled="MailScanner,anacron,apmd,atd,autofs,avahi-daemon,avahi-dnsconfd,barnyard,bluetooth,conman,cpuspeed,crond,cups,dansguardian,dhcdbd,dnsmasq,dund,firstboot,gpm,haldaemon,hidd,ibmasm,ip6tables,ipmi,iptables,ip6tables,irqbalance,kudzu,libvirtd,lm_sensors,lvm2-monitor,mcstrans,mdmonitor,mdmpd,messagebus,microcode_ctl,multipathd,netconsole,netfs,netplugd,nfs,nfslock,nrpe,nscd,ntpd,oddjobd,p3scan,pand,pcscd,pmacctd,portmap,psacct,qemu,rdisc,readahead_early,readahead_later,restorecond,rpcgssd,rpcidmapd,rpcsvcgssd,snortd,saslauthd,sendmail,setroubleshoot,smartd,sshd,syslog-ng,sysstat,xend,xendomains,xfs,ypbind,yum-updatesd"
+# System authorization information
+authconfig --enableshadow --passalgo=sha512
 
-# Enable necessary services
-services --enabled="acpid,auditd,network,rsyslog,synapsed,sshd<#list _applications.services as _service>,${_service}</#list>"
+# Enable necessary services. This list should at least contain the ComodIT agent service
+services --enabled="acpid,comodit-agent<#list _applications.services as _service>,${_service}</#list>"
 
-# Clear the Master Boot Record
-zerombr
+############################# Disk partitioning ################################
 
 # System bootloader configuration
-bootloader --location=mbr --append "text"
-
-# Clear all partitions from the disk
-clearpart --all
+bootloader --location=mbr
 
 # Disk partitioning information
-part /        --fstype ext4      --size=8 --grow
-part swap  --fstype swap     --size=512
+clearpart --all
+zerombr
+part /    --fstype ext4 --size=8 --grow
+part swap --fstype swap --size=512
 
-%packages --excludedocs --nobase
-@Core
+############################### Packages #######################################
 
-# usefull
-acpid
-vim-enhanced
+%packages
 
-# The additional distributions
+# Base packages
+@Base
+
+# Epel and ComodIT release packages
 epel-release
-
-# Openssh
-openssh
-openssh-clients
-openssh-server
-
-# The yum system
-yum
-
-# For secure root execution
-sudo
 
 # For configuration management
 comodit-agent
 
-# User specific packages
+# User specific packages coming from applications added to host
 <#list _applications.packages as _pack>
 ${_pack}
 </#list>
 
-%post
+######################### Post-install script ##################################
 
-${_synapse_config}
+%post --nochroot
+
+# Configure ComodIT agent
+cat << EOF > /mnt/sysimage/etc/comodit-agent/comodit-agent.conf
+[bootstrap]
+register = True
+host = ${_config.comodit_host}
+username = ${_org.access_key}
+password =  ${_org.secret_key}
+uuid = ${_host.uuid}
+EOF
+
+# ComodIT agent first run
+chroot /mnt/sysimage/ /usr/bin/comodit-agent --uri ${_setup_url}

@@ -43,9 +43,7 @@ def setup():
     repos = {"base_url" : "http://oak.${zone}.guardis.be/public/centos/6/os/${vm_base_arch}/",
              "updates" : "http://oak.${zone}.guardis.be/public/centos/6/updates/${vm_base_arch}/",
              "epel": "http://oak.${zone}.guardis.be/public/epel/6/${vm_base_arch}/",
-             "comodit": "http://oak.${zone}.guardis.be/public/comodit/centos/6/${vm_arch}/",
-             "comodit-dev": "http://oak.${zone}.guardis.be/private/comodit-dev/centos/6/${vm_arch}/",
-             "synapse-dev": "http://oak.${zone}.guardis.be/private/synapse-dev/centos/6/${vm_arch}/"}
+             "comodit-dev": "http://oak.${zone}.guardis.be/private/comodit-dev/public/centos/6/${vm_arch}/"}
 
     # Override default values with values from file 'var.py'
     if os.path.exists("var.py"):
@@ -104,8 +102,6 @@ def setup():
                 repos["comodit"] = var.repos["comodit"]
             if var.repos.has_key("comodit-dev"):
                 repos["comodit-dev"] = var.repos["comodit-dev"]
-            if var.repos.has_key("synapse-dev"):
-                repos["synapse-dev"] = var.repos["synapse-dev"]
 
 def create_kickstart():
     global repos
@@ -116,9 +112,7 @@ def create_kickstart():
         content = content.replace("##repos_base_url##", repos["base_url"])
         content = content.replace("##repos_updates##", repos["updates"])
         content = content.replace("##repos_epel##", repos["epel"])
-        content = content.replace("##repos_comodit##", repos["comodit"])
         content = content.replace("##repos_comodit-dev##", repos["comodit-dev"])
-        content = content.replace("##repos_synapse-dev##", repos["synapse-dev"])
 
         with open("files/co6.ks", "w") as g:
             g.write(content)
@@ -127,9 +121,7 @@ def create_repo_files():
     global repos
 
     files = ["files/CentOS-Base.repo.template",
-             "files/comodit.repo.template",
              "files/comodit-dev.repo.template",
-             "files/synapse-dev.repo.template",
              "files/epel.repo.template"]
 
     for name in files:
@@ -139,9 +131,7 @@ def create_repo_files():
             content = content.replace("##repos_base_url##", repos["base_url"])
             content = content.replace("##repos_updates##", repos["updates"])
             content = content.replace("##repos_epel##", repos["epel"])
-            content = content.replace("##repos_comodit##", repos["comodit"])
             content = content.replace("##repos_comodit-dev##", repos["comodit-dev"])
-            content = content.replace("##repos_synapse-dev##", repos["synapse-dev"])
 
             with open(repo_name, "w") as g:
                 g.write(content)

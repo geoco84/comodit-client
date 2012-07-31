@@ -1,6 +1,0 @@
-[synapse-dev]
-name=Synapse $releasever - $basearch
-baseurl=##repos_synapse-dev##
-failovermethod=priority
-enabled=1
-gpgcheck=0

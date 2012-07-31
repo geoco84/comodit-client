@@ -79,7 +79,7 @@ def run(argv):
     __set_httpd_port_setting(org, host, 80, time_out)
 
     print "Setting httpd_port at environment level..."
-    __set_httpd_port_setting(env, host, 88, time_out)
+    __set_httpd_port_setting(env, host, 8880, time_out)
 
     print "Setting httpd_port at host level..."
     __set_httpd_port_setting(host, host, 8000, time_out)
@@ -91,7 +91,7 @@ def run(argv):
     __unset_httpd_port_setting_and_test(app, host, 8000, time_out)
 
     print "Unsetting httpd_port at host level..."
-    __unset_httpd_port_setting_and_test(host, host, 88, time_out)
+    __unset_httpd_port_setting_and_test(host, host, 8880, time_out)
 
     print "Unsetting httpd_port at environment level..."
     __unset_httpd_port_setting_and_test(env, host, 80, time_out)
