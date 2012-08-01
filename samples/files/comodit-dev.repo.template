@@ -1,6 +1,0 @@
-[comodit-dev]
-name=Comodit $releasever - $basearch
-baseurl=##repos_comodit-dev##
-failovermethod=priority
-enabled=1
-gpgcheck=0
