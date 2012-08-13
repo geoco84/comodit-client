@@ -1,44 +1,64 @@
 {
     "name":"my-app",
-    "description":"My application example",
-    "packages":
-      [
-       {"name":"package"}
-      ],
-     "services":
-      [
-          {
-              "name":"service",
-              "enabled":true
-          }
-      ],
-     "files":
-      [
-          {
-              "name":"myfile",
-              "path":"/path/to/file",
-              "owner":"root",
-              "group":"root",
-              "mode":"644",
-              "template": {
+    "description":"My application description",
+    "packages": [
+        {
+            "name":"<package name>"
+        }
+    ],
+    "services": [
+        {
+            "name":"<service name>",
+            "enabled":true
+        }
+    ],
+    "files": [
+        {
+            "name":"myfile",
+            "path":"/path/to/file",
+            "owner":"root",
+            "group":"root",
+            "mode":"644",
+            "template": {
                 "name": "<file name>",
-                "parameters": [
-                    {
-                        "key": "<a key>",
-                        "value": "<a value>",
-                        "name": "<a name>",
-                        "description": "<a description>"
-                    }
-                ]
+                "delimiter": {
+                    "start": "${",
+                    "end": "}"
+                }
             }
-          }
-      ],
-      "parameters": [
-         {
-             "key": "<a key>",
-             "value": "<a value>",
-             "name": "<a name>",
-             "description": "<a description>"
-          }
-      ]
+        }
+    ],
+    "parameters": [
+        {
+            "key": "<a key>",
+            "value": "<a value>",
+            "name": "<a name>",
+            "description": "<a description>"
+        }
+    ],
+    "handlers": [
+        {
+            "do": [
+                {
+                    "action": "update", 
+                    "resource": "file://<file name>"
+                }, 
+                {
+                    "action": "execute", 
+                    "resource": "file://<file name>"
+                },
+                {
+                    "action": "restart", 
+                    "resource": "service://<service name>"
+                }, 
+                {
+                    "action": "reload", 
+                    "resource": "service://<service name>"
+                }
+            ], 
+            "on": [
+                "<setting key>"
+            ]
+        }
+    ]
 }
