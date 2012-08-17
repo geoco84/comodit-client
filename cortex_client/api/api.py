@@ -15,6 +15,8 @@ from flavors import FlavorCollection
 from organization import Organization
 from user import User
 
+from cortex_client.api.store import AppStoreCollection
+
 class CortexApi(object):
     """
     Defines the access point to a particular cortex server. An instance of
@@ -58,6 +60,7 @@ class CortexApi(object):
         self._orga_collection = OrganizationCollection(self)
         self._user_collection = UserCollection(self)
         self._flavor_collection = FlavorCollection(self)
+        self._app_store_collection = AppStoreCollection(self)
 
     def get_client(self):
         """
@@ -111,3 +114,6 @@ class CortexApi(object):
 
     def flavors(self):
         return self._flavor_collection
+
+    def app_store(self):
+        return self._app_store_collection

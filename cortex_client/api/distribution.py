@@ -133,6 +133,18 @@ class Distribution(Configurable):
         except ApiException, e:
             raise PythonApiException("Unable to clone distribution: " + e.message)
 
+    def get_published_as(self):
+        return self._get_field("publishedAs")
+
+    def get_purchased_as(self):
+        return self._get_field("publishedAs")
+
+    def get_can_pull(self):
+        return self._get_field("canPull")
+
+    def get_can_push(self):
+        return self._get_field("canPush")
+
     def _show(self, indent = 0):
         super(Distribution, self)._show(indent)
         print " "*indent, "Settings:"

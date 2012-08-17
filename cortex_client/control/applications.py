@@ -7,6 +7,8 @@
 # This software cannot be used and/or distributed without prior
 # authorization from Guardis.
 
+import json, os
+
 from cortex_client.api import collections
 from cortex_client.api.exporter import Export
 from cortex_client.api.importer import Import
@@ -16,6 +18,9 @@ from cortex_client.control.files import ApplicationFilesController
 from cortex_client.control.parameters import ApplicationParametersController
 from cortex_client.control.doc import ActionDoc
 from cortex_client.control.exceptions import ArgumentException
+from cortex_client.api.exceptions import PythonApiException
+from cortex_client.config import Config
+from cortex_client.util.editor import edit_text
 
 class ApplicationsController(OrganizationResourceController):
 
@@ -33,9 +38,15 @@ class ApplicationsController(OrganizationResourceController):
         # actions
         self._register(["import"], self._import, self._print_import_completions)
         self._register(["export"], self._export, self._print_export_completions)
+        self._register(["publish"], self._publish, self._print_resource_completions)
+        self._register(["unpublish"], self._unpublish, self._print_resource_completions)
+        self._register(["push"], self._push, self._print_resource_completions)
 
         self._register_action_doc(self._export_doc())
         self._register_action_doc(self._import_doc())
+        self._register_action_doc(self._publish_doc())
+        self._register_action_doc(self._unpublish_doc())
+        self._register_action_doc(self._push_doc())
 
     def _get_collection(self, org_name):
         return collections.applications(self._api, org_name)
@@ -91,3 +102,45 @@ class ApplicationsController(OrganizationResourceController):
         return ActionDoc("import", "<org_name> <src_folder> [--skip-existing]", """
         Import application from disk. --skip-existing option causes existing resources
         on server to be updated.""")
+
+    def _publish(self, argv):
+        app = self._get_resource(argv)
+
+        if not app.get_published_as() is None:
+            raise PythonApiException("Application has already been published")
+
+        template_json = json.load(open(os.path.join(Config()._get_templates_path(), "published_application.json")))
+        template_json["application"] = app.get_uuid()
+        updated = edit_text(json.dumps(template_json, indent = 4))
+
+        pub_app = self._api.app_store()._new_resource(json.loads(updated))
+        self._api.app_store().add_resource(pub_app)
+
+    def _publish_doc(self):
+        return ActionDoc("publish", "<org_name> <app_name>", """
+        Publish application to store.""")
+
+    def _unpublish(self, argv):
+        app = self._get_resource(argv)
+
+        if app.get_published_as() is None:
+            raise PythonApiException("Application is not published")
+
+        self._api.app_store().get_resource(app.get_published_as()).delete()
+
+    def _unpublish_doc(self):
+        return ActionDoc("unpublish", "<org_name> <app_name>", """
+        Unpublish application from store.""")
+
+    def _push(self, argv):
+        app = self._get_resource(argv)
+
+        if app.get_published_as() is None:
+            raise PythonApiException("Application is not published")
+
+        pub_app = self._api.app_store()._new_resource({"uuid" : app.get_published_as()})
+        pub_app.commit()
+
+    def _push_doc(self):
+        return ActionDoc("push", "<org_name> <app_name>", """
+        Push application update to store.""")

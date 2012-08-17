@@ -629,6 +629,18 @@ class Application(Resource):
         except ApiException, e:
             raise PythonApiException("Unable to clone application: " + e.message)
 
+    def get_published_as(self):
+        return self._get_field("publishedAs")
+
+    def get_purchased_as(self):
+        return self._get_field("purchasedAs")
+
+    def get_can_pull(self):
+        return self._get_field("canPull")
+
+    def get_can_push(self):
+        return self._get_field("canPush")
+
     def _show(self, indent = 0):
         """
         Prints the state of this object to standard output in a user-friendly
@@ -669,3 +681,16 @@ class Application(Resource):
         for f in handlers:
             f.show(indent + 2)
 
+        is_purchased = not self.get_purchased_as() is None
+        print " "*indent, "Purchased: " + str(is_purchased),
+        if is_purchased:
+            print "(can pull: " + str(self.get_can_pull()) + ")"
+        else:
+            print
+
+        is_published = not self.get_published_as() is None
+        print " "*indent, "Published: " + str(is_published),
+        if is_published:
+            print "(can push: " + str(self.get_can_push()) + ")"
+        else:
+            print

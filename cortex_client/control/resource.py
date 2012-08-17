@@ -44,7 +44,8 @@ class ResourceController(AbstractController):
             print "No resources to list"
         else:
             for r in resources_list:
-                print r.get_identifier()
+                label = r.get_label()
+                print r.get_identifier() + ("" if label is None else " - " + label)
 
     def _print_identifiers(self, collection):
         self._print_resource_identifiers(collection.get_resources())

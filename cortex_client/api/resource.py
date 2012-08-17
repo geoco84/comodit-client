@@ -87,6 +87,9 @@ class Resource(JsonWrapper):
     def get_uuid(self):
         return self._get_field("uuid")
 
+    def get_label(self):
+        return None
+
     def get_identifier(self):
         return self.get_name()
 
