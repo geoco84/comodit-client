@@ -41,12 +41,14 @@ class ApplicationsController(OrganizationResourceController):
         self._register(["publish"], helper._publish, self._print_resource_completions)
         self._register(["unpublish"], helper._unpublish, self._print_resource_completions)
         self._register(["push"], helper._push, self._print_resource_completions)
+        self._register(["pull"], helper._pull, self._print_resource_completions)
 
         self._register_action_doc(self._export_doc())
         self._register_action_doc(self._import_doc())
         self._register_action_doc(helper._publish_doc())
         self._register_action_doc(helper._unpublish_doc())
         self._register_action_doc(helper._push_doc())
+        self._register_action_doc(helper._pull_doc())
 
     def _get_collection(self, org_name):
         return collections.applications(self._api, org_name)

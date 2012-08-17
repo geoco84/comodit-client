@@ -30,6 +30,14 @@ class StoreHelper(object):
         else:
             return None
 
+    def get_purchased(self, org):
+        if self._content_type == "app":
+            return org.purchased_apps()
+        elif self._content_type == "dist":
+            return org.purchased_dists()
+        else:
+            return None
+
     def _publish(self, argv):
         app = self._ctrl._get_resource(argv)
 
@@ -71,3 +79,18 @@ class StoreHelper(object):
     def _push_doc(self):
         return ActionDoc("push", self._params, """
         Push """ + self._label + """ update to store.""")
+
+    def _pull(self, argv):
+        app = self._ctrl._get_resource(argv)
+
+        if app.get_purchased_as() is None:
+            raise PythonApiException(self._type_name + " is not purchased")
+
+        org = self._ctrl._api.organizations().get_resource(app.get_organization())
+
+        pur = self.get_purchased(org)._new_resource({"uuid" : app.get_purchased_as()})
+        pur.commit()
+
+    def _pull_doc(self):
+        return ActionDoc("pull", self._params, """
+        Pull """ + self._label + """ update from store.""")

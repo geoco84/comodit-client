@@ -137,13 +137,16 @@ class Distribution(Configurable):
         return self._get_field("publishedAs")
 
     def get_purchased_as(self):
-        return self._get_field("publishedAs")
+        return self._get_field("purchasedAs")
 
     def get_can_pull(self):
         return self._get_field("canPull")
 
     def get_can_push(self):
         return self._get_field("canPush")
+
+    def get_organization(self):
+        return self._get_field("organization")
 
     def _show(self, indent = 0):
         super(Distribution, self)._show(indent)

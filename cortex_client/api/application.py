@@ -641,6 +641,9 @@ class Application(Resource):
     def get_can_push(self):
         return self._get_field("canPush")
 
+    def get_organization(self):
+        return self._get_field("organization")
+
     def _show(self, indent = 0):
         """
         Prints the state of this object to standard output in a user-friendly
