@@ -20,6 +20,7 @@ from cortex_client.api.settings import Configurable, SettingFactory
 from cortex_client.rest.exceptions import ApiException
 from cortex_client.api.exceptions import PythonApiException
 from cortex_client.api.audit import AuditCollection
+from cortex_client.api.purchased import PurchasedCollection
 
 class Organization(Configurable):
     """
@@ -182,3 +183,9 @@ class Organization(Configurable):
 
     def audit_logs(self):
         return AuditCollection(self._get_path() + "audit/", self._get_api())
+
+    def purchased_apps(self):
+        return PurchasedCollection(self._get_path() + "purchased/applications/", self._get_api())
+
+    def purchased_dists(self):
+        return PurchasedCollection(self._get_path() + "purchased/distributions/", self._get_api())

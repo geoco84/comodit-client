@@ -18,7 +18,7 @@ from cortex_client.control.files import ApplicationFilesController
 from cortex_client.control.parameters import ApplicationParametersController
 from cortex_client.control.doc import ActionDoc
 from cortex_client.control.exceptions import ArgumentException
-from cortex_client.control.StoreHelper import StoreHelper
+from cortex_client.control.store_helper import StoreHelper
 
 class ApplicationsController(OrganizationResourceController):
 

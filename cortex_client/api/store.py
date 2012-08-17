@@ -67,7 +67,7 @@ class PublishedApplicationFactory(object):
         self._collection = collection
 
     def new_object(self, json_data):
-        return PublishedApplicationFactory(self._collection, json_data)
+        return PublishedApplication(self._collection, json_data)
 
 class PublishedDistribution(PublishedEntity):
     def __init__(self, collection, json_data = None):
