@@ -18,6 +18,7 @@ from cortex_client.util import globals
 from cortex_client.control.doc import ActionDoc
 from cortex_client.control.exceptions import ArgumentException
 from cortex_client.api.importer import Import
+from cortex_client.control.StoreHelper import StoreHelper
 
 class DistributionsController(OrganizationResourceController):
 
@@ -37,8 +38,16 @@ class DistributionsController(OrganizationResourceController):
         self._register(["import"], self._import, self._print_import_completions)
         self._register(["export"], self._export, self._print_export_completions)
 
+        helper = StoreHelper(self, "dist")
+        self._register(["publish"], helper._publish, self._print_resource_completions)
+        self._register(["unpublish"], helper._unpublish, self._print_resource_completions)
+        self._register(["push"], helper._push, self._print_resource_completions)
+
         self._register_action_doc(self._export_doc())
         self._register_action_doc(self._import_doc())
+        self._register_action_doc(helper._publish_doc())
+        self._register_action_doc(helper._unpublish_doc())
+        self._register_action_doc(helper._push_doc())
 
     def _get_collection(self, org_name):
         return collections.distributions(self._api, org_name)

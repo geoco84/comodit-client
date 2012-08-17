@@ -31,7 +31,7 @@ from api.api import CortexApi
 from api.exceptions import PythonApiException
 from cortex_client.api.importer import ImportException
 from cortex_client.api.exporter import ExportException
-from cortex_client.control.store import AppStoreController
+from cortex_client.control.store import AppStoreController, DistStoreController
 
 def run(argv):
     # resources
@@ -44,6 +44,7 @@ def run(argv):
     control.router.register(["environments"], EnvironmentsController())
     control.router.register(["hosts"], HostsController())
     control.router.register(["app-store"], AppStoreController())
+    control.router.register(["dist-store"], DistStoreController())
 
     _parse(argv)
 

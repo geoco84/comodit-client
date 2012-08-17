@@ -15,7 +15,7 @@ from flavors import FlavorCollection
 from organization import Organization
 from user import User
 
-from cortex_client.api.store import AppStoreCollection
+from cortex_client.api.store import AppStoreCollection, DistStoreCollection
 
 class CortexApi(object):
     """
@@ -61,6 +61,7 @@ class CortexApi(object):
         self._user_collection = UserCollection(self)
         self._flavor_collection = FlavorCollection(self)
         self._app_store_collection = AppStoreCollection(self)
+        self._dist_store_collection = DistStoreCollection(self)
 
     def get_client(self):
         """
@@ -117,3 +118,6 @@ class CortexApi(object):
 
     def app_store(self):
         return self._app_store_collection
+
+    def dist_store(self):
+        return self._dist_store_collection

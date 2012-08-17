@@ -160,3 +160,17 @@ class Distribution(Configurable):
         for f in files:
             f._show(indent + 2)
 
+        is_purchased = not self.get_purchased_as() is None
+        print " "*indent, "Purchased: " + str(is_purchased),
+        if is_purchased:
+            print "(can pull: " + str(self.get_can_pull()) + ")"
+        else:
+            print
+
+        is_published = not self.get_published_as() is None
+        print " "*indent, "Published: " + str(is_published),
+        if is_published:
+            print "(can push: " + str(self.get_can_push()) + ")"
+        else:
+            print
+
