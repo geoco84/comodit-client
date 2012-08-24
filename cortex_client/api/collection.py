@@ -145,7 +145,7 @@ class Collection(object):
             if e.code == 404:
                 raise ResourceNotFoundException(e_id)
             else:
-                raise PythonApiException("Could not get resource " + e_id + ":" + e.message)
+                raise PythonApiException("Could not get resource " + e_id + " (error " + str(e.code) + "):" + e.message)
 
     def get_single_resource(self):
         return self.get_resource("")
