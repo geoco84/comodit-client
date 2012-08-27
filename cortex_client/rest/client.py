@@ -24,7 +24,7 @@ class Client:
     def create(self, resource, item = None, parameters = {}, decode = True):
         url = self._encode_url(resource, parameters)
 
-        if item is not None:
+        if not item is None:
             try:
                 json_data = json.dumps(item)
             except Exception, e:
@@ -32,6 +32,9 @@ class Client:
             req = self._new_request_with_data(url, "POST", json_data)
         else:
             req = self._new_request(url, "POST")
+            # Fix regarding Nginx not supporting empty requests with no
+            # Content-Length
+            req.add_header("Content-Length", 0)
         raw = self._urlopen(req)
         if decode:
             try:
@@ -55,6 +58,10 @@ class Client:
         req = self._new_request(url, "PUT")
         if item:
             req.add_data(json.dumps(item))
+        else:
+            # Fix regarding Nginx not supporting empty requests with no
+            # Content-Length
+            req.add_header("Content-Length", 0)
         raw = self._urlopen(req)
         if decode:
             return json.load(raw)
