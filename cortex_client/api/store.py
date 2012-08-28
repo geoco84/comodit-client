@@ -28,12 +28,6 @@ class PublishedEntity(Resource):
     def get_label(self):
         return self.get_name()
 
-    def get_name(self):
-        return self._get_field("name")
-
-    def get_description(self):
-        return self._get_field("description")
-
     def get_author(self):
         return self._get_field("author")
 
@@ -54,6 +48,21 @@ class PublishedEntity(Resource):
 
     def get_url(self):
         return self._get_field("url")
+
+    def get_comments(self):
+        return self._get_field("comments")
+
+    def get_price(self):
+        return self._get_field("price")
+
+    def _show(self, indent = 0):
+        super(PublishedEntity, self)._show(indent)
+        print " "*indent, "Author:", self.get_author()
+        print " "*indent, "Url:", self.get_url()
+        print " "*indent, "Comments:", self.get_comments()
+        print " "*indent, "Price:", self.get_price()
+        print " "*indent, "Published:", self.get_date_published()
+        print " "*indent, "Last update:", self.get_date_updated()
 
 class PublishedApplication(PublishedEntity):
     def __init__(self, collection, json_data = None):

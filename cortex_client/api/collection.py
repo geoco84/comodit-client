@@ -86,7 +86,7 @@ class Collection(object):
             raise PythonApiException("Could not create resource: " + e.message)
         resource.set_json(result)
 
-    def get_resources(self):
+    def get_resources(self, parameters = {}):
         """
         Provides the list of resources associated to this collection.
         
@@ -95,7 +95,7 @@ class Collection(object):
         """
         client = self._api.get_client()
         try:
-            result = client.read(self._resource_path)
+            result = client.read(self._resource_path, parameters = parameters)
 
             resources_list = []
             count = int(result["count"])
@@ -124,7 +124,7 @@ class Collection(object):
         """
         raise NotImplementedError
 
-    def get_resource(self, e_id):
+    def get_resource(self, e_id, parameters = {}):
         """
         Retrieves the resource or collection with given identifier from this collection.
         
@@ -139,7 +139,7 @@ class Collection(object):
         """
         client = self._api.get_client()
         try:
-            result = client.read(self._resource_path + e_id)
+            result = client.read(self._resource_path + e_id, parameters = parameters)
             return self._new_resource(result)
         except ApiException, e:
             if e.code == 404:

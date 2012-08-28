@@ -61,7 +61,7 @@ class StoreHelper(object):
         if app.get_published_as() is None:
             raise PythonApiException(self._type_name + " is not published")
 
-        self.get_store().get_resource(app.get_published_as()).delete()
+        self.get_store().get_resource(app.get_published_as(), {"org_name" : argv[0]}).delete()
 
     def _unpublish_doc(self):
         return ActionDoc("unpublish", self._params, """

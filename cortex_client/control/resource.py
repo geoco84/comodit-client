@@ -20,7 +20,7 @@ class ResourceController(AbstractController):
 
     def __init__(self):
         super(ResourceController, self).__init__()
-        self._register(["list"], self._list, self._print_collection_completions)
+        self._register(["list"], self._list, self._print_list_completions)
         self._register(["show"], self._show, self._print_resource_completions)
         self._register(["add"], self._add, self._print_collection_completions)
         self._register(["update"], self._update, self._print_resource_completions)
@@ -36,10 +36,14 @@ class ResourceController(AbstractController):
         self._register_action_doc(self._delete_doc())
 
     def _print_list_completions(self, param_num, argv):
-        pass
+        self._print_collection_completions(param_num, argv)
+
+    def _get_list_parameters(self, argv):
+        return {}
 
     def _list(self, argv):
-        resources_list = self._get_resources(argv)
+        parameters = self._get_list_parameters(argv)
+        resources_list = self._get_resources(argv, parameters = parameters)
         if(len(resources_list) == 0):
             print "No resources to list"
         else:
@@ -56,8 +60,12 @@ class ResourceController(AbstractController):
     def _print_resource_completions(self, param_num, argv):
         pass
 
+    def _get_show_parameters(self, argv):
+        return {}
+
     def _show(self, argv):
-        res = self._get_resource(argv)
+        parameters = self._get_show_parameters(argv)
+        res = self._get_resource(argv, parameters = parameters)
 
         # Display the result
         options = globals.options
@@ -139,11 +147,11 @@ class ResourceController(AbstractController):
     def _help(self, argv):
         self._print_doc()
 
-    def _get_resource(self, argv):
-        return self.get_collection(argv).get_resource(self._get_name_argument(argv))
+    def _get_resource(self, argv, parameters = {}):
+        return self.get_collection(argv).get_resource(self._get_name_argument(argv), parameters = parameters)
 
-    def _get_resources(self, argv):
-        return self.get_collection(argv).get_resources()
+    def _get_resources(self, argv, parameters = {}):
+        return self.get_collection(argv).get_resources(parameters = parameters)
 
     def get_collection(self, argv):
         raise NotImplementedError
