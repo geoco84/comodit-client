@@ -110,7 +110,7 @@ class SettingCollection(Collection):
     def __init__(self, api, collection_path):
         super(SettingCollection, self).__init__(collection_path, api)
 
-    def _new_resource(self, json_data):
+    def _new_resource(self, json_data = None):
         return Setting(self, json_data)
 
 class Configurable(Resource):
