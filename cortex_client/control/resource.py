@@ -111,6 +111,7 @@ class ResourceController(AbstractController):
     def _update(self, argv):
         # First, get resource
         res = self._get_resource(argv)
+        cur_name = res.get_name()
 
         # Prune resource fields (all may not be updatable)
         self._prune_json_update(res)
@@ -132,7 +133,8 @@ class ResourceController(AbstractController):
         # Check if name has changed
         if item.has_key("name"):
             new_name = item["name"]
-            res.rename(new_name)
+            if cur_name != new_name:
+                res.rename(new_name)
 
         # Update resource
         res.set_json(item)
