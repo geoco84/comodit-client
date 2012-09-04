@@ -28,9 +28,6 @@ class PublishedEntity(Resource):
     def get_label(self):
         return self.get_name()
 
-    def get_author(self):
-        return self._get_field("author")
-
     def get_publisher(self):
         return self._get_field("publisher")
 
@@ -49,17 +46,16 @@ class PublishedEntity(Resource):
     def get_url(self):
         return self._get_field("url")
 
-    def get_comments(self):
-        return self._get_field("comments")
+    def get_documentation(self):
+        return self._get_field("documentation")
 
     def get_price(self):
         return self._get_field("price")
 
     def _show(self, indent = 0):
         super(PublishedEntity, self)._show(indent)
-        print " "*indent, "Author:", self.get_author()
         print " "*indent, "Url:", self.get_url()
-        print " "*indent, "Comments:", self.get_comments()
+        print " "*indent, "Documentation:", self.get_documentation()
         print " "*indent, "Price:", self.get_price()
         print " "*indent, "Published:", self.get_date_published()
         print " "*indent, "Last update:", self.get_date_updated()

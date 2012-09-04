@@ -644,6 +644,24 @@ class Application(Resource):
     def get_organization(self):
         return self._get_field("organization")
 
+    def get_url(self):
+        return self._get_field("url")
+
+    def set_url(self, url):
+        return self._set_field("url", url)
+
+    def get_documentation(self):
+        return self._get_field("documentation")
+
+    def set_documentation(self, documentation):
+        return self._set_field("documentation", documentation)
+
+    def get_price(self):
+        return self._get_field("price")
+
+    def set_price(self, price):
+        return self._set_field("price", price)
+
     def _show(self, indent = 0):
         """
         Prints the state of this object to standard output in a user-friendly
@@ -697,3 +715,10 @@ class Application(Resource):
             print "(can push: " + str(self.get_can_push()) + ")"
         else:
             print
+
+        print " "*indent, "Url: " + self.get_url()
+
+        print " "*indent, "Documentation: " + self.get_documentation()
+
+        print " "*indent, "Price: " + self.get_price()
+
