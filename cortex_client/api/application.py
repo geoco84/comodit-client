@@ -662,6 +662,12 @@ class Application(Resource):
     def set_price(self, price):
         return self._set_field("price", price)
 
+    def get_thumbnail_content(self):
+        return self._get_client().read(self._get_path() + "thumb", decode = False)
+
+    def set_thumbnail_content(self, path):
+        self._get_client().upload_to_exising_file_with_path(path, self._get_path() + "thumb")
+
     def _show(self, indent = 0):
         """
         Prints the state of this object to standard output in a user-friendly
