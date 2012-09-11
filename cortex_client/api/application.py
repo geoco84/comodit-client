@@ -26,7 +26,7 @@ class ApplicationResource(JsonWrapper):
         """
         Sets the state of a new instance of ApplicationResource with
         given state.
-        
+
         @param json_data: A quasi-JSON representation of object's state
         @type json_data: dict
         """
@@ -35,7 +35,7 @@ class ApplicationResource(JsonWrapper):
     def get_name(self):
         """
         Provides the name of the resource
-        
+
         @return: The name of the resource
         @rtype: String
         """
@@ -72,17 +72,17 @@ class Package(ApplicationResource):
 class PackageFactory(object):
     """
     Application's package factory.
-    
+
     @see: L{Package}
     @see: L{cortex_client.util.json_wrapper.JsonWrapper._get_list_field}
     """
     def new_object(self, json_data):
         """
         Instantiates a Package object using given state.
-        
+
         @param json_data: A quasi-JSON representation of a Package instance's state.
         @type json_data: String, dict or list
-        
+
         @return: A package object
         @rtype: L{Package}
         """
@@ -164,17 +164,17 @@ class Service(ApplicationResource):
 class ServiceFactory(object):
     """
     Application's service factory.
-    
+
     @see: L{Service}
     @see: L{cortex_client.util.json_wrapper.JsonWrapper._get_list_field}
     """
     def new_object(self, json_data):
         """
         Instantiates a Service object using given state.
-        
+
         @param json_data: A quasi-JSON representation of a Package instance's state.
         @type json_data: String, dict or list
-        
+
         @return: A service object
         @rtype: L{Service}
         """
@@ -184,7 +184,7 @@ class ServiceFactory(object):
 class ApplicationFile(FileResource):
     """
     Application's file resource.
-    
+
     @see: L{Application}
     """
 
@@ -194,7 +194,7 @@ class ApplicationFile(FileResource):
     def get_name(self):
         """
         Provides the name of the resource
-        
+
         @return: The name of the resource
         @rtype: String
         """
@@ -294,18 +294,18 @@ class ApplicationFileFactory(object):
 
     """
     Application's file factory.
-    
+
     @see: L{Application}
     @see: L{cortex_client.util.json_wrapper.JsonWrapper._get_list_field}
     """
     def new_object(self, json_data):
         """
         Instantiates an ApplicationFile object using given state.
-        
+
         @param json_data: A quasi-JSON representation of an ApplicationFile
         instance's state.
         @type json_data: String, dict or list
-        
+
         @return: A file object
         @rtype: L{ApplicationFile}
         """
@@ -357,18 +357,18 @@ class Action(JsonWrapper):
 class ActionFactory(object):
     """
     Application's action factory.
-    
+
     @see: L{Action}
     @see: L{cortex_client.util.json_wrapper.JsonWrapper._get_list_field}
     """
     def new_object(self, json_data):
         """
         Instantiates an Action object using given state.
-        
+
         @param json_data: A quasi-JSON representation of an Action
         instance's state.
         @type json_data: String, dict or list
-        
+
         @return: An action object
         @rtype: L{Action}
         """
@@ -457,18 +457,18 @@ class Handler(JsonWrapper):
 class HandlerFactory(object):
     """
     Application's handler factory.
-    
+
     @see: L{Handler}
     @see: L{cortex_client.util.json_wrapper.JsonWrapper._get_list_field}
     """
     def new_object(self, json_data):
         """
         Instantiates a Handler object using given state.
-        
+
         @param json_data: A quasi-JSON representation of an Action
         instance's state.
         @type json_data: String, dict or list
-        
+
         @return: An action object
         @rtype: L{Action}
         """
@@ -716,9 +716,9 @@ class Application(Resource):
         else:
             print
 
-        print " "*indent, "Url: " + self.get_url()
+        print " "*indent, "Url: %s" % self.get_url()
 
-        print " "*indent, "Documentation: " + self.get_documentation()
+        print " "*indent, "Documentation: %s" % self.get_documentation()
 
-        print " "*indent, "Price: " + self.get_price()
+        print " "*indent, "Price: %s" % self.get_price()
 

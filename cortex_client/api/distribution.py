@@ -195,8 +195,8 @@ class Distribution(Configurable):
         else:
             print
 
-        print " "*indent, "Url: " + self.get_url()
+        print " "*indent, "Url: %s" % self.get_url()
 
-        print " "*indent, "Documentation: " + self.get_documentation()
+        print " "*indent, "Documentation: %s" % self.get_documentation()
 
-        print " "*indent, "Price: " + self.get_price()
+        print " "*indent, "Price: %s" % self.get_price()
