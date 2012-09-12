@@ -5,6 +5,7 @@ import os
 from cortex_client.util import path
 from cortex_client.api.exceptions import PythonApiException
 from cortex_client.api.collection import ResourceNotFoundException
+from cortex_client.rest.exceptions import ApiException
 
 class ExportException(Exception):
     pass
@@ -34,8 +35,15 @@ class Export(object):
 
         if export_thumb:
             # Dump thumbnail to disk
-            with open(os.path.join(res_folder, "thumb"), "w") as f:
-                f.write(res.get_thumbnail_content().read())
+            try:
+                content_reader = res.get_thumbnail_content()
+                with open(os.path.join(res_folder, "thumb"), "w") as f:
+                    f.write(content_reader.read())
+            except ApiException as e:
+                if e.code == 404:
+                    pass
+                else:
+                    raise e
 
     def export_application(self, app, app_folder):
         self._export_resource(app, app_folder, True, True)
