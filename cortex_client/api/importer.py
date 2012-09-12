@@ -57,6 +57,12 @@ class Import(object):
         else:
             app.files().get_resource(name).set_content(src_file)
 
+    def _import_thumbnail(self, conflict, src_file, app, resource_type = "resource"):
+        if self._queue_actions:
+            self._actions_queue.add_action(UploadThumb(conflict, src_file, app, resource_type))
+        else:
+            app.set_thumbnail_content(src_file)
+
     def _import_resource_with_files(self, res, root_folder, resource_type = "resource"):
         res.load(root_folder)
 
@@ -68,6 +74,10 @@ class Import(object):
             file_name = f.get_name()
             content_file = os.path.join(root_folder, "files", file_name)
             self._import_file_content(conflict, content_file, res, file_name, resource_type)
+
+        if os.path.exists(os.path.join(root_folder, "thumb")):
+            thumb_file = os.path.join(root_folder, "thumb")
+            self._import_thumbnail(conflict, thumb_file, res, resource_type)
 
     def import_application(self, org, root_folder):
         app = Application(org.applications(), None)
@@ -210,6 +220,19 @@ class UploadContent(Action):
     def execute(self):
         file_res = self._res.files().get_resource(self._file_name)
         file_res.set_content(self._src_file)
+
+class UploadThumb(Action):
+    def __init__(self, conflict, src_file, res, resource_type = "resource"):
+        super(UploadContent, self).__init__(conflict)
+        self._src_file = src_file
+        self._res = res
+        self._resource_type = resource_type
+
+    def get_summary(self):
+        return "Upload thumbnail to " + self._resource_type + " '" + self._res.get_name() + "'"
+
+    def execute(self):
+        self._res.set_thumbnail_content(self._src_file)
 
 class CreateResource(Action):
     def __init__(self, conflict, res_object, resource_type):

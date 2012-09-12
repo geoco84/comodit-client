@@ -75,6 +75,12 @@ class Distribution(Configurable):
     def get_file_content(self, name):
         return self._get_client().read(self._get_file_path(name), decode = False)
 
+    def get_thumbnail_content(self):
+        return self._get_client().read(self._get_path() + "thumb", decode = False)
+
+    def set_thumbnail_content(self, path):
+        self._get_client().upload_to_exising_file_with_path(path, self._get_path() + "thumb")
+
     def get_settings(self):
         """
         Provides platform's settings.
