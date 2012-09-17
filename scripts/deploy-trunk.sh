@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Building cortex-client from master"
+echo "Building comodit-client from master"
 
 set -e
 
@@ -9,7 +9,7 @@ cd ..
 git checkout master
 git pull
 
-NAME="cortex-client"
+NAME="comodit-client"
 VERSION=`git describe --long --match "release*dev" | awk -F"-" '{print $2}'`
 RELEASE=`git describe --long --match "release*dev" | awk -F"-" '{print $3}'`
 
