@@ -115,7 +115,7 @@ class SettingCollection(Collection):
 
 class Configurable(Resource):
     def settings(self):
-        return SettingCollection(self._get_api(), self._get_path() + "settings/")
+        return SettingCollection(self.get_api(), self._get_path() + "settings/")
 
     def new_setting(self, key):
         setting = Setting(self.settings())

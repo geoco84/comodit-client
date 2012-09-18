@@ -462,7 +462,7 @@ class Host(Configurable):
         @rtype: L{InstanceInfo}
         @raise PythonApiException: If host was not yet provisioned
         """
-        return InstanceCollection(self._get_api(), self._get_path() + "instance/")
+        return InstanceCollection(self.get_api(), self._get_path() + "instance/")
 
     def _show(self, indent = 0):
         print " "*indent, "Name:", self.get_name()
@@ -559,13 +559,13 @@ class Host(Configurable):
             raise PythonApiException("Unable to clone host: " + e.message)
 
     def applications(self):
-        return ApplicationContextCollection(self._get_api(), self._get_path() + "applications/")
+        return ApplicationContextCollection(self.get_api(), self._get_path() + "applications/")
 
     def platform(self):
-        return PlatformContextCollection(self._get_api(), self._get_path() + "platform/")
+        return PlatformContextCollection(self.get_api(), self._get_path() + "platform/")
 
     def distribution(self):
-        return DistributionContextCollection(self._get_api(), self._get_path() + "distribution/")
+        return DistributionContextCollection(self.get_api(), self._get_path() + "distribution/")
 
     def get_changes(self, show_processed = False):
         if self.get_state() == "DEFINED":
@@ -595,10 +595,10 @@ class Host(Configurable):
         self._get_client().delete(self._get_path() + "changes/" + str(order_num))
 
     def audit_logs(self):
-        return AuditCollection(self._get_path() + "audit/", self._get_api())
+        return AuditCollection(self._get_path() + "audit/", self.get_api())
 
     def compliance(self):
-        return ComplianceCollection(self._get_path() + "compliance/", self._get_api())
+        return ComplianceCollection(self._get_path() + "compliance/", self.get_api())
 
     def live_update_file(self, app_name, file_name):
         self._get_client().update(self._get_path() + "applications/" + app_name + "/files/" + file_name + "/_update", decode = False)

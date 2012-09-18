@@ -51,7 +51,7 @@ class Distribution(Configurable):
         return self._get_path() + "files/" + name + "/content"
 
     def files(self):
-        return DistributionFileCollection(self._get_api(), self._get_path() + "files/")
+        return DistributionFileCollection(self.get_api(), self._get_path() + "files/")
 
     def get_files(self):
         return self._get_list_field("files", FileFactory(self.files()))
@@ -130,7 +130,7 @@ class Distribution(Configurable):
         self._add_to_list_field("parameters", parameter)
 
     def parameters(self):
-        return DistributionParameterCollection(self._get_api(), self._get_path() + "parameters/")
+        return DistributionParameterCollection(self.get_api(), self._get_path() + "parameters/")
 
     def clone(self, clone_name):
         try:

@@ -116,7 +116,7 @@ class Platform(Configurable):
         return self._get_path() + "files/" + name + "/content"
 
     def files(self):
-        return PlatformFileCollection(self._get_api(), self._get_path() + "files/")
+        return PlatformFileCollection(self.get_api(), self._get_path() + "files/")
 
     def get_files(self):
         return self._get_list_field("files", FileFactory(self.files()))
@@ -159,7 +159,7 @@ class Platform(Configurable):
         self._add_to_list_field("parameters", parameter)
 
     def parameters(self):
-        return PlatformParameterCollection(self._get_api(), self._get_path() + "parameters/")
+        return PlatformParameterCollection(self.get_api(), self._get_path() + "parameters/")
 
     def clone(self, clone_name):
         try:

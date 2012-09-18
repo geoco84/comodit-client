@@ -65,7 +65,7 @@ class Resource(JsonWrapper):
         self.__enforce_connected()
         return self._collection.get_client()
 
-    def _get_api(self):
+    def get_api(self):
         """
         Provides rest client to server.
         

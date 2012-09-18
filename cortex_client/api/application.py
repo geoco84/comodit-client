@@ -569,7 +569,7 @@ class Application(Resource):
         self._add_to_list_field("files", app_file)
 
     def files(self):
-        return ApplicationFileCollection(self._get_api(), self._get_path() + "files/")
+        return ApplicationFileCollection(self.get_api(), self._get_path() + "files/")
 
     def get_handlers(self):
         """
@@ -620,7 +620,7 @@ class Application(Resource):
         self._add_to_list_field("parameters", parameter)
 
     def parameters(self):
-        return ParameterCollection(self._get_api(), self._get_path() + "parameters/")
+        return ParameterCollection(self.get_api(), self._get_path() + "parameters/")
 
     def clone(self, clone_name):
         try:

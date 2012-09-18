@@ -98,7 +98,7 @@ class Environment(Configurable):
         @return: The collection
         @rtype: L{HostCollection}
         """
-        return HostCollection(self._get_api(), self._get_path() + "hosts/")
+        return HostCollection(self.get_api(), self._get_path() + "hosts/")
 
     def new_host(self, name):
         """
@@ -121,7 +121,7 @@ class Environment(Configurable):
             raise PythonApiException("Unable to clone environment: " + e.message)
 
     def audit_logs(self):
-        return AuditCollection(self._get_path() + "audit/", self._get_api())
+        return AuditCollection(self._get_path() + "audit/", self.get_api())
 
     def get_settings(self):
         return self._get_list_field("settings", SettingFactory(None))

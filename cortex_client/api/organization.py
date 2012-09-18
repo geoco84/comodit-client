@@ -84,7 +84,7 @@ class Organization(Configurable):
         @return: The collection
         @rtype: L{ApplicationCollection}
         """
-        return ApplicationCollection(self._get_api(), self._get_path() + "applications/")
+        return ApplicationCollection(self.get_api(), self._get_path() + "applications/")
 
     def new_application(self, name):
         """
@@ -104,7 +104,7 @@ class Organization(Configurable):
         @return: The collection
         @rtype: L{PlatformCollection}
         """
-        return PlatformCollection(self._get_api(), self._get_path() + "platforms/")
+        return PlatformCollection(self.get_api(), self._get_path() + "platforms/")
 
     def new_platform(self, name):
         """
@@ -124,7 +124,7 @@ class Organization(Configurable):
         @return: The collection
         @rtype: L{ApplicationCollection}
         """
-        return DistributionCollection(self._get_api(), self._get_path() + "distributions/")
+        return DistributionCollection(self.get_api(), self._get_path() + "distributions/")
 
     def new_distribution(self, name):
         """
@@ -144,7 +144,7 @@ class Organization(Configurable):
         @return: The collection
         @rtype: L{ApplicationCollection}
         """
-        return EnvironmentCollection(self._get_api(), self._get_path() + "environments/")
+        return EnvironmentCollection(self.get_api(), self._get_path() + "environments/")
 
     def new_environment(self, name):
         """
@@ -159,7 +159,7 @@ class Organization(Configurable):
         return env
 
     def groups(self):
-        return GroupCollection(self._get_api(), self._get_path() + "groups/")
+        return GroupCollection(self.get_api(), self._get_path() + "groups/")
 
     def get_access_key(self):
         access = self._get_field("access")
@@ -182,10 +182,10 @@ class Organization(Configurable):
             raise PythonApiException("Could not reset secret key: " + e.message)
 
     def audit_logs(self):
-        return AuditCollection(self._get_path() + "audit/", self._get_api())
+        return AuditCollection(self._get_path() + "audit/", self.get_api())
 
     def purchased_apps(self):
-        return PurchasedCollection(self._get_path() + "purchased/applications/", self._get_api())
+        return PurchasedCollection(self._get_path() + "purchased/applications/", self.get_api())
 
     def purchased_dists(self):
-        return PurchasedCollection(self._get_path() + "purchased/distributions/", self._get_api())
+        return PurchasedCollection(self._get_path() + "purchased/distributions/", self.get_api())
