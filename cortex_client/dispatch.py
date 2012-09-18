@@ -111,7 +111,7 @@ Available resources:
     parser.add_argument("--user", dest = "username", help = "username on cortex server", default = None)
     parser.add_argument("--pass", dest = "password", help = "password on cortex server", default = None)
     parser.add_argument("--templates", dest = "templates_path", help = "directory containing JSON templates", default = config.templates_path)
-    parser.add_argument("--profile", dest = "profile_name", help = "Name of profile to use", default = config.get_default_profile_name())
+    parser.add_argument("--profile", dest = "profile_name", help = "Name of profile to use", default = None)
 
     parser.add_argument("--force", dest = "force", help = "bypass change management and update everything", action = "store_true", default = False)
     parser.add_argument("--debug", dest = "debug", help = "display debug information", action = "store_true", default = False)
@@ -177,23 +177,22 @@ def _parse(argv):
 
     # Use profile data to configure server API connector. Options provided
     # on command-line have priority.
-    profile = config.get_profile(globals.options.profile_name)
     if globals.options.api:
         api = globals.options.api
     else:
-        api = profile["api"]
+        api = config.get_api(globals.options.profile_name)
         globals.options.api = api
 
     if globals.options.username:
         username = globals.options.username
     else:
-        username = profile["username"]
+        username = config.get_username(globals.options.profile_name)
         globals.options.username = username
 
     if globals.options.password:
         password = globals.options.password
     else:
-        password = profile["password"]
+        password = config.get_password(globals.options.profile_name)
         globals.options.password = password
 
     api = CortexApi(api, username, password)

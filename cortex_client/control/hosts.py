@@ -235,8 +235,8 @@ class HostsController(ResourceController):
         vnc_params = host.instance().get_single_resource().get_vnc()
 
         # Get VNC viewer call string
-        profile = Config().get_profile(globals.options.profile_name)
-        viewer_call_template = profile.get("vnc_viewer_call")
+        config = Config()
+        viewer_call_template = config.get_vnc_viewer_call(globals.options.profile_name)
         if viewer_call_template is None or viewer_call_template == "":
             raise ControllerException("VNC viewer is not configured")
 

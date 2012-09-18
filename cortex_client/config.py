@@ -67,53 +67,40 @@ class Config(object):
             self.config = self._get_config_dict(config_path)
             self._check_config()
 
-        default_profile_name = self.config["client"]["default_profile"]
-        self.default_profile = self.config[default_profile_name]
+        self.default_profile_name = self.config["client"]["default_profile"]
+        self.default_profile = self.config[self.default_profile_name]
 
         # set templates directory
         self.templates_path = self._get_templates_path()
         if not self.templates_path:
             raise IOError("No templates directory found")
 
-    def get_default_profile_name(self):
-        """
-        Provides default profile's name.
-        @return: A profile's name
-        @rtype: String
-        """
-        return self.config["client"]["default_profile"]
+    def _get_value(self, profile_name, key):
+        if profile_name is None:
+            profile_name = self.default_profile_name
+        if not self.config.has_key(profile_name):
+            raise ConfigException("No profile with name " + str(profile_name))
+        profile = self.config[profile_name]
+        if not profile.has_key(key):
+            raise ConfigException("Profile has no field " + str(key))
 
-    def get_default_api(self):
-        """
-        Provides default profile's API URL.
-        @return: A URL
-        @rtype: String
-        """
-        return self.default_profile["api"]
+        value = profile[key]
+        if value is None and self.default_profile.has_key(key):
+            value = self.default_profile[key]
 
-    def get_default_username(self):
-        """
-        Provides default profile's user name.
-        @return: A user name
-        @rtype: String
-        """
-        return self.default_profile["username"]
+        return value
 
-    def get_default_password(self):
-        """
-        Provides default profile's password.
-        @return: A password
-        @rtype: String
-        """
-        return self.default_profile["password"]
+    def get_api(self, profile_name):
+        return self._get_value(profile_name, "api")
 
-    def get_profile(self, name):
-        """
-        Provides properties associated to given profile.
-        @param name: A profile's name
-        @type name: String
-        """
-        return self.config[name]
+    def get_username(self, profile_name):
+        return self._get_value(profile_name, "username")
+
+    def get_password(self, profile_name):
+        return self._get_value(profile_name, "password")
+
+    def get_vnc_viewer_call(self, profile_name):
+        return self._get_value(profile_name, "vnc_viewer_call")
 
     def _check_config(self):
         """
