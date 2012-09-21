@@ -169,35 +169,42 @@ _cortex_client()
         fi
 
         params=`eval ${COMP_WORDS[*]} --completions ${cur_arg}`
-        case "$?" in
+        ret_eval=$?
+
+        local IFS=$'\n'
+        case "$ret_eval" in
             "0")
                 # Ignore spaces when parsing possible values
-                local IFS=$'\n'
                 COMPREPLY=( $(compgen -W "${params}" -- ${cur}) )
-
-                # Escape spaces
-                local cur_comp=0
-                local num_of_comps=${#COMPREPLY[@]}
-                while ((cur_comp < num_of_comps))
-                do
-                    local to_escape="${COMPREPLY[$cur_comp]}"
-                    _escape_string $to_escape
-                    local escaped=${__escaped_string}
-                    COMPREPLY[$cur_comp]=$escaped
-                    ((cur_comp++))
-                done
                 ;;
             "1")
                 # File completion is requested
-                COMPREPLY=( $(compgen -f ${cur}) )
+                local IFS=$'\n'
+                COMPREPLY=( $(compgen -f -- ${cur}) )
+                compopt -o nospace
                 ;;
             "2")
                 # Directory completion is requested
-                COMPREPLY=( $(compgen -d ${cur}) )
+                local IFS=$'\n'
+                COMPREPLY=( $(compgen -d -S / -- ${cur}) )
+                compopt -o nospace
                 ;;
             *)
                 ;;
         esac
+
+        # Escape spaces
+        local cur_comp=0
+        local num_of_comps=${#COMPREPLY[@]}
+        while ((cur_comp < num_of_comps))
+        do
+            local to_escape="${COMPREPLY[$cur_comp]}"
+            _escape_string $to_escape
+            local escaped=${__escaped_string}
+            COMPREPLY[$cur_comp]=$escaped
+            ((cur_comp++))
+        done
+
         _clean
         return 0
     fi
