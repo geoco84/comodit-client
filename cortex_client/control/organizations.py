@@ -11,8 +11,7 @@ import os, json
 
 from cortex_client.util import globals
 from cortex_client.control.root_resource import RootResourceController
-from cortex_client.control.exceptions import ArgumentException, \
-    ControllerException
+from cortex_client.control.exceptions import ArgumentException
 from cortex_client.control.settings import OrganizationSettingsController
 from cortex_client.control.groups import GroupsController
 from cortex_client.control.doc import ActionDoc
@@ -20,11 +19,6 @@ from cortex_client.api import collections
 from cortex_client.control.audit import AuditHelper
 from cortex_client.api.exporter import Export
 from cortex_client.api.importer import Import
-
-
-class SyncException(ControllerException):
-    def __init__(self, msg):
-        ControllerException.__init__(self, msg)
 
 
 class OrganizationsController(RootResourceController):

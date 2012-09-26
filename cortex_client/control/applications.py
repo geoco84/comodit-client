@@ -19,6 +19,7 @@ from cortex_client.control.parameters import ApplicationParametersController
 from cortex_client.control.doc import ActionDoc
 from cortex_client.control.exceptions import ArgumentException
 from cortex_client.control.store_helper import StoreHelper
+from cortex_client.control.sync import AppSyncController
 
 class ApplicationsController(OrganizationResourceController):
 
@@ -30,6 +31,7 @@ class ApplicationsController(OrganizationResourceController):
         # sub-controllers
         self._register_subcontroller(["files"], ApplicationFilesController())
         self._register_subcontroller(["parameters"], ApplicationParametersController())
+        self._register_subcontroller(["sync"], AppSyncController())
 
         self._doc = "Applications handling."
 
