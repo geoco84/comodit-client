@@ -19,6 +19,7 @@ from cortex_client.control.doc import ActionDoc
 from cortex_client.control.exceptions import ArgumentException
 from cortex_client.api.importer import Import
 from cortex_client.control.store_helper import StoreHelper
+from cortex_client.control.sync import DistSyncController
 
 class DistributionsController(OrganizationResourceController):
 
@@ -31,6 +32,7 @@ class DistributionsController(OrganizationResourceController):
         self._register_subcontroller(["settings"], DistributionSettingsController())
         self._register_subcontroller(["files"], DistributionFilesController())
         self._register_subcontroller(["parameters"], DistributionParametersController())
+        self._register_subcontroller(["sync"], DistSyncController())
 
         self._doc = "Distributions handling."
 

@@ -70,3 +70,16 @@ class AppSyncController(SyncController):
             raise ArgumentException("Expected org name, app name and folder path")
         res = collections.applications(self._api, argv[0]).get_resource(argv[1])
         return (res, argv[2])
+
+class DistSyncController(SyncController):
+    def __init__(self):
+        super(DistSyncController, self).__init__("<org_name> <dist_name> <local_folder>")
+
+    def _print_sync_completions(self, param_num, argv):
+        completions.dist_sync_completions(self._api, param_num, argv)
+
+    def _get_resource_and_folder(self, argv):
+        if len(argv) != 3:
+            raise ArgumentException("Expected org name, dist name and folder path")
+        res = collections.distributions(self._api, argv[0]).get_resource(argv[1])
+        return (res, argv[2])

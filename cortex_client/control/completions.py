@@ -46,10 +46,24 @@ def app_completions(api, param_num, argv):
     elif param_num == 1 and len(argv) > 0:
         print_identifiers(collections.applications(api, argv[0]))
 
+def dist_completions(api, param_num, argv):
+    if param_num == 0:
+        org_completions(api, param_num, argv)
+    elif param_num == 1 and len(argv) > 0:
+        print_identifiers(collections.distributions(api, argv[0]))
+
 def app_sync_completions(api, param_num, argv):
     if param_num == 0:
         org_completions(api, param_num, argv)
     elif param_num == 1:
         app_completions(api, param_num, argv)
+    elif param_num == 2:
+        print_dir_completions()
+
+def dist_sync_completions(api, param_num, argv):
+    if param_num == 0:
+        org_completions(api, param_num, argv)
+    elif param_num == 1:
+        dist_completions(api, param_num, argv)
     elif param_num == 2:
         print_dir_completions()
