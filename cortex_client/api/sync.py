@@ -9,7 +9,7 @@ class SyncException(ControllerException):
         super(SyncException, self).__init__(msg)
 
 class Diff(object):
-    def __init__(self, diff_type, key, old_value = None, new_value = None):
+    def __init__(self, diff_type, key = None, old_value = None, new_value = None):
         self.type = diff_type
         self.key = key
         self.old_value = old_value
@@ -20,10 +20,16 @@ class LocalFileProvider(object):
         self._folder = folder
 
     def exists(self, name):
-        return os.path.exists(os.path.join(self._folder, name))
+        return os.path.exists(os.path.join(self._folder, "files", name))
+
+    def thumb_exists(self):
+        return os.path.exists(os.path.join(self._folder, "thumb"))
 
     def open(self, name):
-        return open(os.path.join(self._folder, name), "r")
+        return open(os.path.join(self._folder, "files", name), "r")
+
+    def open_thumb(self):
+        return open(os.path.join(self._folder, "thumb"), "r")
 
     def close(self, fd):
         fd.close()
@@ -39,8 +45,18 @@ class RemoteFileProvider(object):
         except ResourceNotFoundException:
             return False
 
+    def thumb_exists(self):
+        try:
+            self._remote_res.get_thumbnail_content()
+            return True
+        except ResourceNotFoundException:
+            return False
+
     def open(self, name):
         return self._remote_res.files().get_resource(name).get_content()
+
+    def open_thumb(self):
+        return self._remote_res.get_thumbnail_content()
 
     def close(self, fd):
         pass
@@ -73,6 +89,24 @@ class SyncEngine(object):
 
         fd1 = reader1.open(file_name)
         fd2 = reader2.open(file_name)
+
+        is_same_content = fd1.read() == fd2.read()
+
+        reader1.close(fd1)
+        reader2.close(fd2)
+        return is_same_content
+
+    def _is_same_thumb(self, reader1, reader2):
+        exists1 = reader1.thumb_exists()
+        exists2 = reader2.thumb_exists()
+
+        if exists1 != exists2:
+            return False
+        elif not exists1:
+            return True
+
+        fd1 = reader1.open_thumb()
+        fd2 = reader2.open_thumb()
 
         is_same_content = fd1.read() == fd2.read()
 
@@ -133,6 +167,13 @@ class SyncEngine(object):
                 if key == "files":
                     for f in value:
                         diffs.append(Diff("set_file_content", f["name"]))
+
+        # Thumbnails
+        if not self._is_same_thumb(src_reader, dest_reader):
+            if src_reader.thumb_exists():
+                diffs.append(Diff("set_thumb"))
+            else:
+                diffs.append(Diff("delete_thumb"))
 
         return diffs
 
@@ -220,6 +261,10 @@ class SyncEngine(object):
                 print "Deletion of file '" + d.key + "' content"
             elif d.type == "set_file_content":
                 print "Creation/update of file '" + d.key + "' content"
+            elif d.type == "set_thumb":
+                print "Set thumbnail content"
+            elif d.type == "delete_thumb":
+                print "Delete thumbnail"
 
     def _apply_pull_diff(self, diffs, local_dict, remote_res):
         files_dir = os.path.join(self._folder_path, "files")
@@ -230,6 +275,12 @@ class SyncEngine(object):
                 content_reader = remote_res.files().get_resource(d.key).get_content()
                 with open(os.path.join(files_dir, d.key), "w") as fd:
                     fd.write(content_reader.read())
+            elif d.type == "set_thumb":
+                content_reader = remote_res.get_thumbnail_content()
+                with open(os.path.join(self._folder_path, "thumb"), "w") as fd:
+                    fd.write(content_reader.read())
+            elif d.type == "delete_thumb":
+                os.remove(os.path.join(self._folder_path, "thumb"))
         remote_res.dump(self._folder_path)
 
     def _apply_push_diff(self, diffs, local_dict, remote_res):
@@ -287,6 +338,8 @@ class SyncEngine(object):
                 content_path = os.path.join(self._folder_path, "files", d.key)
                 if os.path.exists(content_path):
                     remote_res.files().get_resource(d.key).set_content(content_path)
+            elif d.type == "set_thumb":
+                remote_res.set_thumbnail_content(os.path.join(self._folder_path, "thumb"))
 
         # Update remaining fields
         remote_res.commit()
@@ -295,7 +348,7 @@ class SyncEngine(object):
         remote_json = remote_res.get_json()
         local_json = json.load(open(self._deffile_path, "r"))
 
-        diffs = self._diff(remote_json, local_json, True, RemoteFileProvider(remote_res), LocalFileProvider(self._files_folder_path))
+        diffs = self._diff(remote_json, local_json, True, RemoteFileProvider(remote_res), LocalFileProvider(self._folder_path))
         if dry_run:
             self._print_diff(diffs)
         else:
@@ -305,7 +358,7 @@ class SyncEngine(object):
         remote_json = remote_res.get_json()
         local_json = json.load(open(self._deffile_path, "r"))
 
-        diffs = self._diff(local_json, remote_json, False, LocalFileProvider(self._files_folder_path), RemoteFileProvider(remote_res))
+        diffs = self._diff(local_json, remote_json, False, LocalFileProvider(self._folder_path), RemoteFileProvider(remote_res))
         if dry_run:
             self._print_diff(diffs)
         else:
