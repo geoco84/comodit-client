@@ -152,7 +152,7 @@ class SyncEngine(object):
                 elif type(value) is types.ListType:
                     did_output = self._print_list_diff(level + 2, value, remote_value) or did_output
                 else:
-                    print level * " " + "Different values for key '", key + "'", value, "->", remote_value
+                    print level * " " + "Different values for key '" + key + "'", value, "->", remote_value
                     did_output = True
 
         for key, value in src_dict.iteritems():
@@ -192,11 +192,11 @@ class SyncEngine(object):
                 if self._try_print_dictified_list(level, key_name, src_list, dest_list):
                     return True
                 else:
-                    print "only elements order is different"
+                    print level * " " + "only elements order is different"
                     return False
             except SyncException:
                 pass
-        print "different lists"
+        print level * " " + "different lists"
         return True
 
     def _print_diff(self, diffs):
