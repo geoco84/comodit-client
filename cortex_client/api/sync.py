@@ -136,6 +136,69 @@ class SyncEngine(object):
 
         return diffs
 
+    def _print_dict_diff(self, level, src_dict, dest_dict):
+        did_output = False
+        for key, value in dest_dict.iteritems():
+            remote_value = src_dict.get(key)
+            if remote_value is None:
+                print level * " " + "'" + key + "' will be added"
+                did_output = True
+            elif value != remote_value:
+                if type(value) != type(remote_value):
+                    print level * " " + "Different types for key '", key + "'", type(value), "->", type(remote_value)
+                    did_output = True
+                elif type(value) is types.DictType:
+                    did_output = self._print_dict_diff(level + 2, value, remote_value) or did_output
+                elif type(value) is types.ListType:
+                    did_output = self._print_list_diff(level + 2, value, remote_value) or did_output
+                else:
+                    print level * " " + "Different values for key '", key + "'", value, "->", remote_value
+                    did_output = True
+
+        for key, value in src_dict.iteritems():
+            local_value = dest_dict.get(key)
+            if local_value is None:
+                print level * " " + "'" + key + "' should be removed"
+                did_output = True
+
+        return did_output
+
+    def _dictify(self, key, input_list):
+        output_dict = {}
+        for e in input_list:
+            if not type(e) is types.DictType:
+                return None
+            if not e.has_key(key):
+                return None
+            if output_dict.has_key(key):
+                return None
+            output_dict[e[key]] = e
+        return output_dict
+
+    def _try_print_dictified_list(self, level, key_name, src_list, dest_list):
+        src_dict = self._dictify(key_name, src_list)
+        if src_dict is None:
+            raise SyncException("Could not dictify source list")
+
+        dest_dict = self._dictify(key_name, dest_list)
+        if dest_dict is None:
+            raise SyncException("Could not dictify destination list")
+
+        return self._print_dict_diff(level, src_dict, dest_dict)
+
+    def _print_list_diff(self, level, src_list, dest_list):
+        for key_name in ("name", "id"):
+            try:
+                if self._try_print_dictified_list(level, key_name, src_list, dest_list):
+                    return True
+                else:
+                    print "only elements order is different"
+                    return False
+            except SyncException:
+                pass
+        print "different lists"
+        return True
+
     def _print_diff(self, diffs):
         for d in diffs:
             if d.type == "delete":
@@ -144,11 +207,13 @@ class SyncEngine(object):
                 print "Creation of field '" + d.key + "'"
             elif d.type == "update":
                 if type(d.old_value) != type(d.new_value):
-                    print "Conflicting types for field", d.key
+                    print "Conflicting types for field '", d.key + "':", type(d.old_value), "->", type(d.new_value)
                 elif type(d.old_value) is types.DictType:
-                    print "Conflicting values for field '" + d.key + "': different dicts"
+                    print "Conflicting values for dict field '" + d.key + "':"
+                    self._print_dict_diff(2, d.old_value, d.new_value)
                 elif type(d.old_value) is types.ListType:
-                    print "Conflicting values for field '" + d.key + "': different lists"
+                    print "Conflicting values for list field '" + d.key + "':"
+                    self._print_list_diff(2, d.old_value, d.new_value)
                 else:
                     print "Conflicting values for field '" + d.key + "':", d.old_value, "->", d.new_value
             elif d.type == "delete_file_content":
