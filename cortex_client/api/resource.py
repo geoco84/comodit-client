@@ -120,13 +120,13 @@ class Resource(JsonWrapper):
         """
         self._set_field("description", description)
 
-    def update(self):
+    def update(self, parameters = {}):
         """
         Replaces the state of this object with state retrieved from server.
 
         @raise PythonApiException: If server access point is not set.
         """
-        self.set_json(self._get_client().read(self._get_path()))
+        self.set_json(self._get_client().read(self._get_path(), parameters = parameters))
 
     def rename(self, new_name):
         current_path = self._get_path()

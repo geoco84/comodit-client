@@ -137,11 +137,11 @@ class ComplianceCollection(Collection):
             raise ArgumentException("Wrong compliance error name, should be of the form applications/<app_name>/<type>/<id>")
         return (name[slash_index0 + 1:slash_index1], name[slash_index1 + 1:slash_index2], name[slash_index2 + 1:])
 
-    def get_resource(self, name):
+    def get_resource(self, name, parameters = {}):
         (app_name, res_type, res_name) = self.__split_name(name)
         error = ComplianceError(self, None)
         error.set_application(app_name)
         error.set_type_collection(res_type)
         error.set_name(res_name)
-        error.update()
+        error.update(parameters = parameters)
         return error
