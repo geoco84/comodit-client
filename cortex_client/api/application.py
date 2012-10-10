@@ -656,6 +656,12 @@ class Application(Resource):
     def set_documentation(self, documentation):
         return self._set_field("documentation", documentation)
 
+    def get_license(self):
+        return self._get_field("license")
+
+    def set_license(self, license_text):
+        return self._set_field("license", license_text)
+
     def get_price(self):
         return self._get_field("price")
 
@@ -724,7 +730,9 @@ class Application(Resource):
 
         print " "*indent, "Url: %s" % self.get_url()
 
-        print " "*indent, "Documentation: %s" % self.get_documentation()
+        print " "*indent, "Documentation:\n%s" % self.get_documentation()
+
+        print " "*indent, "License:\n%s" % self.get_documentation()
 
         print " "*indent, "Price: %s" % self.get_price()
 
