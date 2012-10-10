@@ -182,7 +182,7 @@ class SyncEngine(object):
         for key, value in dest_dict.iteritems():
             remote_value = src_dict.get(key)
             if remote_value is None:
-                print level * " " + "'" + key + "' will be added"
+                print level * " " + "'" + key + "' will be removed"
                 did_output = True
             elif value != remote_value:
                 if type(value) != type(remote_value):
@@ -199,7 +199,7 @@ class SyncEngine(object):
         for key, value in src_dict.iteritems():
             local_value = dest_dict.get(key)
             if local_value is None:
-                print level * " " + "'" + key + "' should be removed"
+                print level * " " + "'" + key + "' will be added"
                 did_output = True
 
         return did_output
