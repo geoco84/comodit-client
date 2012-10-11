@@ -49,6 +49,9 @@ class User(Resource):
     def set_email(self, email):
         return self._set_field("email", email)
 
+    def set_password(self, password):
+        return self._set_field("password", password)
+
     def get_role(self):
         """
         Provides the role associated to this user.
