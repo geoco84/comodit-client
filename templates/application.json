@@ -22,7 +22,7 @@
         {
             "name":"<user name>",
             "password":"",
-            "loginGroup":"";
+            "loginGroup":"",
             "groups":[],
             "home":"",
             "fullName":"",
