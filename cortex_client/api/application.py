@@ -99,11 +99,41 @@ class User(ApplicationResource):
     def get_groups(self):
         return self._get_list_field("groups", StringFactory())
 
+    def get_gid(self):
+        return self._get_field("gid")
+
+    def set_gid(self, gid):
+        return self._set_field("gid", gid)
+
+    def get_uid(self):
+        return self._get_field("uid")
+
+    def set_uid(self, uid):
+        return self._set_field("uid", uid)
+
+    def set_password(self, password):
+        return self._set_field("password", password)
+
     def get_password(self):
-        json_data = self._get_field("password")
-        if json_data is None:
-            return None
-        return Parameter(json_data)
+        return self._get_field("password")
+
+    def set_home(self, home):
+        return self._set_field("home", home)
+
+    def get_home(self):
+        return self._get_field("home")
+
+    def set_full_name(self, full_name):
+        return self._set_field("fullName", full_name)
+
+    def get_full_name(self):
+        return self._get_field("fullName")
+
+    def set_shell(self, shell):
+        return self._set_field("shell", shell)
+
+    def get_shell(self):
+        return self._get_field("shell")
 
     def show(self, indent = 0):
         print " "*indent, self.get_name() + ":"
@@ -111,10 +141,12 @@ class User(ApplicationResource):
         print " "*(indent + 2), "Groups:"
         for g in self.get_groups():
             print " "*(indent + 4), g
-        print " "*(indent + 2), "Password:"
-        password = self.get_password()
-        if not password is None:
-            password.show(indent + 4)
+        print " "*(indent + 2), "Password:", self.get_password()
+        print " "*(indent + 2), "UID:", self.get_uid()
+        print " "*(indent + 2), "GID:", self.get_gid()
+        print " "*(indent + 2), "Home:", self.get_home()
+        print " "*(indent + 2), "Full name:", self.get_full_name()
+        print " "*(indent + 2), "Shell:", self.get_shell()
 
 class UserFactory(object):
     def new_object(self, json_data):
@@ -125,8 +157,15 @@ class Group(ApplicationResource):
     def __init__(self, json_data = None):
         super(Group, self).__init__(json_data)
 
+    def get_gid(self):
+        return self._get_field("gid")
+
+    def set_gid(self, gid):
+        return self._set_field("gid", gid)
+
     def show(self, indent = 0):
-        print " "*indent, self.get_name()
+        print " "*indent, self.get_name() + ":"
+        print " "*indent, "GID:", self.get_gid()
 
 class GroupFactory(object):
     def new_object(self, json_data):
