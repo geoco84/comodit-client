@@ -9,7 +9,7 @@ Application module.
 from cortex_client.util.json_wrapper import JsonWrapper, StringFactory
 from resource import Resource
 from file import File
-from cortex_client.api.parameters import Parameter, ParameterFactory, \
+from cortex_client.api.parameters import ParameterFactory, \
     ParameterCollection
 from cortex_client.api.collection import Collection
 from cortex_client.api.file import FileResource
@@ -89,6 +89,40 @@ class PackageFactory(object):
         return Package(json_data)
 
 
+class Repository(ApplicationResource):
+    def __init__(self, json_data = None):
+        super(ApplicationResource, self).__init__(json_data)
+
+    def get_location(self):
+        return self._get_field("location")
+
+    def set_location(self, location):
+        return self._set_field("location", location)
+
+    def show(self, indent = 0):
+        print " "*indent, self.get_name() + ":"
+        print " "*(indent + 2), "Location:", self.get_location()
+
+class RepositoryFactory(object):
+    """
+    Application's package factory.
+
+    @see: L{Package}
+    @see: L{cortex_client.util.json_wrapper.JsonWrapper._get_list_field}
+    """
+    def new_object(self, json_data):
+        """
+        Instantiates a Package object using given state.
+
+        @param json_data: A quasi-JSON representation of a Package instance's state.
+        @type json_data: String, dict or list
+
+        @return: A package object
+        @rtype: L{Package}
+        """
+        return Repository(json_data)
+
+
 class User(ApplicationResource):
     def __init__(self, json_data = None):
         super(User, self).__init__(json_data)
@@ -165,7 +199,7 @@ class Group(ApplicationResource):
 
     def show(self, indent = 0):
         print " "*indent, self.get_name() + ":"
-        print " "*indent, "GID:", self.get_gid()
+        print " "*(indent + 2), "GID:", self.get_gid()
 
 class GroupFactory(object):
     def new_object(self, json_data):
@@ -713,6 +747,15 @@ class Application(Resource):
     def set_thumbnail_content(self, path):
         self._get_client().upload_to_exising_file_with_path(path, self._get_path() + "thumb")
 
+    def get_repositories(self):
+        return self._get_list_field("repositories", RepositoryFactory())
+
+    def set_repositories(self, repositories):
+        self._set_list_field("repositories", repositories)
+
+    def add_repository(self, repo):
+        self._add_to_list_field("repositories", repo)
+
     def _show(self, indent = 0):
         """
         Prints the state of this object to standard output in a user-friendly
@@ -748,6 +791,10 @@ class Application(Resource):
         users = self.get_users()
         for u in users:
             u.show(indent + 2)
+        print " "*indent, "Repositories:"
+        repos = self.get_repositories()
+        for r in repos:
+            r.show(indent + 2)
         print " "*indent, "Handlers:"
         handlers = self.get_handlers()
         for f in handlers:

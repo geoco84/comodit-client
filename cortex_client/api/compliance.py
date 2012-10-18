@@ -2,7 +2,7 @@
 from cortex_client.api.collection import Collection
 from cortex_client.api.resource import Resource
 from cortex_client.control.exceptions import ArgumentException
-from cortex_client.util.json_wrapper import JsonWrapper
+from cortex_client.util.json_wrapper import JsonWrapper, StringFactory
 
 class ServiceState(JsonWrapper):
     def is_running(self):
@@ -53,6 +53,71 @@ class PackageState(JsonWrapper):
     def show(self, indent = 0):
         print " " * indent, "Installed:", self.is_installed()
 
+class UserState(JsonWrapper):
+    def is_present(self):
+        return self._get_field("present")
+
+    def get_gid(self):
+        return self._get_field("gid")
+
+    def get_uid(self):
+        return self._get_field("uid")
+
+    def get_name(self):
+        return self._get_field("name")
+
+    def get_home_dir(self):
+        return self._get_field("dir")
+
+    def get_shell(self):
+        return self._get_field("shell")
+
+    def get_gecos(self):
+        return self._get_field("gecos")
+
+    def get_groups(self):
+        return self._get_list_field("groups", StringFactory())
+
+    def show(self, indent = 0):
+        print " " * indent, "Present:", self.is_present()
+        print " " * indent, "Name:", self.get_name()
+        print " " * indent, "GID:", self.get_gid()
+        print " " * indent, "UID:", self.get_uid()
+        print " " * indent, "Home directory:", self.get_home_dir()
+        print " " * indent, "Shell:", self.get_shell()
+        print " " * indent, "GECOS:", self.get_gecos()
+        print " " * indent, "Groups:", self.get_groups()
+
+class GroupState(JsonWrapper):
+    def is_present(self):
+        return self._get_field("present")
+
+    def get_name(self):
+        return self._get_field("name")
+
+    def get_gid(self):
+        return self._get_field("gid")
+
+    def show(self, indent = 0):
+        print " " * indent, "Present:", self.is_present()
+        print " " * indent, "Name:", self.get_name()
+        print " " * indent, "GID:", self.get_gid()
+
+class RepositoryState(JsonWrapper):
+    def is_present(self):
+        return self._get_field("present")
+
+    def get_name(self):
+        return self._get_field("name")
+
+    def get_location(self):
+        return self._get_field("location")
+
+    def show(self, indent = 0):
+        print " " * indent, "Present:", self.is_present()
+        print " " * indent, "Name:", self.get_name()
+        print " " * indent, "Location:", self.get_location()
+
 class ComplianceError(Resource):
     def _get_path(self):
         return self._collection.get_path() + self.get_name()
@@ -77,6 +142,12 @@ class ComplianceError(Resource):
             return "files"
         elif res_type == "packageResource":
             return "packages"
+        elif res_type == "userResource":
+            return "users"
+        elif res_type == "groupResource":
+            return "groups"
+        elif res_type == "repoResource":
+            return "repos"
 
     def set_type_collection(self, col):
         if col == "services":
@@ -85,6 +156,12 @@ class ComplianceError(Resource):
             self.set_resource_type("fileResource")
         elif col == "packages":
             self.set_resource_type("packageResource")
+        elif col == "users":
+            self.set_resource_type("userResource")
+        elif col == "groups":
+            self.set_resource_type("groupResource")
+        elif col == "repos":
+            self.set_resource_type("repoResource")
 
     def get_res_name(self):
         return self._get_field("name")
@@ -108,6 +185,12 @@ class ComplianceError(Resource):
             return FileState(self._get_field(state + "State"))
         elif self.get_resource_type() == "packageResource":
             return PackageState(self._get_field(state + "State"))
+        elif self.get_resource_type() == "userResource":
+            return UserState(self._get_field(state + "State"))
+        elif self.get_resource_type() == "groupResource":
+            return GroupState(self._get_field(state + "State"))
+        elif self.get_resource_type() == "repoResource":
+            return RepositoryState(self._get_field(state + "State"))
         else:
             return self._get_field("currentState")
 
