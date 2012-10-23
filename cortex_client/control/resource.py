@@ -51,8 +51,8 @@ class ResourceController(AbstractController):
                 label = r.get_label()
                 print r.get_identifier() + ("" if label is None else " - " + label)
 
-    def _print_identifiers(self, collection):
-        self._print_resource_identifiers(collection.get_resources())
+    def _print_identifiers(self, collection, parameters = {}):
+        self._print_resource_identifiers(collection.get_resources(parameters))
 
     def _print_collection_completions(self, param_num, argv):
         pass

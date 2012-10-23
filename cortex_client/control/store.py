@@ -4,6 +4,7 @@ from cortex_client.control.root_resource import RootResourceController
 from cortex_client.control.exceptions import ArgumentException
 from cortex_client.config import Config
 from cortex_client.util.editor import edit_text
+from cortex_client.util import globals
 
 class StoreController(RootResourceController):
 
@@ -18,31 +19,36 @@ class StoreController(RootResourceController):
 
         self._register("purchase", self._purchase, self._print_purchase_completions)
 
-    def _print_list_completions(self, param_num, argv):
-        if param_num == 0:
-            self._print_identifiers(self._api.organizations())
+    def _get_filter(self):
+        if globals.options.private:
+            return "private"
+        elif globals.options.featured:
+            return "featured"
+        else:
+            return "public"
+
+    def _get_filter_parameters(self):
+        list_filter = self._get_filter()
+        param = {"filter": list_filter}
+        if globals.options.org_name:
+            param["org_name"] = globals.options.org_name
+        elif list_filter == "private":
+            raise ArgumentException("An organization name must be provided with private filter")
+        return param
 
     def _get_list_parameters(self, argv):
-        if len(argv) == 1:
-            return {"org_name" : argv[0]}
-        else:
-            return {}
+        return self._get_filter_parameters()
 
     def _print_resource_completions(self, param_num, argv):
         if param_num == 0:
-            self._print_identifiers(self.get_collection(argv))
-        elif param_num == 1:
-            self._print_identifiers(self._api.organizations())
+            self._print_identifiers(self.get_collection(argv), parameters = self._get_filter_parameters())
 
     def _get_show_parameters(self, argv):
-        if len(argv) == 2:
-            return {"org_name" : argv[1]}
-        else:
-            return {}
+        return self._get_filter_parameters()
 
     def _print_purchase_completions(self, param_num, argv):
         if param_num == 0:
-            self._print_identifiers(self.get_collection(argv))
+            self._print_identifiers(self.get_collection(argv), parameters = self._get_filter_parameters())
         elif param_num == 1:
             self._print_identifiers(self._api.organizations())
 

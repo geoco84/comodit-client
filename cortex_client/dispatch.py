@@ -65,6 +65,7 @@ def _get_value_options(parser):
                 "--templates",
                 "--profile",
                 "--completions",
+                "--org",
                 "--flavor"
                 ]
     return options
@@ -106,6 +107,11 @@ Available resources:
 
     parser.add_argument("--skip-conflict", dest = "skip_conflict", help = "Skip conflicts on import", action = "store_true", default = False)
     parser.add_argument("--dry-run", dest = "dry_run", help = "Dry-run for import", action = "store_true", default = False)
+
+    parser.add_argument("--public", dest = "public", help = "List only public apps/dists", action = "store_true", default = False)
+    parser.add_argument("--private", dest = "private", help = "List only private apps/dists", action = "store_true", default = False)
+    parser.add_argument("--featured", dest = "featured", help = "List only featured apps/dists", action = "store_true", default = False)
+    parser.add_argument("--org", dest = "org_name", help = "Set organization", default = None)
 
     parser.add_argument("--api", dest = "api", help = "endpoint for the API", default = None)
     parser.add_argument("--user", dest = "username", help = "username on cortex server", default = None)
