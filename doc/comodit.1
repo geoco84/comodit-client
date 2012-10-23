@@ -2,12 +2,12 @@
 .\"     Title: comodit
 .\"    Author: Daniel Bartz <daniel.bartz@guardis.com>
 .\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
-.\"      Date: 09/28/2012
+.\"      Date: 10/23/2012
 .\"    Manual: Command Line User Interface Guide
 .\"    Source: Guardis
 .\"  Language: English
 .\"
-.TH "COMODIT" "1" "09/28/2012" "Guardis" "Command Line User Interface Gu"
+.TH "COMODIT" "1" "10/23/2012" "Guardis" "Command Line User Interface Gu"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -31,7 +31,7 @@
 comodit \- ComodIT command\-line interface
 .SH "SYNOPSIS"
 .HP \w'/usr/bin/comodit\ 'u
-/usr/bin/comodit [\-h\ |\ \-\-help] [\-f\ FILE\ |\-\-file\ FILE] [\-j\ FILE\ |\-\-json\ FILE] [\-d\ |\ \-\-default] [\-t\ |\ \-\-test] [\-\-raw] [\-\-flavor\ FLAVOR] [\-\-skip\-chown] [\-\-skip\-chmod] [\-\-skip\-conflict] [\-\-dry\-run] [\-\-api\ URL] [\-\-user\ USERNAME] [\-\-pass\ PASSWORD] [\-\-templates\ PATH] [\-\-profile\ NAME] [\-\-force] [\-\-debug] [\-\-version] {resource} [sub\-resources\ \&...] {action} [\&...]
+/usr/bin/comodit [\-h\ |\ \-\-help] [\-f\ FILE\ |\-\-file\ FILE] [\-j\ FILE\ |\-\-json\ FILE] [\-d\ |\ \-\-default] [\-t\ |\ \-\-test] [\-\-raw] [\-\-flavor\ FLAVOR] [\-\-skip\-chown] [\-\-skip\-chmod] [\-\-skip\-conflict] [\-\-dry\-run] [\-\-public] [\-\-private] [\-\-featured] [\-\-org\ NAME] [\-\-api\ URL] [\-\-user\ USERNAME] [\-\-pass\ PASSWORD] [\-\-templates\ PATH] [\-\-profile\ NAME] [\-\-force] [\-\-debug] [\-\-version] {resource} [sub\-resources\ \&...] {action} [\&...]
 .SH "DESCRIPTION"
 .PP
 ComodIT is a global, integrated and centralized platform that eases the management of Linux systems and cloud provisioning (i\&.e\&. the instantiation of ready\-to\-use VMs)\&.
@@ -355,6 +355,16 @@ import [PATH]
 .RS 4
 Application is imported from given folder\&.
 .RE
+.PP
+publish ORG_NAME APP_NAME
+.RS 4
+Publishes application into store\&.
+.RE
+.PP
+unpublish ORG_NAME APP_NAME
+.RS 4
+Unpublishes application from store\&.
+.RE
 .SS "flavors"
 .PP
 A flavor is uniquely identified by its name\&. Therefore \*(Aqlist\*(Aq does not take any argument and \*(Aqshow\*(Aq takes a flavor name\&. As flavors are read\-only resources, \*(Aqadd\*(Aq, \*(Aqupdate\*(Aq and \*(Aqdelete\*(Aq actions are not available\&.
@@ -420,6 +430,16 @@ Creates a copy of given distribution\&.
 import [PATH]
 .RS 4
 Distribution is imported from given folder\&.
+.RE
+.PP
+publish ORG_NAME DIST_NAME
+.RS 4
+Publishes distribution into store\&.
+.RE
+.PP
+unpublish ORG_NAME DIST_NAME
+.RS 4
+Unpublishes distribution from store\&.
 .RE
 .SS "users"
 .PP
@@ -768,6 +788,26 @@ audit ORG_NAME ENV_NAME HOST_NAME
 .RS 4
 Prints audit logs for this host\&.
 .RE
+.SS "app\-store"
+.PP
+The unique application store contains published applications\&. Therefore, \*(Aqlist\*(Aq takes no argument\&. Published applications are uniquely identified by their UUID\&. \*(Aqshow\*(Aq action takes a UUID as argument\&. See \*(Aq\-\-public\*(Aq, \*(Aq\-\-private\*(Aq, \*(Aq\-\-featured\*(Aq and \*(Aq\-\-org\*(Aq options for further control on actions\&.
+.PP
+Application store features 1 additional action:
+.PP
+purchase UUID ORG_NAME
+.RS 4
+Purchases selected application and copies it into provided organization\&.
+.RE
+.SS "dist\-store"
+.PP
+The unique distribution store contains published distributions\&. Therefore, \*(Aqlist\*(Aq takes no argument\&. Published distributions are uniquely identified by their UUID\&. \*(Aqshow\*(Aq action takes a UUID as argument\&. See \*(Aq\-\-public\*(Aq, \*(Aq\-\-private\*(Aq, \*(Aq\-\-featured\*(Aq and \*(Aq\-\-org\*(Aq options for further control on actions\&.
+.PP
+Distribution store features 1 additional action:
+.PP
+purchase UUID ORG_NAME
+.RS 4
+Purchases selected distribution and copies it into provided organization\&.
+.RE
 .SH "OPTIONS"
 .PP
 \-f FILE |\-\-file FILE
@@ -813,6 +853,26 @@ Skips ownership setting on files (see \*(Aqtree\*(Aq on rendering)\&.
 \-\-skip\-chmod
 .RS 4
 Skips mode setting on files (see \*(Aqtree\*(Aq on rendering)\&.
+.RE
+.PP
+\-\-public
+.RS 4
+Only public store entries are listed\&.
+.RE
+.PP
+\-\-private
+.RS 4
+Only private store entries are listed\&. \-\-org option must also be set\&.
+.RE
+.PP
+\-\-featured
+.RS 4
+Only featured store entries are listed\&.
+.RE
+.PP
+\-\-org NAME
+.RS 4
+Must be used in conjunction of \-\-private option; only private store entries shared with named organization are listed (user used to login must be part of the organization)\&.
 .RE
 .PP
 \-\-api URL

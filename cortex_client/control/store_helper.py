@@ -46,9 +46,8 @@ class StoreHelper(object):
 
         template_json = json.load(open(os.path.join(Config()._get_templates_path(), self._template)))
         template_json[self._label] = app.get_uuid()
-        updated = edit_text(json.dumps(template_json, indent = 4))
 
-        pub_app = self.get_store()._new_resource(json.loads(updated))
+        pub_app = self.get_store()._new_resource(template_json)
         self.get_store().add_resource(pub_app)
 
     def _publish_doc(self):
