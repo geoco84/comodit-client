@@ -95,6 +95,8 @@ class ResourceController(AbstractController):
 
         res = self.get_collection(argv)._new_resource(item)
         parameters = {}
+        if options.populate:
+            parameters["populate"] = "true"
         if options.default:
             parameters["default"] = "true"
         if options.test:
