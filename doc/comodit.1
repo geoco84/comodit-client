@@ -2,12 +2,12 @@
 .\"     Title: comodit
 .\"    Author: Daniel Bartz <daniel.bartz@guardis.com>
 .\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
-.\"      Date: 10/23/2012
+.\"      Date: 10/26/2012
 .\"    Manual: Command Line User Interface Guide
 .\"    Source: Guardis
 .\"  Language: English
 .\"
-.TH "COMODIT" "1" "10/23/2012" "Guardis" "Command Line User Interface Gu"
+.TH "COMODIT" "1" "10/26/2012" "Guardis" "Command Line User Interface Gu"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -31,7 +31,7 @@
 comodit \- ComodIT command\-line interface
 .SH "SYNOPSIS"
 .HP \w'/usr/bin/comodit\ 'u
-/usr/bin/comodit [\-h\ |\ \-\-help] [\-f\ FILE\ |\-\-file\ FILE] [\-j\ FILE\ |\-\-json\ FILE] [\-d\ |\ \-\-default] [\-t\ |\ \-\-test] [\-\-raw] [\-\-flavor\ FLAVOR] [\-\-skip\-chown] [\-\-skip\-chmod] [\-\-skip\-conflict] [\-\-dry\-run] [\-\-public] [\-\-private] [\-\-featured] [\-\-org\ NAME] [\-\-api\ URL] [\-\-user\ USERNAME] [\-\-pass\ PASSWORD] [\-\-templates\ PATH] [\-\-profile\ NAME] [\-\-force] [\-\-debug] [\-\-version] {resource} [sub\-resources\ \&...] {action} [\&...]
+/usr/bin/comodit [\-h\ |\ \-\-help] [\-f\ FILE\ |\-\-file\ FILE] [\-j\ FILE\ |\-\-json\ FILE] [\-d\ |\ \-\-default] [\-t\ |\ \-\-test] [\-p\ |\ \-\-populate] [\-\-raw] [\-\-flavor\ FLAVOR] [\-\-skip\-chown] [\-\-skip\-chmod] [\-\-skip\-conflict] [\-\-dry\-run] [\-\-public] [\-\-private] [\-\-featured] [\-\-org\ NAME] [\-\-api\ URL] [\-\-user\ USERNAME] [\-\-pass\ PASSWORD] [\-\-templates\ PATH] [\-\-profile\ NAME] [\-\-force] [\-\-debug] [\-\-version] {resource} [sub\-resources\ \&...] {action} [\&...]
 .SH "DESCRIPTION"
 .PP
 ComodIT is a global, integrated and centralized platform that eases the management of Linux systems and cloud provisioning (i\&.e\&. the instantiation of ready\-to\-use VMs)\&.
@@ -448,6 +448,13 @@ A user is uniquely identified by its name\&. Therefore, \*(Aqlist\*(Aq and \*(Aq
 .PP
 An organization is uniquely identified by its name\&. Therefore, \*(Aqlist\*(Aq and \*(Aqadd\*(Aq take no argument where \*(Aqshow\*(Aq, \*(Aqupdate\*(Aq and \*(Aqdelete\*(Aq take an organization name\&.
 .PP
+An additional options is available when adding an organization:
+.PP
+\*(Aq\-\-populate\*(Aq or \*(Aq\-p\*(Aq
+.RS 4
+if the option is given, created organization will be populated with a default environment, distribution and platform\&.
+.RE
+.PP
 An organization has 2 sub\-resources:
 .sp
 .RS 4
@@ -828,6 +835,11 @@ Let driver add required files and/or settings to newly created platform\&.
 \-t | \-\-test
 .RS 4
 Let driver test provided settings of newly created platform\&.
+.RE
+.PP
+\-p | \-\-populate
+.RS 4
+Populate newly created organization with default environment, distribution and platform\&.
 .RE
 .PP
 \-\-skip\-conflict
