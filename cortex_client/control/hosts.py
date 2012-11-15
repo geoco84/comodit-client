@@ -220,9 +220,7 @@ class HostsController(ResourceController):
     def _prune_json_update(self, json_wrapper):
         super(HostsController, self)._prune_json_update(json_wrapper)
         json_wrapper._del_field("organization")
-        json_wrapper._del_field("environment")
         json_wrapper._del_field("settings")
-        json_wrapper._del_field("applications")
         json_wrapper._del_field("distribution")
         json_wrapper._del_field("platform")
         json_wrapper._del_field("state")
