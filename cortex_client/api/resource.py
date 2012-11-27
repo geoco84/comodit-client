@@ -160,14 +160,14 @@ class Resource(JsonWrapper):
         self.__enforce_connected()
         self._collection.add_resource(self, parameters = parameters)
 
-    def delete(self):
+    def delete(self, parameters = {}):
         """
         Deletes associated resource on the server.
 
         @raise PythonApiException: If server access point is not set.
         """
         self.__enforce_connected()
-        self._get_client().delete(self._get_path())
+        self._get_client().delete(self._get_path(), parameters = parameters)
 
     def show(self, as_json = False, indent = 0):
         """

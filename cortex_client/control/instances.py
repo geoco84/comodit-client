@@ -73,7 +73,10 @@ class InstancesController(ResourceController):
     def _delete(self, argv):
         instance = self._get_resource(argv)
         if globals.options.force or prompt.confirm(prompt = "Delete VM ?", resp = False):
-            instance.delete()
+            if globals.options.force:
+                instance.delete(parameters = {"force": "true"})
+            else:
+                instance.delete()
 
     def _delete_doc(self):
         return ActionDoc("delete", "<org_name>  <env_name> <host_name>", """
