@@ -223,7 +223,7 @@ class UploadContent(Action):
 
 class UploadThumb(Action):
     def __init__(self, conflict, src_file, res, resource_type = "resource"):
-        super(UploadContent, self).__init__(conflict)
+        super(UploadThumb, self).__init__(conflict)
         self._src_file = src_file
         self._res = res
         self._resource_type = resource_type
