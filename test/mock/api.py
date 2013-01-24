@@ -1,10 +1,7 @@
-class Client(object):
+class HttpClient(object):
     def __init__(self, endpoint, username, password):
         pass
 
-class CortexApi(object):
+class Client(object):
     def __init__(self, endpoint, username, password):
-        self._client = Client(endpoint, username, password)
-
-    def get_client(self):
-        return self._client
+        self._http_client = HttpClient(endpoint, username, password)

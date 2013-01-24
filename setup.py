@@ -28,7 +28,7 @@ def get_template_files():
 VERSION = '0.0'
 RELEASE = '0'
 try:
-    from cortex_client import version
+    from comodit_client import version
     VERSION = version.VERSION
     RELEASE = version.RELEASE
 except ImportError:
@@ -37,7 +37,7 @@ except ImportError:
 setup(
     name = 'comodit-client',
     description = 'ComodIT command line client and python library.',
-    long_description = read('README'),
+    long_description = read('README.md'),
     version = VERSION + "-" + RELEASE,
     author = 'see AUTHOR file',
     author_email = 'team@comodit.com',

@@ -3,7 +3,7 @@
 NAME="comodit-client"
 SPEC_FILE_NAME="comodit-client"
 PLATFORMS="epel-6-i386 fedora-16-i386 fedora-17-i386"
-TAR_CONTENT="cortex_client templates setup.py comodit auto_completion/comodit doc/comodit.1 README rpmbuild/etc"
+TAR_CONTENT="comodit_client templates setup.py comodit auto_completion/comodit README.md doc/comodit.1 rpmbuild/etc"
 
 cd `dirname $0`
 cd ..

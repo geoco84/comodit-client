@@ -4,7 +4,7 @@
 
 import sys
 
-from cortex_client import dispatch
+from comodit_client import dispatch
 
 def main(argv):
     dispatch.run(argv)

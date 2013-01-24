@@ -8,6 +8,9 @@ class RequestWithMethodMock(object):
     def add_data(self, obj):
         pass
 
+    def add_header(self, key, value):
+        pass
+
 
 class RequestResult(object):
     def __init__(self, string_result):

@@ -20,7 +20,7 @@ set_version()
 generate_version_file()
 {
     # Generate version file
-    echo "VERSION=\""$1"\"" > cortex_client/version.py
-    echo "RELEASE=\""$2"\"" >> cortex_client/version.py
-    echo "COMMIT=\""$3"\"" >> cortex_client/version.py
+    echo "VERSION=\""$1"\"" > comodit_client/version.py
+    echo "RELEASE=\""$2"\"" >> comodit_client/version.py
+    echo "COMMIT=\""$3"\"" >> comodit_client/version.py
 }
