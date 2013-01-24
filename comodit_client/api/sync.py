@@ -371,7 +371,7 @@ class SyncEngine(object):
         return self._print_dict_diff(level, src_dict, dest_dict)
 
     def _print_list_diff(self, level, src_list, dest_list):
-        for key_name in ("name", "id"):
+        for key_name in ("name", "id", "key"):
             try:
                 if self._try_print_dictified_list(level, key_name, src_list, dest_list):
                     return True
@@ -469,7 +469,7 @@ class SyncEngine(object):
 
                 if d.type == "create" or d.type == "update":
                     # (Re)-create all
-                    for s in remote_res.se:
+                    for s in remote_res.settings_f:
                         remote_res.settings()._create(s)
 
         # Reset file contents
