@@ -448,7 +448,7 @@ class SyncEngine(object):
                 if d.type == "create" or d.type == "update":
                     # (Re)-create all
                     for f in remote_res.files_f:
-                        remote_res.files()._create(f.get_json())
+                        remote_res.files()._create(f)
 
             if d.key == "parameters":
                 if d.type == "delete" or d.type == "update":
@@ -459,7 +459,7 @@ class SyncEngine(object):
                 if d.type == "create" or d.type == "update":
                     # (Re)-create all
                     for p in remote_res.parameters_f:
-                        remote_res.parameters()._create(p.get_json())
+                        remote_res.parameters()._create(p)
 
             if d.key == "settings":
                 if d.type == "delete" or d.type == "update":
@@ -470,7 +470,7 @@ class SyncEngine(object):
                 if d.type == "create" or d.type == "update":
                     # (Re)-create all
                     for s in remote_res.se:
-                        remote_res.settings()._create(s.get_json())
+                        remote_res.settings()._create(s)
 
         # Reset file contents
         for d in diffs:
