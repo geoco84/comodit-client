@@ -259,24 +259,24 @@ class SyncEngine(object):
 
     def _diff(self, src_dict, dest_dict, is_pull, src_reader, dest_reader):
         diffs = []
-        for key, value in dest_dict.iteritems():
+        for key, dest_value in dest_dict.iteritems():
             if self.__is_ignore(key, is_pull):
                 continue
 
-            remote_value = src_dict.get(key)
-            if remote_value is None:
+            src_value = src_dict.get(key)
+            if src_value is None:
                 diffs.append(Diff("delete", key))
                 if key == "files":
-                    for f in remote_value:
+                    for f in src_value:
                         diffs.append(Diff("delete_file_content", f["name"]))
-            elif value != remote_value:
-                diffs.append(Diff("update", key, value, remote_value))
+            elif dest_value != src_value:
+                diffs.append(Diff("update", key, dest_value, src_value))
                 if key == "files":
                     local_names = set()
-                    for f in value:
+                    for f in dest_value:
                         local_names.add(f["name"])
                     remote_names = set()
-                    for f in remote_value:
+                    for f in src_value:
                         remote_names.add(f["name"])
 
                     to_delete = local_names - remote_names
@@ -293,7 +293,7 @@ class SyncEngine(object):
                             else:
                                 diffs.append(Diff("delete_file_content", file_name))
             elif key == "files":
-                for f in value:
+                for f in dest_value:
                     file_name = f["name"]
                     if not self._is_same_content(src_reader, dest_reader, file_name):
                         if src_reader.exists(file_name):
@@ -301,14 +301,14 @@ class SyncEngine(object):
                         else:
                             diffs.append(Diff("delete_file_content", file_name))
 
-        for key, value in src_dict.iteritems():
+        for key, src_value in src_dict.iteritems():
             if self.__is_ignore(key, is_pull):
                 continue
-            local_value = dest_dict.get(key)
-            if local_value is None:
-                diffs.append(Diff("create", key, None, value))
+            dest_value = dest_dict.get(key)
+            if dest_value is None:
+                diffs.append(Diff("create", key, None, src_value))
                 if key == "files":
-                    for f in value:
+                    for f in src_value:
                         diffs.append(Diff("set_file_content", f["name"]))
 
         # Thumbnails
@@ -320,28 +320,28 @@ class SyncEngine(object):
 
         return diffs
 
-    def _print_dict_diff(self, level, src_dict, dest_dict):
+    def _print_dict_diff(self, level, new_dict, old_dict):
         did_output = False
-        for key, value in dest_dict.iteritems():
-            remote_value = src_dict.get(key)
-            if remote_value is None:
+        for key, old_value in old_dict.iteritems():
+            new_value = new_dict.get(key)
+            if new_value is None:
                 print level * " " + "'" + key + "' will be removed"
                 did_output = True
-            elif value != remote_value:
-                if type(value) != type(remote_value):
-                    print level * " " + "Different types for key '", key + "'", type(value), "->", type(remote_value)
+            elif old_value != new_value:
+                if type(old_value) != type(new_value):
+                    print level * " " + "Different types for key '", key + "'", type(old_value), "->", type(new_value)
                     did_output = True
-                elif type(value) is types.DictType:
-                    did_output = self._print_dict_diff(level + 2, value, remote_value) or did_output
-                elif type(value) is types.ListType:
-                    did_output = self._print_list_diff(level + 2, value, remote_value) or did_output
+                elif type(old_value) is types.DictType:
+                    did_output = self._print_dict_diff(level + 2, new_value, old_value) or did_output
+                elif type(old_value) is types.ListType:
+                    did_output = self._print_list_diff(level + 2, new_value, old_value) or did_output
                 else:
-                    print level * " " + "Different values for key '" + key + "'", value, "->", remote_value
+                    print level * " " + "Different values for key '" + key + "'", old_value, "->", new_value
                     did_output = True
 
-        for key, value in src_dict.iteritems():
-            local_value = dest_dict.get(key)
-            if local_value is None:
+        for key, new_value in new_dict.iteritems():
+            old_value = old_dict.get(key)
+            if old_value is None:
                 print level * " " + "'" + key + "' will be added"
                 did_output = True
 
@@ -394,10 +394,10 @@ class SyncEngine(object):
                     print "Conflicting types for field '", d.key + "':", type(d.old_value), "->", type(d.new_value)
                 elif type(d.old_value) is types.DictType:
                     print "Conflicting values for dict field '" + d.key + "':"
-                    self._print_dict_diff(2, d.old_value, d.new_value)
+                    self._print_dict_diff(2, d.new_value, d.old_value)
                 elif type(d.old_value) is types.ListType:
                     print "Conflicting values for list field '" + d.key + "':"
-                    self._print_list_diff(2, d.old_value, d.new_value)
+                    self._print_list_diff(2, d.new_value, d.old_value)
                 else:
                     print "Conflicting values for field '" + d.key + "':", d.old_value, "->", d.new_value
             elif d.type == "delete_file_content":
