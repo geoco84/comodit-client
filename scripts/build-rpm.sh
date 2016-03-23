@@ -20,8 +20,9 @@ sed -i "s/#RELEASE#/${RELEASE}/g" rpmbuild/SPECS/${SPEC_FILE_NAME}.spec
 sed -i "s/#COMMIT#/${COMMIT}/g" rpmbuild/SPECS/${SPEC_FILE_NAME}.spec
 rpmbuild -ba rpmbuild/SPECS/${SPEC_FILE_NAME}.spec
 
-for platform in $PLATFORMS
-do
+if [ -f "/usr/bin/mock" ]
+then
+for platform in "${PLATFORMS[@]}"
     /usr/bin/mock -r ${platform} --rebuild $HOME/rpmbuild/SRPMS/${NAME}-${VERSION}-${RELEASE}*.src.rpm
 done
-
+fi
