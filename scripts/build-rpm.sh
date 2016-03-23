@@ -23,6 +23,7 @@ rpmbuild -ba rpmbuild/SPECS/${SPEC_FILE_NAME}.spec
 if [ -f "/usr/bin/mock" ]
 then
 for platform in "${PLATFORMS[@]}"
+do
     /usr/bin/mock -r ${platform} --rebuild $HOME/rpmbuild/SRPMS/${NAME}-${VERSION}-${RELEASE}*.src.rpm
 done
 fi
