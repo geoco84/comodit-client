@@ -2,7 +2,7 @@ Source: comodit-client
 Section: shells
 Priority: optional
 Maintainer: Gerard Dethier <gerard.dethier@comodit.com>
-Build-Depends: debhelper (>=8.0.0~), python-support (>= 0.6), cdbs (>= 0.4.49), python-all-dev , python-setuptools
+Build-Depends: debhelper (>=8.0.0~), cdbs (>= 0.4.49), python-all-dev , python-setuptools
 XS-Python-Version: >=2.6
 Standards-Version: 3.9.1.0
 
