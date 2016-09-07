@@ -40,7 +40,7 @@ class HostCollection(Collection):
     def new(self, name, description = "", plat = None, dist = None, apps = []):
         """
         Instantiates a new host object.
-        
+
         @param name: Host's name.
         @type name: string
         @param description: Host's description.
@@ -203,7 +203,7 @@ class Instance(Entity):
     """
 
     @property
-    def identifier(self):
+    def name(self):
         return ""
 
     def create(self):
@@ -337,6 +337,17 @@ class Instance(Entity):
                 return p.value
         return None
 
+    def alerts(self):
+        """
+        Instantiates MonitorinAlert collection.
+
+        @return: MonitoringAlert collection.
+        @rtype: L{MonitoringAlertCollection}
+        """
+
+        return MonitoringAlertCollection(self.client, self.url + "alerts/")
+
+
     def get_file_content(self, path):
         """
         Retrieves the content of a file on a host's instance.
@@ -351,6 +362,24 @@ class Instance(Entity):
             return self._http_client.read(self.url + "files", parameters = {"path": path}, decode = False)
         except ApiException as e:
             raise PythonApiException("Unable to get file: " + e.message)
+
+    def get_status(self, collection, sensor):
+        """
+        Retrieves the value of a monitoring sensor on a host's instance.
+
+        @param collection: The collection to query (e.g. host, apache).
+        @param sensor: The specific sensor to query.
+        @type collection: string
+        @type sensor: string
+        @return: the value read from the sensor.
+        @rtype: string
+        """
+
+        try:
+            result = self._http_client.read(self.url + "status" + "/" + collection + "/" + sensor, decode = True)
+            return result["status"][sensor]
+        except ApiException as e:
+            raise PythonApiException("Unable to get sensor content: " + e.message)
 
     def start(self):
         """
@@ -483,6 +512,27 @@ class Instance(Entity):
             return publicip
         else:
             return ip
+
+    def wait_for_state(self, state, time_out = 0):
+        """
+        Waits until instance has requested state.
+
+        @param state: The expected state (see L{Instance.State}).
+        @type state: string
+        @param time_out: A time-out expressed in seconds. A time-out of 0 seconds
+        means no time-out (method can wait forever).
+        @type time_out: int
+        """
+
+        start_time = time.time()
+        self.refresh()
+        while self.state != state:
+            time.sleep(3)
+            now = time.time()
+            if time_out > 0 and (now - start_time) > time_out:
+                break
+            self.refresh()
+
 
 
 class Task(JsonWrapper):
@@ -631,13 +681,114 @@ class ChangeCollection(Collection):
         @param show_processed: If true, asks all changes to the server, including
         already processed changes.
         @return: The list of changes in this collection.
-        @rtype: list of L{Entity}
+        @rtype: list of L{Change}
         """
 
+        params = parameters.copy()
         if show_processed:
-            parameters["show_processed"] = "true"
-        return super(ChangeCollection, self).list(parameters = parameters)
+            params["show_processed"] = "true"
+        return super(ChangeCollection, self).list(parameters = params)
 
+class MonitoringAlert(Entity):
+    """
+    TODO
+    """
+
+    @property
+    def identifier(self):
+        return str(self.timestamp)
+
+    @property
+    def name(self):
+        return self.identifier
+
+    @property
+    def label(self):
+        return "%s/%s: %s" % (self.plugin, self.sensor, self.output)
+
+    @property
+    def timestamp(self):
+        """
+        The timestamp of the alert.
+
+        @rtype: int
+        """
+
+        return self._get_field("timestamp")
+
+    @property
+    def plugin(self):
+        """
+        The plugin the alert relates to.
+
+        @rtype: string
+        """
+
+        return self._get_field("collection")
+
+    @property
+    def sensor(self):
+        """
+        The sendor from the plugin the alert relates to.
+
+        @rtype: string
+        """
+
+        return self._get_field("property")
+
+    @property
+    def output(self):
+        """
+        The outout of the alert.
+
+        @rtype: string
+        """
+
+        return self._get_field("output")
+
+    @property
+    def threshold(self):
+        """
+        The threshold of the alert.
+
+        @rtype: string
+        """
+
+        return self._get_field("threshold")
+
+    @property
+    def level(self):
+        """
+        The level of the alert.
+
+        @rtype: string
+        """
+
+        return self._get_field("level")
+
+    @property
+    def comparator(self):
+        """
+        The compare method used for the alert.
+
+        @rtype: string
+        """
+
+        return self._get_field("compare_method")
+
+    def _show(self, indent = 0):
+        print " "*indent, "Timestamp:", self.timestamp
+        print " "*indent, "Plugin:", self.plugin
+        print " "*indent, "Sensor:", self.sensor
+        print " "*indent, "Output:", self.output
+
+class MonitoringAlertCollection(Collection):
+    """
+    TODO
+    """
+
+    def _new(self, json_data = None):
+        return MonitoringAlert(self, json_data)
 
 class Host(HasSettings):
     """
@@ -743,7 +894,7 @@ class Host(HasSettings):
         considered by the server at creation time. In order to set/change the platform
         associated to a host later, one has to (re-)create the platform context
         associated to this host (see L{Host.platform()}).
-        
+
         @param platform: The name of the platform.
         @type platform: string
         """
@@ -828,7 +979,7 @@ class Host(HasSettings):
     def get_instance(self):
         """
         Fetches host's instance.
-        
+
         @return: Host's instance.
         @rtype: L{Instance}
         """
@@ -848,7 +999,7 @@ class Host(HasSettings):
         """
         Triggers host's provisioning. A distribution and a platform must be
         associated to the host in order to provision it.
-        
+
         @return: The host's instance.
         @rtype: L{Instance}
         """
@@ -922,7 +1073,7 @@ class Host(HasSettings):
 
     def get_app_link(self, app_name, file_name, short = False):
         """
-        Requests a one-time URL for a rendered application file. A one-time URL is 
+        Requests a one-time URL for a rendered application file. A one-time URL is
         accessible without authentication but has a limited life-time.
 
         @param app_name: The name of application.
@@ -1056,7 +1207,7 @@ class Host(HasSettings):
     def get_change(self, num):
         """
         Fetches a change from server.
-        
+
         @param num: The order number of the change.
         @type num: string
         @return: The change.
@@ -1087,7 +1238,7 @@ class Host(HasSettings):
 
     def get_compliance_error(self, identifier):
         """
-        Fetches a particular compliance error from server. 
+        Fetches a particular compliance error from server.
 
         @param identifier: Compliance error's identifier. It
         must have the following form: 'applications/I{app_name}/I{collection}/I{id}'
