@@ -8,6 +8,8 @@ provided by this module.
 
 from comodit_client.api.settings import HasSettings, add_settings
 from comodit_client.api.collection import Collection
+from comodit_client.rest.exceptions import ApiException
+from comodit_client.api.exceptions import PythonApiException
 
 class AbstractContext(HasSettings):
     """
@@ -96,7 +98,7 @@ class ApplicationContext(AbstractContext):
     """
 
     @property
-    def identifier(self):
+    def name(self):
         return self.application
 
     @property
@@ -123,6 +125,16 @@ class ApplicationContext(AbstractContext):
         """
 
         self._set_field("application", application)
+
+    def run_custom_action(self, key):
+        """
+        Requests the execution of the handler associated to given custom action key.
+
+        @param key: The key of a custom action.
+        @type key: string
+        """
+
+        self._http_client.update(self.url + "actions/" + key, decode = False)
 
     def _show(self, indent = 0):
         print " "*indent, "Application:", self.application
@@ -176,6 +188,10 @@ class DistributionContext(AbstractContext):
     An distribution context. An distribution context represents the association
     of a distribution with a host.
     """
+
+    @property
+    def name(self):
+        return ""
 
     @property
     def url(self):
@@ -253,6 +269,10 @@ class PlatformContext(AbstractContext):
     An platform context. An platform context represents the association
     of a platform with a host.
     """
+
+    @property
+    def name(self):
+        return ""
 
     @property
     def url(self):
