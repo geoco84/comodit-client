@@ -2,7 +2,7 @@
 
 NAME="comodit-client"
 SPEC_FILE_NAME="comodit-client"
-PLATFORMS=(epel-6-i386 epel-6-x86_64 epel-7-x86_64 fedora-22-x86_64 fedora-23-x86_64 fedora-24-x86_64 fedora-25-x86_64)
+PLATFORMS=(epel-6-i386 epel-6-x86_64 epel-7-x86_64 fedora-23-x86_64 fedora-24-x86_64 fedora-25-x86_64)
 TAR_CONTENT="comodit_client templates setup.py comodit auto_completion/comodit README.md doc/comodit.1 rpmbuild/etc"
 
 # Create build structure
