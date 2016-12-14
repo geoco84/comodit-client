@@ -23,6 +23,7 @@ BuildRequires: python-setuptools
 %if 0%{?fedora}
 Requires: python >= 2.7
 Requires: python(abi) >= 2.7
+Requires: python-pycurl
 %endif
 
 %if 0%{?rhel}
