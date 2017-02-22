@@ -1,0 +1,6 @@
+{
+    "name": "<key name>",
+    "description": "",
+    "expirationDate": "YYYY-MM-DDTHH:MM:SS.mmm",
+    "group":"users"
+}

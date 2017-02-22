@@ -7,7 +7,7 @@
 # This software cannot be used and/or distributed without prior
 # authorization from Guardis.
 
-import urllib, urllib2, json, urlparse
+import urllib, urllib2, json
 import comodit_client.util.fileupload as fileupload
 from urllib2 import HTTPError
 from comodit_client.util import urllibx
@@ -15,10 +15,11 @@ from comodit_client.rest.exceptions import ApiException
 
 
 class HttpClient(object):
-    def __init__(self, endpoint, username, password, insecure_upload = False):
+    def __init__(self, endpoint, username, password, token, insecure_upload = False):
         self.endpoint = endpoint.rstrip('/')
         self.username = username
         self.password = password
+        self.token = token
         self._insecure_upload = insecure_upload
 
     def create(self, entity, item = None, parameters = {}, decode = True):
@@ -73,28 +74,43 @@ class HttpClient(object):
         req = self._new_request(url, "DELETE")
         self._urlopen(req)
 
-    def upload_to_exising_file_with_path(self, file_name, path):
-        response = fileupload.post_multipart(self._encode_url(path, []), [],
-                                             [("file", file_name)],
-                                             insecure = self._insecure_upload,
-                                             headers = {"Authorization": self._get_basic_authorization_field()})
-        return response
-
     def _encode_url(self, entity, parameters):
         url = self.endpoint + "/" + urllib.quote(entity, "/%")
         if len(parameters) > 0:
             url = url + "?" + urllib.urlencode(parameters)
         return url
 
-    def _headers(self):
-        return {
-                   "Authorization": self._get_basic_authorization_field(),
-                   "Content-Type": "application/json",
-                }
+    def upload_to_exising_file_with_path(self, file_name, path):
+        response = fileupload.post_multipart(self._encode_url(path, []), [],
+                                             [("file", file_name)],
+                                             insecure = self._insecure_upload,
+                                             headers = self._auth_headers())
+        return response
+    
+    def _auth_headers(self):
+        if self._is_token_available():
+            return {
+                       "X-ComodIT-AppKey": self._get_app_key_field(),
+                    }
+        else:
+            return {
+                       "Authorization": self._get_basic_authorization_field(),
+                    }
+
+    def _is_token_available(self):
+        return self.token
 
     def _get_basic_authorization_field(self):
         s = self.username + ":" + self.password
         return "Basic " + s.encode("base64").rstrip()
+
+    def _headers(self):
+        headers = self._auth_headers()
+        headers["Content-Type"] = "application/json"
+        return headers
+
+    def _get_app_key_field(self):
+        return self.token
 
     def _urlopen(self, request):
         try:

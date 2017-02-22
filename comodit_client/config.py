@@ -36,7 +36,7 @@ class ConfigException(Exception):
 @singleton
 class Config(object):
     """
-    Cortex client's configuration.
+    ComodIT client's configuration.
     """
 
     _default_config = {
@@ -47,6 +47,7 @@ class Config(object):
             "api": "http://localhost:8000/api",
             "username": "admin",
             "password": "secret",
+            "token": "",
             "vnc_viewer_call": "vinagre %h:%p"
             }
         }
@@ -98,6 +99,9 @@ class Config(object):
 
     def get_password(self, profile_name):
         return self._get_value(profile_name, "password")
+    
+    def get_token(self, profile_name):
+        return self._get_value(profile_name, "token")
 
     def get_vnc_viewer_call(self, profile_name):
         return self._get_value(profile_name, "vnc_viewer_call")
@@ -174,6 +178,7 @@ class Config(object):
         [default]
         username = foologin
         password = foopass
+        token    = token
         api      = url
 
         becomes :
@@ -185,7 +190,8 @@ class Config(object):
             "default": {
                 "api": "http://localhost:8000/api",
                 "username": "admin",
-                "password": "secret"
+                "password": "secret",
+                "token": "token"
             }
         }
 

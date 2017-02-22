@@ -19,11 +19,9 @@ from control.flavors import FlavorsController
 from rest.exceptions import ApiException
 from util import globals
 from util.editor import NotModifiedException
-import os
 import argparse
 import traceback
 import sys
-import textwrap
 import control.router
 from config import Config, ConfigException
 from api import Client
@@ -31,6 +29,7 @@ from api.exceptions import PythonApiException
 from comodit_client.api.importer import ImportException
 from comodit_client.api.exporter import ExportException
 from comodit_client.control.store import AppStoreController, DistStoreController
+from comodit_client.control.application_keys import ApplicationKeysController
 
 def run(argv):
     # entities
@@ -43,6 +42,7 @@ def run(argv):
     control.router.register(["hosts"], HostsController())
     control.router.register(["app-store"], AppStoreController())
     control.router.register(["dist-store"], DistStoreController())
+    control.router.register(["application_keys"], ApplicationKeysController())
 
     _parse(argv)
 
@@ -60,6 +60,7 @@ def _get_value_options(parser):
                 "--api",
                 "--user",
                 "--pass",
+                "--token",
                 "--templates",
                 "--profile",
                 "--completions",
@@ -86,6 +87,7 @@ Available entities:
     environments      Environment defined within an organization
     hosts             Host defined within an environment
     flavors           Available flavors when creating a distribution
+    application_keys  Temporary access tokens related to an organization
 """)
 
     parser.add_argument("entity", help = "An entity")
@@ -115,6 +117,7 @@ Available entities:
     parser.add_argument("--api", dest = "api", help = "endpoint for the API", default = None)
     parser.add_argument("--user", dest = "username", help = "username on comodit server", default = None)
     parser.add_argument("--pass", dest = "password", help = "password on comodit server", default = None)
+    parser.add_argument("--token", dest = "token", help = "application key token", default = None)
     parser.add_argument("--templates", dest = "templates_path", help = "directory containing JSON templates", default = config.templates_path)
     parser.add_argument("--profile", dest = "profile_name", help = "Name of profile to use", default = None)
 
@@ -200,7 +203,13 @@ def _parse(argv):
         password = config.get_password(globals.options.profile_name)
         globals.options.password = password
 
-    client = Client(api, username, password, globals.options.insecure)
+    if globals.options.token:
+        token = globals.options.token
+    else:
+        token = config.get_token(globals.options.profile_name)
+        globals.options.token = token
+
+    client = Client(api, username, password, token, globals.options.insecure)
 
     entity_args = [] + globals.options.subentities
 

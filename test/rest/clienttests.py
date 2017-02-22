@@ -12,10 +12,11 @@ class ClientTest(unittest.TestCase):
         self._api = "http://localhost/api"
         self._user = "user"
         self._pass = "pass"
+        self._token = None
         self._headers = None
         self._urlopen_result = None
 
-        self._client = HttpClient(self._api, self._user, self._pass)
+        self._client = HttpClient(self._api, self._user, self._pass, self._token)
 
         # Mock some Client methods
         self._client._new_request = self._new_request

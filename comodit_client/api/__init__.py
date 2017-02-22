@@ -95,7 +95,7 @@ class Client(object):
     access to ComodIT entities.
     """
 
-    def __init__(self, endpoint, username, password, insecure_upload = False):
+    def __init__(self, endpoint, username, password, token, insecure_upload = False):
         """
         Client constructor. In order to create a client, the URL to a ComodIT
         server's REST API (e.g. http://my.comodit.com/api) must be provided, in
@@ -107,9 +107,11 @@ class Client(object):
         @type username: String
         @param password: A password
         @type password: String
+        @param token: A token
+        @type token: String
         """
 
-        self._http_client = HttpClient(endpoint, username, password, insecure_upload)
+        self._http_client = HttpClient(endpoint, username, password, token, insecure_upload)
         self._organizations = OrganizationCollection(self)
         self._flavors = FlavorCollection(self)
         self._app_store = AppStoreCollection(self)
@@ -375,3 +377,35 @@ class Client(object):
         """
 
         return self.hosts(org_name, env_name).get(name)
+
+
+    # Application Keys helpers
+
+    def application_keys(self, org_name):
+        """
+        Instantiates the collection of environments associated to named
+        organization.
+
+        @param org_name: The name of the organization owning requested collection.
+        @type org_name: string
+        @rtype: L{EnvironmentCollection}
+        """
+
+        return self.__get_unresolved_org(org_name).application_keys()
+
+    def __get_unresolved_application_key(self, org_name, token):
+        return self.application_keys(org_name).new(token)
+
+    def get_application_key(self, org_name, token):
+        """
+        Fetches an environment given the name of owning organization and its
+        name.
+
+        @param org_name: The name of the organization owning requested platform.
+        @type org_name: string
+        @param name: The name of the environment.
+        @type name: string
+        @rtype: L{Environment}
+        """
+
+        return self.application_keys(org_name).get(token)
