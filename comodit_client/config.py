@@ -76,18 +76,21 @@ class Config(object):
         if not self.templates_path:
             raise IOError("No templates directory found")
 
-    def _get_value(self, profile_name, key):
+    def _get_value(self, profile_name, key, optional = False):
         if profile_name is None:
             profile_name = self.default_profile_name
         if not self.config.has_key(profile_name):
             raise ConfigException("No profile with name " + str(profile_name))
         profile = self.config[profile_name]
         if not profile.has_key(key):
-            raise ConfigException("Profile has no field " + str(key))
-
-        value = profile[key]
+            value = None
+        else:
+            value = profile[key]
         if value is None and self.default_profile.has_key(key):
             value = self.default_profile[key]
+
+        if value is None and not optional:
+            raise ConfigException("No value for key " + key)
 
         return value
 
@@ -95,13 +98,13 @@ class Config(object):
         return self._get_value(profile_name, "api")
 
     def get_username(self, profile_name):
-        return self._get_value(profile_name, "username")
+        return self._get_value(profile_name, "username", True)
 
     def get_password(self, profile_name):
-        return self._get_value(profile_name, "password")
+        return self._get_value(profile_name, "password", True)
     
     def get_token(self, profile_name):
-        return self._get_value(profile_name, "token")
+        return self._get_value(profile_name, "token", True)
 
     def get_vnc_viewer_call(self, profile_name):
         return self._get_value(profile_name, "vnc_viewer_call")
@@ -127,15 +130,20 @@ class Config(object):
             if section == "client":
                 continue # client section's content has already been checked
 
-            section_content = self.config[section]
-            for prop in ("api", "username", "password"):
-                if not section_content.has_key(prop):
-                    raise ConfigException(section + " section lacks '" + prop + "' property")
+            self._check_property(section, "api")
+
+            if not self.config[section].has_key("token") and (not self.config[section].has_key("username") or not self.config[section].has_key("password")):
+                raise ConfigException("Profile " + section + " should define either 'username' and 'password' properties or 'token' property")
+
             if section == default_profile:
                 default_profile_exists = True
 
         if not default_profile_exists:
             raise ConfigException("Default profile is not defined")
+
+    def _check_property(self, section, name):
+        if not self.config[section].has_key(name):
+            raise ConfigException(section + " section lacks '" + name + "' property")
 
     def _get_config_path(self):
         """ Gets the configuration path with following priority order :

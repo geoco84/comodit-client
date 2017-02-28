@@ -209,6 +209,10 @@ def _parse(argv):
         token = config.get_token(globals.options.profile_name)
         globals.options.token = token
 
+    if ((username is None) or (password is None)) and (token is None):
+        print "You have to provider either a username and a password or a token"
+        exit(-1)
+
     client = Client(api, username, password, token, globals.options.insecure)
 
     entity_args = [] + globals.options.subentities
