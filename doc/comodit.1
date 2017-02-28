@@ -1,13 +1,13 @@
 '\" t
 .\"     Title: comodit
 .\"    Author: Daniel Bartz <daniel.bartz@guardis.com>
-.\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
-.\"      Date: 01/25/2013
+.\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
+.\"      Date: 02/28/2017
 .\"    Manual: Command Line User Interface Guide
-.\"    Source: Guardis
+.\"    Source: Guardis 1
 .\"  Language: English
 .\"
-.TH "COMODIT" "1" "01/25/2013" "Guardis" "Command Line User Interface Gu"
+.TH "COMODIT" "1" "02/28/2017" "Guardis 1" "Command Line User Interface Gu"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -31,7 +31,7 @@
 comodit \- ComodIT command\-line interface
 .SH "SYNOPSIS"
 .HP \w'/usr/bin/comodit\ 'u
-/usr/bin/comodit [\-h\ |\ \-\-help] [\-f\ FILE\ |\-\-file\ FILE] [\-j\ FILE\ |\-\-json\ FILE] [\-d\ |\ \-\-default] [\-t\ |\ \-\-test] [\-p\ |\ \-\-populate] [\-\-raw] [\-\-flavor\ FLAVOR] [\-\-skip\-chown] [\-\-skip\-chmod] [\-\-skip\-conflict] [\-\-dry\-run] [\-\-public] [\-\-private] [\-\-featured] [\-\-org\ NAME] [\-\-api\ URL] [\-\-user\ USERNAME] [\-\-pass\ PASSWORD] [\-\-templates\ PATH] [\-\-profile\ NAME] [\-\-force] [\-\-debug] [\-\-version] {sel} [sel\ \&...] {action} [id\ \&...] [\&...]
+/usr/bin/comodit [\-h\ |\ \-\-help] [\-f\ FILE\ |\-\-file\ FILE] [\-j\ FILE\ |\-\-json\ FILE] [\-d\ |\ \-\-default] [\-t\ |\ \-\-test] [\-p\ |\ \-\-populate] [\-\-raw] [\-\-flavor\ FLAVOR] [\-\-skip\-chown] [\-\-skip\-chmod] [\-\-skip\-conflict] [\-\-dry\-run] [\-\-public] [\-\-private] [\-\-featured] [\-\-org\ NAME] [\-\-api\ URL] [\-\-user\ USERNAME] [\-\-pass\ PASSWORD] [\-\-token\ TOKEN] [\-\-templates\ PATH] [\-\-profile\ NAME] [\-\-force] [\-\-debug] [\-\-version] {sel} [sel\ \&...] {action} [id\ \&...] [\&...]
 .SH "INTRODUCTION"
 .PP
 This section briefly describes ComodIT and the way you will, in general, interact with the client\&.
@@ -137,6 +137,17 @@ environments: an environment is defined in the context of an organization\&. It 
 .IP \(bu 2.3
 .\}
 hosts: a host is defined in the context of an environment\&. It represents the description of a server: operating system, installed applications, etc\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+application keys: an application key can be created in the context of an organization\&. An application key\*(Aqs token can be used to authenticate and manage entities inside of an organization\&. Application keys have a limited life time and can be revoked\&.
 .RE
 .PP
 Some entities are generic and are associated to several of above entities:
@@ -1348,6 +1359,75 @@ where ORG is an organization\*(Aqs name, ENV an environment name and NAME is a h
 settings
 .RE
 .RE
+.SS "Application Keys"
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBSelectors\fR
+.RS 4
+.PP
+application_keys
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBActions\fR
+.RS 4
+.PP
+All generic actions\&.
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBIdentifiers\fR
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+For collection: ORG
+.sp
+where ORG is an organization\*(Aqs name\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+For entity: ORG NAME
+.sp
+where ORG is an organization\*(Aqs name and NAME is application key\*(Aqs name\&.
+.RE
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBAccepted selectors\fR
+.RS 4
+.PP
+None\&.
+.RE
 .SS "Compliance"
 .sp
 .it 1 an-trap
@@ -1962,6 +2042,11 @@ Sets the user name to use for authentication\&.
 Sets the password to use for authentication\&.
 .RE
 .PP
+\-\-token TOKEN
+.RS 4
+Sets the application key token to use for authentication\&.
+.RE
+.PP
 \-\-templates PATH
 .RS 4
 Sets templates directory\&. Templates are used when creating a resource in interactive mode (see \*(Aqadd\*(Aq)\&.
@@ -2020,6 +2105,18 @@ username = admin
 .RE
 .RS 4
 password = secret
+.RE
+.RS 4
+ 
+.RE
+.RS 4
+[token_auth]
+.RE
+.RS 4
+api = http://localhost:8000/api
+.RE
+.RS 4
+token = abcdefghijklmnopqrstuvwxyz
 .RE
 .PP
 By default, profile with name \*(Aqdefault\*(Aq is used\&. This profile defines \*(Aqhttp://localhost:8000/api\*(Aq as the API URL (see \-\-api option), \*(Aqadmin\*(Aq as user name (see \-\-user option) and \*(Aqsecret\*(Aq as password (see \-\-pass option)\&.
