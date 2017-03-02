@@ -7,8 +7,6 @@
 # This software cannot be used and/or distributed without prior
 # authorization from Guardis.
 
-import re
-
 from comodit_client.util import globals
 from comodit_client.control.exceptions import ControllerException
 from comodit_client.control.doc import ActionDoc

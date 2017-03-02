@@ -16,6 +16,7 @@ from comodit_client.api.exceptions import PythonApiException
 from comodit_client.api.audit import AuditLogCollection
 from comodit_client.api.purchased import PurchasedCollection
 from comodit_client.util.json_wrapper import JsonWrapper
+from comodit_client.api.application_key import ApplicationKeyCollection
 
 
 class User(JsonWrapper):
@@ -467,4 +468,14 @@ class Organization(HasSettings):
         """
 
         return self.purchased_dists().get(uuid)
+
+    def application_keys(self):
+        """
+        Instantiates the collection of application keys associated to this organization.
+
+        @return: The collection of application keys associated to this organization.
+        @rtype: L{ApplicationKeyCollection}
+        """
+
+        return ApplicationKeyCollection(self.client, self.url + "applicationkeys/")
 
