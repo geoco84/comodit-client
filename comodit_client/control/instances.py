@@ -2,7 +2,7 @@
 
 import json, completions
 
-from comodit_client.util import prompt, globals
+from comodit_client.util import globals
 from comodit_client.control.entity import EntityController
 from comodit_client.control.exceptions import ArgumentException
 from comodit_client.control.doc import ActionDoc
@@ -75,11 +75,7 @@ class InstancesController(EntityController):
 
     def _delete(self, argv):
         instance = self._get_entity(argv)
-        if globals.options.force or prompt.confirm(prompt = "Delete VM ?", resp = False):
-            if globals.options.force:
-                instance.delete(parameters = {"force": "true"})
-            else:
-                instance.delete()
+        instance.delete()
 
     def _delete_doc(self):
         return ActionDoc("delete", "<org_name>  <env_name> <host_name>", """
