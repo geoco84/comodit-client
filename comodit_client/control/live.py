@@ -21,12 +21,14 @@ class LiveController(AbstractController):
 
         self._register(["update-file"], self._update_file, self._print_file_completions)
         self._register(["restart-service"], self._restart_service, self._print_service_completions)
+        self._register(["update-service"], self._update_service, self._print_service_completions)
         self._register(["install-package"], self._install_package, self._print_package_completions)
         self._register(["help"], self._help)
         self._default_action = self._help
 
         self._register_action_doc(self._update_file_doc())
         self._register_action_doc(self._restart_service_doc())
+        self._register_action_doc(self._update_service_doc())
         self._register_action_doc(self._install_package_doc())
 
     def _help(self, argv):
@@ -55,7 +57,7 @@ class LiveController(AbstractController):
             self._print_host_completions(param_num, argv)
         elif len(argv) > 3 and param_num == 4:
             app = self._client.get_application(argv[0], argv[3])
-            for res in app.services_f:
+            for res in app.services:
                 completions.print_escaped_string(res.name)
 
     def _print_package_completions(self, param_num, argv):
@@ -63,7 +65,7 @@ class LiveController(AbstractController):
             self._print_host_completions(param_num, argv)
         elif len(argv) > 3 and param_num == 4:
             app = self._client.get_application(argv[0], argv[3])
-            for res in app.packages_f:
+            for res in app.packages:
                 completions.print_escaped_string(res.name)
 
     def _get_host(self, argv):
@@ -94,6 +96,19 @@ class LiveController(AbstractController):
     def _restart_service_doc(self):
         return ActionDoc("restart-service", "<org_name> <env_name> <host_name> <app_name> <svc_name>", """
         Restarts service on given host.""")
+
+    def _update_service(self, argv):
+        if len(argv) < 4:
+            raise ArgumentException("Wrong number of arguments")
+
+        host = self._get_host(argv)
+        app_name = argv[3]
+        svc_name = argv[4]
+        host.live_update_service(app_name, svc_name)
+
+    def _update_service_doc(self):
+        return ActionDoc("update-service", "<org_name> <env_name> <host_name> <app_name> <svc_name>", """
+        Updates service on given host.""")
 
     def _install_package(self, argv):
         if len(argv) < 4:

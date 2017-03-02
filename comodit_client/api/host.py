@@ -1285,13 +1285,27 @@ class Host(HasSettings):
         instance, solve a compliance error linked to target service by resetting
         its state. A change is queued and exposes the result of the operation.
 
-        @param app_name: The name of file's application.
+        @param app_name: The name of service's application.
         @type app_name: string
         @param svc_name: The service's name.
         @type svc_name: string
         """
 
         self._http_client.update(self.url + "applications/" + app_name + "/services/" + svc_name + "/_restart", decode = False)
+
+    def live_update_service(self, app_name, svc_name):
+        """
+        Requests the update of a service on provisioned machine. This may, for
+        instance, solve a compliance error linked to target service by resetting
+        its state. A change is queued and exposes the result of the operation.
+
+        @param app_name: The name of service's application.
+        @type app_name: string
+        @param svc_name: The service's name.
+        @type svc_name: string
+        """
+
+        self._http_client.update(self.url + "applications/" + app_name + "/services/" + svc_name + "/_update", decode = False)
 
     def live_install_package(self, app_name, pkg_name):
         """
