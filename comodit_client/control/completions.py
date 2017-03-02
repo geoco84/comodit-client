@@ -31,8 +31,8 @@ def print_entity_identifiers(res_list):
         for r in res_list:
             print_escaped_string(r.identifier)
 
-def print_identifiers(collection):
-    print_entity_identifiers(collection.list())
+def print_identifiers(collection, parameters = {}):
+    print_entity_identifiers(collection.list(parameters))
 
 #
 # Entity specific functions

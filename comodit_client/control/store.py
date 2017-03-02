@@ -18,6 +18,7 @@ class StoreController(RootEntityController):
         self._unregister("delete")
 
         self._register("purchase", self._purchase, self._print_purchase_completions)
+        self._register("update-authorized", self._update_authorized, self._print_entity_completions)
 
     def _get_filter(self):
         if globals.options.private:
@@ -66,6 +67,15 @@ class StoreController(RootEntityController):
 
         pur_app = self.get_purchased_collection(org)._new(json.loads(updated))
         pur_app.create()
+
+    def _update_authorized(self, argv):
+        if len(argv) < 1:
+            raise ArgumentException("A published entity UUID must be provided")
+
+        pub = self.get_collection(argv).get(argv[0])
+        updated = edit_text(json.dumps(pub.authorized, indent = 4))
+        pub.update_authorized(json.loads(updated))
+
 
 class AppStoreController(StoreController):
 

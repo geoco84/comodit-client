@@ -245,7 +245,11 @@ class PublishedEntity(Entity):
         @rtype: bool
         """
 
-        return self._get_field("isFeatured")
+        return self._get_field("featured")
+
+    def update_authorized(self, new_authorized):
+        url = self.collection.url + self.definition.uuid + "/"
+        self._json_data = self._http_client.update(url + "organizations", new_authorized)
 
     def _show(self, indent = 0):
         super(PublishedEntity, self)._show(indent)
@@ -256,6 +260,7 @@ class PublishedEntity(Entity):
         print " "*indent, "License:", self.license
         print " "*indent, "Price:", self.price
         print " "*indent, "Featured:", self.featured
+        print " "*indent, "Authorized organizations:", self.authorized
 
 
 class PublishedApplication(PublishedEntity):
@@ -279,6 +284,17 @@ class PublishedApplication(PublishedEntity):
 
         return self._set_field("application", uuid)
 
+    @property
+    def definition(self):
+        """
+        Returns the application.
+
+        @rtype: L{Application}
+        """
+
+        from comodit_client.api.application import Application
+        return Application(None, self._get_field("definition"))
+
 
 class PublishedDistribution(PublishedEntity):
     """
@@ -300,6 +316,17 @@ class PublishedDistribution(PublishedEntity):
         """
 
         return self._set_field("distribution", uuid)
+
+    @property
+    def definition(self):
+        """
+        Returns the distribution.
+
+        @rtype: L{Distribution}
+        """
+
+        from comodit_client.api.distribution import Distribution
+        return Distribution(None, self._get_field("definition"))
 
 
 class IsStoreCapable(Entity):
