@@ -18,6 +18,7 @@ class InstancesController(EntityController):
         self._register(["resume"], self._resume, self._print_entity_completions)
         self._register(["shutdown"], self._shutdown, self._print_entity_completions)
         self._register(["poweroff"], self._poweroff, self._print_entity_completions)
+        self._register(["forget"], self._forget, self._print_entity_completions)
         self._register(["properties"], self._properties, self._print_entity_completions)
         self._register(["show_file"], self._show_file, self._print_entity_completions)
         self._register(["get_status"], self._get_status, self._print_entity_completions)
@@ -33,6 +34,7 @@ class InstancesController(EntityController):
         self._register_action_doc(self._resume_doc())
         self._register_action_doc(self._shutdown_doc())
         self._register_action_doc(self._poweroff_doc())
+        self._register_action_doc(self._forget_doc())
         self._register_action_doc(self._properties_doc())
         self._register_action_doc(self._show_file_doc())
         self._register_action_doc(self._get_status_doc())
@@ -122,6 +124,14 @@ class InstancesController(EntityController):
     def _poweroff_doc(self):
         return ActionDoc("poweroff", "<org_name>  <env_name> <host_name>", """
         Power-off a host instance.""")
+
+    def _forget(self, argv):
+        instance = self._get_entity(argv)
+        instance.forget()
+
+    def _forget_doc(self):
+        return ActionDoc("forget", "<org_name>  <env_name> <host_name>", """
+        Forgets a host instance.""")
 
     def _show_file(self, argv):
         if len(argv) < 4:

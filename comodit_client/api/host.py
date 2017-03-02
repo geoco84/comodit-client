@@ -432,6 +432,18 @@ class Instance(Entity):
         except ApiException, e:
             raise PythonApiException("Unable to power instance off: " + e.message)
 
+    def forget(self):
+        """
+        Forgets instance.
+        """
+
+        try:
+            result = self._http_client.update(self.url + "_forget", decode = False)
+            if result.getcode() != 202:
+                raise PythonApiException("Call not accepted by server")
+        except ApiException, e:
+            raise PythonApiException("Unable to forget instance: " + e.message)
+
     def _show(self, indent = 0):
         """
         Prints instance's information to standard output in a user-friendly way.
