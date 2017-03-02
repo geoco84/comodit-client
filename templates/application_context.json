@@ -5,5 +5,11 @@
        "key": "<k>",
        "value": "<v>"
      }
+   ],
+   "services": [
+     {
+       "name": "<service-name>",
+       "enabled": true
+     }
    ]
 }

@@ -74,7 +74,11 @@ class ApplicationContextController(AbstractContextController):
     def _complete_template(self, argv, template_json):
         if len(argv) < 4:
             raise ArgumentException("Wrong number of arguments");
-        template_json["application"] = argv[3]
+
+        app = self._client.get_application(argv[0], argv[3])
+        template_json["application"] = app.name
+        template_json["services"] = [{"name": s.name, "enabled": s.enabled} for s in app.services]
+        template_json["settings"] = [{"key": p.key, "value": p.value} for p in app.parameters_f]
 
     def _get_name_argument(self, argv):
         if len(argv) < 4:
