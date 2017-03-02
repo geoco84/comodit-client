@@ -7,9 +7,9 @@
 # This software cannot be used and/or distributed without prior
 # authorization from Guardis.
 
-from comodit_client.util import globals
 from comodit_client.control.exceptions import ControllerException
 from comodit_client.control.doc import ActionDoc
+from comodit_client.config import Config
 
 class AbstractController(object):
     '''The default (abstract) controller'''
@@ -21,18 +21,19 @@ class AbstractController(object):
         self._docs = {}
         self._register("__available_actions", self._available_actions)
         self._default_action = lambda x : self._error("No default action defined", -1)
+        self._config = Config()
 
     def run(self, client, argv):
         '''Execute the action (first argument in argv with other arguments) from this controller'''
         self._client = client
         self._pre(argv)
 
-        param_num = globals.param_completions
+        param_num = self._config.param_completions
         if param_num >= 0:
             if len(argv) == 0 or param_num == 0:
                 self._available_actions()
             elif self._subcontrollers.has_key(argv[0]):
-                globals.param_completions -= 1
+                self._config.param_completions -= 1
                 self._subcontrollers[argv[0]].run(client, argv[1:])
             elif self._completions.has_key(argv[0]):
                 self._completions[argv[0]](param_num - 1, argv[1:])

@@ -12,7 +12,6 @@ from comodit_client.control.doc import ActionDoc
 from comodit_client.api.sync import SyncEngine
 from comodit_client.control import completions
 from comodit_client.control.exceptions import ArgumentException
-from comodit_client.util import globals
 
 class SyncController(AbstractController):
 
@@ -42,7 +41,7 @@ class SyncController(AbstractController):
         (remote_res, folder) = self._get_and_folder(argv)
         sync = SyncEngine(folder)
 
-        sync.pull(remote_res, globals.options.dry_run)
+        sync.pull(remote_res, self._config.options.dry_run)
 
     def _pull_doc(self):
         return ActionDoc("pull", self._doc_params, """
@@ -52,7 +51,7 @@ class SyncController(AbstractController):
         (remote_res, folder) = self._get_and_folder(argv)
         sync = SyncEngine(folder)
 
-        sync.push(remote_res, globals.options.dry_run)
+        sync.push(remote_res, self._config.options.dry_run)
 
     def _push_doc(self):
         return ActionDoc("push", self._doc_params, """

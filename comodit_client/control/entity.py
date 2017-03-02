@@ -11,7 +11,7 @@ import json, os, completions
 
 from comodit_client.config import Config
 from comodit_client.control.abstract import AbstractController
-from comodit_client.util import globals, prompt
+from comodit_client.util import prompt
 from comodit_client.util.editor import edit_text
 from comodit_client.control.doc import ActionDoc
 
@@ -68,7 +68,7 @@ class EntityController(AbstractController):
         res = self._get_entity(argv, parameters = parameters)
 
         # Display the result
-        options = globals.options
+        options = self._config.options
         if options.raw:
             res.show(as_json = True)
         else:
@@ -78,7 +78,7 @@ class EntityController(AbstractController):
         pass
 
     def _add(self, argv):
-        options = globals.options
+        options = self._config.options
 
         if options.filename:
             with open(options.filename, 'r') as f:
@@ -118,7 +118,7 @@ class EntityController(AbstractController):
         # Prune entity fields (all may not be updatable)
         self._prune_json_update(res)
 
-        options = globals.options
+        options = self._config.options
         if options.filename:
             with open(options.filename, 'r') as f:
                 item = json.load(f)
@@ -145,7 +145,7 @@ class EntityController(AbstractController):
 
     def _delete(self, argv):
         res = self._get_entity(argv)
-        if globals.options.force or (prompt.confirm(prompt = "Delete " + res.name + " ?", resp = False)) :
+        if self._config.options.force or (prompt.confirm(prompt = "Delete " + res.name + " ?", resp = False)) :
             res.delete()
 
     def _help(self, argv):

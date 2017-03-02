@@ -4,7 +4,7 @@ Provides the importer tool. The importer can be used to importer entities
 from local directories into a ComodIT server.
 """
 
-import os, json
+import os
 
 from comodit_client.api.application import Application
 from comodit_client.api.collection import EntityNotFoundException

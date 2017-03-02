@@ -2,7 +2,6 @@
 
 import json, completions
 
-from comodit_client.util import globals
 from comodit_client.control.entity import EntityController
 from comodit_client.control.exceptions import ArgumentException
 from comodit_client.control.doc import ActionDoc
@@ -62,7 +61,7 @@ class InstancesController(EntityController):
 
     def _properties(self, argv):
         instance = self._get_entity(argv)
-        options = globals.options
+        options = self._config.options
         if options.raw:
             print json.dumps(instance._get_field("properties"), indent = 4)
         else:

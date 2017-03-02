@@ -4,7 +4,6 @@ from comodit_client.control.root_entity import RootEntityController
 from comodit_client.control.exceptions import ArgumentException
 from comodit_client.config import Config
 from comodit_client.util.editor import edit_text
-from comodit_client.util import globals
 
 class StoreController(RootEntityController):
 
@@ -21,9 +20,9 @@ class StoreController(RootEntityController):
         self._register("update-authorized", self._update_authorized, self._print_entity_completions)
 
     def _get_filter(self):
-        if globals.options.private:
+        if self._config.options.private:
             return "private"
-        elif globals.options.featured:
+        elif self._config.options.featured:
             return "featured"
         else:
             return "public"
@@ -31,8 +30,8 @@ class StoreController(RootEntityController):
     def _get_filter_parameters(self):
         list_filter = self._get_filter()
         param = {"filter": list_filter}
-        if globals.options.org_name:
-            param["org_name"] = globals.options.org_name
+        if self._config.options.org_name:
+            param["org_name"] = self._config.options.org_name
         elif list_filter == "private":
             raise ArgumentException("An organization name must be provided with private filter")
         return param

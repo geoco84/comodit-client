@@ -14,7 +14,6 @@ from comodit_client.control.settings import PlatformSettingsController
 from comodit_client.control.files import PlatformFilesController
 from comodit_client.control.parameters import PlatformParametersController
 from comodit_client.api.exporter import Export
-from comodit_client.util import globals
 from comodit_client.control.doc import ActionDoc
 from comodit_client.control.exceptions import ArgumentException
 from comodit_client.api.importer import Import
@@ -59,7 +58,7 @@ class PlatformsController(OrganizationEntityController):
             completions.print_dir_completions()
 
     def _export(self, argv):
-        self._options = globals.options
+        self._options = self._config.options
 
         plat = self._get_entity(argv)
 
@@ -67,7 +66,7 @@ class PlatformsController(OrganizationEntityController):
         if len(argv) > 2:
             root_folder = argv[2]
 
-        export = Export(globals.options.force)
+        export = Export(self._config.options.force)
         export.export_platform(plat, root_folder)
 
     def _export_doc(self):

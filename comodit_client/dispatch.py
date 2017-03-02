@@ -17,7 +17,6 @@ from control.organizations import OrganizationsController
 from control.flavors import FlavorsController
 
 from rest.exceptions import ApiException
-from util import globals
 from util.editor import NotModifiedException
 import argparse
 import traceback
@@ -155,16 +154,16 @@ def _parse(argv):
     try:
         completions_index = argv.index("--completions")
         del argv[completions_index]
-        globals.param_completions = int(argv[completions_index])
+        config.param_completions = int(argv[completions_index])
         del argv[completions_index]
 
-        if globals.param_completions == 0:
+        if config.param_completions == 0:
             control.router.print_keywords()
             exit(0)
 
-        globals.param_completions -= 1
+        config.param_completions -= 1
     except Exception:
-        globals.param_completions = -1
+        config.param_completions = -1
 
     if "--version" in argv:
         version = "NO_VERSION"
@@ -181,51 +180,50 @@ def _parse(argv):
         exit(0)
 
     # Parse arguments
-    globals.options = parser.parse_known_args(args = argv)[0]
+    config.options = parser.parse_known_args(args = argv)[0]
 
     # Use profile data to configure server API connector. Options provided
     # on command-line have priority.
-    if globals.options.api:
-        api = globals.options.api
+    if config.options.api:
+        api = config.options.api
     else:
-        api = config.get_api(globals.options.profile_name)
-        globals.options.api = api
+        api = config.get_api(config.options.profile_name)
+        config.options.api = api
 
-    if globals.options.username:
-        username = globals.options.username
+    if config.options.username:
+        username = config.options.username
     else:
-        username = config.get_username(globals.options.profile_name)
-        globals.options.username = username
+        username = config.get_username(config.options.profile_name)
+        config.options.username = username
 
-    if globals.options.password:
-        password = globals.options.password
+    if config.options.password:
+        password = config.options.password
     else:
-        password = config.get_password(globals.options.profile_name)
-        globals.options.password = password
+        password = config.get_password(config.options.profile_name)
+        config.options.password = password
 
-    if globals.options.token:
-        token = globals.options.token
+    if config.options.token:
+        token = config.options.token
     else:
-        token = config.get_token(globals.options.profile_name)
-        globals.options.token = token
+        token = config.get_token(config.options.profile_name)
+        config.options.token = token
 
     if ((username is None) or (password is None)) and (token is None):
         print "You have to provider either a username and a password or a token"
         exit(-1)
 
-    client = Client(api, username, password, token, globals.options.insecure)
+    client = Client(api, username, password, token, config.options.insecure)
 
-    entity_args = [] + globals.options.subentities
+    entity_args = [] + config.options.subentities
 
-    if not globals.options.action is None:
-        entity_args.append(globals.options.action)
+    if not config.options.action is None:
+        entity_args.append(config.options.action)
 
-    _dispatch(globals.options.entity, entity_args, client)
+    _dispatch(config.options, entity_args, client)
 
-def _dispatch(entity, args, client):
-    options = globals.options
-
+def _dispatch(options, args, client):
     try:
+        entity = options.entity
         control.router.dispatch(entity, client, args)
         exit(0)
     except ControllerException as e:

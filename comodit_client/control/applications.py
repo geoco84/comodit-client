@@ -7,11 +7,10 @@
 # This software cannot be used and/or distributed without prior
 # authorization from Guardis.
 
-import json, completions
+import completions
 
 from comodit_client.api.exporter import Export
 from comodit_client.api.importer import Import
-from comodit_client.util import globals
 from comodit_client.control.organization_entity import OrganizationEntityController
 from comodit_client.control.files import ApplicationFilesController
 from comodit_client.control.parameters import ApplicationParametersController
@@ -69,7 +68,7 @@ class ApplicationsController(OrganizationEntityController):
             completions.print_dir_completions()
 
     def _export(self, argv):
-        self._options = globals.options
+        self._options = self._config.options
 
         app = self._get_entity(argv)
 
@@ -77,7 +76,7 @@ class ApplicationsController(OrganizationEntityController):
         if len(argv) > 2:
             root_folder = argv[2]
 
-        export = Export(globals.options.force)
+        export = Export(self._config.options.force)
         export.export_application(app, root_folder)
 
     def _export_doc(self):

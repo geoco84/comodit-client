@@ -9,7 +9,7 @@
 
 import subprocess, completions
 
-from comodit_client.util import prompt, globals
+from comodit_client.util import prompt
 from comodit_client.control.entity import EntityController
 from comodit_client.control.exceptions import ArgumentException, MissingException, \
     ControllerException
@@ -97,7 +97,7 @@ class HostsController(EntityController):
     def _delete(self, argv):
         host = self._get_entity(argv)
 
-        if globals.options.force or (prompt.confirm(prompt = "Delete " + host.get_name() + " ?", resp = False)) :
+        if self._config.options.force or (prompt.confirm(prompt = "Delete " + host.get_name() + " ?", resp = False)) :
             host.delete()
 
     def _print_file_completions(self, param_num, argv):
@@ -125,7 +125,7 @@ class HostsController(EntityController):
 
         renderer = TreeRenderer(self._client, org_name, env_name, host_name)
 
-        options = globals.options
+        options = self._config.options
         renderer.render(root_dir, options.skip_chmod, options.skip_chown)
 
     def _render_tree_doc(self):
@@ -168,7 +168,7 @@ class HostsController(EntityController):
 
         # Get VNC viewer call string
         config = Config()
-        viewer_call_template = config.get_vnc_viewer_call(globals.options.profile_name)
+        viewer_call_template = config.get_vnc_viewer_call(self._config.options.profile_name)
         if viewer_call_template is None or viewer_call_template == "":
             raise ControllerException("VNC viewer is not configured")
 

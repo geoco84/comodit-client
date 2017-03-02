@@ -7,9 +7,8 @@
 # This software cannot be used and/or distributed without prior
 # authorization from Guardis.
 
-import json, completions
+import completions
 
-from comodit_client.util import globals
 from comodit_client.control.root_entity import RootEntityController
 from comodit_client.control.exceptions import ArgumentException
 from comodit_client.control.settings import OrganizationSettingsController
@@ -80,12 +79,12 @@ class OrganizationsController(RootEntityController):
             completions.print_dir_completions()
 
     def _export(self, argv):
-        self._options = globals.options
+        self._options = self._config.options
 
         self.__set_root_folder(argv)
 
         org = self._client.get_organization(argv[0])
-        export = Export(globals.options.force)
+        export = Export(self._config.options.force)
         export.export_organization(org, self._root)
 
     def _export_doc(self):
@@ -105,16 +104,16 @@ class OrganizationsController(RootEntityController):
         is detected. In case of collision, 'force' option can be used to still
         import data.
         """
-        self._options = globals.options
+        self._options = self._config.options
 
         if len(argv) < 1:
             raise ArgumentException("Wrong number of arguments")
         self._root = argv[0]
 
-        importer = Import(globals.options.skip_conflict, True)
+        importer = Import(self._config.options.skip_conflict, True)
         importer.import_organization(self._client, self._root)
 
-        if (importer.no_conflict() or globals.options.skip_conflict) and not globals.options.dry_run:
+        if (importer.no_conflict() or self._config.options.skip_conflict) and not self._config.options.dry_run:
             importer.execute_queue()
         else:
             importer.display_queue(show_only_conflicts = True)

@@ -14,7 +14,6 @@ from comodit_client.control.settings import DistributionSettingsController
 from comodit_client.control.files import DistributionFilesController
 from comodit_client.control.parameters import DistributionParametersController
 from comodit_client.api.exporter import Export
-from comodit_client.util import globals
 from comodit_client.control.doc import ActionDoc
 from comodit_client.control.exceptions import ArgumentException
 from comodit_client.api.importer import Import
@@ -72,7 +71,7 @@ class DistributionsController(OrganizationEntityController):
             completions.print_dir_completions()
 
     def _export(self, argv):
-        self._options = globals.options
+        self._options = self._config.options
 
         dist = self._get_entity(argv)
 
@@ -80,7 +79,7 @@ class DistributionsController(OrganizationEntityController):
         if len(argv) > 2:
             root_folder = argv[2]
 
-        export = Export(globals.options.force)
+        export = Export(self._config.options.force)
         export.export_distribution(dist, root_folder)
 
     def _export_doc(self):
@@ -110,7 +109,7 @@ class DistributionsController(OrganizationEntityController):
         on server to be updated.""")
 
     def _complete_template(self, argv, template_json):
-        flavor_name = globals.options.flavor
+        flavor_name = self._config.options.flavor
         if flavor_name != None:
             template_json["settings"] = []
             flavor = self._client.get_flavor(flavor_name)

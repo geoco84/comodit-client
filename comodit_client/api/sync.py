@@ -6,7 +6,7 @@ can be I{pushed} remotely (uploaded to the server) and remote changes may be
 I{pulled} locally (downloaded from the server).
 """
 
-import os, json, types, shutil
+import os, json, types
 
 from comodit_client.api.collection import EntityNotFoundException
 
