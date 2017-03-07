@@ -24,6 +24,9 @@ class StoreController(RootEntityController):
         self._register_action_doc(self._purchase_doc())
         self._register_action_doc(self._update_authorized_doc())
 
+    def _sort_key(self):
+        return lambda entity : entity.name
+
     def _get_filter(self):
         if self._config.options.private:
             return "private"
