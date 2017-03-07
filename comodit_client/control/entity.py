@@ -48,11 +48,14 @@ class EntityController(AbstractController):
         if len(entities_list) == 0:
             print(self._str_empty)
         else:
-            for r in sorted(entities_list, key = self._sort_key()):
-                print(r.label)
+            for e in sorted(entities_list, key = self._sort_key()):
+                print(self._label(e))
 
     def _sort_key(self):
         return lambda entity : entity.identifier
+
+    def _label(self, entity):
+        return entity.label
 
     def _print_identifiers(self, collection, parameters = {}):
         completions.print_entity_identifiers(collection.list(parameters))

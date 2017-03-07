@@ -64,7 +64,8 @@ def _get_value_options(parser):
                 "--profile",
                 "--completions",
                 "--org",
-                "--flavor"
+                "--flavor",
+                "--with-org"
                 ]
     return options
 
@@ -112,6 +113,7 @@ Available entities:
     parser.add_argument("--private", dest = "private", help = "List only private apps/dists", action = "store_true", default = False)
     parser.add_argument("--featured", dest = "featured", help = "List only featured apps/dists", action = "store_true", default = False)
     parser.add_argument("--org", dest = "org_name", help = "Set organization", default = None)
+    parser.add_argument("--with-org", dest = "with_org", help = "Show organization name when listing apps/dists in store", action = "store_true", default = False)
 
     parser.add_argument("--api", dest = "api", help = "endpoint for the API", default = None)
     parser.add_argument("--user", dest = "username", help = "username on comodit server", default = None)

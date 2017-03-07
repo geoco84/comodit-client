@@ -27,6 +27,12 @@ class StoreController(RootEntityController):
     def _sort_key(self):
         return lambda entity : entity.name
 
+    def _label(self, entity):
+        if self._config.options.with_org:
+            return entity.uuid + " - " + entity.name + " - " + entity.publishing_organization["companyName"]
+        else:
+            return entity.uuid + " - " + entity.name
+
     def _get_filter(self):
         if self._config.options.private:
             return "private"
