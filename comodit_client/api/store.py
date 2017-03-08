@@ -248,8 +248,7 @@ class PublishedEntity(Entity):
         return self._get_field("featured")
 
     def update_authorized(self, new_authorized):
-        url = self.collection.url + self.definition.uuid + "/"
-        self._json_data = self._http_client.update(url + "organizations", new_authorized)
+        self._json_data = self._http_client.update(self.url + "organizations", new_authorized)
 
     def _show(self, indent = 0):
         super(PublishedEntity, self)._show(indent)
@@ -260,7 +259,9 @@ class PublishedEntity(Entity):
         print " "*indent, "License:", self.license
         print " "*indent, "Price:", self.price
         print " "*indent, "Featured:", self.featured
-        print " "*indent, "Authorized organizations:", self.authorized
+        print " "*indent, "Authorized organizations:"
+        for name in self.authorized:
+            print " "*(indent + 2), name
 
 
 class PublishedApplication(PublishedEntity):

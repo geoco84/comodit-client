@@ -42,6 +42,7 @@ class ApplicationsController(OrganizationEntityController):
         self._register(["unpublish"], helper._unpublish, self._print_entity_completions)
         self._register(["push"], helper._push, self._print_entity_completions)
         self._register(["pull"], helper._pull, self._print_entity_completions)
+        self._register(["update-authorized"], helper._update_authorized, self._print_entity_completions)
 
         self._register_action_doc(self._export_doc())
         self._register_action_doc(self._import_doc())
@@ -49,6 +50,7 @@ class ApplicationsController(OrganizationEntityController):
         self._register_action_doc(helper._unpublish_doc())
         self._register_action_doc(helper._push_doc())
         self._register_action_doc(helper._pull_doc())
+        self._register_action_doc(helper._update_authorized_doc())
 
     def _get_collection(self, org_name):
         return self._client.applications(org_name)

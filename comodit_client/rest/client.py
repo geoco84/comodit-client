@@ -57,7 +57,7 @@ class HttpClient(object):
     def update(self, entity, item = None, parameters = {}, decode = True):
         url = self._encode_url(entity, parameters)
         req = self._new_request(url, "PUT")
-        if item:
+        if not item is None:
             req.add_data(json.dumps(item))
         else:
             # Fix regarding Nginx not supporting empty requests with no

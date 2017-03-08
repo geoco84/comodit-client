@@ -2,12 +2,12 @@
 .\"     Title: comodit
 .\"    Author: Daniel Bartz <daniel.bartz@guardis.com>
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 03/02/2017
+.\"      Date: 03/08/2017
 .\"    Manual: Command Line User Interface Guide
 .\"    Source: Guardis 1
 .\"  Language: English
 .\"
-.TH "COMODIT" "1" "03/02/2017" "Guardis 1" "Command Line User Interface Gu"
+.TH "COMODIT" "1" "03/08/2017" "Guardis 1" "Command Line User Interface Gu"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -514,7 +514,7 @@ if the option is given, selects the flavor of created distribution, letting the 
 .PP
 The following specific actions are also available:
 .PP
-clone ORG_NAME APP_NAME CLONE_NAME
+clone ORG_NAME DIST_NAME CLONE_NAME
 .RS 4
 Creates a copy of given distribution\&.
 .RE
@@ -524,14 +524,19 @@ import PATH
 Distribution is imported from given folder\&.
 .RE
 .PP
-publish ORG_NAME APP_NAME
+publish ORG_NAME DIST_NAME
 .RS 4
 Publishes distribution into store\&.
 .RE
 .PP
-unpublish ORG_NAME APP_NAME
+unpublish ORG_NAME DIST_NAME
 .RS 4
 Unpublishes distribution from store\&.
+.RE
+.PP
+update\-authorized ORG_NAME DIST_NAME
+.RS 4
+Updates the list of authorized organizations for given published distribution\&.
 .RE
 .RE
 .sp
@@ -665,6 +670,11 @@ Publishes application into store\&.
 unpublish ORG_NAME APP_NAME
 .RS 4
 Unpublishes application from store\&.
+.RE
+.PP
+update\-authorized ORG_NAME APP_NAME
+.RS 4
+Updates the list of authorized organizations for given published application\&.
 .RE
 .RE
 .sp
@@ -1829,11 +1839,6 @@ purchase UUID [\-\-org ORG_NAME]
 .RS 4
 Purchases selected application and copies it into provided organization\&.
 .RE
-.PP
-update\-authorized UUID
-.RS 4
-Updates the list of authorized organizations for given published application\&.
-.RE
 .RE
 .sp
 .it 1 an-trap
@@ -1891,11 +1896,6 @@ Shows an distributions published in the store\&. \-\-org sets the organization w
 purchase UUID [\-\-org ORG_NAME]
 .RS 4
 Purchases selected distribution and copies it into provided organization\&.
-.RE
-.PP
-update\-authorized UUID
-.RS 4
-Updates the list of authorized organizations for given published distribution\&.
 .RE
 .RE
 .sp

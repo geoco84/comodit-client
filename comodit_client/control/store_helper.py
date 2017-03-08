@@ -3,6 +3,8 @@ import json, os
 from comodit_client.control.doc import ActionDoc
 from comodit_client.api.exceptions import PythonApiException
 from comodit_client.config import Config
+from comodit_client.control.exceptions import ControllerException
+from comodit_client.util.editor import edit_text
 
 class StoreHelper(object):
     def __init__(self, ctrl, content_type):
@@ -92,3 +94,20 @@ class StoreHelper(object):
     def _pull_doc(self):
         return ActionDoc("pull", self._params, """
         Pull """ + self._label + """ update from store.""")
+
+    def _update_authorized(self, argv):
+        app = self._ctrl._get_entity(argv)
+
+        if app.published_as is None:
+            raise PythonApiException(self._type_name + " is not published")
+
+        try:
+            pub = self.store().get(app.published_as, {"org_name" : argv[0]})
+        except PythonApiException:
+            raise ControllerException("Unable to retrieve entity from store, maybe you forgot to use --org option?")
+        updated = edit_text(json.dumps(pub.authorized, indent = 4))
+        pub.update_authorized(json.loads(updated))
+
+    def _update_authorized_doc(self):
+        return ActionDoc("update-authorized", "<UUID>", """
+        Update authorized organizations of a published entity.""")

@@ -19,10 +19,8 @@ class StoreController(RootEntityController):
         self._unregister("delete")
 
         self._register("purchase", self._purchase, self._print_purchase_completions)
-        self._register("update-authorized", self._update_authorized, self._print_entity_completions)
 
         self._register_action_doc(self._purchase_doc())
-        self._register_action_doc(self._update_authorized_doc())
 
     def _sort_key(self):
         return lambda entity : entity.name
@@ -84,18 +82,6 @@ class StoreController(RootEntityController):
     def _purchase_doc(self):
         return ActionDoc("purchase", "<UUID> <dest_org_name>", """
         Purchase an entity and add it to an organization.""")
-
-    def _update_authorized(self, argv):
-        if len(argv) < 1:
-            raise ArgumentException("A published entity UUID must be provided")
-
-        pub = self.get_collection(argv).get(argv[0])
-        updated = edit_text(json.dumps(pub.authorized, indent = 4))
-        pub.update_authorized(json.loads(updated))
-
-    def _update_authorized_doc(self):
-        return ActionDoc("update-authorized", "<UUID>", """
-        Update authorized organizations of a published entity.""")
 
     def _show(self, argv):
         try:
