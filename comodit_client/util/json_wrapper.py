@@ -31,6 +31,7 @@ class JsonWrapper(object):
             self._json_data = {}
         else:
             self._json_data = json_data
+        self._sort_keys = False
 
     def _get_field(self, field, factory = None):
         """
@@ -148,13 +149,22 @@ class JsonWrapper(object):
         """
         return self._json_data
 
-    def print_json(self, sort_keys = True, indent = 4):
+    def get_real_json(self, indent = 4):
+        """
+        Provides the JSON representation of this object's state.
+
+        @return: JSON representation of this object's state
+        @rtype: string
+        """
+        return json.dumps(self._json_data, sort_keys = self._sort_keys, indent = indent)
+
+    def print_json(self, indent = 4):
         """
         Prints JSON representation of this object's state.
         """
-        print json.dumps(self._json_data, sort_keys = sort_keys, indent = indent)
+        print(self.get_real_json())
 
-    def dump_json(self, output_file, sort_keys = True, indent = 4):
+    def dump_json(self, output_file, indent = 4):
         """
         Writes JSON representation of this object's state to given file.
 
@@ -166,7 +176,7 @@ class JsonWrapper(object):
         @type indent: Integer
         """
         with open(output_file, 'w') as f:
-            json.dump(self._json_data, f, sort_keys = sort_keys, indent = indent)
+            json.dump(self._json_data, f, sort_keys = self._sort_keys, indent = indent)
 
     def load_json(self, input_file):
         """

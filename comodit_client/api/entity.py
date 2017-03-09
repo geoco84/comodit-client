@@ -234,6 +234,7 @@ class Entity(JsonWrapper):
         @type as_json: bool
         @param indent: The number of spaces to put in front of each displayed
         line (only if as_json is False).
+        @param sort_keys: If True and as_json is True, keys in JSON are sorted
         @type indent: int
         """
         if as_json:

@@ -132,10 +132,8 @@ class EntityController(AbstractController):
             item = json.loads(options.json)
         elif len(argv) > 0:
             # Edit the entity
-            original = json.dumps(res.get_json(), sort_keys = True, indent = 4)
-            # original = "# To abort the request; just exit your editor without saving this file.\n\n" + original
+            original = res.get_real_json(indent = 4)
             updated = edit_text(original)
-            # updated = re.sub(r'#.*$', "", updated)
             item = json.loads(updated)
 
         # Check if name has changed
