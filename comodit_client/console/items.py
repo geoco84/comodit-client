@@ -213,7 +213,7 @@ class SingleElementContainer(Item):
             cur_name = self._entity.name
 
             # Edit the entity
-            original = json.dumps(self._entity.get_json(), sort_keys = True, indent = 4)
+            original = json.dumps(self._entity.get_json(), indent = 4)
             new_data = json.loads(edit_text(original))
 
             # Check if name has changed
