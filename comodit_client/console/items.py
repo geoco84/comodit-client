@@ -11,6 +11,7 @@ from comodit_client.api.settings import SimpleSetting, LinkSetting, \
 from comodit_client.api.exporter import Export
 from comodit_client.api.importer import Import
 from comodit_client.api.sync import SyncEngine
+from collections import OrderedDict
 
 
 def get_names(col, params = {}):
@@ -118,7 +119,7 @@ class EntityItem(Item):
 
         # Edit the entity
         original = self._entity.get_real_json(indent = 4)
-        new_data = json.loads(edit_text(original))
+        new_data = json.loads(edit_text(original), object_pairs_hook=OrderedDict)
 
         # Check if name has changed
         if new_data.has_key("name"):
@@ -144,7 +145,7 @@ class ContainerOnlyItem(Item):
 
         template_json = json.load(open(os.path.join(Config()._get_templates_path(), self._template)))
         updated = edit_text(json.dumps(template_json, indent = 4))
-        entity_data = json.loads(updated)
+        entity_data = json.loads(updated, object_pairs_hook=OrderedDict)
 
         res = self._collection._new(entity_data)
 
@@ -181,7 +182,7 @@ class SingleElementContainer(Item):
 
         template_json = json.load(open(os.path.join(Config()._get_templates_path(), self._template)))
         updated = edit_text(json.dumps(template_json, indent = 4))
-        entity_data = json.loads(updated)
+        entity_data = json.loads(updated, object_pairs_hook=OrderedDict)
 
         res = self._collection._new(entity_data)
 
@@ -214,7 +215,7 @@ class SingleElementContainer(Item):
 
             # Edit the entity
             original = json.dumps(self._entity.get_json(), indent = 4)
-            new_data = json.loads(edit_text(original))
+            new_data = json.loads(edit_text(original), object_pairs_hook=OrderedDict)
 
             # Check if name has changed
             if new_data.has_key("name"):
