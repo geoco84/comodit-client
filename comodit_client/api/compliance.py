@@ -577,3 +577,6 @@ class ComplianceCollection(Collection):
         error = ComplianceError(self, {"application": app_name, "name":res_name, "type": res_type})
         error.refresh(parameters = parameters)
         return error
+
+    def rebuild(self):
+        self._http_client.update(self.url + "_rebuild", decode = False)

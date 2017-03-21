@@ -23,8 +23,10 @@ class ComplianceController(EntityController):
         self._unregister("update")
 
         self._register(["delete-all"], self._delete_all, self._print_collection_completions)
+        self._register(["rebuild"], self._rebuild, self._print_collection_completions)
 
         self._register_action_doc(self._delete_all_doc())
+        self._register_action_doc(self._rebuild_doc())
 
     def get_collection(self, argv):
         if len(argv) < 3:
@@ -58,3 +60,11 @@ class ComplianceController(EntityController):
     def _delete_all_doc(self):
         return ActionDoc("delete-all", "<org_name> <env_name> <host_name>", """
         Deletes all compliance errors.""")
+
+    def _rebuild(self, argv):
+        compliance = self.get_collection(argv)
+        compliance.rebuild()
+
+    def _rebuild_doc(self):
+        return ActionDoc("rebuild", "<org_name> <env_name> <host_name>", """
+        Rebuilds compliance DB by sending back all state info to agent.""")
