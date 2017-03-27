@@ -9,20 +9,21 @@ NAME="comodit-client"
 
 if [ -z $1 ]
 then
-  # Get the latest tag on the current branch
-  VERSION=`git describe --abbrev=0 --tags  | awk -F"-" '{print $2}'`
+  # Get the latest release*dev tag  
+  VERSION=`git describe --long --match "release*dev" | awk -F"-" '{print $2}'`
 else
   VERSION=$1
 fi
 
 if [ -z $2 ]
 then
-  RELEASE=1
+  # How much commit since last release*dev tag ?
+  RELEASE=`git describe --long --match "release*dev" | awk -F"-" '{print $3}'`
 else
   RELEASE=$2
 fi
 
-COMMIT=`git describe --long --match "release*" | awk -F"-" '{print $4}'`
+COMMIT=`git describe --long --match "release*dev" | awk -F"-" '{print $4}'`
 
 sed "s/#VERSION#/${VERSION}/g" rpmbuild/SPECS/${NAME}.spec.template > rpmbuild/SPECS/${NAME}.spec
 sed -i "s/#RELEASE#/${RELEASE}/g" rpmbuild/SPECS/${NAME}.spec
