@@ -1,11 +1,14 @@
-#/bin/bash
+#!/bin/sh
 
 # Exit on errors
 set -e
 
 SYSTEMD_PLATFORMS=(epel-7-x86_64 fedora-24-x86_64 fedora-25-x86_64)
 PLATFORMS=(epel-6-i386 epel-6-x86_64)
+
 NAME="comodit-client"
+
+git branch
 
 if [ -z $1 ]
 then
@@ -22,7 +25,7 @@ else
   RELEASE=$2
 fi
 
-COMMIT=`git describe --long --match "release*" | awk -F"-" '{print $4}'`
+COMMIT=`git describe --tags --long --match "release-$VERSION" | awk -F"-" '{print $4}'`
 
 sed "s/#VERSION#/${VERSION}/g" rpmbuild/SPECS/${NAME}.spec.template > rpmbuild/SPECS/${NAME}.spec
 sed -i "s/#RELEASE#/${RELEASE}/g" rpmbuild/SPECS/${NAME}.spec
