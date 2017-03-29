@@ -353,6 +353,17 @@ class SettingCollection(Collection):
         data.pop("property", "")
         return LinkSetting(self, data)
 
+    def change(self, settings):
+        """
+        @param settings: the new settings list
+        @type settings: List of L{Setting}
+        """
+
+        data = {
+            'newOrUpdatedSettings': [setting.get_json() for setting in settings]
+        }
+        self.client._http_client.update(self.url, data)
+
 
 class HasSettings(Entity):
     """

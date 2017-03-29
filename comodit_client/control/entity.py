@@ -15,6 +15,7 @@ from comodit_client.util import prompt
 from comodit_client.util.editor import edit_text
 from comodit_client.control.doc import ActionDoc
 from collections import OrderedDict
+from comodit_client.control.json_update import JsonUpdater
 
 
 class EntityController(AbstractController):
@@ -46,11 +47,14 @@ class EntityController(AbstractController):
     def _list(self, argv):
         parameters = self._get_list_parameters(argv)
         entities_list = self._list_entities(argv, parameters = parameters)
-        if len(entities_list) == 0:
-            print(self._str_empty)
+        if self._config.options.raw:
+            print(json.dumps([entity.get_json() for entity in entities_list], indent = 4))
         else:
-            for e in sorted(entities_list, key = self._sort_key()):
-                print(self._label(e))
+            if len(entities_list) == 0:
+                print(self._str_empty)
+            else:
+                for e in sorted(entities_list, key = self._sort_key()):
+                    print(self._label(e))
 
     def _sort_key(self):
         return lambda entity : entity.identifier
@@ -123,17 +127,8 @@ class EntityController(AbstractController):
         # Prune entity fields (all may not be updatable)
         self._prune_json_update(res)
 
-        options = self._config.options
-        if options.filename:
-            with open(options.filename, 'r') as f:
-                item = json.load(f, object_pairs_hook=OrderedDict)
-        elif options.json:
-            item = json.loads(options.json, object_pairs_hook=OrderedDict)
-        elif len(argv) > 0:
-            # Edit the entity
-            original = res.get_real_json(indent = 4)
-            updated = edit_text(original)
-            item = json.loads(updated, object_pairs_hook=OrderedDict)
+        updater = JsonUpdater(self._config.options)
+        item = updater.update(res)
 
         # Check if name has changed
         if item.has_key("name"):
@@ -143,8 +138,8 @@ class EntityController(AbstractController):
 
         # Update entity
         res.set_json(item)
-        res.update(options.force)
-        res.show(as_json = options.raw)
+        res.update(self._config.options.force)
+        res.show(as_json = self._config.options.raw)
 
     def _delete(self, argv):
         res = self._get_entity(argv)
