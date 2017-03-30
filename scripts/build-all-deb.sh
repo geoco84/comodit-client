@@ -19,8 +19,8 @@ do
   fi
 
   # Build packages 
-  sudo HOME=/home/$USERNAME DIST=$tab ARCH=amd64 /usr/sbin/cowbuilder --build ../../comodit-client*.dsc 
-  sudo HOME=/home/$USERNAME DIST=$tab ARCH=i386 /usr/sbin/cowbuilder --build ../../comodit-client*.dsc
+  sudo HOME=/home/$USERNAME DIST=$tab ARCH=amd64 /usr/sbin/cowbuilder --build ../comodit-client*.dsc 
+  sudo HOME=/home/$USERNAME DIST=$tab ARCH=i386 /usr/sbin/cowbuilder --build ../comodit-client*.dsc
   
   mkdir -p /home/$USERNAME/packages/$tab-amd64
   mkdir -p /home/$USERNAME/packages/$tab-i386
