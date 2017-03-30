@@ -4,8 +4,8 @@ set e
 
 echo
 echo "# Build comodit-client ... "
-./build-deb.sh
+scripts/build-deb.sh
 
 echo
 echo "# Build comodit-client for all distributions in config file ... "
-./build-all-deb.sh
+scripts/build-all-deb.sh
