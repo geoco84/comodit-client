@@ -65,7 +65,8 @@ def _get_value_options(parser):
                 "--completions",
                 "--org",
                 "--flavor",
-                "--with-org"
+                "--with-org",
+                "--no-delete"
                 ]
     return options
 
@@ -125,6 +126,7 @@ Available entities:
     parser.add_argument("--force", dest = "force", help = "bypass change management and update everything", action = "store_true", default = False)
     parser.add_argument("--debug", dest = "debug", help = "display debug information", action = "store_true", default = False)
     parser.add_argument("--version", dest = "version", help = "display version information", action = "store_true", default = False)
+    parser.add_argument("--no-delete", dest = "no_delete", help = "Skips deletions when changing settings", action = "store_true", default = False)
 
     return parser
 

@@ -410,7 +410,7 @@ class ChangeHandler(object):
         if len(actions) > 0:
             self._print_actions(actions)
             if self._config.options.force or (prompt.confirm(prompt = "Do you want to proceed?", resp = False)):
-                settings.change(updated_settings)
+                settings.change(updated_settings, self._config.options.no_delete)
         else:
             print("No change detected, ignoring")
 
@@ -428,9 +428,11 @@ class ChangeHandler(object):
                 actions.append("- Adding setting " + key)
             elif self._value_changed(initial_dict[key], updated_dict[key]):
                 actions.append("- Updating setting " + key)
-        for key in initial_dict:
-            if key not in updated_dict:
-                actions.append("- Deleting setting " + key)
+
+        if not self._config.options.no_delete:
+            for key in initial_dict:
+                if key not in updated_dict:
+                    actions.append("- Deleting setting " + key)
 
         return actions
 
