@@ -1,11 +1,8 @@
 #!/bin/bash
 
-set e
+set -e
 
-echo
-echo "# Build comodit-client ... "
-scripts/build-deb.sh
+[[ $1 == dev ]] && scripts/build-dev-deb.sh 
+[[ $1 == prod ]] && scripts/build-deb.sh 
 
-echo
-echo "# Build comodit-client for all distributions in config file ... "
-scripts/build-all-deb.sh
+scripts/build-all-deb.sh $1

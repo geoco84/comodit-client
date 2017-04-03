@@ -2,6 +2,9 @@
 
 source config
 
+PACKAGES=packages-dev
+[[ $1 == "prod" ]] && PACKAGES=packages-prod
+
 for tab in "${TABS[@]}"
 do
   # Create distribution directory if not exist
@@ -22,10 +25,10 @@ do
   sudo HOME=/home/$USERNAME DIST=$tab ARCH=amd64 /usr/sbin/cowbuilder --build ../comodit-client*.dsc 
   sudo HOME=/home/$USERNAME DIST=$tab ARCH=i386 /usr/sbin/cowbuilder --build ../comodit-client*.dsc
   
-  mkdir -p /home/$USERNAME/packages/$tab-amd64
-  mkdir -p /home/$USERNAME/packages/$tab-i386
-  sudo mv -f /var/cache/pbuilder/$tab-amd64/result/*deb /home/$USERNAME/packages/$tab-amd64
-  sudo mv -f /var/cache/pbuilder/$tab-i386/result/*deb /home/$USERNAME/packages/$tab-i386
+  mkdir -p /home/$USERNAME/$PACKAGES/$tab-amd64 /home/$USERNAME/$PACKAGES/$tab-i386
+
+  sudo mv -f /var/cache/pbuilder/$tab-amd64/result/*deb /home/$USERNAME/$PACKAGES/$tab-amd64
+  sudo mv -f /var/cache/pbuilder/$tab-i386/result/*deb /home/$USERNAME/$PACKAGES/$tab-i386
 done  
 
 sudo find /var/cache/pbuilder -name *.changes -exec rm -fr {} \;
