@@ -50,14 +50,14 @@ then
   for platform in "${PLATFORMS[@]}"
   do
     /usr/bin/mock -r ${platform} --rebuild rpmbuild/SRPMS/${NAME}-${VERSION}-${RELEASE}*.src.rpm
-    mkdir -p ${HOME}/packages/${platform}
-    mv /var/lib/mock/${platform}/result/*.rpm ${HOME}/packages/${platform}
+    mkdir -p ${HOME}/packages-dev/${platform}
+    mv /var/lib/mock/${platform}/result/*.rpm ${HOME}/packages-dev/${platform}
   done
 
   for platform in "${SYSTEMD_PLATFORMS[@]}"
   do
     /usr/bin/mock -r ${platform} --define "use_systemd 1" --rebuild rpmbuild/SRPMS/${NAME}-${VERSION}-${RELEASE}*.src.rpm
-    mkdir -p ${HOME}/packages/${platform}
-    mv /var/lib/mock/${platform}/result/*.rpm ${HOME}/packages/${platform}
+    mkdir -p ${HOME}/packages-dev/${platform}
+    mv /var/lib/mock/${platform}/result/*.rpm ${HOME}/packages-dev/${platform}
   done
 fi
