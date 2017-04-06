@@ -28,7 +28,8 @@
             "fullName":"",
             "uid":-1,
             "gid":-1,
-            "shell":""
+            "shell":"",
+            "system":false
         }
     ],
     "files": [

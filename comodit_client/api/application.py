@@ -16,14 +16,14 @@ Application resources:
 Handler: L{Handler}
 """
 
+from comodit_client.api.collection import Collection
+from comodit_client.api.exceptions import PythonApiException
+from comodit_client.api.files import FileEntity
+from comodit_client.api.parameters import HasParameters
+from comodit_client.api.store import IsStoreCapable
+from comodit_client.rest.exceptions import ApiException
 from comodit_client.util.json_wrapper import JsonWrapper
 from files import File
-from comodit_client.api.parameters import HasParameters
-from comodit_client.api.collection import Collection
-from comodit_client.api.files import FileEntity
-from comodit_client.rest.exceptions import ApiException
-from comodit_client.api.exceptions import PythonApiException
-from comodit_client.api.store import IsStoreCapable
 
 
 class ApplicationCollection(Collection):
@@ -346,6 +346,27 @@ class User(ApplicationResource):
 
         return self._set_field("shell", shell)
 
+    @property
+    def system(self):
+        """
+        Flag telling if the user should be created as a system user or not.
+
+        @rtype: bool
+        """
+
+        return self._get_field("system")
+
+    @system.setter
+    def system(self, system):
+        """
+        Sets user's system flag.
+
+        @param system: User's system flag.
+        @type system: bool
+        """
+
+        return self._set_field("system", system)
+
     def show(self, indent = 0):
         """
         Prints this user's state to standard output in a user-friendly way.
@@ -366,6 +387,7 @@ class User(ApplicationResource):
         print " "*(indent + 2), "Home:", self.home
         print " "*(indent + 2), "Full name:", self.full_name
         print " "*(indent + 2), "Shell:", self.shell
+        print " "*(indent + 2), "System:", self.system
 
 
 class Group(ApplicationResource):
