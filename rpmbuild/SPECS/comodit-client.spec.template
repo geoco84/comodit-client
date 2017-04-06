@@ -69,7 +69,7 @@ auditing and monitoring.
 %{__rm} -rf %{buildroot}
 
 %files
-/usr/bin/comodit
+%attr(755, root, root) /usr/bin/comodit
 %config(noreplace)/etc/comodit-client/comodit-client.conf
 /usr/share/comodit-client/templates/*.json
 /etc/bash_completion.d/comodit
