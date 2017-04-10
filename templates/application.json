@@ -29,7 +29,8 @@
             "uid":-1,
             "gid":-1,
             "shell":"",
-            "system":false
+            "system":false,
+            "createHome":false
         }
     ],
     "files": [
