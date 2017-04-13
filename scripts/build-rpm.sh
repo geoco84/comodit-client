@@ -13,7 +13,7 @@ git branch
 if [ -z $1 ]
 then
   # Get the latest tag on the current branch
-  VERSION=`git describe --abbrev=0 --tags --match "*[^dev]"`
+  VERSION=`git describe --abbrev=0 --tags --match "*[^dev]" | awk -F"-" '{print $2}'`
 else
   VERSION=$1
 fi
