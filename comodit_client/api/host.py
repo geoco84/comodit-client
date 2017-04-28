@@ -5,18 +5,18 @@ and L{HostCollection}. L{Host instance entity class<Instance>} is also provided 
 module.
 """
 
+from exceptions import PythonApiException
 import time
 
-from comodit_client.rest.exceptions import ApiException
-from comodit_client.util.json_wrapper import JsonWrapper
-from exceptions import PythonApiException
-from comodit_client.api.settings import HasSettings
+from comodit_client.api.audit import AuditLogCollection
+from comodit_client.api.collection import Collection
+from comodit_client.api.compliance import ComplianceCollection
 from comodit_client.api.contexts import ApplicationContextCollection, \
     PlatformContextCollection, DistributionContextCollection
 from comodit_client.api.entity import Entity
-from comodit_client.api.collection import Collection
-from comodit_client.api.audit import AuditLogCollection
-from comodit_client.api.compliance import ComplianceCollection
+from comodit_client.api.settings import HasSettings
+from comodit_client.rest.exceptions import ApiException
+from comodit_client.util.json_wrapper import JsonWrapper
 
 
 class HostCollection(Collection):
@@ -1306,6 +1306,30 @@ class Host(HasSettings):
         """
 
         self._http_client.update(self.url + "applications/" + app_name + "/services/" + svc_name + "/_update", decode = False)
+
+    def live_enable_service(self, app_name, svc_name):
+        """
+        Enables a service on a machine.
+
+        @param app_name: The name of service's application.
+        @type app_name: string
+        @param svc_name: The service's name.
+        @type svc_name: string
+        """
+
+        self._http_client.update(self.url + "applications/" + app_name + "/services/" + svc_name + "/_enable", decode = False)
+
+    def live_disable_service(self, app_name, svc_name):
+        """
+        Disables a service on a machine.
+
+        @param app_name: The name of service's application.
+        @type app_name: string
+        @param svc_name: The service's name.
+        @type svc_name: string
+        """
+
+        self._http_client.update(self.url + "applications/" + app_name + "/services/" + svc_name + "/_disable", decode = False)
 
     def live_install_package(self, app_name, pkg_name):
         """

@@ -7,11 +7,11 @@
 # This software cannot be used and/or distributed without prior
 # authorization from Guardis.
 
+from comodit_client.control.abstract import AbstractController
+from comodit_client.control.doc import ActionDoc
+from comodit_client.control.exceptions import ArgumentException
 import completions
 
-from comodit_client.control.abstract import AbstractController
-from comodit_client.control.exceptions import ArgumentException
-from comodit_client.control.doc import ActionDoc
 
 class LiveController(AbstractController):
 
@@ -22,6 +22,8 @@ class LiveController(AbstractController):
         self._register(["update-file"], self._update_file, self._print_file_completions)
         self._register(["restart-service"], self._restart_service, self._print_service_completions)
         self._register(["update-service"], self._update_service, self._print_service_completions)
+        self._register(["enable-service"], self._enable_service, self._print_service_completions)
+        self._register(["disable-service"], self._disable_service, self._print_service_completions)
         self._register(["install-package"], self._install_package, self._print_package_completions)
         self._register(["help"], self._help)
         self._default_action = self._help
@@ -29,6 +31,8 @@ class LiveController(AbstractController):
         self._register_action_doc(self._update_file_doc())
         self._register_action_doc(self._restart_service_doc())
         self._register_action_doc(self._update_service_doc())
+        self._register_action_doc(self._enable_service_doc())
+        self._register_action_doc(self._disable_service_doc())
         self._register_action_doc(self._install_package_doc())
 
     def _help(self, argv):
@@ -109,6 +113,32 @@ class LiveController(AbstractController):
     def _update_service_doc(self):
         return ActionDoc("update-service", "<org_name> <env_name> <host_name> <app_name> <svc_name>", """
         Updates service on given host.""")
+    
+    def _enable_service(self, argv):
+        if len(argv) < 4:
+            raise ArgumentException("Wrong number of arguments")
+
+        host = self._get_host(argv)
+        app_name = argv[3]
+        svc_name = argv[4]
+        host.live_enable_service(app_name, svc_name)
+
+    def _enable_service_doc(self):
+        return ActionDoc("enable-service", "<org_name> <env_name> <host_name> <app_name> <svc_name>", """
+        Enables service on given host.""")
+    
+    def _disable_service(self, argv):
+        if len(argv) < 4:
+            raise ArgumentException("Wrong number of arguments")
+
+        host = self._get_host(argv)
+        app_name = argv[3]
+        svc_name = argv[4]
+        host.live_disable_service(app_name, svc_name)
+
+    def _disable_service_doc(self):
+        return ActionDoc("disable-service", "<org_name> <env_name> <host_name> <app_name> <svc_name>", """
+        Disables service on given host.""")
 
     def _install_package(self, argv):
         if len(argv) < 4:
