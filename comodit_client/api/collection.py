@@ -110,8 +110,12 @@ class Collection(object):
         server.
         """
 
+        entity_id = entity.identifier
+        if not entity_id:
+            raise PythonApiException("Cannot update entity: identifier is empty")
+
         try:
-            result = self.client._http_client.update(self.url + entity.identifier,
+            result = self.client._http_client.update(self.url + entity_id,
                                                    entity.get_json(),
                                                    parameters = parameters)
         except ApiException as e:
@@ -188,6 +192,9 @@ class Collection(object):
         server.
         """
 
+        if not identifier:
+            raise PythonApiException("Cannot get entity: identifier is empty")
+
         try:
             result = self.client._http_client.read(self.url + identifier, parameters = parameters)
             return self._new(result)
@@ -204,11 +211,14 @@ class Collection(object):
         @type parameters: dict of strings
         """
 
+        if not identifier:
+            raise PythonApiException("Cannot delete entity: identifier is empty")
+
         try:
             self.client._http_client.delete(self.url + identifier, parameters = parameters)
         except ApiException as e:
-            if e.code == 404:
-                pass
+            if e.code != 404:
+                self._handle_error(e, identifier)
 
     def clear(self, parameters = {}):
         """
