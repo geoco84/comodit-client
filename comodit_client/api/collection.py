@@ -62,6 +62,7 @@ class Collection(object):
 
         self.url = url
         self.client = client
+        self.accept_empty_id = False
 
     @property
     def _http_client(self):
@@ -111,7 +112,7 @@ class Collection(object):
         """
 
         entity_id = entity.identifier
-        if not entity_id:
+        if not entity_id and not self.accept_empty_id:
             raise PythonApiException("Cannot update entity: identifier is empty")
 
         try:
@@ -192,7 +193,7 @@ class Collection(object):
         server.
         """
 
-        if not identifier:
+        if not identifier and not self.accept_empty_id:
             raise PythonApiException("Cannot get entity: identifier is empty")
 
         try:
@@ -211,7 +212,7 @@ class Collection(object):
         @type parameters: dict of strings
         """
 
-        if not identifier:
+        if not identifier and not self.accept_empty_id:
             raise PythonApiException("Cannot delete entity: identifier is empty")
 
         try:

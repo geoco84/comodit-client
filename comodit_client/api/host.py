@@ -172,6 +172,10 @@ class InstanceCollection(Collection):
     element.
     """
 
+    def __init__(self, client, url):
+        super(InstanceCollection, self).__init__(client, url)
+        self.accept_empty_id = True
+
     def _new(self, json_data = None):
         return Instance(self, json_data)
 
