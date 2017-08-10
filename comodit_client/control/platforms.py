@@ -7,16 +7,16 @@
 # This software cannot be used and/or distributed without prior
 # authorization from Guardis.
 
-import completions
-
-from comodit_client.control.organization_entity import OrganizationEntityController
-from comodit_client.control.settings import PlatformSettingsController
-from comodit_client.control.files import PlatformFilesController
-from comodit_client.control.parameters import PlatformParametersController
 from comodit_client.api.exporter import Export
+from comodit_client.api.importer import Import
 from comodit_client.control.doc import ActionDoc
 from comodit_client.control.exceptions import ArgumentException
-from comodit_client.api.importer import Import
+from comodit_client.control.files import PlatformFilesController
+from comodit_client.control.organization_entity import OrganizationEntityController
+from comodit_client.control.parameters import PlatformParametersController
+from comodit_client.control.settings import PlatformSettingsController
+import completions
+
 
 class PlatformsController(OrganizationEntityController):
 
@@ -35,9 +35,11 @@ class PlatformsController(OrganizationEntityController):
         # actions
         self._register(["import"], self._import, self._print_import_completions)
         self._register(["export"], self._export, self._print_export_completions)
+        self._register(["images"], self._images, self._print_entity_completions)
 
         self._register_action_doc(self._export_doc())
         self._register_action_doc(self._import_doc())
+        self._register_action_doc(self._images_doc())
 
     def _get_collection(self, org_name):
         return self._client.platforms(org_name)
@@ -95,3 +97,12 @@ class PlatformsController(OrganizationEntityController):
         Import platform from disk. --skip-existing option causes existing entities
         on server to be updated.""")
 
+    def _images(self, argv):
+        plat = self._get_entity(argv)
+        images = plat.list_images()
+        for image in images:
+            image.show()
+
+    def _images_doc(self):
+        return ActionDoc("images", "<org_name> <plat_name>", """
+        Lists images associated with given platform.""")

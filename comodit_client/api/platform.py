@@ -4,12 +4,12 @@ Provides classes related to platform entity, in particular L{Platform}
 and L{PlatformCollection}.
 """
 
-from comodit_client.api.files import HasFiles
-from comodit_client.api.settings import HasSettings
-from comodit_client.api.parameters import HasParameters
 from comodit_client.api.collection import Collection
-from comodit_client.rest.exceptions import ApiException
 from comodit_client.api.exceptions import PythonApiException
+from comodit_client.api.files import HasFiles
+from comodit_client.api.parameters import HasParameters
+from comodit_client.api.settings import HasSettings, _build_setting
+from comodit_client.rest.exceptions import ApiException
 from comodit_client.util.json_wrapper import JsonWrapper
 
 
@@ -132,6 +132,59 @@ class Driver(JsonWrapper):
         print " "*indent, "Driver class:", self.class_name
 
 
+class Image(JsonWrapper):
+    """
+    Platform image representation. An image can be created from an L{Instance} with some driver types.
+    The image can later be re-used to duplicate the instance.
+
+    @see: L{Platform}
+    @see: L{Instance}
+    """
+
+    @property
+    def image_id(self):
+        """
+        Image's ID.
+
+        @rtype: string
+        """
+
+        return self._get_field("id")
+
+    @property
+    def name(self):
+        """
+        Image's name.
+
+        @rtype: string
+        """
+
+        return self._get_field("name")
+
+    @property
+    def create_distribution(self):
+        """
+        Image's "create distribution" flag (telling if a L{Distribution} was created alongside the image).
+
+        @rtype: string
+        """
+
+        return self._get_field("createDistribution")
+
+    def show(self, indent = 0):
+        """
+        Prints image's representation to standard output in a user-friendly way.
+
+        @param indent: The number of spaces to put in front of each displayed
+        line.
+        @type indent: int
+        """
+
+        print " "*indent, "ID:", self.image_id
+        print " "*indent, "Name:", self.name
+        print " "*indent, "Create Distribution:", self.create_distribution
+
+
 class Platform(HasSettings, HasParameters, HasFiles):
     """
     Platform entity representation. A platform defines the
@@ -191,3 +244,10 @@ class Platform(HasSettings, HasParameters, HasFiles):
         self._show_settings(indent)
         self._show_parameters(indent)
         self._show_files(indent)
+
+    def list_images(self):
+        try:
+            result = self._http_client.read(self.url + "images")
+            return [ Image(item) for item in result['items']]
+        except ApiException as e:
+            raise PythonApiException("Unable to retrieve platform images: " + e.message)
