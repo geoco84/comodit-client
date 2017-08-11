@@ -182,7 +182,6 @@ class Image(JsonWrapper):
 
         print " "*indent, "ID:", self.image_id
         print " "*indent, "Name:", self.name
-        print " "*indent, "Create Distribution:", self.create_distribution
 
 
 class Platform(HasSettings, HasParameters, HasFiles):
