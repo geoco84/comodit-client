@@ -2,9 +2,13 @@
 
 import json, completions
 
+from comodit_client.api.platform import Image
+from comodit_client.api.settings import SimpleSetting
+from comodit_client.control.doc import ActionDoc
 from comodit_client.control.entity import EntityController
 from comodit_client.control.exceptions import ArgumentException
-from comodit_client.control.doc import ActionDoc
+from comodit_client.control.json_update import JsonUpdater
+
 
 class InstancesController(EntityController):
 
@@ -21,6 +25,7 @@ class InstancesController(EntityController):
         self._register(["properties"], self._properties, self._print_entity_completions)
         self._register(["show_file"], self._show_file, self._print_entity_completions)
         self._register(["get_status"], self._get_status, self._print_entity_completions)
+        self._register(["create_image"], self._create_image, self._print_entity_completions)
 
         # Unregister unsupported actions
         self._unregister(["update", "list", "add"])
@@ -37,6 +42,7 @@ class InstancesController(EntityController):
         self._register_action_doc(self._properties_doc())
         self._register_action_doc(self._show_file_doc())
         self._register_action_doc(self._get_status_doc())
+        self._register_action_doc(self._create_image_doc())
 
 
     def get_collection(self, argv):
@@ -149,3 +155,28 @@ class InstancesController(EntityController):
     def _get_status_doc(self):
         return ActionDoc("get_status", "<org_name>  <env_name> <host_name> <collection> <sensor>", """
         Show a host's file content.""")
+
+    def _create_image(self, argv):
+        image = Image()
+        image.create_distribution = False
+
+        host = self._client.get_host(argv[0], argv[1], argv[2])
+        platform = self._client.get_platform(argv[0], host.platform_name)
+        image.settings = [ self._build_setting(param) for param in platform.image_parameters() ]
+
+        updater = JsonUpdater(self._config.options, ignore_not_modified=True)
+        updated_json = updater.update(image)
+        image.set_json(updated_json)
+
+        instance = self._get_entity(argv)
+        instance.create_image(image)
+
+    def _build_setting(self, parameter):
+        setting = SimpleSetting(None)
+        setting.key = parameter.key
+        setting.value = parameter.value
+        return setting
+
+    def _create_image_doc(self):
+        return ActionDoc("create_image", "<org_name>  <env_name> <host_name>", """
+        Creates an image from given host's instance.""")

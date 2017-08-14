@@ -1,11 +1,14 @@
-import json
 from collections import OrderedDict
+import json
+
 from comodit_client.util.editor import edit_text
+
 
 class JsonUpdater(object):
 
-    def __init__(self, options):
+    def __init__(self, options, ignore_not_modified=False):
         self._options = options
+        self._ignore_not_modified = ignore_not_modified
 
     def update(self, json_data):
         if self._options.filename:
@@ -15,5 +18,5 @@ class JsonUpdater(object):
             return json.loads(self._options.json, object_pairs_hook=OrderedDict)
         else:
             original = json_data.get_real_json(indent = 4)
-            updated = edit_text(original)
+            updated = edit_text(original, ignore_not_modified=self._ignore_not_modified)
             return json.loads(updated, object_pairs_hook=OrderedDict)

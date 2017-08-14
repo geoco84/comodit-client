@@ -2,12 +2,12 @@
 .\"     Title: comodit
 .\"    Author: Daniel Bartz <daniel.bartz@guardis.com>
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 03/08/2017
+.\"      Date: 08/14/2017
 .\"    Manual: Command Line User Interface Guide
 .\"    Source: Guardis 1
 .\"  Language: English
 .\"
-.TH "COMODIT" "1" "03/08/2017" "Guardis 1" "Command Line User Interface Gu"
+.TH "COMODIT" "1" "08/14/2017" "Guardis 1" "Command Line User Interface Gu"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -405,6 +405,11 @@ Creates a copy of given platform\&.
 import [PATH]
 .RS 4
 Platform is imported from given folder\&.
+.RE
+.PP
+images
+.RS 4
+Lists the images associated with given platform\&.
 .RE
 .RE
 .sp
@@ -1081,6 +1086,11 @@ Deletes an instance\&.
 forget ORG_NAME ENV_NAME HOST_NAME
 .RS 4
 Forgets an instance\&.
+.RE
+.PP
+create_image ORG_NAME ENV_NAME HOST_NAME
+.RS 4
+Creates an image from given instance\&.
 .RE
 .RE
 .sp

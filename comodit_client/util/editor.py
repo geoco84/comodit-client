@@ -16,7 +16,7 @@ http://books.google.com/books?id=Q0s6Vgb98CQC&lpg=PT436&ots=hc6X43QfoD&dq=python
 
 import sys, os, tempfile
 
-def edit_text(starting_text=''):
+def edit_text(starting_text='', ignore_not_modified=False):
     temp_fd, temp_filename = tempfile.mkstemp(text=True)
     os.write(temp_fd, starting_text)
     os.close(temp_fd)
@@ -28,7 +28,7 @@ def edit_text(starting_text=''):
     result = open(temp_filename).read()
     updated = os.path.getmtime(temp_filename)
     os.unlink(temp_filename)
-    if time == updated:
+    if not ignore_not_modified and time == updated:
         raise NotModifiedException()
     return result
 

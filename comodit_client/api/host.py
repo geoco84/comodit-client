@@ -549,6 +549,17 @@ class Instance(Entity):
                 break
             self.refresh()
 
+    def create_image(self, image):
+        """
+        Creates an image based on provided template.
+
+        @param image: the image template
+        @type image: L{Image}
+        """
+
+        result = self._http_client.update(self.url + "_create_image", item=image.get_json(), decode = False)
+        if(result.getcode() != 202):
+            raise PythonApiException("Could not create image")
 
 
 class Task(JsonWrapper):
