@@ -7,22 +7,23 @@
 # This software cannot be used and/or distributed without prior
 # authorization from Guardis.
 
-import completions
-
-from comodit_client.control.exceptions import ArgumentException
+from comodit_client.control.doc import ActionDoc
 from comodit_client.control.entity import EntityController
+from comodit_client.control.exceptions import ArgumentException
 from comodit_client.control.settings import ApplicationContextSettingsController, \
     PlatformContextSettingsController, DistributionContextSettingsController
-from comodit_client.control.doc import ActionDoc
+import completions
+
 
 class AbstractContextController(EntityController):
-    def __init__(self):
+    def __init__(self, unregister_update=True):
         super(AbstractContextController, self).__init__()
 
         # actions
         self._register(["render-file"], self._render_file, self._print_render_file_completions)
         self._register(["link"], self._get_link, self._print_render_file_completions)
-        self._unregister(["update"])
+        if unregister_update:
+            self._unregister(["update"])
 
         self._update_action_doc_params("list", "<org_name> <env_name> <host_name>")
         self._update_action_doc_params("show", "<org_name> <env_name> <host_name> <name>")
@@ -47,7 +48,7 @@ class ApplicationContextController(AbstractContextController):
     _template = "application_context.json"
 
     def __init__(self):
-        super(ApplicationContextController, self).__init__()
+        super(ApplicationContextController, self).__init__(unregister_update=False)
 
         # subcontroller
         self._register_subcontroller(["settings"], ApplicationContextSettingsController())
