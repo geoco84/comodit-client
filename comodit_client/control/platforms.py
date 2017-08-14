@@ -7,6 +7,8 @@
 # This software cannot be used and/or distributed without prior
 # authorization from Guardis.
 
+import json
+
 from comodit_client.api.exporter import Export
 from comodit_client.api.importer import Import
 from comodit_client.control.doc import ActionDoc
@@ -100,8 +102,11 @@ class PlatformsController(OrganizationEntityController):
     def _images(self, argv):
         plat = self._get_entity(argv)
         images = plat.list_images()
-        for image in images:
-            image.show()
+        if self._config.options.raw:
+            print(json.dumps([image.get_json() for image in images], indent=4))
+        else:
+            for image in images:
+                image.show()
 
     def _images_doc(self):
         return ActionDoc("images", "<org_name> <plat_name>", """
