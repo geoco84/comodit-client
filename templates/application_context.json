@@ -1,5 +1,6 @@
 {
    "application":"<app-name>",
+   "enabled":"true",
    "settings": [
      {
        "key": "<k>",
