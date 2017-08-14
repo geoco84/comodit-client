@@ -6,10 +6,9 @@ Provides all classes related to the configuration of a distribution
 provided by this module.
 """
 
-from comodit_client.api.settings import HasSettings, add_settings
 from comodit_client.api.collection import Collection
-from comodit_client.rest.exceptions import ApiException
-from comodit_client.api.exceptions import PythonApiException
+from comodit_client.api.settings import HasSettings, add_settings
+
 
 class AbstractContext(HasSettings):
     """
@@ -148,6 +147,10 @@ class DistributionContextCollection(Collection):
     a context, a newly created context will replace the old one.
     """
 
+    def __init__(self, client, url):
+        super(DistributionContextCollection, self).__init__(client, url)
+        self.accept_empty_id = True
+
     def _new(self, json_data = None):
         return DistributionContext(self, json_data)
 
@@ -229,6 +232,10 @@ class PlatformContextCollection(Collection):
     will always contain at most one element. If the collection already contains
     a context, a newly created context will replace the old one.
     """
+
+    def __init__(self, client, url):
+        super(PlatformContextCollection, self).__init__(client, url)
+        self.accept_empty_id = True
 
     def _new(self, json_data = None):
         return PlatformContext(self, json_data)
