@@ -31,6 +31,10 @@ sed "s/#VERSION#/${VERSION}/g" rpmbuild/SPECS/${NAME}.spec.template > rpmbuild/S
 sed -i "s/#RELEASE#/${RELEASE}/g" rpmbuild/SPECS/${NAME}.spec
 sed -i "s/#COMMIT#/${COMMIT}/g" rpmbuild/SPECS/${NAME}.spec
 
+# Generate version file
+echo "VERSION=\""$VERSION"\"" > comodit_client/version.py
+echo "RELEASE=\""$RELEASE"\"" >> comodit_client/version.py
+
 mkdir -p rpmbuild/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
 
 # Do not tar directly in SOURCES directory to escape error
