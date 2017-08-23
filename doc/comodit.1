@@ -2,12 +2,12 @@
 .\"     Title: comodit
 .\"    Author: Daniel Bartz <daniel.bartz@guardis.com>
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 08/14/2017
+.\"      Date: 08/23/2017
 .\"    Manual: Command Line User Interface Guide
 .\"    Source: Guardis 1
 .\"  Language: English
 .\"
-.TH "COMODIT" "1" "08/14/2017" "Guardis 1" "Command Line User Interface Gu"
+.TH "COMODIT" "1" "08/23/2017" "Guardis 1" "Command Line User Interface Gu"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -2150,6 +2150,33 @@ token = abcdefghijklmnopqrstuvwxyz
 .RE
 .PP
 By default, profile with name \*(Aqdefault\*(Aq is used\&. This profile defines \*(Aqhttp://localhost:8000/api\*(Aq as the API URL (see \-\-api option), \*(Aqadmin\*(Aq as user name (see \-\-user option) and \*(Aqsecret\*(Aq as password (see \-\-pass option)\&.
+.SH "AUTHENTICATION"
+.PP
+In previous section, we saw that configuration files provide credentials\&. There are 2 other ways of authenticating with the client:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Using the command line options \-\-username and \-\-password or \-\-token
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Defining the environment variables COMODIT_USERNAME and COMODIT_PASSWORD or COMODIT_TOKEN
+.RE
+.PP
+Note that command line options have precedence over environment variables which have precedence over credentials coming from configuration files\&.
 .SH "EXAMPLES"
 .SS "List available entites"
 .PP
