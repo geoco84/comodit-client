@@ -2,9 +2,9 @@
 Cortex client configuration file parsing.
 """
 
+import ConfigParser
 import os
 
-import ConfigParser
 
 def singleton(cls):
     """
@@ -76,7 +76,7 @@ class Config(object):
         if not self.templates_path:
             raise IOError("No templates directory found")
 
-    def _get_value(self, profile_name, key, optional = False):
+    def get_value(self, profile_name, key, optional = False):
         if profile_name is None:
             profile_name = self.default_profile_name
         if not self.config.has_key(profile_name):
@@ -95,19 +95,19 @@ class Config(object):
         return value
 
     def get_api(self, profile_name):
-        return self._get_value(profile_name, "api")
+        return self.get_value(profile_name, "api")
 
     def get_username(self, profile_name):
-        return self._get_value(profile_name, "username", True)
+        return self.get_value(profile_name, "username", True)
 
     def get_password(self, profile_name):
-        return self._get_value(profile_name, "password", True)
+        return self.get_value(profile_name, "password", True)
     
     def get_token(self, profile_name):
-        return self._get_value(profile_name, "token", True)
+        return self.get_value(profile_name, "token", True)
 
     def get_vnc_viewer_call(self, profile_name):
-        return self._get_value(profile_name, "vnc_viewer_call")
+        return self.get_value(profile_name, "vnc_viewer_call")
 
     def _check_config(self):
         """

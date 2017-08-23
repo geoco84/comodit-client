@@ -7,28 +7,30 @@
 # This software cannot be used and/or distributed without prior
 # authorization from Guardis.
 
+import argparse
+import os
+import sys
+import traceback
+
+from api import Client
+from api.exceptions import PythonApiException
+from comodit_client.api.exporter import ExportException
+from comodit_client.api.importer import ImportException
+from comodit_client.control.application_keys import ApplicationKeysController
+from comodit_client.control.store import AppStoreController, DistStoreController
+from config import Config, ConfigException
 from control.applications import ApplicationsController
-from control.platforms import PlatformsController
 from control.distributions import DistributionsController
 from control.environments import EnvironmentsController
 from control.exceptions import ControllerException, ArgumentException
+from control.flavors import FlavorsController
 from control.hosts import HostsController
 from control.organizations import OrganizationsController
-from control.flavors import FlavorsController
-
+from control.platforms import PlatformsController
+import control.router
 from rest.exceptions import ApiException
 from util.editor import NotModifiedException
-import argparse
-import traceback
-import sys
-import control.router
-from config import Config, ConfigException
-from api import Client
-from api.exceptions import PythonApiException
-from comodit_client.api.importer import ImportException
-from comodit_client.api.exporter import ExportException
-from comodit_client.control.store import AppStoreController, DistStoreController
-from comodit_client.control.application_keys import ApplicationKeysController
+
 
 def run(argv):
     # entities
@@ -194,29 +196,15 @@ def _parse(argv):
         api = config.get_api(config.options.profile_name)
         config.options.api = api
 
-    if config.options.username:
-        username = config.options.username
-    else:
-        username = config.get_username(config.options.profile_name)
-        config.options.username = username
+    define_credentials_item('username', 'COMODIT_USERNAME')
+    define_credentials_item('password', 'COMODIT_PASSWORD')
+    define_credentials_item('token', 'COMODIT_TOKEN')
 
-    if config.options.password:
-        password = config.options.password
-    else:
-        password = config.get_password(config.options.profile_name)
-        config.options.password = password
-
-    if config.options.token:
-        token = config.options.token
-    else:
-        token = config.get_token(config.options.profile_name)
-        config.options.token = token
-
-    if ((username is None) or (password is None)) and (token is None):
-        print "You have to provider either a username and a password or a token"
+    if not is_credentials_defined():
+        print("You have to provider either a username and a password or a token")
         exit(-1)
 
-    client = Client(api, username, password, token, config.options.insecure)
+    client = Client(api, config.options.username, config.options.password, config.options.token, config.options.insecure)
 
     entity_args = [] + config.options.subentities
 
@@ -224,6 +212,29 @@ def _parse(argv):
         entity_args.append(config.options.action)
 
     _dispatch(config.options, entity_args, client)
+
+
+def define_credentials_item(item_name, env_name):
+    config = Config()
+    if not getattr(config.options, item_name):
+        item_value = os.environ.get(env_name, None)
+        if not item_value:
+            item_value = config.get_value(config.options.profile_name, item_name, True)
+        if item_value:
+            setattr(config.options, item_name, item_value)
+
+
+def is_credentials_defined():
+    return (is_option_defined('username') and is_option_defined('password')) or is_option_defined('token')
+
+
+def is_option_defined(option_name):
+    config = Config()
+    if hasattr(config.options, option_name):
+        return getattr(config.options, option_name) is not None
+    else:
+        return False
+
 
 def _dispatch(options, args, client):
     try:
