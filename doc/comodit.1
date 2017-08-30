@@ -2,12 +2,12 @@
 .\"     Title: comodit
 .\"    Author: Daniel Bartz <daniel.bartz@guardis.com>
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 08/23/2017
+.\"      Date: 08/30/2017
 .\"    Manual: Command Line User Interface Guide
 .\"    Source: Guardis 1
 .\"  Language: English
 .\"
-.TH "COMODIT" "1" "08/23/2017" "Guardis 1" "Command Line User Interface Gu"
+.TH "COMODIT" "1" "08/30/2017" "Guardis 1" "Command Line User Interface Gu"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -31,7 +31,7 @@
 comodit \- ComodIT command\-line interface
 .SH "SYNOPSIS"
 .HP \w'/usr/bin/comodit\ 'u
-/usr/bin/comodit [\-h\ |\ \-\-help] [\-f\ FILE\ |\-\-file\ FILE] [\-j\ FILE\ |\-\-json\ FILE] [\-d\ |\ \-\-default] [\-t\ |\ \-\-test] [\-p\ |\ \-\-populate] [\-\-raw] [\-\-flavor\ FLAVOR] [\-\-skip\-chown] [\-\-skip\-chmod] [\-\-skip\-conflict] [\-\-dry\-run] [\-\-public] [\-\-private] [\-\-featured] [\-\-org\ NAME] [\-\-api\ URL] [\-\-user\ USERNAME] [\-\-pass\ PASSWORD] [\-\-token\ TOKEN] [\-\-templates\ PATH] [\-\-profile\ NAME] [\-\-force] [\-\-debug] [\-\-version] {sel} [sel\ \&...] {action} [id\ \&...] [\&...]
+/usr/bin/comodit [\-h\ |\ \-\-help] [\-f\ FILE\ |\-\-file\ FILE] [\-j\ FILE\ |\-\-json\ FILE] [\-d\ |\ \-\-default] [\-t\ |\ \-\-test] [\-p\ |\ \-\-populate] [\-\-raw] [\-\-flavor\ FLAVOR] [\-\-skip\-chown] [\-\-skip\-chmod] [\-\-skip\-conflict] [\-\-dry\-run] [\-\-with\-instances] [\-\-public] [\-\-private] [\-\-featured] [\-\-org\ NAME] [\-\-api\ URL] [\-\-user\ USERNAME] [\-\-pass\ PASSWORD] [\-\-token\ TOKEN] [\-\-templates\ PATH] [\-\-profile\ NAME] [\-\-force] [\-\-debug] [\-\-version] {sel} [sel\ \&...] {action} [id\ \&...] [\&...]
 .SH "INTRODUCTION"
 .PP
 This section briefly describes ComodIT and the way you will, in general, interact with the client\&.
@@ -299,9 +299,9 @@ export ORG_NAME [PATH] [\-\-force]
 Organization is exported onto disk in given folder\&. If no folder is given, a folder with organization\*(Aqs name is created and data written into it\&. If \-\-force option is set, data already present in output folder are overwritten\&.
 .RE
 .PP
-import PATH [\-\-force] [\-\-skip\-conflicts] [\-\-dry\-run]
+import PATH [\-\-force] [\-\-skip\-conflicts] [\-\-dry\-run] [\-\-with\-instances]
 .RS 4
-Organization is imported from given folder\&. If \-\-force option is set, data already present on server are updated\&. \-\-skip\-conflicts implies that data already present are ignored\&. With \-\-dry\-run, actions are not actually performed but displayed on standard output\&.
+Organization is imported from given folder\&. If \-\-force option is set, data already present on server are updated\&. \-\-skip\-conflicts implies that data already present are ignored\&. With \-\-dry\-run, actions are not actually performed but displayed on standard output\&. \-\-with\-instances also imports the instances (WARNING: this may be dangerous if the exported organization still exists as several hosts then point to the same actual machines or VMs)\&.
 .RE
 .PP
 audit ORG_NAME
@@ -2020,6 +2020,11 @@ If this option is set, conflicting resources are not imported during organizatio
 \-\-dry\-run
 .RS 4
 On organization import, sync pull or sync push, do not actually execute anything but display actions that would be executed\&.
+.RE
+.PP
+\-\-with\-instances
+.RS 4
+On organization import, force the import of instances\&. By default, host instances are not imported to prevent the unwanted sharing of actual resources between hosts from different organizations\&. Use this flag if you are sure you know what you do\&.
 .RE
 .PP
 \-\-raw
