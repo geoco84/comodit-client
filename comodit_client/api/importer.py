@@ -8,14 +8,14 @@ import os
 
 from comodit_client.api.application import Application
 from comodit_client.api.collection import EntityNotFoundException
-from comodit_client.api.distribution import Distribution
-from comodit_client.api.platform import Platform
-from comodit_client.api.environment import Environment
-from comodit_client.api.host import Host, Instance
 from comodit_client.api.contexts import ApplicationContext, PlatformContext, \
     DistributionContext
-from comodit_client.api.organization import Organization
+from comodit_client.api.distribution import Distribution
+from comodit_client.api.environment import Environment
 from comodit_client.api.exceptions import PythonApiException
+from comodit_client.api.host import Host, Instance
+from comodit_client.api.organization import Organization
+from comodit_client.api.platform import Platform
 
 
 class ImportException(Exception):
@@ -32,7 +32,7 @@ class Import(object):
     directories. Imported entities have generally been exported (see L{Export}).
     """
 
-    def __init__(self, skip_conflict = False, queue_actions = False):
+    def __init__(self, skip_conflict = False, queue_actions = False, with_instances=False):
         """
         Creates an importer instance. When importing entities, there might be
         conflicts with existing remote entities. In this case, import fails unless
@@ -52,6 +52,7 @@ class Import(object):
 
         self._skip_conflict = skip_conflict
         self._queue_actions = queue_actions
+        self._with_instances = with_instances
         if queue_actions:
             self._actions_queue = ActionsQueue()
 
@@ -217,7 +218,7 @@ class Import(object):
 
         # Import instance (must come at last)
         instance_file = os.path.join(host_folder, "instance.json")
-        if os.path.exists(instance_file):
+        if os.path.exists(instance_file) and self._with_instances:
             instance = Instance(host.instance(), None)
             instance.load_json(instance_file)
             self._import_instance(instance)

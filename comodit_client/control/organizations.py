@@ -7,16 +7,15 @@
 # This software cannot be used and/or distributed without prior
 # authorization from Guardis.
 
-import completions
-
-from comodit_client.control.root_entity import RootEntityController
-from comodit_client.control.exceptions import ArgumentException
-from comodit_client.control.settings import OrganizationSettingsController
-from comodit_client.control.groups import GroupsController
-from comodit_client.control.doc import ActionDoc
-from comodit_client.control.audit import AuditHelper
 from comodit_client.api.exporter import Export
 from comodit_client.api.importer import Import
+from comodit_client.control.audit import AuditHelper
+from comodit_client.control.doc import ActionDoc
+from comodit_client.control.exceptions import ArgumentException
+from comodit_client.control.groups import GroupsController
+from comodit_client.control.root_entity import RootEntityController
+from comodit_client.control.settings import OrganizationSettingsController
+import completions
 
 
 class OrganizationsController(RootEntityController):
@@ -110,7 +109,7 @@ class OrganizationsController(RootEntityController):
             raise ArgumentException("Wrong number of arguments")
         self._root = argv[0]
 
-        importer = Import(self._config.options.skip_conflict, True)
+        importer = Import(self._config.options.skip_conflict, queue_actions=True, with_instances=self._config.options.with_instances)
         importer.import_organization(self._client, self._root)
 
         if (importer.no_conflict() or self._config.options.skip_conflict) and not self._config.options.dry_run:
