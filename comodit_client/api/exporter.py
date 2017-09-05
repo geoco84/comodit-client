@@ -6,10 +6,11 @@ to local directories.
 
 import os
 
-from comodit_client.util.path import ensure
-from comodit_client.api.exceptions import PythonApiException
 from comodit_client.api.collection import EntityNotFoundException
+from comodit_client.api.exceptions import PythonApiException
+from comodit_client.api.host import Host
 from comodit_client.rest.exceptions import ApiException
+from comodit_client.util.path import ensure
 
 
 class ExportException(Exception):
@@ -142,11 +143,12 @@ class Export(object):
         self._export_entity(host, path)
 
         # Export instance
-        try:
-            instance = host.get_instance()
-            instance.dump_json(os.path.join(path, "instance.json"))
-        except PythonApiException:
-            pass
+        if host.state != Host.State.DEFINED:
+            try:
+                instance = host.get_instance()
+                instance.dump_json(os.path.join(path, "instance.json"))
+            except PythonApiException:
+                pass
 
         # Export application contexts
         app_folder = os.path.join(path, "applications")
