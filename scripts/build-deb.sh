@@ -25,6 +25,8 @@ fi
 COMMIT=`git describe --tags --long --match "release-${VERSION}" | awk -F"-" '{print $4}'`
 MESSAGE="Release $VERSION-$RELEASE-$COMMIT"
 
+debchange -b --newversion $VERSION-$RELEASE "$MESSAGE"
+
 # Generate version file
 echo "VERSION=\""$VERSION"\"" > comodit_client/version.py
 echo "RELEASE=\""$RELEASE"\"" >> comodit_client/version.py
