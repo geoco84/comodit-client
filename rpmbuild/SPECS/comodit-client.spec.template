@@ -15,7 +15,7 @@ Source0: %{name}-%{version}-#RELEASE#.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch: noarch
 
-Packager: Gerard Dethier <gerard.dethier@guardis.com>
+Packager: Daniel Bartz <daniel.bartz@guardis.com>
 
 BuildRequires: python-devel
 BuildRequires: python-setuptools
@@ -77,11 +77,5 @@ auditing and monitoring.
 %{python_sitelib}/%{main_package}
 
 %changelog
-* Mon Jul 30 2012 Gerard Dethier <gerard.dethier@guardis.com> - 1.2.dev-19
-- Renamed client into comodit
-* Fri Jul 20 2012 Gerard Dethier <gerard.dethier@guardis.com> - 1.1.dev-14
-- Fixed RPM spec file
-* Fri Mar 16 2012 Gerard Dethier <gerard.dethier@guardis.com> - 0.9
-- Fixed bash completion script name
-* Tue Nov 22 2011 Gerard Dethier <gerard.dethier@guardis.com> - 0.9
-- Added man page
+* Fri Sep 29 2017 Daniel Bartz <daniel.bartz@guardis.comm> - 1.18.2
+- Update SPEC file
