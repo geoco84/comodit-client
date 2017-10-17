@@ -123,13 +123,15 @@ class Import(object):
         else:
             app.set_thumbnail_content(src_file)
 
-    def _import_entity_with_files(self, res, root_folder, entity_type = "entity", skip_conflict_detection=False):
+    def _import_entity_with_files_and_parameters(self, res, root_folder, entity_type = "entity", skip_conflict_detection=False):
         res.load(root_folder)
 
         conflict = self._detect_conflict(res, skip_conflict_detection)
         if conflict:
             for res_file in res.files_f:
                 self._import_entity_and_detect_conflict(res_file, "file", skip_conflict_detection)
+            for param in res.parameters_f:
+                self._import_entity_and_detect_conflict(param, "parameter", skip_conflict_detection)
 
         self._import_entity(res, conflict, entity_type)
 
@@ -155,7 +157,7 @@ class Import(object):
         """
 
         app = Application(org.applications(), None)
-        self._import_entity_with_files(app, root_folder, "application", skip_conflict_detection=skip_conflict_detection)
+        self._import_entity_with_files_and_parameters(app, root_folder, "application", skip_conflict_detection=skip_conflict_detection)
 
     def import_distribution(self, org, root_folder, skip_conflict_detection=False):
         """
@@ -168,7 +170,7 @@ class Import(object):
         """
 
         dist = Distribution(org.distributions(), None)
-        self._import_entity_with_files(dist, root_folder, "distribution", skip_conflict_detection=skip_conflict_detection)
+        self._import_entity_with_files_and_parameters(dist, root_folder, "distribution", skip_conflict_detection=skip_conflict_detection)
 
     def import_platform(self, org, root_folder, skip_conflict_detection=False):
         """
@@ -181,7 +183,7 @@ class Import(object):
         """
 
         plat = Platform(org.platforms(), None)
-        self._import_entity_with_files(plat, root_folder, "platform", skip_conflict_detection=skip_conflict_detection)
+        self._import_entity_with_files_and_parameters(plat, root_folder, "platform", skip_conflict_detection=skip_conflict_detection)
 
     def import_environment(self, org, env_folder, skip_conflict_detection=False):
         """
