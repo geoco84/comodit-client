@@ -32,7 +32,7 @@ class Import(object):
     directories. Imported entities have generally been exported (see L{Export}).
     """
 
-    def __init__(self, skip_conflict = False, queue_actions = False, with_instances=False):
+    def __init__(self, skip_conflict = False, queue_actions = False, with_instances=False, update_existing=False):
         """
         Creates an importer instance. When importing entities, there might be
         conflicts with existing remote entities. In this case, import fails unless
@@ -53,6 +53,7 @@ class Import(object):
         self._skip_conflict = skip_conflict
         self._queue_actions = queue_actions
         self._with_instances = with_instances
+        self._update_existing = update_existing
         if queue_actions:
             self._actions_queue = ActionsQueue()
 
@@ -62,7 +63,10 @@ class Import(object):
             conflict = self._is_conflict(local_res.collection, local_res.name)
 
         if conflict:
-            self._signal_conflict(local_res, entity_type)
+            if self._update_existing:
+                self._update_entity(local_res, entity_type)
+            else:
+                self._signal_conflict(local_res, entity_type)
         else:
             self._create_entity(local_res, entity_type)
 
@@ -74,6 +78,12 @@ class Import(object):
             return True
         except EntityNotFoundException:
             return False
+
+    def _update_entity(self, local_res, entity_type):
+        if self._queue_actions:
+            self._actions_queue.add_action(UpdateEntity(local_res, entity_type))
+        else:
+            local_res.update()
 
     def _signal_conflict(self, local_res, entity_type):
         if self._queue_actions:
@@ -445,6 +455,32 @@ class CreateEntity(Action):
 
     def get_summary(self):
         return "Create " + self._entity_type + " '" + self._res_object.name + "'"
+
+
+class UpdateEntity(Action):
+    """
+    Entity update action.
+    """
+
+    def __init__(self, res_object, entity_type):
+        """
+        Updates an existing entity.
+
+        @param res_object: The entity to update.
+        @type res_object: L{Entity}
+        @param entity_type: Entity type.
+        @type entity_type: string
+        """
+
+        super(UpdateEntity, self).__init__(False)
+        self._res_object = res_object
+        self._entity_type = entity_type
+
+    def execute(self):
+        self._res_object.update()
+
+    def get_summary(self):
+        return "Update " + self._entity_type + " '" + self._res_object.name + "'"
 
 
 class ActionsQueue:

@@ -109,7 +109,8 @@ Available entities:
     parser.add_argument("--skip-chmod", dest = "skip_chmod", help = "Do not chmod files on render tree", action = "store_true", default = False)
 
     parser.add_argument("--skip-conflict", dest = "skip_conflict", help = "Skip conflicts on import", action = "store_true", default = False)
-    parser.add_argument("--dry-run", dest = "dry_run", help = "Dry-run for import", action = "store_true", default = False)
+    parser.add_argument("--update-existing", dest = "update_existing", help = "Updates existing entities on import", action = "store_true", default = False)
+    parser.add_argument("--dry-run", dest = "dry_run", help = "Dry-run for import of organization", action = "store_true", default = False)
     parser.add_argument("--with-instances", dest = "with_instances", help = "Imports instances as well when importing an organization, an environment or a host", action = "store_true", default = False)
     parser.add_argument("--insecure", dest = "insecure", help = "Tells the client to ignore self-signed certificates", action = "store_true", default = False)
 

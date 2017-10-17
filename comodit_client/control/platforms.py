@@ -91,12 +91,12 @@ class PlatformsController(OrganizationEntityController):
             raise ArgumentException("Wrong number of arguments")
 
         org = self._client.organizations().get(argv[0])
-        imp = Import()
+        imp = Import(update_existing=self._config.options.update_existing)
         imp.import_platform(org, argv[1])
 
     def _import_doc(self):
-        return ActionDoc("import", "<org_name> <src_folder> [--skip-existing]", """
-        Import platform from disk. --skip-existing option causes existing entities
+        return ActionDoc("import", "<org_name> <src_folder> [--update-existing]", """
+        Import platform from disk. --update-existing option causes existing entities
         on server to be updated.""")
 
     def _images(self, argv):

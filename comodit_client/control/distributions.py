@@ -7,18 +7,18 @@
 # This software cannot be used and/or distributed without prior
 # authorization from Guardis.
 
-import completions
-
-from comodit_client.control.organization_entity import OrganizationEntityController
-from comodit_client.control.settings import DistributionSettingsController
-from comodit_client.control.files import DistributionFilesController
-from comodit_client.control.parameters import DistributionParametersController
 from comodit_client.api.exporter import Export
+from comodit_client.api.importer import Import
 from comodit_client.control.doc import ActionDoc
 from comodit_client.control.exceptions import ArgumentException
-from comodit_client.api.importer import Import
+from comodit_client.control.files import DistributionFilesController
+from comodit_client.control.organization_entity import OrganizationEntityController
+from comodit_client.control.parameters import DistributionParametersController
+from comodit_client.control.settings import DistributionSettingsController
 from comodit_client.control.store_helper import StoreHelper
 from comodit_client.control.sync import DistSyncController
+import completions
+
 
 class DistributionsController(OrganizationEntityController):
 
@@ -102,12 +102,12 @@ class DistributionsController(OrganizationEntityController):
             raise ArgumentException("Wrong number of arguments")
 
         org = self._client.get_organization(argv[0])
-        imp = Import()
+        imp = Import(update_existing=self._config.options.update_existing)
         imp.import_distribution(org, argv[1])
 
     def _import_doc(self):
-        return ActionDoc("import", "<org_name> <src_folder> [--skip-existing]", """
-        Import distribution from disk. --skip-existing option causes existing entities
+        return ActionDoc("import", "<org_name> <src_folder> [--update-existing]", """
+        Import distribution from disk. --update-existing option causes existing entities
         on server to be updated.""")
 
     def _complete_template(self, argv, template_json):
