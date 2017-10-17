@@ -7,6 +7,8 @@
 # This software cannot be used and/or distributed without prior 
 # authorization from Guardis.
 
+from __future__ import print_function
+
 ## {{{ http://code.activestate.com/recipes/541096/ (r1)
 def confirm(prompt=None, resp=False):
     """prompts for yes or no response from the user. Returns True for yes and
@@ -40,7 +42,7 @@ def confirm(prompt=None, resp=False):
         if not ans:
             return resp
         if ans not in ['y', 'Y', 'n', 'N']:
-            print 'please enter y or n.'
+            print('please enter y or n.')
             continue
         if ans == 'y' or ans == 'Y':
             return True

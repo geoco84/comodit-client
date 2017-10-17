@@ -7,10 +7,11 @@
 # This software cannot be used and/or distributed without prior
 # authorization from Guardis.
 
+from __future__ import absolute_import
 from comodit_client.control.abstract import AbstractController
 from comodit_client.control.doc import ActionDoc
 from comodit_client.control.exceptions import ArgumentException
-import completions
+from . import completions
 
 
 class LiveController(AbstractController):

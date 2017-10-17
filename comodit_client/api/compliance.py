@@ -12,6 +12,7 @@ of an application resource:
 
 @see: L{Application}
 """
+from __future__ import print_function
 
 from comodit_client.api.collection import Collection
 from comodit_client.api.entity import Entity
@@ -62,8 +63,8 @@ class ServiceState(State):
         @type indent: int
         """
 
-        print " " * indent, "Running:", self.running
-        print " " * indent, "Enabled:", self.enabled
+        print(" " * indent, "Running:", self.running)
+        print(" " * indent, "Enabled:", self.enabled)
 
 
 class FileState(State):
@@ -152,13 +153,13 @@ class FileState(State):
         @type indent: int
         """
 
-        print " " * indent, "Present:", self.present
+        print(" " * indent, "Present:", self.present)
         if self.present:
-            print " " * indent, "Creation time:", self.creation_time
-            print " " * indent, "Modification time:", self.modification_time
-            print " " * indent, "Owner:", self.owner
-            print " " * indent, "Group:", self.group
-            print " " * indent, "Mode:", self.mode
+            print(" " * indent, "Creation time:", self.creation_time)
+            print(" " * indent, "Modification time:", self.modification_time)
+            print(" " * indent, "Owner:", self.owner)
+            print(" " * indent, "Group:", self.group)
+            print(" " * indent, "Mode:", self.mode)
 
 
 class PackageState(State):
@@ -185,7 +186,7 @@ class PackageState(State):
         @type indent: int
         """
 
-        print " " * indent, "Installed:", self.installed
+        print(" " * indent, "Installed:", self.installed)
 
 
 class UserState(State):
@@ -282,14 +283,14 @@ class UserState(State):
         @type indent: int
         """
 
-        print " " * indent, "Present:", self.present
-        print " " * indent, "Name:", self.name
-        print " " * indent, "GID:", self.gid
-        print " " * indent, "UID:", self.uid
-        print " " * indent, "Home directory:", self.home_dir
-        print " " * indent, "Shell:", self.shell
-        print " " * indent, "GECOS:", self.gecos
-        print " " * indent, "Groups:", self.groups
+        print(" " * indent, "Present:", self.present)
+        print(" " * indent, "Name:", self.name)
+        print(" " * indent, "GID:", self.gid)
+        print(" " * indent, "UID:", self.uid)
+        print(" " * indent, "Home directory:", self.home_dir)
+        print(" " * indent, "Shell:", self.shell)
+        print(" " * indent, "GECOS:", self.gecos)
+        print(" " * indent, "Groups:", self.groups)
 
 
 class GroupState(State):
@@ -336,9 +337,9 @@ class GroupState(State):
         @type indent: int
         """
 
-        print " " * indent, "Present:", self.present
-        print " " * indent, "Name:", self.name
-        print " " * indent, "GID:", self.gid
+        print(" " * indent, "Present:", self.present)
+        print(" " * indent, "Name:", self.name)
+        print(" " * indent, "GID:", self.gid)
 
 
 class RepositoryState(State):
@@ -386,9 +387,9 @@ class RepositoryState(State):
         @type indent: int
         """
 
-        print " " * indent, "Present:", self.present
-        print " " * indent, "Name:", self.name
-        print " " * indent, "Location:", self.location
+        print(" " * indent, "Present:", self.present)
+        print(" " * indent, "Name:", self.name)
+        print(" " * indent, "Location:", self.location)
 
 
 class ComplianceError(Entity):
@@ -400,7 +401,7 @@ class ComplianceError(Entity):
 
     def __init__(self, collection, json_data = None):
         super(ComplianceError, self).__init__(collection, json_data)
-        if (json_data != None) and (json_data.has_key("type")):
+        if (json_data != None) and ("type" in json_data):
             self._set_type_collection(json_data["type"])
 
     @property
@@ -522,14 +523,14 @@ class ComplianceError(Entity):
         """
 
         col = self.resource_type
-        print " " * indent, "Type:", col
-        print " " * indent, "Application:", self.application
-        print " " * indent, "Name:", self.res_name
+        print(" " * indent, "Type:", col)
+        print(" " * indent, "Application:", self.application)
+        print(" " * indent, "Name:", self.res_name)
 
-        print " " * indent, "Current state:"
+        print(" " * indent, "Current state:")
         self.current_state.show(indent + 2)
 
-        print " " * indent, "Expected state:"
+        print(" " * indent, "Expected state:")
         self.expected_state.show(indent + 2)
 
 

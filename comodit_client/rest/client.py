@@ -29,7 +29,7 @@ class HttpClient(object):
         if not item is None:
             try:
                 json_data = json.dumps(item)
-            except Exception, e:
+            except Exception as e:
                 raise ApiException("Could not encode given data: " + e.message, 0)
             req = self._new_request_with_data(url, "POST", json_data)
         else:

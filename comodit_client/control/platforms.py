@@ -7,6 +7,9 @@
 # This software cannot be used and/or distributed without prior
 # authorization from Guardis.
 
+from __future__ import absolute_import
+from __future__ import print_function
+
 import json
 
 from comodit_client.api.exporter import Export
@@ -17,7 +20,8 @@ from comodit_client.control.files import PlatformFilesController
 from comodit_client.control.organization_entity import OrganizationEntityController
 from comodit_client.control.parameters import PlatformParametersController
 from comodit_client.control.settings import PlatformSettingsController
-import completions
+
+from . import completions
 
 
 class PlatformsController(OrganizationEntityController):

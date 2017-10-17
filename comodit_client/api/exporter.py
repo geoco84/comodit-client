@@ -3,6 +3,7 @@
 Provides the exporter tool. The exporter can be used to export ComodIT entities
 to local directories.
 """
+from __future__ import print_function
 
 import os
 
@@ -51,7 +52,7 @@ class Export(object):
                     raise e
 
     def _export_entity(self, res, res_folder, export_files = False, export_thumb = False):
-        print "exporting", res.name, "to", res_folder
+        print("exporting", res.name, "to", res_folder)
         # Ensures local repository does not contain stale data
         if(os.path.exists(res_folder) and len(os.listdir(res_folder)) > 0) and not self._force:
             raise ExportException(res_folder + " already exists and is not empty.")

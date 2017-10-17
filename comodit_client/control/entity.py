@@ -7,15 +7,17 @@
 # This software cannot be used and/or distributed without prior
 # authorization from Guardis.
 
+from __future__ import print_function
+
+from collections import OrderedDict
 import json, os, completions
 
 from comodit_client.config import Config
 from comodit_client.control.abstract import AbstractController
+from comodit_client.control.doc import ActionDoc
+from comodit_client.control.json_update import JsonUpdater
 from comodit_client.util import prompt
 from comodit_client.util.editor import edit_text
-from comodit_client.control.doc import ActionDoc
-from collections import OrderedDict
-from comodit_client.control.json_update import JsonUpdater
 
 
 class EntityController(AbstractController):
@@ -131,7 +133,7 @@ class EntityController(AbstractController):
         item = updater.update(res)
 
         # Check if name has changed
-        if item.has_key("name"):
+        if "name" in item:
             new_name = item["name"]
             if cur_name != new_name:
                 res.rename(new_name)

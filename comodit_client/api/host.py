@@ -4,8 +4,10 @@ Provides the classes related to host entity, in particular L{Host}
 and L{HostCollection}. L{Host instance entity class<Instance>} is also provided by this
 module.
 """
+from __future__ import print_function
+from __future__ import absolute_import
 
-from exceptions import PythonApiException
+from .exceptions import PythonApiException
 import time
 
 from comodit_client.api.audit import AuditLogCollection
@@ -124,8 +126,8 @@ class Property(JsonWrapper):
         @type indent: int
         """
 
-        print " "*indent, "Key:", self.key
-        print " "*indent, "Value:", self.value
+        print(" "*indent, "Key:", self.key)
+        print(" "*indent, "Value:", self.value)
 
 
 class Vnc(JsonWrapper):
@@ -162,8 +164,8 @@ class Vnc(JsonWrapper):
         @type indent: int
         """
 
-        print " "*indent, "hostname:", self.hostname
-        print " "*indent, "port:", self.port
+        print(" "*indent, "hostname:", self.hostname)
+        print(" "*indent, "port:", self.port)
 
 
 class InstanceCollection(Collection):
@@ -433,7 +435,7 @@ class Instance(Entity):
             result = self._http_client.update(self.url + "_off", decode = False)
             if(result.getcode() != 202):
                 raise PythonApiException("Call not accepted by server")
-        except ApiException, e:
+        except ApiException as e:
             raise PythonApiException("Unable to power instance off: " + e.message)
 
     def forget(self):
@@ -445,7 +447,7 @@ class Instance(Entity):
             result = self._http_client.update(self.url + "_forget", decode = False)
             if result.getcode() != 202:
                 raise PythonApiException("Call not accepted by server")
-        except ApiException, e:
+        except ApiException as e:
             raise PythonApiException("Unable to forget instance: " + e.message)
 
     def _show(self, indent = 0):
@@ -457,10 +459,10 @@ class Instance(Entity):
         @type indent: int
         """
 
-        print " "*indent, "State:", self.state
-        print " "*indent, "Agent state:", self.agent_state
-        print " "*indent, "Hostname:", self.hostname
-        print " "*indent, "Vnc:"
+        print(" "*indent, "State:", self.state)
+        print(" "*indent, "Agent state:", self.agent_state)
+        print(" "*indent, "Hostname:", self.hostname)
+        print(" "*indent, "Vnc:")
         self.vnc.show(indent + 2)
 
     def show_properties(self, indent = 0):
@@ -472,10 +474,10 @@ class Instance(Entity):
         @type indent: int
         """
 
-        print " "*indent, "Properties:"
+        print(" "*indent, "Properties:")
         props = self.properties
         for p in props:
-            print " "*(indent + 2), p.key, ":", p.value
+            print(" "*(indent + 2), p.key, ":", p.value)
 
     def wait_for_property(self, key, time_out = 0):
         """
@@ -616,12 +618,12 @@ class Task(JsonWrapper):
         @type indent: int
         """
 
-        print " "*indent, "Number:", self.order_num
-        print " "*indent, "Description:", self.description
-        print " "*indent, "Status:", self.status
+        print(" "*indent, "Number:", self.order_num)
+        print(" "*indent, "Description:", self.description)
+        print(" "*indent, "Status:", self.status)
 
         if self.status == "ERROR":
-            print " "*indent, "Error: '" + self.error + "'"
+            print(" "*indent, "Error: '" + self.error + "'")
 
 
 class Change(Entity):
@@ -680,9 +682,9 @@ class Change(Entity):
         return False
 
     def _show(self, indent = 0):
-        print " "*indent, "Number:", self.order_num
-        print " "*indent, "Description:", self.description
-        print " "*indent, "Tasks:"
+        print(" "*indent, "Number:", self.order_num)
+        print(" "*indent, "Description:", self.description)
+        print(" "*indent, "Tasks:")
         tasks = self.tasks
         for t in tasks:
             t.show(indent + 2)
@@ -804,10 +806,10 @@ class MonitoringAlert(Entity):
         return self._get_field("compare_method")
 
     def _show(self, indent = 0):
-        print " "*indent, "Timestamp:", self.timestamp
-        print " "*indent, "Plugin:", self.plugin
-        print " "*indent, "Sensor:", self.sensor
-        print " "*indent, "Output:", self.output
+        print(" "*indent, "Timestamp:", self.timestamp)
+        print(" "*indent, "Plugin:", self.plugin)
+        print(" "*indent, "Sensor:", self.sensor)
+        print(" "*indent, "Output:", self.output)
 
 class MonitoringAlertCollection(Collection):
     """
@@ -1014,13 +1016,13 @@ class Host(HasSettings):
         return self.instance().get()
 
     def _show(self, indent = 0):
-        print " "*indent, "Name:", self.name
-        print " "*indent, "Description:", self.description
-        print " "*indent, "Organization:", self.organization
-        print " "*indent, "Environment:", self.environment
-        print " "*indent, "Platform:", self.platform_name
-        print " "*indent, "Distribution:", self.distribution_name
-        print " "*indent, "State:", self.state
+        print(" "*indent, "Name:", self.name)
+        print(" "*indent, "Description:", self.description)
+        print(" "*indent, "Organization:", self.organization)
+        print(" "*indent, "Environment:", self.environment)
+        print(" "*indent, "Platform:", self.platform_name)
+        print(" "*indent, "Distribution:", self.distribution_name)
+        print(" "*indent, "State:", self.state)
 
     def provision(self):
         """
@@ -1037,7 +1039,7 @@ class Host(HasSettings):
         try:
             result = self._http_client.read(collection + "/files/" + file_name, decode = False)
             return result
-        except ApiException, e:
+        except ApiException as e:
             raise PythonApiException("Unable to render file: " + e.message)
 
     def render_app_file(self, app_name, file_name):
@@ -1095,7 +1097,7 @@ class Host(HasSettings):
                 return result["url"]
             else:
                 raise PythonApiException("Could not recover link")
-        except ApiException, e:
+        except ApiException as e:
             raise PythonApiException("Unable to render file: " + e.message)
 
     def get_app_link(self, app_name, file_name, short = False):
@@ -1156,7 +1158,7 @@ class Host(HasSettings):
         try:
             result = self._http_client.update(self.url + "_clone")
             return Host(self.collection, result)
-        except ApiException, e:
+        except ApiException as e:
             raise PythonApiException("Unable to clone host: " + e.message)
 
     def applications(self):

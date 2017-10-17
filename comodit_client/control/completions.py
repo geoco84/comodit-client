@@ -1,3 +1,4 @@
+from __future__ import print_function
 import re
 
 #
@@ -17,7 +18,7 @@ def print_escaped_string(name):
     if name is None:
         return
     name = re.sub(r'[ \\ ()<>\']', __match_replacement, name)
-    print name.encode("utf-8")
+    print(name.encode("utf-8"))
 
 def print_escaped_strings(name_list):
     for name in name_list:

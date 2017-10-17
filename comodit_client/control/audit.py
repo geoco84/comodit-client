@@ -1,5 +1,6 @@
 # coding: utf-8
 
+from __future__ import print_function
 from comodit_client.control.doc import ActionDoc
 
 class AuditHelper(object):
@@ -16,7 +17,7 @@ class AuditHelper(object):
             user = log.initiator_full_name
             if user is None or user == "":
                 user = log.initiator_username
-            print log.timestamp, log.message, "by", user
+            print(log.timestamp, log.message, "by", user)
 
     def audit_doc(self):
         return ActionDoc("audit", self._params, """

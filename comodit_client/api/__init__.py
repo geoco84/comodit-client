@@ -75,17 +75,18 @@ of L{Organization}, I{host} is an instance of L{Host}.
     ... host.get_instance().delete()
     ... host.delete()
 """
+from __future__ import absolute_import
 
 from comodit_client.rest.client import HttpClient
 
-from flavors import FlavorCollection, Flavor
-from organization import OrganizationCollection, Organization
-from store import AppStoreCollection, DistStoreCollection
-from application import Application
-from distribution import Distribution
-from platform import Platform
-from environment import Environment
-from host import Host
+from .flavors import FlavorCollection, Flavor
+from .organization import OrganizationCollection, Organization
+from .store import AppStoreCollection, DistStoreCollection
+from .application import Application
+from .distribution import Distribution
+from .platform import Platform
+from .environment import Environment
+from .host import Host
 
 
 class Client(object):

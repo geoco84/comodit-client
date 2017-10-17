@@ -5,6 +5,7 @@ on local disk (see L{exporter}) with remote entities i.e. updates made locally
 can be I{pushed} remotely (uploaded to the server) and remote changes may be
 I{pulled} locally (downloaded from the server).
 """
+from __future__ import print_function
 
 import os, json, types
 
@@ -326,24 +327,24 @@ class SyncEngine(object):
         for key, old_value in old_dict.iteritems():
             new_value = new_dict.get(key)
             if new_value is None:
-                print level * " " + "'" + key + "' will be removed"
+                print(level * " " + "'" + key + "' will be removed")
                 did_output = True
             elif old_value != new_value:
                 if type(old_value) != type(new_value):
-                    print level * " " + "Different types for key '", key + "'", type(old_value), "->", type(new_value)
+                    print(level * " " + "Different types for key '", key + "'", type(old_value), "->", type(new_value))
                     did_output = True
-                elif type(old_value) is types.DictType:
+                elif type(old_value) is dict:
                     did_output = self._print_dict_diff(level + 2, new_value, old_value) or did_output
-                elif type(old_value) is types.ListType:
+                elif type(old_value) is list:
                     did_output = self._print_list_diff(level + 2, new_value, old_value) or did_output
                 else:
-                    print level * " " + "Different values for key '" + key + "'", old_value, "->", new_value
+                    print(level * " " + "Different values for key '" + key + "'", old_value, "->", new_value)
                     did_output = True
 
         for key, new_value in new_dict.iteritems():
             old_value = old_dict.get(key)
             if old_value is None:
-                print level * " " + "'" + key + "' will be added"
+                print(level * " " + "'" + key + "' will be added")
                 did_output = True
 
         return did_output
@@ -351,11 +352,11 @@ class SyncEngine(object):
     def _dictify(self, key, input_list):
         output_dict = {}
         for e in input_list:
-            if not type(e) is types.DictType:
+            if not type(e) is dict:
                 return None
-            if not e.has_key(key):
+            if key not in e:
                 return None
-            if output_dict.has_key(key):
+            if key in output_dict:
                 return None
             output_dict[e[key]] = e
         return output_dict
@@ -377,38 +378,38 @@ class SyncEngine(object):
                 if self._try_print_dictified_list(level, key_name, src_list, dest_list):
                     return True
                 else:
-                    print level * " " + "only elements order is different"
+                    print(level * " " + "only elements order is different")
                     return False
             except SyncException:
                 pass
-        print level * " " + "different lists"
+        print(level * " " + "different lists")
         return True
 
     def _print_diff(self, diffs):
         for d in diffs:
             if d.type == "delete":
-                print "Deletion of field '" + d.key + "'"
+                print("Deletion of field '" + d.key + "'")
             elif d.type == "create":
-                print "Creation of field '" + d.key + "'"
+                print("Creation of field '" + d.key + "'")
             elif d.type == "update":
                 if type(d.old_value) != type(d.new_value):
-                    print "Conflicting types for field '", d.key + "':", type(d.old_value), "->", type(d.new_value)
-                elif type(d.old_value) is types.DictType:
-                    print "Conflicting values for dict field '" + d.key + "':"
+                    print("Conflicting types for field '", d.key + "':", type(d.old_value), "->", type(d.new_value))
+                elif type(d.old_value) is dict:
+                    print("Conflicting values for dict field '" + d.key + "':")
                     self._print_dict_diff(2, d.new_value, d.old_value)
-                elif type(d.old_value) is types.ListType:
-                    print "Conflicting values for list field '" + d.key + "':"
+                elif type(d.old_value) is list:
+                    print("Conflicting values for list field '" + d.key + "':")
                     self._print_list_diff(2, d.new_value, d.old_value)
                 else:
-                    print "Conflicting values for field '" + d.key + "':", d.old_value, "->", d.new_value
+                    print("Conflicting values for field '" + d.key + "':", d.old_value, "->", d.new_value)
             elif d.type == "delete_file_content":
-                print "Deletion of file '" + d.key + "' content"
+                print("Deletion of file '" + d.key + "' content")
             elif d.type == "set_file_content":
-                print "Creation/update of file '" + d.key + "' content"
+                print("Creation/update of file '" + d.key + "' content")
             elif d.type == "set_thumb":
-                print "Set thumbnail content"
+                print("Set thumbnail content")
             elif d.type == "delete_thumb":
-                print "Delete thumbnail"
+                print("Delete thumbnail")
 
     def _apply_pull_diff(self, diffs, local_dict, remote_res):
         files_dir = os.path.join(self._folder_path, "files")

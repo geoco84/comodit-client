@@ -1,8 +1,10 @@
 # coding: utf-8
 
-import items
+from __future__ import absolute_import
 
 from comodit_client.config import singleton
+
+from . import items
 
 
 ROOT = (items.RootItem, '/')

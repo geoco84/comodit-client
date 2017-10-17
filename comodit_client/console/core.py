@@ -1,10 +1,12 @@
 # coding: utf-8
 
+from __future__ import print_function
+from __future__ import absolute_import
 import sys, readline
 
 from comodit_client.api import Client
 from comodit_client.console.utils import merge_escaped
-from commands import Commands
+from .commands import Commands
 
 
 class ComodITConsole(object):
@@ -25,10 +27,10 @@ class ComodITConsole(object):
                 line = raw_input(self._cmds.prompt() + "> ")
                 self.execute_line(line)
             except EOFError:
-                print
+                print()
                 break
             except KeyboardInterrupt:
-                print  # skip a line
+                print()  # skip a line
                 continue
 
     def execute_file(self, path):

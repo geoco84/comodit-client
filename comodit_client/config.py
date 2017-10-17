@@ -79,14 +79,14 @@ class Config(object):
     def get_value(self, profile_name, key, optional = False):
         if profile_name is None:
             profile_name = self.default_profile_name
-        if not self.config.has_key(profile_name):
+        if profile_name not in self.config:
             raise ConfigException("No profile with name " + str(profile_name))
         profile = self.config[profile_name]
-        if not profile.has_key(key):
+        if key not in profile:
             value = None
         else:
             value = profile[key]
-        if value is None and self.default_profile.has_key(key):
+        if value is None and key in self.default_profile:
             value = self.default_profile[key]
 
         if value is None and not optional:
@@ -118,10 +118,10 @@ class Config(object):
         if(self.config is None):
             raise ConfigException("Unable to parse config file")
 
-        if not self.config.has_key("client"):
+        if "client" not in self.config:
             raise ConfigException("No client section defined")
 
-        if not self.config["client"].has_key("default_profile"):
+        if "default_profile" not in self.config["client"]:
             raise ConfigException("No default_profile property defined in client section")
 
         default_profile = self.config["client"]["default_profile"]
@@ -132,7 +132,7 @@ class Config(object):
 
             self._check_property(section, "api")
 
-            if not self.config[section].has_key("token") and (not self.config[section].has_key("username") or not self.config[section].has_key("password")):
+            if "token" not in self.config[section] and ("username" not in self.config[section] or "password" not in self.config[section]):
                 raise ConfigException("Profile " + section + " should define either 'username' and 'password' properties or 'token' property")
 
             if section == default_profile:
@@ -142,7 +142,7 @@ class Config(object):
             raise ConfigException("Default profile is not defined")
 
     def _check_property(self, section, name):
-        if not self.config[section].has_key(name):
+        if name not in self.config[section]:
             raise ConfigException(section + " section lacks '" + name + "' property")
 
     def _get_config_path(self):

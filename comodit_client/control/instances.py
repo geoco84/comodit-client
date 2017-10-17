@@ -1,5 +1,6 @@
 # coding: utf-8
 
+from __future__ import print_function
 import json, completions
 
 from comodit_client.api.platform import Image
@@ -69,7 +70,7 @@ class InstancesController(EntityController):
         instance = self._get_entity(argv)
         options = self._config.options
         if options.raw:
-            print json.dumps(instance._get_field("properties"), indent = 4)
+            print(json.dumps(instance._get_field("properties"), indent = 4))
         else:
             for p in instance.properties:
                 p.show()
@@ -139,7 +140,7 @@ class InstancesController(EntityController):
             raise ArgumentException("Wrong number of arguments");
 
         instance = self._get_entity(argv)
-        print instance.get_file_content(argv[3]).read(),
+        print(instance.get_file_content(argv[3]).read(), end=' ')
 
     def _show_file_doc(self):
         return ActionDoc("show_file", "<org_name>  <env_name> <host_name> <path>", """
@@ -150,7 +151,7 @@ class InstancesController(EntityController):
             raise ArgumentException("Wrong number of arguments");
 
         instance = self._get_entity(argv)
-        print instance.get_status(argv[3], argv[4]),
+        print(instance.get_status(argv[3], argv[4]), end=' ')
 
     def _get_status_doc(self):
         return ActionDoc("get_status", "<org_name>  <env_name> <host_name> <collection> <sensor>", """

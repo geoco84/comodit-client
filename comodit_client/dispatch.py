@@ -7,43 +7,47 @@
 # This software cannot be used and/or distributed without prior
 # authorization from Guardis.
 
+from __future__ import absolute_import
+from __future__ import print_function
+
 import argparse
 import os
 import sys
 import traceback
 
-from api import Client
-from api.exceptions import PythonApiException
 from comodit_client.api.exporter import ExportException
 from comodit_client.api.importer import ImportException
 from comodit_client.control.application_keys import ApplicationKeysController
 from comodit_client.control.store import AppStoreController, DistStoreController
-from config import Config, ConfigException
-from control.applications import ApplicationsController
-from control.distributions import DistributionsController
-from control.environments import EnvironmentsController
-from control.exceptions import ControllerException, ArgumentException
-from control.flavors import FlavorsController
-from control.hosts import HostsController
-from control.organizations import OrganizationsController
-from control.platforms import PlatformsController
-import control.router
-from rest.exceptions import ApiException
-from util.editor import NotModifiedException
+
+from .api import Client
+from .api.exceptions import PythonApiException
+from .config import Config, ConfigException
+from .control import router
+from .control.applications import ApplicationsController
+from .control.distributions import DistributionsController
+from .control.environments import EnvironmentsController
+from .control.exceptions import ControllerException, ArgumentException
+from .control.flavors import FlavorsController
+from .control.hosts import HostsController
+from .control.organizations import OrganizationsController
+from .control.platforms import PlatformsController
+from .rest.exceptions import ApiException
+from .util.editor import NotModifiedException
 
 
 def run(argv):
     # entities
-    control.router.register(["flavors"], FlavorsController())
-    control.router.register(["platforms"], PlatformsController())
-    control.router.register(["applications"], ApplicationsController())
-    control.router.register(["distributions"], DistributionsController())
-    control.router.register(["organizations"], OrganizationsController())
-    control.router.register(["environments"], EnvironmentsController())
-    control.router.register(["hosts"], HostsController())
-    control.router.register(["app-store"], AppStoreController())
-    control.router.register(["dist-store"], DistStoreController())
-    control.router.register(["application_keys"], ApplicationKeysController())
+    router.register(["flavors"], FlavorsController())
+    router.register(["platforms"], PlatformsController())
+    router.register(["applications"], ApplicationsController())
+    router.register(["distributions"], DistributionsController())
+    router.register(["organizations"], OrganizationsController())
+    router.register(["environments"], EnvironmentsController())
+    router.register(["hosts"], HostsController())
+    router.register(["app-store"], AppStoreController())
+    router.register(["dist-store"], DistStoreController())
+    router.register(["application_keys"], ApplicationKeysController())
 
     _parse(argv)
 
@@ -140,9 +144,9 @@ def _parse(argv):
     # Load configuration file
     try:
         config = Config()
-    except ConfigException, e:
-        print "Configuration error:"
-        print e.msg
+    except ConfigException as e:
+        print("Configuration error:")
+        print(e.msg)
         exit(-1)
 
     # Create parser
@@ -151,12 +155,12 @@ def _parse(argv):
     # Check for completion related call
     if "--options" in argv:
         for o in _get_all_options(parser):
-            print o
+            print(o)
         exit(0)
 
     if "--options-with-value" in argv:
         for o in _get_value_options(parser):
-            print o
+            print(o)
         exit(0)
 
     try:
@@ -166,7 +170,7 @@ def _parse(argv):
         del argv[completions_index]
 
         if config.param_completions == 0:
-            control.router.print_keywords()
+            router.print_keywords()
             exit(0)
 
         config.param_completions -= 1
@@ -184,7 +188,7 @@ def _parse(argv):
                 release = version_mod.RELEASE
         except ImportError:
             pass
-        print "ComodIT command line client " + version + "-" + release + "."
+        print("ComodIT command line client " + version + "-" + release + ".")
         exit(0)
 
     # Parse arguments
@@ -241,30 +245,30 @@ def is_option_defined(option_name):
 def _dispatch(options, args, client):
     try:
         entity = options.entity
-        control.router.dispatch(entity, client, args)
+        router.dispatch(entity, client, args)
         exit(0)
     except ControllerException as e:
-        print e.msg
+        print(e.msg)
     except ArgumentException as e:
-        print e.msg
+        print(e.msg)
     except ApiException as e:
-        print "Error (%s): %s" % (e.code, e.message)
+        print("Error (%s): %s" % (e.code, e.message))
     except PythonApiException as e:
-        print e
+        print(e)
     except ImportException as e:
-        print e
+        print(e)
     except ExportException as e:
-        print e
+        print(e)
     except NotModifiedException:
-        print "Command was canceled since you did not save the file"
+        print("Command was canceled since you did not save the file")
     except Exception:
         if options.debug:
-            print "Exception in user code."
+            print("Exception in user code.")
         else :
-            print "Oops, it seems something went wrong (use --debug to learn more)."
+            print("Oops, it seems something went wrong (use --debug to learn more).")
 
     if options.debug:
-        print '-' * 60
+        print('-' * 60)
         traceback.print_exc(file = sys.stdout)
-        print '-' * 60
+        print('-' * 60)
     exit(-1)

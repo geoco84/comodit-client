@@ -1,5 +1,6 @@
 # coding: utf-8
 
+from __future__ import print_function
 import json, os
 
 from bisect import insort
@@ -34,15 +35,15 @@ class Item(object):
 
     def print_container(self, name, details = None):
         if details is None or details == '':
-            print "{0: <20}".format(name + '/')
+            print("{0: <20}".format(name + '/'))
         else:
-            print u"{0: <20} {1}".format(name + '/', details)
+            print(u"{0: <20} {1}".format(name + '/', details))
 
     def print_leaf(self, name, details = None):
         if details is None or details == '':
-            print name
+            print(name)
         else:
-            print u"{0: <20} {1}".format(name, details)
+            print(u"{0: <20} {1}".format(name, details))
 
     @property
     def absolute_path(self):
@@ -122,7 +123,7 @@ class EntityItem(Item):
         new_data = json.loads(edit_text(original), object_pairs_hook=OrderedDict)
 
         # Check if name has changed
-        if new_data.has_key("name"):
+        if "name" in new_data:
             new_name = new_data["name"]
             if cur_name != new_name:
                 self._current.rename(new_name)
@@ -218,7 +219,7 @@ class SingleElementContainer(Item):
             new_data = json.loads(edit_text(original), object_pairs_hook=OrderedDict)
 
             # Check if name has changed
-            if new_data.has_key("name"):
+            if "name" in new_data:
                 new_name = new_data["name"]
                 if cur_name != new_name:
                     self._current.rename(new_name)
@@ -533,7 +534,7 @@ class HostInstanceItem(SingleElementContainer):
 
     def show_content(self, path = None):
         self._ensure_instance()
-        print self._entity.get_file_content(path).read(),
+        print(self._entity.get_file_content(path).read(), end=' ')
 
     def start(self):
         self._ensure_instance()
@@ -777,10 +778,10 @@ class FileItem(EntityItem):
         self._entity = self._parent.get_file(name)
 
     def show_content(self, path = None):
-        print self._entity.get_content().read()
+        print(self._entity.get_content().read())
 
     def set_content(self, path):
-        print self._entity.set_content(path)
+        print(self._entity.set_content(path))
 
 
 class AppFilesItem(FilesItem):
@@ -843,7 +844,7 @@ class HostAppFileItem(RenderedFileItem):
         self._file = path_vars['file_name']
 
     def show_content(self, path = None):
-        print self._host.render_app_file(self._app, self._file).read()
+        print(self._host.render_app_file(self._app, self._file).read())
 
     def live_update(self, opts):
         self._host.live_update_file(self._app, self._file)
@@ -896,7 +897,7 @@ class HostDistFileItem(RenderedFileItem):
         self._file = path_vars['file_name']
 
     def show_content(self, path = None):
-        print self._host.render_dist_file(self._file).read()
+        print(self._host.render_dist_file(self._file).read())
 
 
 class HostPlatFilesItem(RenderedFilesItem):
@@ -912,7 +913,7 @@ class HostPlatFileItem(RenderedFileItem):
         self._file = path_vars['file_name']
 
     def show_content(self, path = None):
-        print self._host.render_plat_file(self._file).read()
+        print(self._host.render_plat_file(self._file).read())
 
 
 # Audit

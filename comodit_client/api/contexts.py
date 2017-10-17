@@ -5,6 +5,7 @@ Provides all classes related to the configuration of a distribution
 (L{ApplicationContext}) when associated to a host. Related collections are also
 provided by this module.
 """
+from __future__ import print_function
 
 from comodit_client.api.collection import Collection
 from comodit_client.api.settings import HasSettings, add_settings
@@ -136,7 +137,7 @@ class ApplicationContext(AbstractContext):
         self._http_client.update(self.url + "actions/" + key, decode = False)
 
     def _show(self, indent = 0):
-        print " "*indent, "Application:", self.application
+        print(" "*indent, "Application:", self.application)
         self._show_settings(indent)
 
 
@@ -222,7 +223,7 @@ class DistributionContext(AbstractContext):
         self._set_field("distribution", distribution)
 
     def _show(self, indent = 0):
-        print " "*indent, "Distribution:", self.distribution
+        print(" "*indent, "Distribution:", self.distribution)
         self._show_settings(indent)
 
 
@@ -307,5 +308,5 @@ class PlatformContext(AbstractContext):
         self._set_field("platform", platform)
 
     def _show(self, indent = 0):
-        print " "*indent, "Platform:", self.platform
+        print(" "*indent, "Platform:", self.platform)
         self._show_settings(indent)

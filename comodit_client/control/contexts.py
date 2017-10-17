@@ -7,12 +7,16 @@
 # This software cannot be used and/or distributed without prior
 # authorization from Guardis.
 
+from __future__ import absolute_import
+from __future__ import print_function
+
 from comodit_client.control.doc import ActionDoc
 from comodit_client.control.entity import EntityController
 from comodit_client.control.exceptions import ArgumentException
 from comodit_client.control.settings import ApplicationContextSettingsController, \
     PlatformContextSettingsController, DistributionContextSettingsController
-import completions
+
+from . import completions
 
 
 class AbstractContextController(EntityController):
@@ -161,7 +165,7 @@ class ApplicationContextController(AbstractContextController):
         app_name = argv[3]
         file_name = argv[4]
 
-        print host.render_app_file(app_name, file_name).read()
+        print(host.render_app_file(app_name, file_name).read())
 
     def _render_file_doc(self):
         return ActionDoc("render-file", "<org_name> <env_name> <host_name> <app_name> <file_name>", """
@@ -176,7 +180,7 @@ class ApplicationContextController(AbstractContextController):
         file_name = argv[4]
         short = True if len(argv) == 6 and argv[5] == "True" else False
 
-        print host.get_app_link(app_name, file_name, short)
+        print(host.get_app_link(app_name, file_name, short))
 
     def _get_link_doc(self):
         return ActionDoc("link", "<org_name> <env_name> <host_name> <app_name> <file_name>", """
@@ -231,7 +235,7 @@ class PlatformContextController(AbstractContextController):
         host = self._get_host(argv)
         file_name = argv[3]
 
-        print host.render_plat_file(file_name).read()
+        print(host.render_plat_file(file_name).read())
 
     def _render_file_doc(self):
         return ActionDoc("render-file", "<org_name> <env_name> <host_name> <file_name>", """
@@ -245,7 +249,7 @@ class PlatformContextController(AbstractContextController):
         file_name = argv[3]
         short = True if len(argv) == 5 and argv[4] == "True" else False
 
-        print host.get_plat_link(file_name, short)
+        print(host.get_plat_link(file_name, short))
 
     def _get_link_doc(self):
         return ActionDoc("link", "<org_name> <env_name> <host_name> <file_name>", """
@@ -300,7 +304,7 @@ class DistributionContextController(AbstractContextController):
         host = self._get_host(argv)
         file_name = argv[3]
 
-        print host.render_dist_file(file_name).read()
+        print(host.render_dist_file(file_name).read())
 
     def _render_file_doc(self):
         return ActionDoc("render-file", "<org_name> <env_name> <host_name> <file_name>", """
@@ -314,7 +318,7 @@ class DistributionContextController(AbstractContextController):
         file_name = argv[3]
         short = True if len(argv) == 5 and argv[4] == "True" else False
 
-        print host.get_dist_link(file_name, short)
+        print(host.get_dist_link(file_name, short))
 
     def _get_link_doc(self):
         return ActionDoc("link", "<org_name> <env_name> <host_name> <file_name>", """

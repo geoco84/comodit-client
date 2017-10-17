@@ -42,11 +42,11 @@ class TreeRenderer(object):
                 if not skip_chmod:
                     try:
                         path.chmod(output_file, f.mode)
-                    except OSError, e:
+                    except OSError as e:
                         raise ControllerException("Could not set permissions on file " + output_file + ": " + e.strerror)
 
                 if not skip_chown:
                     try:
                         path.chown(output_file, f.owner, f.group)
-                    except OSError, e:
+                    except OSError as e:
                         raise ControllerException("Could not set ownership on file " + output_file + ": " + e.strerror)

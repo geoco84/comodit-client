@@ -7,9 +7,12 @@
 # This software cannot be used and/or distributed without prior
 # authorization from Guardis.
 
-from comodit_client.control.exceptions import ControllerException
-from comodit_client.control.doc import ActionDoc
+from __future__ import print_function
+
 from comodit_client.config import Config
+from comodit_client.control.doc import ActionDoc
+from comodit_client.control.exceptions import ControllerException
+
 
 class AbstractController(object):
     '''The default (abstract) controller'''
@@ -32,19 +35,19 @@ class AbstractController(object):
         if param_num >= 0:
             if len(argv) == 0 or param_num == 0:
                 self._available_actions()
-            elif self._subcontrollers.has_key(argv[0]):
+            elif argv[0] in self._subcontrollers:
                 self._config.param_completions -= 1
                 self._subcontrollers[argv[0]].run(client, argv[1:])
-            elif self._completions.has_key(argv[0]):
+            elif argv[0] in self._completions:
                 self._completions[argv[0]](param_num - 1, argv[1:])
         else:
             if len(argv) == 0:
                 self._default_action(argv)
             else:
                 action = argv[0]
-                if self._actions.has_key(action):
+                if action in self._actions:
                     self._actions[action](argv[1:])
-                elif self._subcontrollers.has_key(action):
+                elif action in self._subcontrollers:
                     self._subcontrollers[action].run(client, argv[1:])
                 else:
                     raise ControllerException("Unknown action or collection '" + action + "'")
@@ -82,18 +85,18 @@ class AbstractController(object):
     def _unregister(self, action):
         if isinstance(action, (list, tuple)):
             for a in action:
-                if self._actions.has_key(a):
+                if a in self._actions:
                     del self._actions[a]
-                if self._completions.has_key(a):
+                if a in self._completions:
                     del self._completions[a]
-                if self._docs.has_key(a):
+                if a in self._docs:
                     del self._docs[a]
         else:
-            if self._actions.has_key(action):
+            if action in self._actions:
                 del self._actions[action]
-            if self._completions.has_key(action):
+            if action in self._completions:
                 del self._completions[action]
-            if self._docs.has_key(action):
+            if action in self._docs:
                 del self._docs[action]
 
     def _register_subcontroller(self, action, controller):
@@ -106,19 +109,19 @@ class AbstractController(object):
     def _available_actions(self):
         for k in self._actions.keys():
             if k[0] != '_':
-                print k
+                print(k)
         for k in self._subcontrollers.keys():
             if k[0] != '_':
-                print k
+                print(k)
 
     def _print_doc(self):
         if self._doc:
-            print self._doc
-        print
-        print "Available actions:"
+            print(self._doc)
+        print()
+        print("Available actions:")
         for doc in self._docs.values():
             doc.print_doc()
-        print
+        print()
         for (action, ctrl) in self._subcontrollers.items():
             doc = ActionDoc(action, "<...>", """
         """ + ctrl._doc)

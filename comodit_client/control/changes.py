@@ -7,11 +7,15 @@
 # This software cannot be used and/or distributed without prior
 # authorization from Guardis.
 
-import completions
+from __future__ import absolute_import
+from __future__ import print_function
 
-from comodit_client.control.exceptions import ArgumentException
-from comodit_client.control.entity import EntityController
 from comodit_client.control.doc import ActionDoc
+from comodit_client.control.entity import EntityController
+from comodit_client.control.exceptions import ArgumentException
+
+from . import completions
+
 
 class ChangeController(EntityController):
 
@@ -66,10 +70,10 @@ class ChangeController(EntityController):
         changes = self.get_collection(argv)
         entities_list = changes.list(show_processed = True)
         if(len(entities_list) == 0):
-            print "No entities to list"
+            print("No entities to list")
         else:
             for r in entities_list:
-                print r.label
+                print(r.label)
 
     def _delete_all_doc(self):
         return ActionDoc("delete-all", "<org_name> <env_name> <host_name>", """
