@@ -57,11 +57,18 @@ class Import(object):
         if queue_actions:
             self._actions_queue = ActionsQueue()
 
-    def _import_entity(self, local_res, entity_type = "entity", skip_conflict_detection=False):
-        conflict = False
-        if not skip_conflict_detection:
-            conflict = self._is_conflict(local_res.collection, local_res.name)
+    def _import_entity_and_detect_conflict(self, local_res, entity_type = "entity", skip_conflict_detection=False):
+        conflict = self._detect_conflict(local_res, skip_conflict_detection)
+        self._import_entity(local_res, conflict, entity_type)
+        return conflict
 
+    def _detect_conflict(self, local_res, skip_conflict_detection=False):
+        if not skip_conflict_detection:
+            return self._is_conflict(local_res.collection, local_res.name)
+        else:
+            return False
+
+    def _import_entity(self, local_res, conflict, entity_type = "entity"):
         if conflict:
             if self._update_existing:
                 self._update_entity(local_res, entity_type)
@@ -69,8 +76,6 @@ class Import(object):
                 self._signal_conflict(local_res, entity_type)
         else:
             self._create_entity(local_res, entity_type)
-
-        return conflict
 
     def _is_conflict(self, collection, res_name):
         try:
@@ -121,7 +126,12 @@ class Import(object):
     def _import_entity_with_files(self, res, root_folder, entity_type = "entity", skip_conflict_detection=False):
         res.load(root_folder)
 
-        conflict = self._import_entity(res, entity_type, skip_conflict_detection=skip_conflict_detection)
+        conflict = self._detect_conflict(res, skip_conflict_detection)
+        if conflict:
+            for res_file in res.files_f:
+                self._import_entity_and_detect_conflict(res_file, "file", skip_conflict_detection)
+
+        self._import_entity(res, conflict, entity_type)
 
         # Push files' content
         file_list = res.files_f
@@ -185,7 +195,7 @@ class Import(object):
 
         env = Environment(org.environments(), None)
         env.load(env_folder)
-        env_already_exists = self._import_entity(env, "environment", skip_conflict_detection=skip_conflict_detection)
+        env_already_exists = self._import_entity_and_detect_conflict(env, "environment", skip_conflict_detection=skip_conflict_detection)
 
         # Push hosts
         hosts_folder = os.path.join(env_folder, "hosts")
@@ -215,27 +225,27 @@ class Import(object):
         host._del_field("platform")
         host._del_field("distribution")
 
-        host_already_exists = self._import_entity(host, "host", skip_conflict_detection=skip_conflict_detection)
+        host_already_exists = self._import_entity_and_detect_conflict(host, "host", skip_conflict_detection=skip_conflict_detection)
 
         # Import application contexts
         for app in apps:
             context = ApplicationContext(host.applications(), None)
             context.load_json(os.path.join(host_folder, "applications", app + ".json"))
-            self._import_entity(context, "application context", skip_conflict_detection=not host_already_exists)
+            self._import_entity_and_detect_conflict(context, "application context", skip_conflict_detection=not host_already_exists)
 
         # Import platform context
         platform_file = os.path.join(host_folder, "platform.json")
         if os.path.exists(platform_file):
             context = PlatformContext(host.platform(), None)
             context.load_json(platform_file)
-            self._import_entity(context, "platform context", skip_conflict_detection=not host_already_exists)
+            self._import_entity_and_detect_conflict(context, "platform context", skip_conflict_detection=not host_already_exists)
 
         # Import distribution context
         dist_file = os.path.join(host_folder, "distribution.json")
         if os.path.exists(dist_file):
             context = DistributionContext(host.distribution(), None)
             context.load_json(dist_file)
-            self._import_entity(context, "distribution context", skip_conflict_detection=not host_already_exists)
+            self._import_entity_and_detect_conflict(context, "distribution context", skip_conflict_detection=not host_already_exists)
 
         # Import instance (must come at last)
         instance_file = os.path.join(host_folder, "instance.json")
@@ -257,7 +267,7 @@ class Import(object):
         org = Organization(client.organizations(), None)
         org.load(org_folder)
 
-        organization_already_exists = self._import_entity(org, "organization")
+        organization_already_exists = self._import_entity_and_detect_conflict(org, "organization")
 
         apps_folder = os.path.join(org_folder, "applications")
         if os.path.exists(apps_folder):
