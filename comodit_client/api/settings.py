@@ -474,5 +474,5 @@ def add_settings(container, settings):
     @type settings: dict
     """
 
-    for key, value in settings.iteritems():
+    for key, value in settings.items():
         container.add_simple_setting(key, value)

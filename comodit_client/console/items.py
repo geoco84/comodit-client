@@ -1,6 +1,7 @@
 # coding: utf-8
 
 from __future__ import print_function
+from builtins import object
 import json, os
 
 from bisect import insort

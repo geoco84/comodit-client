@@ -1,10 +1,12 @@
 # coding: utf-8
 
 from __future__ import print_function
-import json, completions
+
+import json
 
 from comodit_client.api.platform import Image
 from comodit_client.api.settings import SimpleSetting
+from comodit_client.control import completions
 from comodit_client.control.doc import ActionDoc
 from comodit_client.control.entity import EntityController
 from comodit_client.control.exceptions import ArgumentException

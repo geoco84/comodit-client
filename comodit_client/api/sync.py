@@ -7,6 +7,7 @@ I{pulled} locally (downloaded from the server).
 """
 from __future__ import print_function
 
+from builtins import object
 import os, json, types
 
 from comodit_client.api.collection import EntityNotFoundException
@@ -261,7 +262,7 @@ class SyncEngine(object):
 
     def _diff(self, src_dict, dest_dict, is_pull, src_reader, dest_reader):
         diffs = []
-        for key, dest_value in dest_dict.iteritems():
+        for key, dest_value in dest_dict.items():
             if self.__is_ignore(key, is_pull):
                 continue
 
@@ -303,7 +304,7 @@ class SyncEngine(object):
                         else:
                             diffs.append(Diff("delete_file_content", file_name))
 
-        for key, src_value in src_dict.iteritems():
+        for key, src_value in src_dict.items():
             if self.__is_ignore(key, is_pull):
                 continue
             dest_value = dest_dict.get(key)
@@ -324,7 +325,7 @@ class SyncEngine(object):
 
     def _print_dict_diff(self, level, new_dict, old_dict):
         did_output = False
-        for key, old_value in old_dict.iteritems():
+        for key, old_value in old_dict.items():
             new_value = new_dict.get(key)
             if new_value is None:
                 print(level * " " + "'" + key + "' will be removed")
@@ -341,7 +342,7 @@ class SyncEngine(object):
                     print(level * " " + "Different values for key '" + key + "'", old_value, "->", new_value)
                     did_output = True
 
-        for key, new_value in new_dict.iteritems():
+        for key, new_value in new_dict.items():
             old_value = old_dict.get(key)
             if old_value is None:
                 print(level * " " + "'" + key + "' will be added")

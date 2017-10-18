@@ -5,6 +5,8 @@ from local directories into a ComodIT server.
 """
 from __future__ import print_function
 
+from builtins import str
+from builtins import object
 import os
 
 from comodit_client.api.application import Application
@@ -496,7 +498,7 @@ class UpdateEntity(Action):
         return "Update " + self._entity_type + " '" + self._res_object.name + "'"
 
 
-class ActionsQueue:
+class ActionsQueue(object):
     """
     The queue of actions.
     """

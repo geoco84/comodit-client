@@ -40,5 +40,5 @@ def dispatch(keyword, client, argv):
 
 def print_keywords():
     global controllers
-    for k in controllers.keys():
+    for k in list(controllers.keys()):
         print(k)

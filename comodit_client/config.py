@@ -1,9 +1,18 @@
+# coding: utf-8
+
 """
 Cortex client configuration file parsing.
 """
 
-import ConfigParser
 import os
+
+from future import standard_library
+standard_library.install_aliases()
+
+# Following import MUST come after call to install_aliases
+from builtins import object
+from builtins import str
+import configparser
 
 
 def singleton(cls):
@@ -204,7 +213,7 @@ class Config(object):
         }
 
         """
-        self.config_parser = ConfigParser.ConfigParser()
+        self.config_parser = configparser.ConfigParser()
         self.config_parser.read(config_path)
 
         cfg = {}

@@ -1,4 +1,5 @@
 from __future__ import print_function
+from builtins import object
 class ActionDoc(object):
     def __init__(self, action, param_string, doc_string):
         self._action = action

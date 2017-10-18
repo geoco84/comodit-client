@@ -4,6 +4,7 @@ Provides classes related to file entities, in particular L{HasFiles}.
 """
 from __future__ import print_function
 
+from builtins import str
 from comodit_client.util.json_wrapper import JsonWrapper
 from comodit_client.api.collection import Collection
 from comodit_client.api.entity import Entity
@@ -113,6 +114,9 @@ class FileEntity(Entity):
         """
 
         return self._http_client.read(self.content_url, decode = False)
+
+    def read_content(self):
+        return self._http_client.decode(self.get_content())
 
 
 class File(FileEntity):

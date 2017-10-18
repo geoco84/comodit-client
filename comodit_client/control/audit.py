@@ -1,6 +1,7 @@
 # coding: utf-8
 
 from __future__ import print_function
+from builtins import object
 from comodit_client.control.doc import ActionDoc
 
 class AuditHelper(object):

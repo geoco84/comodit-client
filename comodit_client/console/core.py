@@ -2,6 +2,9 @@
 
 from __future__ import print_function
 from __future__ import absolute_import
+from builtins import str
+from builtins import input
+from builtins import object
 import sys, readline
 
 from comodit_client.api import Client
@@ -24,7 +27,7 @@ class ComodITConsole(object):
         while True:
             try:
                 readline.set_completer(self._cmds.get_completer())
-                line = raw_input(self._cmds.prompt() + "> ")
+                line = input(self._cmds.prompt() + "> ")
                 self.execute_line(line)
             except EOFError:
                 print()

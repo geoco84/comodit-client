@@ -261,14 +261,14 @@ def _dispatch(options, args, client):
         print(e)
     except NotModifiedException:
         print("Command was canceled since you did not save the file")
-    except Exception:
+    except Exception as e:
         if options.debug:
             print("Exception in user code.")
         else :
             print("Oops, it seems something went wrong (use --debug to learn more).")
 
-    if options.debug:
-        print('-' * 60)
-        traceback.print_exc(file = sys.stdout)
-        print('-' * 60)
-    exit(-1)
+        if options.debug:
+            print('-' * 60)
+            traceback.print_exc(file = sys.stdout)
+            print('-' * 60)
+        exit(-1)

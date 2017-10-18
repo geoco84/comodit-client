@@ -10,6 +10,7 @@
 from __future__ import print_function
 
 ## {{{ http://code.activestate.com/recipes/541096/ (r1)
+from builtins import input
 def confirm(prompt=None, resp=False):
     """prompts for yes or no response from the user. Returns True for yes and
     False for no.
@@ -38,7 +39,7 @@ def confirm(prompt=None, resp=False):
         prompt = '%s [%s]|%s: ' % (prompt, 'n', 'y')
         
     while True:
-        ans = raw_input(prompt)
+        ans = input(prompt)
         if not ans:
             return resp
         if ans not in ['y', 'Y', 'n', 'N']:
@@ -55,7 +56,7 @@ def raw_input_default(prompt, default=None):
     
     if default:
         prompt = "%s [%s]: " % (prompt, default)
-    res = raw_input(prompt)
+    res = input(prompt)
     if not res and default:
         return default
     return res

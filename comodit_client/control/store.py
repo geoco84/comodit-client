@@ -1,11 +1,13 @@
-import json, os, completions
+import json, os
 
-from comodit_client.control.root_entity import RootEntityController
-from comodit_client.control.exceptions import ArgumentException, ControllerException
-from comodit_client.config import Config
-from comodit_client.util.editor import edit_text
-from comodit_client.control.doc import ActionDoc
 from comodit_client.api.exceptions import PythonApiException
+from comodit_client.config import Config
+from comodit_client.control import completions
+from comodit_client.control.doc import ActionDoc
+from comodit_client.control.exceptions import ArgumentException, ControllerException
+from comodit_client.control.root_entity import RootEntityController
+from comodit_client.util.editor import edit_text
+
 
 class StoreController(RootEntityController):
 

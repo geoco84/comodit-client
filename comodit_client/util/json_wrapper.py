@@ -4,6 +4,7 @@ JsonWrapper class module.
 """
 from __future__ import print_function
 
+from builtins import object
 import json, os
 from collections import OrderedDict
 

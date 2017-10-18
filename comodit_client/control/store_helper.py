@@ -1,3 +1,5 @@
+from builtins import str
+from builtins import object
 import json, os
 
 from comodit_client.control.doc import ActionDoc

@@ -1,3 +1,4 @@
+from builtins import object
 import os
 
 from comodit_client.util import path

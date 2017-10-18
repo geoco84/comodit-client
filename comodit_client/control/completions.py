@@ -18,7 +18,7 @@ def print_escaped_string(name):
     if name is None:
         return
     name = re.sub(r'[ \\ ()<>\']', __match_replacement, name)
-    print(name.encode("utf-8"))
+    print(name)
 
 def print_escaped_strings(name_list):
     for name in name_list:

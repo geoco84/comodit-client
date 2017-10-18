@@ -7,24 +7,26 @@
 # This software cannot be used and/or distributed without prior
 # authorization from Guardis.
 
-import subprocess, completions
+import subprocess
 
-from comodit_client.util import prompt
+from comodit_client.config import Config
+from comodit_client.control import completions
+from comodit_client.control.alerts import MonitoringAlertController
+from comodit_client.control.audit import AuditHelper
+from comodit_client.control.changes import ChangeController
+from comodit_client.control.compliance import ComplianceController
+from comodit_client.control.contexts import PlatformContextController, \
+    DistributionContextController, ApplicationContextController
+from comodit_client.control.doc import ActionDoc
 from comodit_client.control.entity import EntityController
 from comodit_client.control.exceptions import ArgumentException, MissingException, \
     ControllerException
-from comodit_client.control.settings import HostSettingsController
 from comodit_client.control.instances import InstancesController
-from comodit_client.control.contexts import PlatformContextController, \
-    DistributionContextController, ApplicationContextController
-from comodit_client.control.tree_rendering import TreeRenderer
-from comodit_client.control.doc import ActionDoc
-from comodit_client.control.audit import AuditHelper
-from comodit_client.config import Config
-from comodit_client.control.compliance import ComplianceController
 from comodit_client.control.live import LiveController
-from comodit_client.control.changes import ChangeController
-from comodit_client.control.alerts import MonitoringAlertController
+from comodit_client.control.settings import HostSettingsController
+from comodit_client.control.tree_rendering import TreeRenderer
+from comodit_client.util import prompt
+
 
 class HostsController(EntityController):
 

@@ -77,6 +77,7 @@ of L{Organization}, I{host} is an instance of L{Host}.
 """
 from __future__ import absolute_import
 
+from builtins import object
 from comodit_client.rest.client import HttpClient
 
 from .flavors import FlavorCollection, Flavor

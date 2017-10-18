@@ -4,6 +4,7 @@ Provides classes related to stores, in particular L{PublishedEntity}.
 """
 from __future__ import print_function
 
+from builtins import str
 from comodit_client.api.collection import Collection
 from comodit_client.api.entity import Entity
 
@@ -471,6 +472,9 @@ class IsStoreCapable(Entity):
         """
 
         return self._http_client.read(self.url + "thumb", decode = False)
+
+    def read_thumbnail_content(self):
+        return self._http_client.decode(self.get_thumbnail_content())
 
     def set_thumbnail_content(self, path):
         """

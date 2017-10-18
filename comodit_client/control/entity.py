@@ -10,10 +10,11 @@
 from __future__ import print_function
 
 from collections import OrderedDict
-import json, os, completions
+import json, os
 
 from comodit_client.config import Config
 from comodit_client.control.abstract import AbstractController
+import comodit_client.control.completions as completions
 from comodit_client.control.doc import ActionDoc
 from comodit_client.control.json_update import JsonUpdater
 from comodit_client.util import prompt

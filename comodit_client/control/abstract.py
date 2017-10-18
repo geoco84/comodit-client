@@ -9,6 +9,7 @@
 
 from __future__ import print_function
 
+from builtins import object
 from comodit_client.config import Config
 from comodit_client.control.doc import ActionDoc
 from comodit_client.control.exceptions import ControllerException
@@ -107,10 +108,10 @@ class AbstractController(object):
             self._subcontrollers[action] = controller
 
     def _available_actions(self):
-        for k in self._actions.keys():
+        for k in list(self._actions.keys()):
             if k[0] != '_':
                 print(k)
-        for k in self._subcontrollers.keys():
+        for k in list(self._subcontrollers.keys()):
             if k[0] != '_':
                 print(k)
 
@@ -119,10 +120,10 @@ class AbstractController(object):
             print(self._doc)
         print()
         print("Available actions:")
-        for doc in self._docs.values():
+        for doc in list(self._docs.values()):
             doc.print_doc()
         print()
-        for (action, ctrl) in self._subcontrollers.items():
+        for (action, ctrl) in list(self._subcontrollers.items()):
             doc = ActionDoc(action, "<...>", """
         """ + ctrl._doc)
             doc.print_doc()

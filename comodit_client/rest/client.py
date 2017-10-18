@@ -7,9 +7,14 @@
 # This software cannot be used and/or distributed without prior
 # authorization from Guardis.
 
-import urllib, urllib2, json
+from future import standard_library
+import base64
+import six
+standard_library.install_aliases()
+from builtins import object
+import urllib.request, urllib.parse, urllib.error, urllib.request, urllib.error, urllib.parse, json
 import comodit_client.util.fileupload as fileupload
-from urllib2 import HTTPError
+from urllib.error import HTTPError
 from comodit_client.util import urllibx
 from comodit_client.rest.exceptions import ApiException
 from collections import OrderedDict
@@ -46,8 +51,14 @@ class HttpClient(object):
         else:
             return raw
 
-    def _decode_and_keep_key_order(self, json_string):
-        return json.load(json_string, object_pairs_hook=OrderedDict)
+    def _decode_and_keep_key_order(self, response):
+        return json.loads(self.decode(response), object_pairs_hook=OrderedDict)
+
+    def decode(self, response):
+        if six.PY2:
+            return response.read()
+        else:
+            return response.read().decode('utf-8', errors = 'ignore')
 
     def read(self, entity, parameters = {}, decode = True):
         url = self._encode_url(entity, parameters)
@@ -60,10 +71,10 @@ class HttpClient(object):
 
     def update(self, entity, item = None, parameters = {}, decode = True):
         url = self._encode_url(entity, parameters)
-        req = self._new_request(url, "PUT")
-        if not item is None:
-            req.add_data(json.dumps(item))
+        if item is not None:
+            req = self._new_request_with_data(url, "PUT", json.dumps(item))
         else:
+            req = self._new_request(url, "PUT")
             # Fix regarding Nginx not supporting empty requests with no
             # Content-Length
             req.add_header("Content-Length", 0)
@@ -79,9 +90,9 @@ class HttpClient(object):
         self._urlopen(req)
 
     def _encode_url(self, entity, parameters):
-        url = self.endpoint + "/" + urllib.quote(entity, "/%")
+        url = self.endpoint + "/" + urllib.parse.quote(entity, "/%")
         if len(parameters) > 0:
-            url = url + "?" + urllib.urlencode(parameters)
+            url = url + "?" + urllib.parse.urlencode(parameters)
         return url
 
     def upload_to_exising_file_with_path(self, file_name, path):
@@ -105,8 +116,8 @@ class HttpClient(object):
         return self.token
 
     def _get_basic_authorization_field(self):
-        s = self.username + ":" + self.password
-        return "Basic " + s.encode("base64").rstrip()
+        s = six.b(self.username + ":" + self.password)
+        return "Basic " + base64.b64encode(s).decode('utf-8')
 
     def _headers(self):
         headers = self._auth_headers()
@@ -118,9 +129,9 @@ class HttpClient(object):
 
     def _urlopen(self, request):
         try:
-            return urllib2.urlopen(request)
+            return urllib.request.urlopen(request)
         except HTTPError as err:
-            err_content = err.read()
+            err_content = err.read().decode('utf-8', errors = 'ignore')
             try:
                 data = json.loads(err_content)
                 msg_list = data["error"]
@@ -142,4 +153,4 @@ class HttpClient(object):
         return urllibx.RequestWithMethod(url, method = m, headers = self._headers())
 
     def _new_request_with_data(self, url, m, d):
-        return urllibx.RequestWithMethod(url, method = m, headers = self._headers(), data = d)
+        return urllibx.RequestWithMethod(url, method = m, headers = self._headers(), data = six.b(d))
