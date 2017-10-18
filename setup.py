@@ -5,7 +5,6 @@ import os
 from setuptools import setup, find_packages
 
 requires = [
-    'python >= 2.6',
     'future >= 0.16',
     'six'
 ]
