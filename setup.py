@@ -5,6 +5,7 @@ import os
 from setuptools import setup, find_packages
 
 requires = [
+    'pycurl',
     'future >= 0.16',
     'six'
 ]
