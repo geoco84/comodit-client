@@ -125,6 +125,7 @@ class Import(object):
 
     def _import_entity_with_files_and_parameters(self, res, root_folder, entity_type = "entity", skip_conflict_detection=False):
         res.load(root_folder)
+        files_to_upload = res.files_f
 
         conflict = self._detect_conflict(res, skip_conflict_detection)
         if conflict:
@@ -136,8 +137,7 @@ class Import(object):
         self._import_entity(res, conflict, entity_type)
 
         # Push files' content
-        file_list = res.files_f
-        for f in file_list:
+        for f in files_to_upload:
             file_name = f.name
             content_file = os.path.join(root_folder, "files", file_name)
             self._import_file_content(conflict, content_file, res, file_name, entity_type)
