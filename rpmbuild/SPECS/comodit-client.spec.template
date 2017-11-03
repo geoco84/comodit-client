@@ -21,14 +21,17 @@ BuildRequires: python-devel
 BuildRequires: python-setuptools
 
 %if 0%{?fedora}
-Requires: python >= 2.7
-Requires: python(abi) >= 2.7
-Requires: python-pycurl
+Requires: python >= 3.5
+Requires: python3-pycurl
+Requires: python3-future
+Requires: python3-six
 %endif
 
 %if 0%{?rhel}
 Requires: python >= 2.6
-Requires: python(abi) >= 2.6
+Requires: python-pycurl
+Requires: python-future
+Requires: python-six
 Requires: python-argparse
 %endif
 
