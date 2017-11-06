@@ -29,11 +29,13 @@ Requires: python3-six
 
 %if 0%{?rhel}
 Requires: python >= 2.6
+Requires: python-argparse
+%endif
+
+# The following may be moved to rhel only when fedora will be fully supporting python3
 Requires: python-pycurl
 Requires: python-future
 Requires: python-six
-Requires: python-argparse
-%endif
 
 Obsoletes: cortex-client
 
