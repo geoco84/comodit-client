@@ -2,6 +2,7 @@
 """
 Provides flavor entity (L{Flavor}) and collection (L{FlavorCollection}) classes.
 """
+from __future__ import print_function
 
 from comodit_client.api.entity import Entity
 from comodit_client.api.collection import Collection
@@ -46,7 +47,7 @@ class Flavor(Entity):
         return self._get_list_field("parameters", lambda x: Parameter(None, x))
 
     def _show(self, indent = 0):
-        print " "*indent, "Name:", self.name
-        print " "*indent, "Parameters:"
+        print(" "*indent, "Name:", self.name)
+        print(" "*indent, "Parameters:")
         for p in self.parameters_f:
             p._show(indent + 2)

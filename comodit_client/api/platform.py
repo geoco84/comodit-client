@@ -3,6 +3,7 @@
 Provides classes related to platform entity, in particular L{Platform}
 and L{PlatformCollection}.
 """
+from __future__ import print_function
 
 from comodit_client.api.collection import Collection
 from comodit_client.api.exceptions import PythonApiException
@@ -127,9 +128,9 @@ class Driver(JsonWrapper):
         @type indent: int
         """
 
-        print " "*indent, "Name:", self.name
-        print " "*indent, "Description:", self.description
-        print " "*indent, "Driver class:", self.class_name
+        print(" "*indent, "Name:", self.name)
+        print(" "*indent, "Description:", self.description)
+        print(" "*indent, "Driver class:", self.class_name)
 
 
 class Image(JsonWrapper):
@@ -215,8 +216,8 @@ class Image(JsonWrapper):
         @type indent: int
         """
 
-        print " "*indent, "ID:", self.image_id
-        print " "*indent, "Name:", self.name
+        print(" "*indent, "ID:", self.image_id)
+        print(" "*indent, "Name:", self.name)
 
 
 class Platform(HasSettings, HasParameters, HasFiles):
@@ -266,13 +267,13 @@ class Platform(HasSettings, HasParameters, HasFiles):
         try:
             result = self._http_client.update(self.url + "_clone", parameters = {"name": clone_name})
             return Platform(self.collection, result)
-        except ApiException, e:
+        except ApiException as e:
             raise PythonApiException("Unable to clone platform: " + e.message)
 
     def _show(self, indent = 0):
         super(Platform, self)._show(indent)
 
-        print " "*indent, "Driver:"
+        print(" "*indent, "Driver:")
         self.driver.show(indent + 2)
 
         self._show_settings(indent)

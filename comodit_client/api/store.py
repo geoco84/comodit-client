@@ -2,7 +2,9 @@
 """
 Provides classes related to stores, in particular L{PublishedEntity}.
 """
+from __future__ import print_function
 
+from builtins import str
 from comodit_client.api.collection import Collection
 from comodit_client.api.entity import Entity
 
@@ -252,16 +254,16 @@ class PublishedEntity(Entity):
 
     def _show(self, indent = 0):
         super(PublishedEntity, self)._show(indent)
-        print " "*indent, "Published:", self.date_published
-        print " "*indent, "Last update:", self.date_updated
-        print " "*indent, "URL:", self.url_f
-        print " "*indent, "Documentation:", self.documentation
-        print " "*indent, "License:", self.license
-        print " "*indent, "Price:", self.price
-        print " "*indent, "Featured:", self.featured
-        print " "*indent, "Authorized organizations:"
+        print(" "*indent, "Published:", self.date_published)
+        print(" "*indent, "Last update:", self.date_updated)
+        print(" "*indent, "URL:", self.url_f)
+        print(" "*indent, "Documentation:", self.documentation)
+        print(" "*indent, "License:", self.license)
+        print(" "*indent, "Price:", self.price)
+        print(" "*indent, "Featured:", self.featured)
+        print(" "*indent, "Authorized organizations:")
         for name in self.authorized:
-            print " "*(indent + 2), name
+            print(" "*(indent + 2), name)
 
 
 class PublishedApplication(PublishedEntity):
@@ -471,6 +473,9 @@ class IsStoreCapable(Entity):
 
         return self._http_client.read(self.url + "thumb", decode = False)
 
+    def read_thumbnail_content(self):
+        return self._http_client.decode(self.get_thumbnail_content())
+
     def set_thumbnail_content(self, path):
         """
         Uploads the content of the thumbnail.
@@ -483,20 +488,20 @@ class IsStoreCapable(Entity):
 
     def _show_store_fields(self, indent = 0):
         is_purchased = not self.purchased_as is None
-        print " "*indent, "Purchased: " + str(is_purchased),
+        print(" "*indent, "Purchased: " + str(is_purchased), end=' ')
         if is_purchased:
-            print "(can pull: " + str(self.can_pull) + ")"
+            print("(can pull: " + str(self.can_pull) + ")")
         else:
-            print
+            print()
 
         is_published = not self.published_as is None
-        print " "*indent, "Published: " + str(is_published),
+        print(" "*indent, "Published: " + str(is_published), end=' ')
         if is_published:
-            print "(can push: " + str(self.can_push) + ")"
+            print("(can push: " + str(self.can_push) + ")")
         else:
-            print
+            print()
 
-        print " "*indent, "Url: %s" % self.url_f
-        print " "*indent, "Documentation:\n%s" % self.documentation
-        print " "*indent, "License:\n%s" % self.license
-        print " "*indent, "Price: %s" % self.price
+        print(" "*indent, "Url: %s" % self.url_f)
+        print(" "*indent, "Documentation:\n%s" % self.documentation)
+        print(" "*indent, "License:\n%s" % self.license)
+        print(" "*indent, "Price: %s" % self.price)

@@ -3,7 +3,9 @@
 Provides the exporter tool. The exporter can be used to export ComodIT entities
 to local directories.
 """
+from __future__ import print_function
 
+from builtins import object
 import os
 
 from comodit_client.api.collection import EntityNotFoundException
@@ -43,7 +45,7 @@ class Export(object):
             file_name = template.name
             try:
                 with open(os.path.join(output_folder, file_name), "w") as f:
-                    f.write(template.get_content().read())
+                    f.write(template.read_content())
             except ApiException as e:
                 if e.code == 404:
                     pass
@@ -51,7 +53,7 @@ class Export(object):
                     raise e
 
     def _export_entity(self, res, res_folder, export_files = False, export_thumb = False):
-        print "exporting", res.name, "to", res_folder
+        print("exporting", res.name, "to", res_folder)
         # Ensures local repository does not contain stale data
         if(os.path.exists(res_folder) and len(os.listdir(res_folder)) > 0) and not self._force:
             raise ExportException(res_folder + " already exists and is not empty.")
@@ -67,9 +69,9 @@ class Export(object):
         if export_thumb:
             # Dump thumbnail to disk
             try:
-                content_reader = res.get_thumbnail_content()
+                content = res.read_thumbnail_content()
                 with open(os.path.join(res_folder, "thumb"), "w") as f:
-                    f.write(content_reader.read())
+                    f.write(content)
             except ApiException as e:
                 if e.code == 404:
                     pass

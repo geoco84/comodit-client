@@ -3,6 +3,8 @@
 Provides collections base class (L{Collection}) and related exceptions.
 """
 
+from builtins import str
+from builtins import object
 from comodit_client.api.exceptions import PythonApiException
 from comodit_client.rest.exceptions import ApiException
 

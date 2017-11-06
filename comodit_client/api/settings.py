@@ -2,6 +2,7 @@
 """
 Provides classes related to setting entities, in particular L{HasSettings}.
 """
+from __future__ import print_function
 
 from comodit_client.api.entity import Entity
 from comodit_client.api.collection import Collection
@@ -35,7 +36,7 @@ class Setting(Entity):
         self._set_field("key", key)
 
     def _show(self, indent = 0):
-        print " "*indent, "Key:", self.key
+        print(" "*indent, "Key:", self.key)
 
 
 class SimpleSetting(Setting):
@@ -75,7 +76,7 @@ class SimpleSetting(Setting):
 
     def _show(self, indent = 0):
         super(SimpleSetting, self)._show(indent)
-        print " "*indent, "Value:", self.value
+        print(" "*indent, "Value:", self.value)
 
 
 class LinkSetting(Setting):
@@ -131,8 +132,8 @@ class LinkSetting(Setting):
 
     def _show(self, indent = 0):
         super(LinkSetting, self)._show(indent)
-        print " "*indent, "Link:", self.link
-        print " "*indent, "Default value:", self.value
+        print(" "*indent, "Link:", self.link)
+        print(" "*indent, "Default value:", self.value)
 
 
 class PropertySetting(Setting):
@@ -172,15 +173,15 @@ class PropertySetting(Setting):
 
     def _show(self, indent = 0):
         super(PropertySetting, self)._show(indent)
-        print " "*indent, "Property:", self.property_f
+        print(" "*indent, "Property:", self.property_f)
 
 
 def _build_setting(collection, json_data):
     if not json_data:
         return SimpleSetting(collection, json_data)
 
-    has_prop = json_data.has_key("property") and json_data["property"]
-    has_link = json_data.has_key("link") and json_data["link"]
+    has_prop = "property" in json_data and json_data["property"]
+    has_link = "link" in json_data and json_data["link"]
 
     if has_prop and not has_link:
         return PropertySetting(collection, json_data)
@@ -457,7 +458,7 @@ class HasSettings(Entity):
         self._set_list_field("settings", settings)
 
     def _show_settings(self, indent = 0):
-        print " "*indent, "Settings:"
+        print(" "*indent, "Settings:")
         for s in self.settings_f:
             s._show(indent + 2)
 
@@ -473,5 +474,5 @@ def add_settings(container, settings):
     @type settings: dict
     """
 
-    for key, value in settings.iteritems():
+    for key, value in settings.items():
         container.add_simple_setting(key, value)

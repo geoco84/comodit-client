@@ -3,8 +3,10 @@
 Provides the classes related to application key entity: L{ApplicationKey}
 and L{ApplicationKeyCollection}.
 """
+from __future__ import print_function
+from __future__ import absolute_import
 
-from collection import Collection
+from .collection import Collection
 from comodit_client.api.entity import Entity
 
 
@@ -103,7 +105,7 @@ class ApplicationKey(Entity):
 
     def _show(self, indent = 0):
         super(ApplicationKey, self)._show(indent)
-        print " "*indent, "Token:", self.token
-        print " "*indent, "Expiration date:", self.expiration_date
-        print " "*indent, "Group:", self.group
-        print " "*indent, "Creator:", self.creator
+        print(" "*indent, "Token:", self.token)
+        print(" "*indent, "Expiration date:", self.expiration_date)
+        print(" "*indent, "Group:", self.group)
+        print(" "*indent, "Creator:", self.creator)

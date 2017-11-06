@@ -7,10 +7,13 @@
 # This software cannot be used and/or distributed without prior
 # authorization from Guardis.
 
-import completions
+from __future__ import absolute_import
 
 from comodit_client.control.entity import EntityController
 from comodit_client.control.exceptions import ArgumentException
+
+from . import completions
+
 
 class RootEntityController(EntityController):
 

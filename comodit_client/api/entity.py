@@ -2,6 +2,7 @@
 """
 Provides entities base class (L{Entity}).
 """
+from __future__ import print_function
 
 import os
 
@@ -249,8 +250,8 @@ class Entity(JsonWrapper):
         line.
         @type indent: int
         """
-        print " "*indent, "Name:", self.name
-        print " "*indent, "Description:", self.description
+        print(" "*indent, "Name:", self.name)
+        print(" "*indent, "Description:", self.description)
 
     def dump(self, dest_folder):
         """

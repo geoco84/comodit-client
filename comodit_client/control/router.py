@@ -7,6 +7,7 @@
 # This software cannot be used and/or distributed without prior
 # authorization from Guardis.
 
+from __future__ import print_function
 from comodit_client.control.exceptions import ControllerException
 
 controllers = {}
@@ -32,12 +33,12 @@ def dispatch(keyword, client, argv):
     '''
 
     global controllers
-    if controllers.has_key(keyword):
+    if keyword in controllers:
         controllers[keyword].run(client, argv)
     else:
         raise ControllerException("Unknown entity '" + keyword + "'")
 
 def print_keywords():
     global controllers
-    for k in controllers.keys():
-        print k
+    for k in list(controllers.keys()):
+        print(k)

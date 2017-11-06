@@ -2,16 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import os
-from platform import python_version
 from setuptools import setup, find_packages
 
-major, minor, micro = python_version().split('.')
-
-if major != '2' or minor not in ['6', '7']:
-    raise Exception('unsupported version of python')
-
 requires = [
-    'python >= 2.6',
+#     'pycurl',
+#     'future',
+#     'six'
 ]
 
 # Utility function to read the README file.

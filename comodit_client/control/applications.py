@@ -7,6 +7,7 @@
 # This software cannot be used and/or distributed without prior
 # authorization from Guardis.
 
+from __future__ import absolute_import
 from comodit_client.api.exporter import Export
 from comodit_client.api.importer import Import
 from comodit_client.control.doc import ActionDoc
@@ -16,7 +17,7 @@ from comodit_client.control.organization_entity import OrganizationEntityControl
 from comodit_client.control.parameters import ApplicationParametersController
 from comodit_client.control.store_helper import StoreHelper
 from comodit_client.control.sync import AppSyncController
-import completions
+from . import completions
 
 
 class ApplicationsController(OrganizationEntityController):

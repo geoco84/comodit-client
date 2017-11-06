@@ -2,7 +2,9 @@
 """
 Provides classes related to file entities, in particular L{HasFiles}.
 """
+from __future__ import print_function
 
+from builtins import str
 from comodit_client.util.json_wrapper import JsonWrapper
 from comodit_client.api.collection import Collection
 from comodit_client.api.entity import Entity
@@ -69,8 +71,8 @@ class Delimiter(JsonWrapper):
         @type indent: int
         """
 
-        print " "*indent, "Start:", self.start
-        print " "*indent, "End:", self.end
+        print(" "*indent, "Start:", self.start)
+        print(" "*indent, "End:", self.end)
 
 
 class FileEntity(Entity):
@@ -113,6 +115,9 @@ class FileEntity(Entity):
 
         return self._http_client.read(self.content_url, decode = False)
 
+    def read_content(self):
+        return self._http_client.decode(self.get_content())
+
 
 class File(FileEntity):
     """
@@ -143,8 +148,8 @@ class File(FileEntity):
         self._set_field("delimiter", delim)
 
     def _show(self, indent = 0):
-        print " "*indent, "Name:", self.name
-        print " "*indent, "Delimiter:"
+        print(" "*indent, "Name:", self.name)
+        print(" "*indent, "Delimiter:")
         self.delimiter.show(indent + 2)
 
 
@@ -247,6 +252,6 @@ class HasFiles(Entity):
         return self.files().get(name)
 
     def _show_files(self, indent = 0):
-        print " "*indent, "Files:"
+        print(" "*indent, "Files:")
         for s in self.files_f:
             s._show(indent + 2)

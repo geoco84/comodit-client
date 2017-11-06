@@ -1,6 +1,8 @@
 # coding: utf-8
 
-import completions
+from __future__ import print_function
+from __future__ import absolute_import
+from . import completions
 
 from comodit_client.control.entity import EntityController
 from comodit_client.control.exceptions import ArgumentException
@@ -41,7 +43,7 @@ class AbstractFilesController(EntityController):
             completions.print_file_completions()
 
     def _show_content(self, argv):
-        print self._get_entity(argv).get_content().read()
+        print(self._get_entity(argv).get_content().read())
 
     def _show_content_doc(self):
         return ActionDoc("show-content", "", """

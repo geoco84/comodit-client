@@ -1,3 +1,5 @@
+from __future__ import print_function
+from builtins import object
 class ActionDoc(object):
     def __init__(self, action, param_string, doc_string):
         self._action = action
@@ -11,4 +13,4 @@ class ActionDoc(object):
         self._param_string = param_string
 
     def print_doc(self):
-        print " "*2, self._action, self._param_string, self._doc_string
+        print(" "*2, self._action, self._param_string, self._doc_string)

@@ -3,9 +3,11 @@
 Provides the classes related to environment entity: L{Environment}
 and L{EnvironmentCollection}.
 """
+from __future__ import print_function
+from __future__ import absolute_import
 
-from collection import Collection
-from host import HostCollection
+from .collection import Collection
+from .host import HostCollection
 from comodit_client.api.settings import HasSettings
 from comodit_client.rest.exceptions import ApiException
 from comodit_client.api.exceptions import PythonApiException
@@ -124,7 +126,7 @@ class Environment(HasSettings):
         try:
             result = self._http_client.update(self.url + "_clone", parameters = {"name": clone_name})
             return Environment(self.collection, result)
-        except ApiException, e:
+        except ApiException as e:
             raise PythonApiException("Unable to clone environment: " + e.message)
 
     def audit_logs(self):
@@ -140,10 +142,10 @@ class Environment(HasSettings):
         return AuditLogCollection(self.client, self.url + "audit/")
 
     def _show(self, indent = 0):
-        print " "*indent, "Name:", self.name
-        print " "*indent, "Description:", self.description
-        print " "*indent, "Organization:", self.organization
-        print " "*indent, "Hosts:"
+        print(" "*indent, "Name:", self.name)
+        print(" "*indent, "Description:", self.description)
+        print(" "*indent, "Organization:", self.organization)
+        print(" "*indent, "Hosts:")
         hosts = self.hosts_f
         for h in hosts:
-            print " "*(indent + 2), h
+            print(" "*(indent + 2), h)

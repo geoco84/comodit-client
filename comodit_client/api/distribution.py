@@ -99,7 +99,7 @@ class Distribution(HasSettings, HasParameters, HasFiles, IsStoreCapable):
         try:
             result = self._http_client.update(self.url + "_clone", parameters = {"name": clone_name})
             return Distribution(self.collection, result)
-        except ApiException, e:
+        except ApiException as e:
             raise PythonApiException("Unable to clone distribution: " + e.message)
 
     def setup_default_settings(self, flavor_name):

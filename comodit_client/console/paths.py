@@ -1,8 +1,13 @@
 # coding: utf-8
 
-import items
+from __future__ import absolute_import
 
+from builtins import str
+from builtins import range
+from builtins import object
 from comodit_client.config import singleton
+
+from . import items
 
 
 ROOT = (items.RootItem, '/')
@@ -241,7 +246,7 @@ class PathModel(object):
             if elem == '':
                 continue
             next_node = None
-            for (label, node) in current_node['links'].iteritems():
+            for (label, node) in current_node['links'].items():
                 if len(label) > 2 and label[0] == '%' and label[-1] == '%':
                     resolved_vars[label[1:-1]] = elem
                     next_node = node
@@ -286,7 +291,7 @@ def resolve_dots(elements):
                 num_of_ddot += 1
                 i += 1
 
-            for j in xrange(min(len(new_elems), num_of_ddot)):
+            for j in range(min(len(new_elems), num_of_ddot)):
                 new_elems.pop()
 
     return new_elems

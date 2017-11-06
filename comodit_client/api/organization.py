@@ -3,13 +3,15 @@
 Provides the classes related to organization entity, in particular L{Organization}
 and L{OrganizationCollection}.
 """
+from __future__ import print_function
+from __future__ import absolute_import
 
-from collection import Collection
-from entity import Entity
-from environment import EnvironmentCollection
-from distribution import DistributionCollection
-from platform import PlatformCollection
-from application import ApplicationCollection
+from .collection import Collection
+from .entity import Entity
+from .environment import EnvironmentCollection
+from .distribution import DistributionCollection
+from .platform import PlatformCollection
+from .application import ApplicationCollection
 from comodit_client.api.settings import HasSettings
 from comodit_client.rest.exceptions import ApiException
 from comodit_client.api.exceptions import PythonApiException
@@ -70,9 +72,9 @@ class User(JsonWrapper):
         @type indent: int
         """
 
-        print " "*indent, "Username:", self.username
-        print " "*indent, "Full name:", self.full_name
-        print " "*indent, "E-mail:", self.email
+        print(" "*indent, "Username:", self.username)
+        print(" "*indent, "Full name:", self.full_name)
+        print(" "*indent, "E-mail:", self.email)
 
 
 class GroupCollection(Collection):
@@ -156,10 +158,10 @@ class Group(Entity):
         return self._set_list_field("users", [])
 
     def _show(self, indent = 0):
-        print " "*indent, "Name:", self.name
-        print " "*indent, "Description:", self.description
-        print " "*indent, "Organization:", self.organization
-        print " "*indent, "Users:"
+        print(" "*indent, "Name:", self.name)
+        print(" "*indent, "Description:", self.description)
+        print(" "*indent, "Organization:", self.organization)
+        print(" "*indent, "Users:")
         users = self.users
         for u in users:
             u.show(indent + 2)
@@ -261,18 +263,18 @@ class Organization(HasSettings):
         return self._get_list_field("groups")
 
     def _show(self, indent = 0):
-        print " "*indent, "Name:", self.name
-        print " "*indent, "Description:", self.description
-        print " "*indent, "Access Key:", self.access_key
-        print " "*indent, "Secret Key:", self.secret_key
+        print(" "*indent, "Name:", self.name)
+        print(" "*indent, "Description:", self.description)
+        print(" "*indent, "Access Key:", self.access_key)
+        print(" "*indent, "Secret Key:", self.secret_key)
 
-        print " "*indent, "Environments:"
+        print(" "*indent, "Environments:")
         for e in self.environment_names:
-            print " "*(indent + 2), e
+            print(" "*(indent + 2), e)
 
-        print " "*indent, "Groups:"
+        print(" "*indent, "Groups:")
         for g in self.group_names:
-            print " "*(indent + 2), g
+            print(" "*(indent + 2), g)
 
     def applications(self):
         """
@@ -414,7 +416,7 @@ class Organization(HasSettings):
 
         try:
             self._http_client.create(self.url + "access")
-        except ApiException, e:
+        except ApiException as e:
             raise PythonApiException("Could not reset secret key: " + e.message)
 
     def audit_logs(self):

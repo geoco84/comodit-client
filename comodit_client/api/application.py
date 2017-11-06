@@ -15,6 +15,8 @@ Application resources:
 
 Handler: L{Handler}
 """
+from __future__ import print_function
+from __future__ import absolute_import
 
 from comodit_client.api.collection import Collection
 from comodit_client.api.exceptions import PythonApiException
@@ -23,7 +25,7 @@ from comodit_client.api.parameters import HasParameters
 from comodit_client.api.store import IsStoreCapable
 from comodit_client.rest.exceptions import ApiException
 from comodit_client.util.json_wrapper import JsonWrapper
-from files import File
+from .files import File
 
 
 class ApplicationCollection(Collection):
@@ -110,7 +112,7 @@ class ApplicationResource(JsonWrapper):
         @type indent: int
         """
 
-        print " "*indent, self.name
+        print(" "*indent, self.name)
 
 
 class Package(ApplicationResource):
@@ -158,8 +160,8 @@ class Repository(ApplicationResource):
         @type indent: int
         """
 
-        print " "*indent, self.name + ":"
-        print " "*(indent + 2), "Location:", self.location
+        print(" "*indent, self.name + ":")
+        print(" "*(indent + 2), "Location:", self.location)
 
 
 class User(ApplicationResource):
@@ -376,18 +378,18 @@ class User(ApplicationResource):
         @type indent: int
         """
 
-        print " "*indent, self.name + ":"
-        print " "*(indent + 2), "Login group:", self.login_group
-        print " "*(indent + 2), "Groups:"
+        print(" "*indent, self.name + ":")
+        print(" "*(indent + 2), "Login group:", self.login_group)
+        print(" "*(indent + 2), "Groups:")
         for g in self.groups:
-            print " "*(indent + 4), g
-        print " "*(indent + 2), "Password:", self.password
-        print " "*(indent + 2), "UID:", self.uid
-        print " "*(indent + 2), "GID:", self.gid
-        print " "*(indent + 2), "Home:", self.home
-        print " "*(indent + 2), "Full name:", self.full_name
-        print " "*(indent + 2), "Shell:", self.shell
-        print " "*(indent + 2), "System:", self.system
+            print(" "*(indent + 4), g)
+        print(" "*(indent + 2), "Password:", self.password)
+        print(" "*(indent + 2), "UID:", self.uid)
+        print(" "*(indent + 2), "GID:", self.gid)
+        print(" "*(indent + 2), "Home:", self.home)
+        print(" "*(indent + 2), "Full name:", self.full_name)
+        print(" "*(indent + 2), "Shell:", self.shell)
+        print(" "*(indent + 2), "System:", self.system)
 
 
 class Group(ApplicationResource):
@@ -426,8 +428,8 @@ class Group(ApplicationResource):
         @type indent: int
         """
 
-        print " "*indent, self.name + ":"
-        print " "*(indent + 2), "GID:", self.gid
+        print(" "*indent, self.name + ":")
+        print(" "*(indent + 2), "GID:", self.gid)
 
 
 class Service(ApplicationResource):
@@ -466,8 +468,8 @@ class Service(ApplicationResource):
         @type indent: int
         """
 
-        print " "*indent, self.name + ":"
-        print " "*(indent + 2), "enabled:", self.enabled
+        print(" "*indent, self.name + ":")
+        print(" "*(indent + 2), "enabled:", self.enabled)
 
 
 class ApplicationFile(FileEntity):
@@ -560,14 +562,14 @@ class ApplicationFile(FileEntity):
         @type indent: int
         """
 
-        print " "*indent, self.name + ":"
-        print " "*(indent + 2), "owner:", self.owner
-        print " "*(indent + 2), "group:", self.group
-        print " "*(indent + 2), "mode:", self.mode
-        print " "*(indent + 2), "path:", self.file_path
+        print(" "*indent, self.name + ":")
+        print(" "*(indent + 2), "owner:", self.owner)
+        print(" "*(indent + 2), "group:", self.group)
+        print(" "*(indent + 2), "mode:", self.mode)
+        print(" "*(indent + 2), "path:", self.file_path)
         template = self.template
         if template:
-            print " "*(indent + 2), "template:"
+            print(" "*(indent + 2), "template:")
             template._show(indent + 4)
 
 
@@ -628,7 +630,7 @@ class Action(JsonWrapper):
         @type indent: int
         """
 
-        print " "*indent, self.type, self.resource
+        print(" "*indent, self.type, self.resource)
 
 
 class Handler(JsonWrapper):
@@ -714,14 +716,14 @@ class Handler(JsonWrapper):
         @type indent: int
         """
 
-        print " "*indent, "Actions:"
+        print(" "*indent, "Actions:")
         actions = self.actions
         for a in actions:
             a.show(indent + 2)
-        print " "*indent, "Triggers:"
+        print(" "*indent, "Triggers:")
         triggers = self.triggers
         for t in triggers:
-            print " "*(indent + 2), t
+            print(" "*(indent + 2), t)
 
 
 class CustomAction(JsonWrapper):
@@ -803,9 +805,9 @@ class CustomAction(JsonWrapper):
         self._set_field("description", description)
 
     def show(self, indent = 0):
-        print " "*indent, "Name:", self.name
-        print " "*indent, "Description:", self.description
-        print " "*indent, "Key:", self.key
+        print(" "*indent, "Name:", self.name)
+        print(" "*indent, "Description:", self.description)
+        print(" "*indent, "Key:", self.key)
 
 
 class CompatibilityRule(JsonWrapper):
@@ -860,8 +862,8 @@ class CompatibilityRule(JsonWrapper):
         @type indent: int
         """
 
-        print " "*indent, "OS type:", self.os_type
-        print " "*indent, "OS version:", self.version
+        print(" "*indent, "OS type:", self.os_type)
+        print(" "*indent, "OS version:", self.version)
 
 
 class Application(HasParameters, IsStoreCapable):
@@ -1093,7 +1095,7 @@ class Application(HasParameters, IsStoreCapable):
         try:
             result = self._http_client.update(self.url + "_clone", parameters = {"name": clone_name})
             return Application(self.collection, result)
-        except ApiException, e:
+        except ApiException as e:
             raise PythonApiException("Unable to clone application: " + e.message)
 
     @property
@@ -1168,44 +1170,44 @@ class Application(HasParameters, IsStoreCapable):
         self._add_to_list_field("compatibility", rule)
 
     def _show(self, indent = 0):
-        print " "*indent, "Name:", self.name
-        print " "*indent, "Description:", self.description
+        print(" "*indent, "Name:", self.name)
+        print(" "*indent, "Description:", self.description)
 
         self._show_parameters(indent)
 
-        print " "*indent, "Compatibility rules:"
+        print(" "*indent, "Compatibility rules:")
         rules = self.compatibility
         for r in rules:
             r.show(indent + 2)
-        print " "*indent, "Packages:"
+        print(" "*indent, "Packages:")
         packages = self.packages
         for p in packages:
             p.show(indent + 2)
-        print " "*indent, "Services:"
+        print(" "*indent, "Services:")
         services = self.services
         for s in services:
             s.show(indent + 2)
-        print " "*indent, "Files:"
+        print(" "*indent, "Files:")
         files = self.files_f
         for f in files:
             f._show(indent + 2)
-        print " "*indent, "Groups:"
+        print(" "*indent, "Groups:")
         groups = self.groups
         for g in groups:
             g.show(indent + 2)
-        print " "*indent, "Users:"
+        print(" "*indent, "Users:")
         users = self.users
         for u in users:
             u.show(indent + 2)
-        print " "*indent, "Repositories:"
+        print(" "*indent, "Repositories:")
         repos = self.repositories
         for r in repos:
             r.show(indent + 2)
-        print " "*indent, "Custom actions:"
+        print(" "*indent, "Custom actions:")
         actions = self.actions
         for c in actions:
             c.show(indent + 2)
-        print " "*indent, "Handlers:"
+        print(" "*indent, "Handlers:")
         handlers = self.handlers
         for f in handlers:
             f.show(indent + 2)

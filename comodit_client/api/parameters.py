@@ -2,6 +2,7 @@
 """
 Provides classes related to parameter entities, in particular L{HasParameters}.
 """
+from __future__ import print_function
 
 from comodit_client.api.entity import Entity
 from comodit_client.api.collection import Collection
@@ -108,10 +109,10 @@ class Parameter(Entity):
         return self._set_field("value", value)
 
     def _show(self, indent = 0):
-        print " "*indent, "Name:", self.name
-        print " "*indent, "Description:", self.description
-        print " "*indent, "Key:", self.key
-        print " "*indent, "Default value:", self.value
+        print(" "*indent, "Name:", self.name)
+        print(" "*indent, "Description:", self.description)
+        print(" "*indent, "Key:", self.key)
+        print(" "*indent, "Default value:", self.value)
 
 
 class HasParameters(Entity):
@@ -175,6 +176,6 @@ class HasParameters(Entity):
         self._set_list_field("parameters", params)
 
     def _show_parameters(self, indent = 0):
-        print " "*indent, "Parameters:"
+        print(" "*indent, "Parameters:")
         for s in self.parameters_f:
             s._show(indent + 2)

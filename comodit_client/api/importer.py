@@ -3,7 +3,10 @@
 Provides the importer tool. The importer can be used to importer entities
 from local directories into a ComodIT server.
 """
+from __future__ import print_function
 
+from builtins import str
+from builtins import object
 import os
 
 from comodit_client.api.application import Application
@@ -375,8 +378,8 @@ class Action(object):
         Displays this actions to standard output.
         """
 
-        print "Conflict:", self._conflict
-        print "Summary: " + self.get_summary()
+        print("Conflict:", self._conflict)
+        print("Summary: " + self.get_summary())
 
 
 class UploadContent(Action):
@@ -495,7 +498,7 @@ class UpdateEntity(Action):
         return "Update " + self._entity_type + " '" + self._res_object.name + "'"
 
 
-class ActionsQueue:
+class ActionsQueue(object):
     """
     The queue of actions.
     """
@@ -542,16 +545,16 @@ class ActionsQueue:
             raise ImportException("Cannot apply actions, conflicts detected")
 
         for a in self._actions:
-            print "-"*80
+            print("-"*80)
             if not a.conflict():
-                print "Executing '" + a.get_summary() + "'"
+                print("Executing '" + a.get_summary() + "'")
                 try:
                     a.execute()
                 except Exception as e:
-                    print "Error:", str(e)
+                    print("Error:", str(e))
             else:
-                print "Skipping '" + a.get_summary() + "'"
-        print "-"*80
+                print("Skipping '" + a.get_summary() + "'")
+        print("-"*80)
 
     def display_actions(self, show_only_conflicts):
         """
@@ -563,6 +566,6 @@ class ActionsQueue:
 
         for a in self._actions:
             if not show_only_conflicts or a.conflict():
-                print "-"*80
+                print("-"*80)
                 a.display()
-        print "-"*80
+        print("-"*80)

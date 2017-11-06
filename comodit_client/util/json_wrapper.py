@@ -2,7 +2,9 @@
 """
 JsonWrapper class module.
 """
+from __future__ import print_function
 
+from builtins import object
 import json, os
 from collections import OrderedDict
 
@@ -65,7 +67,7 @@ class JsonWrapper(object):
             self._json_data[field] = value
 
     def _del_field(self, field):
-        if self._json_data.has_key(field):
+        if field in self._json_data:
             del self._json_data[field]
 
     def _get_list_field(self, field, factory = None):
@@ -85,7 +87,7 @@ class JsonWrapper(object):
         @rtype: list of object
         """
         object_list = []
-        if(self._json_data.has_key(field)):
+        if(field in self._json_data):
             json_list = self._json_data[field]
             for j in json_list:
                 if factory:
@@ -104,7 +106,7 @@ class JsonWrapper(object):
         @param value: A JsonWrapper instance or a String instance
         @type value: L{JsonWrapper} or String
         """
-        if(not self._json_data.has_key(field)):
+        if(field not in self._json_data):
             self._json_data[field] = []
         if(isinstance(value, JsonWrapper)):
             self._json_data[field].append(value.get_json())

@@ -1,6 +1,10 @@
 # coding: utf-8
 
-import completions
+from __future__ import print_function
+from __future__ import absolute_import
+from builtins import str
+from builtins import object
+from . import completions
 
 from comodit_client.control.entity import EntityController
 from comodit_client.control.exceptions import ArgumentException, ControllerException

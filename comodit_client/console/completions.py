@@ -1,6 +1,8 @@
 # coding: utf-8
 
-import readline, paths
+from builtins import object
+import readline
+from . import paths
 
 from comodit_client.console.utils import merge_escaped
 

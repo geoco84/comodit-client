@@ -1,5 +1,6 @@
 # coding: utf-8
 
+from __future__ import print_function
 import sys, argparse
 
 from comodit_client.console.core import ComodITConsole
@@ -10,8 +11,8 @@ if __name__ == '__main__':
     try:
         config = Config()
     except ConfigException as e:
-        print "Configuration error:"
-        print e.msg
+        print("Configuration error:")
+        print(e.msg)
         exit(-1)
 
     parser = argparse.ArgumentParser(formatter_class = argparse.RawDescriptionHelpFormatter,

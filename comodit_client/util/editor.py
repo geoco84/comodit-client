@@ -24,7 +24,7 @@ def edit_text(starting_text='', ignore_not_modified=False):
     editor = _what_editor()
     x = os.spawnlp(os.P_WAIT, editor, editor, temp_filename)
     if x:
-        raise RuntimeError, "Can't run %s %s (%s)" % (editor, temp_filename, x)
+        raise RuntimeError("Can't run %s %s (%s)" % (editor, temp_filename, x))
     result = open(temp_filename).read()
     updated = os.path.getmtime(temp_filename)
     os.unlink(temp_filename)
