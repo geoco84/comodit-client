@@ -4,7 +4,11 @@
 import os
 from setuptools import setup, find_packages
 
-requires = []
+requires = [
+#     'pycurl',
+#     'future',
+#     'six'
+]
 
 # Utility function to read the README file.
 # http://packages.python.org/an_example_pypi_project/setuptools.html
