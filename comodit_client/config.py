@@ -213,7 +213,7 @@ class Config(object):
         }
 
         """
-        self.config_parser = configparser.ConfigParser()
+        self.config_parser = configparser.ConfigParser(interpolation=None)
         self.config_parser.read(config_path)
 
         cfg = {}
