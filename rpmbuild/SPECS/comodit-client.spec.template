@@ -21,7 +21,7 @@ BuildRequires: python-devel
 BuildRequires: python-setuptools
 
 %if 0%{?fedora}
-Requires: python >= 3.5
+Requires: python3 >= 3.5
 Requires: python3-pycurl
 Requires: python3-future
 Requires: python3-six
