@@ -20,20 +20,21 @@ def edit_text(starting_text='', ignore_not_modified=False):
     temp_fd, temp_filename = tempfile.mkstemp(text=True)
     os.write(temp_fd, starting_text)
     os.close(temp_fd)
-    time = os.path.getmtime(temp_filename)
-    edit_file(temp_filename)
+    updated = edit_file(temp_filename)
     result = open(temp_filename).read()
-    updated = os.path.getmtime(temp_filename)
     os.unlink(temp_filename)
-    if not ignore_not_modified and time == updated:
+    if not ignore_not_modified and updated:
         raise NotModifiedException()
     return result
 
 def edit_file(temp_filename):
+    time = os.path.getmtime(temp_filename)
     editor = _what_editor()
     x = os.spawnlp(os.P_WAIT, editor, editor, temp_filename)
     if x:
         raise RuntimeError("Can't run %s %s (%s)" % (editor, temp_filename, x))
+    updated = os.path.getmtime(temp_filename)
+    return time != updated
 
 def _what_editor():
     editor = os.getenv('VISUAL') or os.getenv('EDITOR')

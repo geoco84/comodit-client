@@ -3,11 +3,9 @@ from builtins import object
 import mimetypes, pycurl
 
 class PyCurlCallBack(object):
-    def __init__(self):
-        self.response = ''
 
     def response_callback(self, response):
-        self.response += response
+        pass
 
 def post_multipart(url, fields, files, insecure = False, headers = {}):
     c = pycurl.Curl()
@@ -40,8 +38,6 @@ def post_multipart(url, fields, files, insecure = False, headers = {}):
 
     c.perform()
     c.close()
-
-    return callback.response
 
 def get_content_type(filename):
     return mimetypes.guess_type(filename)[0] or 'application/octet-stream'

@@ -93,12 +93,11 @@ class HttpClient(object):
         return url
 
     def upload_to_exising_file_with_path(self, file_name, path):
-        response = fileupload.post_multipart(self._encode_url(path, []), [],
+        fileupload.post_multipart(self._encode_url(path, []), [],
                                              [("file", file_name)],
                                              insecure = self._insecure_upload,
                                              headers = self._auth_headers())
-        return response
-    
+
     def _auth_headers(self):
         if self._is_token_available():
             return {

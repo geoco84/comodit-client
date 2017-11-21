@@ -68,10 +68,11 @@ class AbstractFilesController(EntityController):
         temp_file = os.fdopen(temp_fd, 'w')
         temp_file.write(file_res.read_content())
         temp_file.close()
-        edit_file(temp_filename)
-        temp_file = open(temp_filename, 'r')
-        file_res.set_content(temp_filename)
-        temp_file.close()
+        updated = edit_file(temp_filename)
+        if updated:
+            file_res.set_content(temp_filename)
+        else:
+            print("File content did not change, skipping upload.")
         os.remove(temp_filename)
 
     def _edit_content_doc(self):
