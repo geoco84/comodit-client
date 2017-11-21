@@ -55,10 +55,7 @@ class HttpClient(object):
         return json.loads(self.decode(response), object_pairs_hook=OrderedDict)
 
     def decode(self, response):
-        if six.PY2:
-            return response.read()
-        else:
-            return response.read().decode('utf-8', errors = 'ignore')
+        return response.read().decode('utf-8', errors = 'ignore')
 
     def read(self, entity, parameters = {}, decode = True):
         url = self._encode_url(entity, parameters)

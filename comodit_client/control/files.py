@@ -7,9 +7,9 @@ from . import completions
 from comodit_client.control.entity import EntityController
 from comodit_client.control.exceptions import ArgumentException
 from comodit_client.control.doc import ActionDoc
-from comodit_client.api.application import Application
-from comodit_client.api.distribution import Distribution
-from comodit_client.api.platform import Platform
+from comodit_client.util.editor import edit_file
+import tempfile
+import os
 
 class AbstractFilesController(EntityController):
 
@@ -20,10 +20,12 @@ class AbstractFilesController(EntityController):
 
         self._register(["show-content"], self._show_content, self._print_entity_completions)
         self._register(["set-content"], self._set_content, self._print_set_content_completions)
+        self._register(["edit"], self._edit_content, self._print_set_content_completions)
 
         self._doc = "Files handling."
         self._register_action_doc(self._show_content_doc())
         self._register_action_doc(self._set_content_doc())
+        self._register_action_doc(self._edit_content_doc())
 
     def get_collection(self, argv):
         return self._get_owning_entity(argv).files()
@@ -43,7 +45,7 @@ class AbstractFilesController(EntityController):
             completions.print_file_completions()
 
     def _show_content(self, argv):
-        print(self._get_entity(argv).get_content().read())
+        print(self._get_entity(argv).read_content())
 
     def _show_content_doc(self):
         return ActionDoc("show-content", "", """
@@ -60,6 +62,22 @@ class AbstractFilesController(EntityController):
         return ActionDoc("set-content", "", """
         Set file's content.""")
 
+    def _edit_content(self, argv):
+        file_res = self._get_entity(argv)
+        temp_fd, temp_filename = tempfile.mkstemp(text=True)
+        temp_file = os.fdopen(temp_fd, 'w')
+        temp_file.write(file_res.read_content())
+        temp_file.close()
+        edit_file(temp_filename)
+        temp_file = open(temp_filename, 'r')
+        file_res.set_content(temp_filename)
+        temp_file.close()
+        os.remove(temp_filename)
+
+    def _edit_content_doc(self):
+        return ActionDoc("edit", "", """
+        Edit file's content.""")
+
 
 class ApplicationFilesController(AbstractFilesController):
 
@@ -75,6 +93,7 @@ class ApplicationFilesController(AbstractFilesController):
         self._update_action_doc_params("show", "<org_name>  <app_name> <file_name>")
         self._update_action_doc_params("show-content", "<org_name>  <app_name> <file_name>")
         self._update_action_doc_params("set-content", "<org_name>  <app_name> <file_name> <path>")
+        self._update_action_doc_params("edit", "<org_name>  <app_name> <file_name>")
 
     def _get_file_position(self):
         return 2
@@ -112,6 +131,7 @@ class DistributionFilesController(AbstractFilesController):
         self._update_action_doc_params("show", "<org_name>  <dist_name> <file_name>")
         self._update_action_doc_params("show-content", "<org_name>  <dist_name> <file_name>")
         self._update_action_doc_params("set-content", "<org_name>  <dist_name> <file_name> <path>")
+        self._update_action_doc_params("edit", "<org_name>  <dist_name> <file_name>")
 
     def _get_file_position(self):
         return 2
@@ -149,6 +169,7 @@ class PlatformFilesController(AbstractFilesController):
         self._update_action_doc_params("show", "<org_name> <plat_name> <file_name>")
         self._update_action_doc_params("show-content", "<org_name> <plat_name> <file_name>")
         self._update_action_doc_params("set-content", "<org_name> <plat_name> <file_name> <path>")
+        self._update_action_doc_params("edit", "<org_name>  <plat_name> <file_name>")
 
     def _get_file_position(self):
         return 2
