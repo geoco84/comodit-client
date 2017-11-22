@@ -22,16 +22,34 @@ not hesitate to [register](https://my.comodit.com/), it's free.
 
 1. Retrieve source from GitHub:
 
-        git clone git://github.com/comodit/comodit-client.git
+        git clone https://github.com/guardis/comodit-client.git ~/.comodit
 
-2. Change directory to downloaded source:
+2. Enable auto-completion and add directory to PYTHONPATH:
 
-        cd comodit-client
+        $ echo 'source $HOME/.comodit/auto_completion/comodit' >> ~/.bashrc
+        $ echo 'export PYTHONPATH="$PYTHONPATH:$HOME/.comodit/"' >> ~/.bashrc
+        $ echo 'export PATH="$PATH:$HOME/.comodit/"' >> ~/.bashrc
 
-3. Install the client using distutils (see [this page](http://docs.python.org/2/install/index.html) for more details).
+   Zsh note: Modify your ~/.zshenv file instead of ~/.bashrc.
 
-        python setup.py install
+   Mac OS X note: Modify your ~/.bash_profile file instead of ~/.bashrc.
 
+3. Install dependencies (you might need admin rights to execute the following):
+
+        $ pip install pycurl future six
+
+4. Create configuration file '~/.comoditrc' with the following content (*UUU* and *PPP* are respectively your ComodIT username and password):
+
+        [client]
+        default_profile = default
+
+        [default]
+        api = https://my.comodit.com/api
+        username = UUU
+        password = PPP
+        vnc_viewer_call = vinagre %h:%p
+
+5. Restart your shell to start using the client
 
 ## From repository
 
