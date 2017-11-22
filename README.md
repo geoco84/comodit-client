@@ -38,18 +38,9 @@ not hesitate to [register](https://my.comodit.com/), it's free.
 
         $ pip install pycurl future six
 
-4. Create configuration file '~/.comoditrc' with the following content (*UUU* and *PPP* are respectively your ComodIT username and password):
+4. Restart your shell
 
-        [client]
-        default_profile = default
-
-        [default]
-        api = https://my.comodit.com/api
-        username = UUU
-        password = PPP
-        vnc_viewer_call = vinagre %h:%p
-
-5. Restart your shell to start using the client
+5. Jump to 'After installation' section below.
 
 ## From repository
 
@@ -77,7 +68,27 @@ not hesitate to [register](https://my.comodit.com/), it's free.
 
 3. Install client with command `apt-get update; apt-get install comodit-client`.
 
+# After installation
 
+1. Create configuration file '~/.comoditrc' with the following content (*UUU* and *PPP* are respectively your ComodIT username and password):
+
+        [client]
+        default_profile = default
+
+        [default]
+        api = https://my.comodit.com/api
+        username = UUU
+        password = PPP
+        vnc_viewer_call = vinagre %h:%p
+
+2. Run the following command to check that everything works (you should see the list of organizations you have access to)
+
+        $ comodit organizations list
+
+For more information, read below sections and/or the man page:
+
+- With installation from source: `man ~/.comodit/doc/comodit.1`
+- With installation from repository: `man comodit`
 
 # Python Library
 
