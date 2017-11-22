@@ -474,7 +474,7 @@ class IsStoreCapable(Entity):
         return self._http_client.read(self.url + "thumb", decode = False)
 
     def read_thumbnail_content(self):
-        return self._http_client.decode(self.get_thumbnail_content())
+        return self.get_thumbnail_content().read()
 
     def set_thumbnail_content(self, path):
         """

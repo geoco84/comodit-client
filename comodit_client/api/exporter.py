@@ -70,7 +70,7 @@ class Export(object):
             # Dump thumbnail to disk
             try:
                 content = res.read_thumbnail_content()
-                with open(os.path.join(res_folder, "thumb"), "w") as f:
+                with open(os.path.join(res_folder, "thumb"), "wb") as f:
                     f.write(content)
             except ApiException as e:
                 if e.code == 404:
