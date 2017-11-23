@@ -21,14 +21,9 @@ def get_template_files():
         files.append('templates/' + name)
     return files
 
-VERSION = '0.0'
-RELEASE = '0'
-try:
-    from comodit_client import version
-    VERSION = version.VERSION
-    RELEASE = version.RELEASE
-except ImportError:
-    pass
+from comodit_client import version
+VERSION = version.VERSION
+RELEASE = version.RELEASE
 
 setup(
     name = 'comodit-client',

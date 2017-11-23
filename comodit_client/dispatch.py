@@ -34,6 +34,7 @@ from .control.organizations import OrganizationsController
 from .control.platforms import PlatformsController
 from .rest.exceptions import ApiException
 from .util.editor import NotModifiedException
+import comodit_client.version as version
 
 
 def run(argv):
@@ -178,17 +179,7 @@ def _parse(argv):
         config.param_completions = -1
 
     if "--version" in argv:
-        version = "NO_VERSION"
-        release = "NO_RELEASE"
-        try:
-            import version as version_mod
-            if version_mod.VERSION:
-                version = version_mod.VERSION
-            if version_mod.RELEASE:
-                release = version_mod.RELEASE
-        except ImportError:
-            pass
-        print("ComodIT command line client " + version + "-" + release + ".")
+        print("ComodIT command line client " + version.VERSION + "-" + version.RELEASE + ".")
         exit(0)
 
     # Parse arguments
