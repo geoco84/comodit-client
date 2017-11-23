@@ -22,7 +22,7 @@ not hesitate to [register](https://my.comodit.com/), it's free.
 
 1. Retrieve source from GitHub:
 
-        git clone https://github.com/guardis/comodit-client.git ~/.comodit
+        git clone https://github.com/comodit/comodit-client.git ~/.comodit
 
 2. Enable auto-completion and add directory to PYTHONPATH:
 
