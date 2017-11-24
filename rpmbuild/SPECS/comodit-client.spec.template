@@ -36,6 +36,7 @@ Requires: python-argparse
 Requires: python-pycurl
 Requires: python-future
 Requires: python-six
+Requires: python-configparser
 
 Obsoletes: cortex-client
 
