@@ -23,7 +23,7 @@ def edit_text(starting_text='', ignore_not_modified=False):
     updated = edit_file(temp_filename)
     result = open(temp_filename).read()
     os.unlink(temp_filename)
-    if not ignore_not_modified and updated:
+    if not ignore_not_modified and not updated:
         raise NotModifiedException()
     return result
 
