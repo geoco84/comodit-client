@@ -165,7 +165,7 @@ class ApplicationContextController(AbstractContextController):
         app_name = argv[3]
         file_name = argv[4]
 
-        print(host.render_app_file(app_name, file_name).read())
+        print(host.render_app_file(app_name, file_name))
 
     def _render_file_doc(self):
         return ActionDoc("render-file", "<org_name> <env_name> <host_name> <app_name> <file_name>", """
@@ -235,7 +235,7 @@ class PlatformContextController(AbstractContextController):
         host = self._get_host(argv)
         file_name = argv[3]
 
-        print(host.render_plat_file(file_name).read())
+        print(host.render_plat_file(file_name))
 
     def _render_file_doc(self):
         return ActionDoc("render-file", "<org_name> <env_name> <host_name> <file_name>", """
@@ -304,7 +304,7 @@ class DistributionContextController(AbstractContextController):
         host = self._get_host(argv)
         file_name = argv[3]
 
-        print(host.render_dist_file(file_name).read())
+        print(host.render_dist_file(file_name))
 
     def _render_file_doc(self):
         return ActionDoc("render-file", "<org_name> <env_name> <host_name> <file_name>", """

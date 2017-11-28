@@ -1039,8 +1039,8 @@ class Host(HasSettings):
 
     def __render_file(self, collection, file_name):
         try:
-            result = self._http_client.read(collection + "/files/" + file_name, decode = False)
-            return result
+            response = self._http_client.read(collection + "/files/" + file_name, decode = False)
+            return self._http_client.decode(response)
         except ApiException as e:
             raise PythonApiException("Unable to render file: " + e.message)
 
@@ -1056,7 +1056,7 @@ class Host(HasSettings):
         @param file_name: The name of the file to render.
         @type file_name: string
         @return: a reader to the content.
-        @rtype: file-like object
+        @rtype: string
         """
 
         return self.__render_file(self.url + "applications/" + app_name, file_name)
@@ -1071,7 +1071,7 @@ class Host(HasSettings):
         @param file_name: The name of the file to render.
         @type file_name: string
         @return: a reader to the content.
-        @rtype: file-like object
+        @rtype: string
         """
 
         return self.__render_file(self.url + "distribution", file_name)
@@ -1086,7 +1086,7 @@ class Host(HasSettings):
         @param file_name: The name of the file to render.
         @type file_name: string
         @return: a reader to the content.
-        @rtype: file-like object
+        @rtype: string
         """
 
         return self.__render_file(self.url + "platform", file_name)

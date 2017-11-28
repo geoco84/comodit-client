@@ -845,7 +845,7 @@ class HostAppFileItem(RenderedFileItem):
         self._file = path_vars['file_name']
 
     def show_content(self, path = None):
-        print(self._host.render_app_file(self._app, self._file).read())
+        print(self._host.render_app_file(self._app, self._file))
 
     def live_update(self, opts):
         self._host.live_update_file(self._app, self._file)
@@ -898,7 +898,7 @@ class HostDistFileItem(RenderedFileItem):
         self._file = path_vars['file_name']
 
     def show_content(self, path = None):
-        print(self._host.render_dist_file(self._file).read())
+        print(self._host.render_dist_file(self._file))
 
 
 class HostPlatFilesItem(RenderedFilesItem):
@@ -914,7 +914,7 @@ class HostPlatFileItem(RenderedFileItem):
         self._file = path_vars['file_name']
 
     def show_content(self, path = None):
-        print(self._host.render_plat_file(self._file).read())
+        print(self._host.render_plat_file(self._file))
 
 
 # Audit
