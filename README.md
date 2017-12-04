@@ -48,9 +48,8 @@ not hesitate to [register](https://my.comodit.com/), it's free.
 
 1. Add ComodIT repository by executing the following command:
 
-    - On CentOS 6: `rpm -ivh http://dl.comodit.com/pub/centos/6/x86_64/comodit-release-6-3.el6.noarch.rpm`
-    - On Fedora 16: `rpm -ivh http://dl.comodit.com/pub/fedora/16/x86_64/comodit-release-16-2.fc16.noarch.rpm`
-    - On Fedora 17: `rpm -ivh http://dl.comodit.com/pub/fedora/17/x86_64/comodit-release-17-1.fc17.noarch.rpm`
+    - On CentOS 67 `rpm -ivh http://dl.comodit.com/pub/centos/7/x86_64/comodit-release-7-0.el7.noarch.rpm`
+    - On Fedora 25: `rpm -ivh http://dl.comodit.com/pub/fedora/27/x86_64/comodit-release-1-0.fc27.noarch.rpm`
 
 2. Install client with command `yum install comodit-client`.
 
@@ -59,7 +58,7 @@ not hesitate to [register](https://my.comodit.com/), it's free.
 1. Add ComodIT repository by executing the following command:
 
         cat <<EOF > /etc/apt/sources.list.d/comodit.list
-        deb http://dl.comodit.com/pub debian-squeeze main
+        deb http://dl.comodit.com/pub debian-stretch main
         EOF
 
 2. Install repository key:
