@@ -133,7 +133,7 @@ class LinkSetting(Setting):
     def _show(self, indent = 0):
         super(LinkSetting, self)._show(indent)
         print(" "*indent, "Link:", self.link)
-        print(" "*indent, "Default value:", self.value)
+        print(" "*indent, "Default value:", self.default)
 
 
 class PropertySetting(Setting):
