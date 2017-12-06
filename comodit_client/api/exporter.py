@@ -13,6 +13,7 @@ from comodit_client.api.exceptions import PythonApiException
 from comodit_client.api.host import Host
 from comodit_client.rest.exceptions import ApiException
 from comodit_client.util.path import ensure
+import six
 
 
 class ExportException(Exception):
@@ -45,7 +46,10 @@ class Export(object):
             file_name = template.name
             try:
                 with open(os.path.join(output_folder, file_name), "w") as f:
-                    f.write(template.read_content())
+                    if six.PY2:
+                        f.write(template.read_content().encode('utf-8'))
+                    else:
+                        f.write(template.read_content())
             except ApiException as e:
                 if e.code == 404:
                     pass
