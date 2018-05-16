@@ -2,9 +2,7 @@
 
 # Exit on errors
 set -e
-
-SYSTEMD_PLATFORMS=(epel-7-x86_64 fedora-26-x86_64 fedora-27-x86_64 fedora-28-x86_64)
-PLATFORMS=(epel-6-i386 epel-6-x86_64)
+source config
 
 NAME="comodit-client"
 
