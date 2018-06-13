@@ -53,7 +53,7 @@ if [ -f "/usr/bin/mock" ]
 then
   for platform in "${PLATFORMS[@]}"
   do
-    /usr/bin/mock --bootstrap-chroot -r ${platform} --rebuild rpmbuild/SRPMS/${NAME}-${VERSION}-${RELEASE}*.src.rpm
+    /usr/bin/mock -r ${platform} --rebuild rpmbuild/SRPMS/${NAME}-${VERSION}-${RELEASE}*.src.rpm
     mkdir -p ${HOME}/packages/${platform}
     mv /var/lib/mock/${platform}/result/*.rpm ${HOME}/packages/${platform}
   done
