@@ -19,7 +19,9 @@ from comodit_client.api.audit import AuditLogCollection
 from comodit_client.api.purchased import PurchasedCollection
 from comodit_client.util.json_wrapper import JsonWrapper
 from comodit_client.api.application_key import ApplicationKeyCollection
-
+from comodit_client.api.job import JobCollection
+from comodit_client.api.notificationLog import NotificationLogCollection
+from comodit_client.api.notification import NotificationCollection
 
 class User(JsonWrapper):
     """
@@ -349,6 +351,25 @@ class Organization(HasSettings):
 
         return EnvironmentCollection(self.client, self.url + "environments/")
 
+    def jobs(self):
+        """
+        Instantiates the collection of jobs associated to this organization.
+
+        @return: The collection of jobs associated to this organization.
+        @rtype: L{JobCollection}
+        """
+
+        return JobCollection(self.client, self.url + "jobs/")
+    
+    def notifications(self):
+        """
+        Instantiates the collection of notifications associated to this organization.
+
+        @return: The collection of notifications associated to this organization.
+        @rtype: L{NotificationCollection}
+        """
+        return NotificationCollection(self.client, self.url + "notifications/")
+
     def get_environment(self, name):
         """
         Fetches an environment of this organization given its name.
@@ -428,6 +449,16 @@ class Organization(HasSettings):
         """
 
         return AuditLogCollection(self.client, self.url + "audit/")
+    
+    def notification_logs(self):
+        """
+        Instantiates the collection of notification logs associated to this organization.
+       
+        @return: The collection of notification logs associated to this organization.
+        @rtype: L{NotificationLogCollection}
+        """
+
+        return NotificationLogCollection(self.client, self.url + "notification/")
 
     def purchased_apps(self):
         """

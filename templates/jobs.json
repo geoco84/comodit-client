@@ -1,0 +1,14 @@
+{
+    "name":"name job",
+    "description":"description job",
+    "enabled":"true",
+    "input":"organizations/Demo/environments/test/hosts/voila",
+    "action":"DELETE_HOST",
+    "organization":"",
+    "cron":"* * * * *",
+    "date":"2018-04-04T15:37:30.612+0200",
+    "operation":{
+        "desciption":"NONE",
+        "operation":"NONE"
+    }
+}

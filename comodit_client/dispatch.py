@@ -17,14 +17,13 @@ import traceback
 
 from comodit_client.api.exporter import ExportException
 from comodit_client.api.importer import ImportException
-from comodit_client.control.application_keys import ApplicationKeysController
 from comodit_client.control.store import AppStoreController, DistStoreController
 
 from .api import Client
 from .api.exceptions import PythonApiException
 from .config import Config, ConfigException
 from .control import router
-from .control.applications import ApplicationsController
+from comodit_client.control.applications import ApplicationsController
 from .control.distributions import DistributionsController
 from .control.environments import EnvironmentsController
 from .control.exceptions import ControllerException, ArgumentException
@@ -48,8 +47,7 @@ def run(argv):
     router.register(["hosts"], HostsController())
     router.register(["app-store"], AppStoreController())
     router.register(["dist-store"], DistStoreController())
-    router.register(["application_keys"], ApplicationKeysController())
-
+    
     _parse(argv)
 
 def _get_all_options(parser):
@@ -95,7 +93,6 @@ Available entities:
     environments      Environment defined within an organization
     hosts             Host defined within an environment
     flavors           Available flavors when creating a distribution
-    application_keys  Temporary access tokens related to an organization
 """)
 
     parser.add_argument("entity", help = "An entity")
