@@ -369,7 +369,6 @@ class Client(object):
 
         return self.environments(org_name).get(name)
 
-
     # Hosts helpers
 
     def hosts(self, org_name, env_name):

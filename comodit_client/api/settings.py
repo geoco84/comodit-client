@@ -6,7 +6,7 @@ from __future__ import print_function
 
 from comodit_client.api.entity import Entity
 from comodit_client.api.collection import Collection
-
+from comodit_client.util.json_wrapper import JsonWrapper
 
 class Setting(Entity):
     """
@@ -77,7 +77,6 @@ class SimpleSetting(Setting):
     def _show(self, indent = 0):
         super(SimpleSetting, self)._show(indent)
         print(" "*indent, "Value:", self.value)
-
 
 class LinkSetting(Setting):
     """
@@ -189,6 +188,236 @@ def _build_setting(collection, json_data):
         return LinkSetting(collection, json_data)
     else:
         return SimpleSetting(collection, json_data)
+
+class SettingImpact(Entity):
+
+    @property
+    def settingHandlerContexts(self):
+        """
+        List of setting with handler.
+
+        @rtype: list of settingHandlerContexts L{SettingHandlerContext}
+        """
+
+        return self._get_list_field("settingHandlerContexts", lambda x: SettingHandlerContext(x))
+
+    @settingHandlerContexts.setter
+    def argumsettingHandlerContextsents(self, settingHandlerContexts):
+        """
+        Sets list of setting with handler.
+
+        @param groups: New list of setting with handler.
+        @type groups: list of SettingHandlerContext
+        """
+
+        return self._set_list_field("settingHandlerContexts", settingHandlerContexts)
+
+
+    @property
+    def otherResources(self):
+        """
+        Sets list of setting without handler.
+
+        @param groups: New list of setting without handler.
+        @type groups: list of String
+        """
+        return self._get_list_field("otherResources")
+
+    @otherResources.setter
+    def otherResources(self, otherResources):
+        """
+        Sets list of setting without handler.
+
+        @param groups: New list of setting without handler.
+        @type groups: list of String
+        """
+        return self._set_list_field("otherResources", otherResources)
+
+    def show(self, indent = 0):
+        print(" "*(indent + 2), "Resources automatically updated by event handlers")
+        for s in self.settingHandlerContexts:
+            s.show(2)
+
+        print(" "*(indent + 2), "Other impacted resources without event handler")
+        for g in self.otherResources:
+            print(" "*(indent + 4), g)
+
+class SettingImpactCollection(Collection):
+
+     def _new(self, json_data = None):
+        return SettingImpact(self, json_data)
+
+class SettingHandlerContext(JsonWrapper):
+    @property
+    def application(self):
+        """
+        application name
+
+        @rtype: String
+        """
+        return self._get_field("application")
+    
+    @application.setter
+    def application(self, application):
+        """
+        Sets application name.
+        """
+
+        self._set_field("application", application.get_json())
+
+    @property
+    def hosts(self):
+        """
+        List of hosts with handler or setting isn't define
+
+        @rtype: list of hosts L{HostSettingContext}
+        """
+
+        return self._get_list_field("hosts", lambda x: HostSettingContext(x))
+
+    @hosts.setter
+    def hosts(self, hosts):
+        """
+        Sets list of hosts with handler or setting isn't define
+
+        @param groups: New list of hosts.
+        @type groups: list of HostSettingContext
+        """
+        return self._set_list_field("hosts", hosts)
+
+    @property
+    def handlers(self):
+        """
+        List of handler
+
+        @rtype: list of handlers L{HandlerSettingContext}
+        """
+
+        return self._get_list_field("handlers", lambda x: HandlerSettingContext(x))
+
+    @handlers.setter
+    def handlers(self, handlers):
+        """
+        Sets list of handler
+
+        @param groups: New list of handler
+        @type groups: list of HandlerSettingContext
+        """
+        return self._set_list_field("handlers", handlers)
+
+    def show(self, indent = 0):
+        print(" "*(indent + 2), "application", self.application)
+        indent += 2
+        print(" "*(indent + 2), "Hosts")
+        for h in self.hosts:
+            h.show(indent)
+        print(" "*(indent + 2), "Actions")
+        for h in self.handlers:
+            h.show(indent)
+
+class HostSettingContext(JsonWrapper):
+    @property
+    def name(self):
+        """
+        name of host
+
+        @rtype: String
+        """
+        return self._get_field("name")
+    
+    @name.setter
+    def name(self, name):
+        """
+        Sets name of host
+        """
+
+        self._set_field("name", name.get_json())
+        
+    @property
+    def environment(self):
+        """
+        name of environment where is host
+
+        @rtype: String
+        """
+        return self._get_field("environment")
+    
+    @environment.setter
+    def environment(self, environment):
+        """
+        Sets name of environment
+        """
+
+        self._set_field("environment", environment.get_json())
+
+    def show(self, indent = 0):        
+        print(" "*(indent + 4), self.environment + "\\" + self.name)
+
+class HandlerSettingContext(JsonWrapper):
+    @property
+    def do(self):
+        """
+        List of actions on Handler.
+
+        @rtype: list of actions L{Do}
+        """
+
+        return self._get_list_field("do", lambda x: Do(x))
+
+    @do.setter
+    def do(self, handlers):
+        """
+        Sets list of action
+
+        @param groups: New list of action.
+        @type groups: list of Do
+        """
+        return self._set_list_field("do", do)
+
+    def show(self, indent = 0):
+        for d in self.do:
+            d.show(indent + 2)
+
+class Do(JsonWrapper):
+    @property
+    def action(self):
+        """
+        action to do on ressource
+
+        @rtype: String
+        """
+        return self._get_field("action")
+    
+    @action.setter
+    def action(self, action):
+        """
+        Sets action
+        """
+
+        self._set_field("action", action.get_json())
+        
+    @property
+    def resource(self):
+        """
+        resource name
+
+        @rtype: String
+        """
+        return self._get_field("resource")
+    
+    @resource.setter
+    def resource(self, resource):
+        """
+        Sets resource name
+
+        @rtype: String
+        """
+
+        self._set_field("resource", resource.get_json())
+
+    def show(self, indent = 0):
+        print(" "*(indent + 2), self.action, self.resource)
+
 
 
 class SettingCollection(Collection):
@@ -387,6 +616,9 @@ class HasSettings(Entity):
     def add_setting(self, key, value):
         self.add_simple_setting(key, value)
 
+    def impact(self, key):
+        return SettingImpactCollection(self.client, self.url + "settings/" + key ).get("/impact")
+        
     def add_simple_setting(self, key, value):
         """
         Adds a simple setting to local list of settings. Note that this list is considered only at creation time.

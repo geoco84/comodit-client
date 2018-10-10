@@ -222,9 +222,3 @@ class Export(object):
 
         for env in org.environments():
             self.export_environment(env, os.path.join(path, "environments", env.name))
-            
-        for job in org.jobs():
-            self.export_job(job, os.path.join(path, "jobs", job.name))
-        
-        for notification in org.notifications():
-            self.export_notification(notification, os.path.join(path, "notification-channels", notification.name))
