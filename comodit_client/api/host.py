@@ -1384,9 +1384,9 @@ class Host(HasSettings):
 
         self._http_client.update(self.url + "applications/" + app_name + "/services/" + svc_name + "/_disable", decode = False)
 
-    def live_install_package(self, app_name, pkg_name):
+    def live_update_package(self, app_name, pkg_name, pkg_version):
         """
-        Requests the (re-)installation of a package on provisioned machine. This may, for
+        Requests the update of a package on provisioned machine. This may, for
         instance, solve a compliance error linked to target package having been
         removed. A change is queued and exposes the result of the operation.
 
@@ -1394,9 +1394,15 @@ class Host(HasSettings):
         @type app_name: string
         @param pkg_name: The package's name.
         @type pkg_name: string
+        @param pkg_version: The package's version.
+        @type pkg_version: string
         """
 
-        self._http_client.update(self.url + "applications/" + app_name + "/packages/" + pkg_name + "/_install", decode = False)
+        res = PackageResource()
+        res.name = pkg_name
+        res.release = pkg_version
+
+        self._http_client.update(self.url + "applications/" + app_name + "/packages/" + pkg_name, res.get_json(), decode = False)
 
     def install(self, name, settings = {}):
         """
@@ -1464,3 +1470,24 @@ class Host(HasSettings):
             now = time.time()
             if time_out > 0 and (now - start_time) > time_out:
                 break
+
+
+class PackageResource(JsonWrapper):
+    
+    @property
+    def name(self):
+        return self._get_field("name")
+    
+    @name.setter
+    def name(self, name):
+        
+        self._set_field("name", name)
+
+    @property
+    def release(self):
+        return self._get_field("release")
+    
+    @release.setter
+    def release(self, release):
+        
+        self._set_field("release", release)
