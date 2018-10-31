@@ -2,6 +2,10 @@
 
 %define main_package comodit_client
 
+%if 0%{?fedora} >= 29
+%define __python /usr/bin/python2
+%endif
+
 Name: comodit-client
 Version: #VERSION#
 Release: #RELEASE#%{?dist}
