@@ -37,5 +37,10 @@ class JobsController(OrganizationEntityController):
         
     def _run(self, argv):
         job = self._get_entity(argv)
+
+        parameters = {}
+        options = self._config.options
+        parameters["wait"] = options.wait
+        
         if self._config.options.force or (prompt.confirm(prompt="Run " + job.name + " ?", resp=False)) :
-            job.run()
+            job.run(parameters)

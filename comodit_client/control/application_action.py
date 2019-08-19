@@ -54,7 +54,12 @@ class ApplicationActionController(AbstractController):
         app_name = argv[3]
         handler_name = argv[4]
 
-        host.get_application(app_name).run_handler(handler_name)
+        parameters = {}
+        options = self._config.options
+        parameters["wait"] = options.wait
+        
+
+        host.get_application(app_name).run_handler(handler_name, parameters)
 
     def _print_run_completions(self, param_num, argv):
         if param_num < 4:

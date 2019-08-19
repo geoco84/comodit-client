@@ -1333,7 +1333,7 @@ class Host(HasSettings):
 
         self._http_client.update(self.url + "applications/" + app_name + "/files/" + file_name + "/_update", decode = False)
         
-    def run_orchestration(self, orchestration_name):
+    def run_orchestration(self, orchestration_name, parameters = None):
         """
         Requests to run orchestration on provisioned machine. 
 
@@ -1341,7 +1341,7 @@ class Host(HasSettings):
         @type orchestration_name: string
         """
         
-        self._http_client.update(self.url + "orchestration/" + orchestration_name + "/_run", decode = False)
+        self._http_client.update(self.url + "orchestration/" + orchestration_name + "/_run", decode = False, parameters = parameters)
         
     def get_orchestrations(self):
         """
