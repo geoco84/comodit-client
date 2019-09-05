@@ -32,11 +32,6 @@ class HostAbstractSettingsController(EntityController):
         self._register(["change"], self._change, self._print_list_completions)
         self._register_action_doc(self._change_doc())
 
-        self._register(["list-secret"], self._list_secret, self._print_list_completions)
-        self._register_action_doc(self._list_secret_doc())
-        self._register(["list-non-secret"], self._list_non_secret, self._print_list_completions)
-        self._register_action_doc(self._list_non_secret_doc())
-
     def _get_name_argument(self, argv):
         if len(argv) < 4:
             raise ArgumentException("An organization, an environment, a host and a setting name must be provided");
@@ -79,26 +74,6 @@ class HostAbstractSettingsController(EntityController):
     def _change_doc(self):
         return ActionDoc("change", self._list_params(), """
         Add, update or delete Settings.""")
-
-    def _list_secret(self, argv):
-        parameters = {}
-        parameters["secret_only"] = True
-
-        self._list(argv, parameters)
-
-    def _list_non_secret(self, argv):
-        parameters = {}
-        parameters["no_secret"] = True
-        
-        self._list(argv, parameters)
-
-    def _list_secret_doc(self):
-        return ActionDoc("list_secret", "<org_name>", """
-        List secret setting.""")
-    
-    def _list_non_secret_doc(self):
-        return ActionDoc("list_non_secret", "<org_name>", """
-        List non secret setting.""")
 
 class PlatformContextSettingsController(HostAbstractSettingsController):
 

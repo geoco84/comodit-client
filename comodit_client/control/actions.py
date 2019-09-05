@@ -39,8 +39,12 @@ class ActionController(AbstractController):
 
         host = self._get_host(argv)
         orch_name = argv[3]
-        host.run_orchestration(orch_name)
-        
+        changes = host.run_orchestration(orch_name)
+
+        if self._config.options.wait:
+            for change in changes:
+                host.wait_for_change_terminated(change)
+                    
     def _print_action_completions(self, param_num, argv):
         if param_num < 4:
             self._print_host_completions(param_num, argv)

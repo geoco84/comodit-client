@@ -140,11 +140,14 @@ class Job(Entity):
         print(" "*indent, "date:", self.date)
         self.operation._show(indent + 2)
         
-    def run(self):
+    def run(self, parameters=None):
         """
         Execute job
+
+        @param parameters: paramters request
+        
         """
-        self._http_client.update(self.url + "/_run", decode = False)
+        self._http_client.update(self.url + "/_run", decode = False, parameters=parameters)
         
         
 class Operation(JsonWrapper):

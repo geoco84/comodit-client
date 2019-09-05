@@ -54,7 +54,10 @@ class ApplicationActionController(AbstractController):
         app_name = argv[3]
         handler_name = argv[4]
 
-        host.get_application(app_name).run_handler(handler_name)
+        changeId = host.get_application(app_name).run_handler(handler_name)
+
+        if self._config.options.wait:
+            host.wait_for_change_terminated(changeId)                    
 
     def _print_run_completions(self, param_num, argv):
         if param_num < 4:
