@@ -236,11 +236,15 @@ class HostsController(EntityController):
                           with_instances=self._config.options.with_instances)
         importer.import_full_host(org, env, argv[2])
 
-        if (importer.no_conflict() or self._config.options.skip_conflict) and not self._config.options.dry_run:
+        if self._config.options.dry_run:
+            importer.display_queue(show_only_conflicts = False)
+
+        elif (importer.no_conflict() or self._config.options.skip_conflict):
             importer.execute_queue()
         else:
             importer.display_queue(show_only_conflicts = True)
+            print ("Impossible to import host. There are conflicts. Use --skip-conflict to force")
 
     def _import_doc(self):
         return ActionDoc("import", "<src_folder> [--dry-run]", """
-            Import host from disk. With --dry-run, actions on conflict are displayed but not applied.""")
+            Import host from disk. With --dry-run, actions are displayed but not applied.""")

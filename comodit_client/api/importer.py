@@ -359,13 +359,40 @@ class Import(object):
         env = Environment(org.environments(), None)
         env.load(env_folder)
         self._import_entity_and_detect_conflict(env, "environment", skip_conflict_detection=False)
+        org_folder = os.path.join(env_folder, "..", "..")
+
 
         hosts_folder = os.path.join(env_folder, "hosts")
         if os.path.exists(hosts_folder):
             hosts_list = os.listdir(hosts_folder)
+            apps = set()
+            dists = set()
+            plats = set()
+            hosts = set()
+
             for host_name in hosts_list:
                 host_folder = os.path.join(hosts_folder, host_name)
-                self.import_full_host(org, env, host_folder)
+                hosts.add(host_folder)
+                host = Host(env.hosts(), None)
+                host.load(host_folder)
+                dists.add(host.distribution_name)
+                plats.add(host.platform_name)
+                for app in host.application_names:
+                    apps.add(app)
+
+            apps_folder = os.path.join(org_folder, "applications")
+            self.import_application_if_not_exist(org, apps_folder, apps)
+
+            dists_folder = os.path.join(org_folder, "distributions")
+            for dist in dists:
+                self.import_distribution_if_not_exist(org, dists_folder, dist)
+
+            plats_folder = os.path.join(org_folder, "platforms")
+            for plat in plats:
+                self.import_platform_if_not_exist(org, plats_folder, plat)
+
+            for host_name in hosts:
+                self.import_host(env, host_name, False)
 
 
     def import_full_host(self, org, env, host_folder):
@@ -386,28 +413,16 @@ class Import(object):
         org_folder = os.path.join(host_folder, "..", "..", "..", "..")
 
         if dist:
-            try:
-                org.get_distribution(dist)
-            except EntityNotFoundException as e:
-                dists_folder = os.path.join(org_folder, "distributions")
-                if os.path.exists(dists_folder):
-                    self.import_distribution(org, os.path.join(dists_folder, dist), skip_conflict_detection=False)
+            dists_folder = os.path.join(org_folder, "distributions")
+            self.import_distribution_if_not_exist(org, dists_folder, dist)
+
         if plat:
-            try:
-                org.get_platform(plat)
-            except EntityNotFoundException as e:
-                plats_folder = os.path.join(org_folder, "platforms")
-                if os.path.exists(plats_folder):
-                    self.import_platform(org, os.path.join(plats_folder, plat), skip_conflict_detection=False)
+            plats_folder = os.path.join(org_folder, "platforms")
+            self.import_distribution_if_not_exist(org, plats_folder, plat)
 
         apps_folder = os.path.join(org_folder, "applications")
+        self.import_application_if_not_exist(org, apps_folder, apps)
 
-        if os.path.exists(apps_folder):
-            for app in apps:
-                try:
-                    org.get_application(app)
-                except EntityNotFoundException as e:
-                    self.import_application(org, os.path.join(apps_folder, app), skip_conflict_detection=False)
 
 
         # Import application contexts
@@ -436,6 +451,29 @@ class Import(object):
             instance = Instance(host.instance(), None)
             instance.load_json(instance_file)
             self._import_instance(instance)
+
+    def import_platform_if_not_exist(self, org, plats_folder, plat):
+        try:
+            org.get_platform(plat)
+        except EntityNotFoundException as e:
+            if os.path.exists(plats_folder):
+                self.import_platform(org, os.path.join(plats_folder, plat), skip_conflict_detection=False)
+
+
+    def import_application_if_not_exist(self, org, apps_folder, apps):
+        if os.path.exists(apps_folder):
+            for app in apps:
+                try:
+                    org.get_application(app)
+                except EntityNotFoundException as e:
+                    self.import_application(org, os.path.join(apps_folder, app), skip_conflict_detection=False)
+
+    def import_distribution_if_not_exist(self, org, dists_folder, dist):
+        try:
+            org.get_distribution(dist)
+        except EntityNotFoundException as e:
+            if os.path.exists(dists_folder):
+                self.import_distribution(org, os.path.join(dists_folder, dist), skip_conflict_detection=False)
 
     def import_organization(self, client, org_folder):
         """
@@ -571,9 +609,10 @@ class Action(object):
         """
         Displays this actions to standard output.
         """
-
-        print("Conflict:", self._conflict)
-        print("Summary: " + self.get_summary())
+        if self.conflict():
+            print("* " + self.get_summary())
+        else:
+            print(" " + self.get_summary())
 
 
 class UploadContent(Action):
@@ -782,9 +821,10 @@ class ActionsQueue(object):
         @param show_only_conflicts: If true, only conflicting actions are displayed.
         @type show_only_conflicts: bool
         """
-
         for a in self._actions:
-            if not show_only_conflicts or a.conflict():
-                print("-"*80)
+            if show_only_conflicts:
+                if a.conflict():
+                    a.display()
+            else:
                 a.display()
         print("-"*80)

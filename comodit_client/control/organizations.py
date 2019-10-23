@@ -133,10 +133,14 @@ class OrganizationsController(RootEntityController):
         importer = Import(self._config.options.skip_conflict, queue_actions=True, with_instances=self._config.options.with_instances)
         importer.import_organization(self._client, self._root)
 
-        if (importer.no_conflict() or self._config.options.skip_conflict) and not self._config.options.dry_run:
+        if  self._config.options.dry_run:
+            importer.display_queue(show_only_conflicts = False)
+
+        elif (importer.no_conflict() or self._config.options.skip_conflict):
             importer.execute_queue()
         else:
             importer.display_queue(show_only_conflicts = True)
+            print ("Impossible to import organization. There are conflicts. Use --skip-conflict to force")
 
     def _import_doc(self):
         return ActionDoc("import", "<src_folder> [--skip-conflict] [--dry-run]", """
