@@ -31,7 +31,7 @@ class EnvironmentsController(OrganizationEntityController):
         self._register_subcontroller(["settings"], EnvironmentSettingsController())
 
         # actions
-        # self._register(["import"], self._import, self._print_import_completions)
+        self._register(["import"], self._import, self._print_import_completions)
         self._register(["audit-logs"], self._audit.audit, self._print_entity_completions)
         self._register_action_doc(self._audit.audit_doc())
         
@@ -47,7 +47,7 @@ class EnvironmentsController(OrganizationEntityController):
         self._register(["other-logs"], self._otherLog.other_log, self._print_entity_completions)
         self._register_action_doc(self._otherLog.other_log_doc())
 
-        # self._register_action_doc(self._import_doc())
+        self._register_action_doc(self._import_doc())
 
         self._doc = "Environments handling."
 
@@ -78,10 +78,13 @@ class EnvironmentsController(OrganizationEntityController):
                           with_instances=self._config.options.with_instances)
         importer.import_full_env(org, argv[1])
 
-        if (importer.no_conflict() or self._config.options.skip_conflict) and not self._config.options.dry_run:
+        if  self._config.options.dry_run:
+            importer.display_queue(show_only_conflicts = False)
+        elif (importer.no_conflict() or self._config.options.skip_conflict):
             importer.execute_queue()
         else:
             importer.display_queue(show_only_conflicts = True)
+            print ("Impossible to import environment. There are conflicts. Use --skip-conflict to force")
 
 
     def _print_import_completions(self, param_num, argv):
@@ -92,4 +95,4 @@ class EnvironmentsController(OrganizationEntityController):
 
     def _import_doc(self):
         return ActionDoc("import", "<src_folder> [--dry-run]", """
-            Import environment from disk. With --dry-run, actions on conflict are displayed but not applied.""")
+            Import environment from disk. With --dry-run, actions are displayed but not applied.""")
