@@ -4,24 +4,25 @@
 set -e
 source config
 
-NAME="comodit-client"
+NAME="python-comodit-client"
 
 if [ -z $1 ]
 then
-  # Get the latest tag on the current branch
-  VERSION=`git describe --abbrev=0 --tags --match "*[^dev]" | awk -F"-" '{print $2}'`
+  # Get the latest release*dev tag  
+  VERSION=`git describe --long --match "release*dev" | awk -F"-" '{print $2}'`
 else
   VERSION=$1
 fi
 
 if [ -z $2 ]
 then
-  RELEASE=1
+  # How much commit since last release*dev tag ?
+  RELEASE=`git describe --long --match "release*dev" | awk -F"-" '{print $3}'`
 else
   RELEASE=$2
 fi
 
-COMMIT=`git describe --tags --long --match "release-$VERSION" | awk -F"-" '{print $4}'`
+COMMIT=`git describe --long --match "release*dev" | awk -F"-" '{print $4}'`
 
 sed "s/#VERSION#/${VERSION}/g" rpmbuild/SPECS/${NAME}.spec.template > rpmbuild/SPECS/${NAME}.spec
 sed -i "s/#RELEASE#/${RELEASE}/g" rpmbuild/SPECS/${NAME}.spec
@@ -52,7 +53,7 @@ then
   for platform in "${PLATFORMS[@]}"
   do
     /usr/bin/mock --bootstrap-chroot -r ${platform} --rebuild rpmbuild/SRPMS/${NAME}-${VERSION}-${RELEASE}*.src.rpm
-    mkdir -p ${HOME}/packages/${platform}
-    mv /var/lib/mock/${platform}/result/*.rpm ${HOME}/packages/${platform}
+    mkdir -p ${HOME}/packages-dev/${platform}
+    mv /var/lib/mock/${platform}/result/*.rpm ${HOME}/packages-dev/${platform}
   done
 fi
