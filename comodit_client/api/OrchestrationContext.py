@@ -1,6 +1,6 @@
 # coding: utf-8
 """
-Provides the classes related to job entity: L{OrchestrationContext}
+Provides the classes related to orchestration context entity: L{OrchestrationContext}
 and L{OrchestrationContextCollection}.
 """
 from __future__ import print_function
