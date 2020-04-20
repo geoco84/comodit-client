@@ -7,9 +7,7 @@
 # authorization from Guardis.
 
 from comodit_client.control.organization_entity import OrganizationEntityController
-from comodit_client.control.doc import ActionDoc
-from comodit_client.util import prompt
-
+from comodit_client.control.OrchestrationContext import OrchestrationContextController
 
 class OrchestrationsController(OrganizationEntityController):
 
@@ -18,7 +16,9 @@ class OrchestrationsController(OrganizationEntityController):
     def __init__(self):
         super(OrchestrationsController, self).__init__()
         # subcontrollers
-        # actions
+        self._register_subcontroller(["history"], OrchestrationContextController())
+
+    # actions
                 
     def _get_collection(self, org_name):
         return self._client.orchestrations(org_name)

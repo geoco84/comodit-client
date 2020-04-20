@@ -76,23 +76,23 @@ class HostGroup(Entity):
         return self._get_field("description")
 
     @property
-    def hosts_queue(self):
+    def ordered_host(self):
         """
-        List of host's where orchestration is applied.
+        List of host's in group
 
-        @rtype: list of hosts queue L{HostQueue}
+        @rtype: list of ordered hosts L{HostQueue}
         """
 
-        return self._get_list_field("hosts", lambda x: HostQueue(x))
+        return self._get_list_field("hosts", lambda x: OrderedHost(x))
 
     def _show(self, indent = 0):
         print(" "*indent, "Name:", self.name)
         print(" "*indent, "Description:", self.description)
-        for h in self.hosts_queue:
+        for h in self.ordered_host:
             h._show(indent + 2)
 
 
-class HostQueue(JsonWrapper):
+class OrderedHost(JsonWrapper):
 
     @property
     def organization(self):
