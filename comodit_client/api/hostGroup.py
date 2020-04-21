@@ -88,8 +88,36 @@ class HostGroup(Entity):
     def _show(self, indent = 0):
         print(" "*indent, "Name:", self.name)
         print(" "*indent, "Description:", self.description)
+        print(" "*indent, "Hosts:")
+
+        #sort by position
+        self.ordered_host.sort(key=lambda x: x.position)
         for h in self.ordered_host:
             h._show(indent + 2)
+
+class OrderedHostGroup(JsonWrapper):
+    @property
+    def position(self):
+        """
+        the position of hostgroups
+
+        @rtype: string
+        """
+        return self._get_field("position")
+
+
+    @property
+    def hostgroup(self):
+        """
+        Hostgroups is a container of ordered hosts
+
+        @rtype: string
+        """
+        return HostGroup(None, self._get_field("hostGroup"));
+
+    def _show(self, indent = 0):
+        print(" "*indent, "Position:", self.position)
+        self.hostgroup._show(indent+2)
 
 
 class OrderedHost(JsonWrapper):
@@ -142,4 +170,3 @@ class OrderedHost(JsonWrapper):
     def _show(self, indent = 0):
         print(" "*indent, "Position:", self.position)
         print(" "*indent, "Name:", self.canonical_name)
-
