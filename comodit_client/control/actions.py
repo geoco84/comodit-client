@@ -128,17 +128,53 @@ class HostActionController(AbstractActionController):
 class OrchestrationActionController(AbstractActionController):
     def __init__(self):
         super(OrchestrationActionController, self).__init__()
+        self._register(["pause"], self._pause, self._print_orchestration_context_completions)
+        self._register(["stop"], self._stop, self._print_orchestration_context_completions)
+        self._register(["resume"], self._resume, self._print_orchestration_context_completions)
+        self._register(["restart"], self._restart, self._print_orchestration_context_completions)
 
-    def _run(self, argv):
+        self._register_action_doc(self._pause_doc())
+        self._register_action_doc(self._stop_doc())
+        self._register_action_doc(self._resume_doc())
+        self._register_action_doc(self._restart_doc())
+
+    def _get_orchestration(self, argv):
         if len(argv) < 2:
             raise ArgumentException("Wrong number of arguments")
 
         org = argv[0]
         orch_name = argv[1]
-        orchestration = self._client.orchestration(org, orch_name)
+        return self._client.orchestration(org, orch_name)
+
+    def _get_orchestration_context(self, argv):
+        if len(argv) < 3:
+            raise ArgumentException("Wrong number of arguments")
+
+        org = argv[0]
+        orch_name = argv[1]
+        return self._client.orchestrationContext(org, orch_name, argv[2])
+
+    def _pause(self, argv):
+        context = self._get_orchestration_context(argv)
+        context.pause()
+
+    def _stop(self, argv):
+        orchestration = self._get_orchestration_context(argv)
+        orchestration.stop()
+
+    def _restart(self, argv):
+        orchestration = self._get_orchestration_context(argv)
+        orchestration.restart(self._config.options.skip_error)
+
+    def _resume(self, argv):
+        orchestration = self._get_orchestration_context(argv)
+        orchestration.resume()
+
+    def _run(self, argv):
+        orchestration = self._get_orchestration(argv)
 
         result = orchestration.run()
-        self._wait(org, orch_name, result["uuid"])
+        self._wait(orchestration.organization, orchestration.name, result["uuid"])
 
     def _get_doc(self):
         return "Apply actions orchestration on hostgroups"
@@ -147,8 +183,25 @@ class OrchestrationActionController(AbstractActionController):
         return ActionDoc("run", "<org_name> <orchestration_name>", """
         run orchestration on host in hostgroups.""")
 
+    def _pause_doc(self):
+        return ActionDoc("pause", "<org_name> <orchestration_name> <id>", """
+        pause running orchestration on host in hostgroups.""")
+
+    def _stop_doc(self):
+        return ActionDoc("stop", "<org_name> <orchestration_name> <id>", """
+        stop running orchestration on host in hostgroups.""")
+
+    def _restart_doc(self):
+        return ActionDoc("restart", "<org_name> <orchestration_name> <id>", """
+        restart when errors occurs on orchestration.
+        --skip-error to ignore host in error""")
+
+    def _resume_doc(self):
+        return ActionDoc("resume", "<org_name> <orchestration_name> <id>", """
+        resume paused orchestration""")
+
     def _print_run_completions(self, param_num, argv):
-        if param_num < 3:
+        if param_num < 2:
             self._print_orchestration_completions(param_num, argv)
 
     def _print_orchestration_completions(self, param_num, argv):
@@ -156,3 +209,9 @@ class OrchestrationActionController(AbstractActionController):
             completions.print_entity_identifiers(self._client.organizations().list())
         elif len(argv) > 0 and param_num == 1:
             completions.print_entity_identifiers(self._client.orchestrations(argv[0]).list())
+
+    def _print_orchestration_context_completions(self, param_num, argv):
+        if param_num < 2:
+            self._print_orchestration_completions(param_num, argv)
+        elif param_num == 2:
+            completions.print_entity_identifiers(self._client.orchestrationContexts(argv[0], argv[1]).list())

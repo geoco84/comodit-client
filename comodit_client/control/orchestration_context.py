@@ -10,6 +10,7 @@ from __future__ import absolute_import
 from comodit_client.control.abstract import AbstractController
 from comodit_client.control.doc import ActionDoc
 from . import completions
+import json
 
 
 class OrchestrationContextController(AbstractController):
@@ -54,9 +55,20 @@ class OrchestrationContextController(AbstractController):
 
     def _list(self, argv):
         contexts = self._client.orchestrationContexts(argv[0], argv[1])
-
+        raw = self._config.options.raw
+        status = self._config.options.status
         for c in contexts:
-            c.show_identifier()
+            if status :
+                if c.status.lower() == status.lower():
+                    self._show_identifier(raw, c)
+            else:
+                self._show_identifier(raw, c)
+
+    def _show_identifier(self, raw, context):
+        if raw:
+            print(json.dumps(context.get_json(), indent=4))
+        else :
+            context.show_identifier()
 
 
     def _show(self, argv):

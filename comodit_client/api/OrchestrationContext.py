@@ -147,7 +147,7 @@ class OrchestrationContext(Entity):
             h._show(indent + 2)
 
     def show_identifier(self):
-        print("id : ", self.identifier, " started : ", self.started)
+       print(self.started, "(id: ", self.identifier+")" , self.status)
 
     def wait_finished(self, time_out = 0, show=False):
         """
@@ -167,6 +167,45 @@ class OrchestrationContext(Entity):
                 self._show(4)
             if time_out > 0 and  val > int(time_out):
                 sys.exit("timeout")
+
+    def pause(self):
+        """
+        Requests to pause orchestration
+
+        @return: Orchestration context
+        @rtype: L{OrchestrationContext}
+        """
+        return self._http_client.update(self.url + "_pause", decode = True)
+
+    def stop(self):
+        """
+        Requests to stop orchestration
+
+        @return: Orchestration context
+        @rtype: L{OrchestrationContext}
+        """
+        return self._http_client.update(self.url + "_stop", decode = True)
+
+    def restart(self, skip_error = False):
+        """
+        Requests to restart orchestration in error
+
+        @return: Orchestration context
+        @rtype: L{OrchestrationContext}
+        """
+        parameters = {}
+        parameters["skipError"] = skip_error
+
+        return self._http_client.update(self.url + "_restart", parameters, decode = True)
+
+    def resume(self):
+        """
+        Requests to resume a paused orchestration
+
+        @return: Orchestration context
+        @rtype: L{OrchestrationContext}
+        """
+        return self._http_client.update(self.url + "_resume", decode = True)
 
 
 class HostQueues(JsonWrapper):

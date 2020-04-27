@@ -2,12 +2,12 @@
 .\"     Title: comodit
 .\"    Author: Daniel Bartz <daniel.bartz@guardis.com>
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 04/21/2020
+.\"      Date: 04/27/2020
 .\"    Manual: Command Line User Interface Guide
 .\"    Source: Guardis 1
 .\"  Language: English
 .\"
-.TH "COMODIT" "1" "04/21/2020" "Guardis 1" "Command Line User Interface Gu"
+.TH "COMODIT" "1" "04/27/2020" "Guardis 1" "Command Line User Interface Gu"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -337,6 +337,11 @@ Generic handling for jobs
 hostgroups ORG_NAME
 .RS 4
 Generic handling for hostgroups
+.RE
+.PP
+orchestrations\-logs ORG_NAME
+.RS 4
+Generic handling for history of orchestrations
 .RE
 .RE
 .sp
@@ -967,11 +972,6 @@ action ORG_NAME ORCH_NAME
 .RS 4
 Give some action on orchestration
 .RE
-.PP
-history ORG_NAME ORCH_NAME
-.RS 4
-history of execution orchestration
-.RE
 .RE
 .sp
 .it 1 an-trap
@@ -1190,9 +1190,29 @@ impact ORG_NAME ORCHESTRATION_NAME
 show actions of orchestration
 .RE
 .PP
-run ID ORCHESTRATION_NAME
+run ORG_NAME ORCHESTRATION_NAME
 .RS 4
 run the orchestration
+.RE
+.PP
+pause ORG_NAME ORCHESTRATION_NAME ID
+.RS 4
+pause running orchestration
+.RE
+.PP
+stop ORG_NAME ORCHESTRATION_NAME ID
+.RS 4
+stop running orchestration
+.RE
+.PP
+resume ORG_NAME ORCHESTRATION_NAME ID
+.RS 4
+resume paused orchestration
+.RE
+.PP
+restart ORG_NAME ORCHESTRATION_NAME ID
+.RS 4
+restart orchestration in error\&.
 .RE
 .RE
 .SS "Actions"
@@ -1205,7 +1225,7 @@ run the orchestration
 \fBSelectors\fR
 .RS 4
 .PP
-History
+Orchestrations\-logs
 .RE
 .sp
 .it 1 an-trap
@@ -1213,7 +1233,7 @@ History
 .nr an-break-flag 1
 .br
 .ps +1
-\fBHistory\fR
+\fBOrchestrations-logs\fR
 .RS 4
 .PP
 show history of orchestration execution
@@ -2203,7 +2223,7 @@ install\-package ORG_NAME ENV_NAME HOST_NAME APP_NAME PACKAGE_RES_NAME
 (Re)installs package on machine\&.
 .RE
 .PP
-restart\-service ORG_NAME ENV_NAME HOST_NAME APP_NAME SERVICE_RES_NAME
+restart\-service ORG_NAME ENV_NAME HOST_NAME [\-\-skip\-error] APP_NAME SERVICE_RES_NAME \-\-skip\-error skip host in error
 .RS 4
 Re\-starts service on machine\&.
 .RE
